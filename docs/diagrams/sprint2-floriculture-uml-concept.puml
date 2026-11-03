@@ -1,0 +1,55 @@
+@startuml
+!pragma layout smetana
+left to right direction
+skinparam defaultFontName Malgun Gothic
+skinparam defaultFontSize 15
+skinparam shadowing false
+skinparam backgroundColor white
+skinparam packageStyle rectangle
+skinparam ArrowColor #526474
+skinparam usecaseBorderColor #36566B
+skinparam rectangleBorderColor #36566B
+skinparam noteBackgroundColor #FFFFFF
+skinparam noteBorderColor #A4ADB5
+skinparam nodesep 28
+skinparam ranksep 45
+title 2차 스프린트 · 화훼 생산자 서비스\n개념 수준 유스케이스 설계안
+actor "화훼 농민\n(생산자)" as Farmer
+rectangle "공공기관의 화훼 생산자 기록·피해보상 신청 시스템" as System {
+  usecase "UC-01\n생산자·농장 정보를 관리한다" as UC01 #E8F2FC
+  usecase "UC-02\n화훼 재배현황을 관리한다" as UC02 #E8F2FC
+  usecase "UC-03\n재배공정·작업기록을 관리한다" as UC03 #E8F2FC
+  usecase "UC-04\n출하이력을 관리한다" as UC04 #E8F2FC
+  usecase "UC-05\n재배·출하 이력을 조회한다" as UC05 #E8F2FC
+  usecase "UC-06\n로그인한다" as UC06 #EFF1F3
+  usecase "UC-07\n로그아웃한다" as UC07 #EFF1F3
+  usecase "UC-08\n기록에 사진을 첨부한다" as UC08 #FFF2CC
+  usecase "UC-09\n조회한 기록을 내려받는다" as UC09 #FFF2CC
+  usecase "UC-10\n재배·출하 기록을 비교한다" as UC10 #FFF2CC
+  usecase "UC-11\n기존 기록으로 피해보상을 신청한다" as UC11 #E8F2FC
+}
+Farmer -- UC01
+Farmer -- UC02
+Farmer -- UC03
+Farmer -- UC04
+Farmer -- UC05
+Farmer -- UC06
+Farmer -- UC07
+Farmer -- UC08
+Farmer -- UC09
+Farmer -- UC10
+Farmer -- UC11
+UC11 ..> UC05 : <<include>>
+note bottom of System
+  업무 유스케이스 사전조건: 로그인 완료 및 본인 기록에 대한 접근권한 보유.
+  핵심·필수·선택은 프로젝트의 우선순위이며 UML 관계 종류가 아니다.
+  보상 신청 과정에는 기존 재배·출하 이력 확인을 항상 포함한다.
+  금액 산정·지급·외부 시스템 연동은 후속 검토 범위다.
+end note
+legend bottom
+  |= 색상 |= 프로젝트 분류 |
+  |<#E8F2FC> 파랑 | 핵심 업무 · 필수 |
+  |<#EFF1F3> 회색 | 공통 기반 · 필수 |
+  |<#FFF2CC> 노랑 | 편의 기능 · 선택 후보 |
+endlegend
+@enduml

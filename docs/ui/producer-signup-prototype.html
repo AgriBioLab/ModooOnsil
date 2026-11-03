@@ -1,0 +1,567 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#18589a">
+  <title>모두의온실 - 생산자 회원가입</title>
+  <link rel="stylesheet" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/packages/pretendard-gov/dist/web/static/pretendard-gov-subset.min.css">
+  <style>
+@charset "UTF-8";
+
+* {
+	box-sizing: border-box;
+}
+
+/* 세로 스크롤바 자리를 항상 비워 둠 → 내용 길이가 다른 페이지로 옮겨도 화면 폭이 바뀌지 않음 */
+html {
+	scrollbar-gutter: stable;
+}
+
+body {
+	margin: 0;
+	/* 웹폰트(각 HTML head에서 불러옴) → 못 불러오면 뒤의 대체 글꼴 사용 */
+	font-family: "Pretendard GOV", -apple-system, "Malgun Gothic", sans-serif;
+	color: #222;
+	background: #fff;
+	font-size: 15px;	/* 본문 기본 글자 크기 (업무 화면: 정보 밀도 우선) */
+	line-height: 1.5;	/* 줄 높이 150% */
+}
+
+a {
+	color: inherit;
+	text-decoration: none;
+}
+
+ul {
+	list-style: none;
+	padding: 0;
+	margin: 0;
+}
+
+/* ============= 전체 레이아웃 ============= */  
+.page-layout {
+	max-width: 1920px;	/* 화면 폭만큼 넓어짐 (아주 넓은 모니터에서만 가운데 정렬) */	
+	margin: 0 auto;
+	padding: 0 24px;	
+	display: flex;
+	min-height: 700px;
+}
+
+/* ============= CONTENT 영역 ============= */
+.content {
+	flex: 1;
+	min-width: 0;	/* flex 칸이 안쪽 표 최소 폭(860px)만큼 늘어나지 않게 → 표는 안에서만 가로 스크롤 */
+	padding: 50px 0 80px 55px;
+}
+
+.breadcrumb {
+	font-size: 13px;
+	color: #666;	/* 흰 배경 대비 5.7:1 (#777 은 4.48:1 로 기준 4.5:1 미달) */
+	margin-bottom: 25px;
+}
+
+.breadcrumb span {
+	margin: 0 8px;
+}
+
+/*  페이지 제목과 왼쪽 시작선을 맞춤 */
+.breadcrumb span:first-child {
+	margin-left: 0;
+}
+
+.page-title {
+	font-size: 32px;
+	font-weight: 700;
+	margin-bottom: 45px;
+}
+
+/* 번호를 눌러 상세로 이동하는 링크 (목록, 상세 공통) */
+.case-link {
+	color: #1f4e9c;
+	text-decoration: underline;
+}
+
+/* ============= 접근성 ============= */
+/* 화면에는 숨기고 스크린리더만 읽는 글자 (표 caption 등) */
+.sr-only {
+	position: absolute;
+	width: 1px;
+	height: 1px;
+	margin: -1px;
+	padding: 0;
+	overflow: hidden;
+	clip: rect(0, 0, 0, 0);
+	white-space: nowrap;
+	border: 0;
+}
+
+/* 키보드(Tab)로 이동할 때 현재 위치를 테두리로 표시 (마우스 클릭 때는 안 보임) */
+:focus-visible {
+	outline: 2px solid #1f4e9c;
+	outline-offset: 2px;
+}
+
+/* ============= 반응형 ============= */
+/* large 미만 (1023px 이하): 사이드메뉴를 본문 위로 */
+@media (max-width: 1023px) {
+	.page-layout {
+		flex-direction: column;	/* 사이드메뉴 | 본문 → 사이드메뉴 위, 본문 아래 */
+	}
+
+	.content {
+		padding: 32px 0 60px;	/* 사이드메뉴가 위로 갔으므로 왼쪽 55px 여백 제거 */
+	}
+}
+
+/* medium 미만 (767px 이하): 모바일 */
+@media (max-width: 767px) {
+	.page-layout {
+		padding: 0 16px;	/* 모바일 좌우 여백 */
+	}
+
+	.page-title {
+		font-size: 24px;	/* 모바일 페이지 제목 */
+		margin-bottom: 24px;
+	}
+}
+/* 입력칸과 버튼에도 본문의 글꼴 적용 */
+input, button, select, textarea {
+    font-family: inherit;
+}
+
+</style>
+  <style>
+@charset "UTF-8";
+.signup-page {background:#f7f9fb;color:#1e2124;font-size:16px;line-height:1.6;}
+.signup-page .skip-link {position:absolute;left:16px;top:-100px;z-index:20;padding:12px 18px;background:#18589a;color:#fff;border-radius:4px;}
+.signup-page .skip-link:focus {top:8px;}
+.signup-page [hidden] {display:none!important;}
+.signup-page button,.signup-page input {font:inherit;}
+.signup-page button,.signup-page summary {cursor:pointer;}
+.signup-page a:focus-visible,.signup-page button:focus-visible,.signup-page input:focus-visible,.signup-page summary:focus-visible {outline:3px solid #18589a;outline-offset:4px;}
+.signup-prototype {background:#edf3f8;border-bottom:1px solid #dce5ed;color:#4d6378;font-size:.8125rem;}
+.signup-prototype>div,.signup-header>div,.signup-footer>div {max-width:1280px;margin:auto;padding:10px 28px;display:flex;align-items:center;justify-content:space-between;gap:16px;}
+.signup-prototype strong {font-weight:600;}
+.signup-header {background:#fff;border-bottom:1px solid #d7dfe7;}
+.signup-header>div {min-height:96px;padding-top:20px;padding-bottom:20px;}
+.signup-brand {display:flex;align-items:center;gap:12px;min-width:0;}
+.signup-brand strong {font-size:1.5rem;white-space:nowrap;letter-spacing:-.5px;}
+.signup-brand>span:last-child {border-left:1px solid #cad4df;padding-left:16px;margin-left:4px;font-size:.875rem;color:#4d6378;}
+.brand-symbol {width:42px;height:42px;display:grid;place-items:center;flex-shrink:0;border-radius:9px;background:#18589a;color:#fff;}
+.brand-symbol svg {width:27px;height:27px;stroke:currentColor;stroke-width:1.6;fill:none;stroke-linecap:round;stroke-linejoin:round;}
+.signup-back {font-size:.875rem;color:#18589a;display:flex;gap:10px;align-items:center;min-height:44px;}
+.signup-main {max-width:1184px;margin:auto;padding:24px 28px 72px;}
+.signup-breadcrumb {display:flex;gap:12px;align-items:center;font-size:.8125rem;color:#58616a;margin-bottom:30px;}
+.signup-breadcrumb [aria-current] {color:#1e2124;}
+.signup-heading {margin-bottom:30px;}
+.signup-eyebrow {color:#18589a;font-size:.875rem;font-weight:600;margin:0 0 6px;}
+.signup-heading h1 {font-size:2.25rem;line-height:1.4;letter-spacing:-1px;margin:0 0 10px;}
+.signup-heading>p:last-child {color:#58616a;margin:0;font-size:1rem;}
+.signup-steps {list-style:none;padding:0;margin:0 0 30px;display:grid;grid-template-columns:repeat(4,1fr);border:1px solid #d7dfe7;background:#fff;border-radius:8px;overflow:hidden;}
+.signup-steps li {display:flex;align-items:center;justify-content:center;gap:12px;min-height:78px;padding:16px;color:#66717d;border-right:1px solid #d7dfe7;position:relative;}
+.signup-steps li:last-child {border:0;}
+.signup-steps li>span {width:30px;height:30px;border:1px solid #b9c4ce;border-radius:50%;display:grid;place-items:center;font-size:.875rem;background:#fff;flex-shrink:0;}
+.signup-steps li strong {font-size:1rem;font-weight:500;word-break:keep-all;}
+.signup-steps li[aria-current] {color:#18589a;background:#edf4fb;box-shadow:inset 0 -3px #18589a;}
+.signup-steps li[aria-current]>span,.signup-steps li.is-done>span {color:#fff;background:#18589a;border-color:#18589a;}
+.signup-steps li[aria-current] strong {font-weight:700;}
+.signup-steps li.is-done {color:#385d7e;}
+.signup-layout {display:grid;grid-template-columns:minmax(0,1fr) 280px;gap:28px;align-items:start;}
+.signup-content {min-width:0;}
+.signup-card {padding:32px;background:#fff;border:1px solid #d7dfe7;border-radius:10px;}
+.signup-section-heading {display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:14px;}
+.signup-section-heading>div {display:flex;gap:10px;align-items:center;}
+.section-number {font-size:.875rem;font-weight:700;color:#18589a;}
+.signup-section-heading h2 {font-size:1.5rem;line-height:1.5;margin:0;letter-spacing:-.5px;}
+.draft-badge {font-size:.75rem;color:#75521e;background:#fff7e8;border:1px solid #e9d5af;border-radius:4px;padding:3px 8px;}
+.section-description {font-size:.9375rem;color:#58616a;margin:0 0 24px;word-break:keep-all;}
+.consent-all {display:flex;align-items:flex-start;gap:12px;background:#f0f5fa;border:1px solid #cdddec;padding:19px 20px;border-radius:6px;font-weight:700;cursor:pointer;}
+.signup-page input[type="checkbox"] {accent-color:#18589a;width:22px;height:22px;flex-shrink:0;margin:2px 0 0;cursor:pointer;}
+.consent-item {border-bottom:1px solid #dce3ea;padding:24px 0;}
+.consent-choice label {display:flex;gap:12px;align-items:flex-start;cursor:pointer;font-weight:600;}
+.required-label {color:#18589a;font-size:.875rem;margin-right:8px;}
+.consent-details {margin:15px 0 0 34px;border:1px solid #dce3ea;border-radius:6px;overflow:hidden;}
+.consent-details summary {padding:12px 16px;font-size:.875rem;font-weight:600;background:#f7f9fb;}
+.consent-details>div {padding:16px 18px;border-top:1px solid #dce3ea;font-size:.875rem;color:#4c5661;}
+.consent-details h3 {font-size:.875rem;margin:16px 0 5px;color:#1e2124;}
+.consent-details p {margin:0 0 12px;line-height:1.75;}
+.consent-details p:last-child {margin-bottom:0;}
+.draft-note {color:#68747e;font-size:.8125rem;}
+.privacy-summary {margin:0;}
+.privacy-summary>div {padding:11px 0;border-bottom:1px solid #e3e8ed;}
+.privacy-summary>div:first-child {padding-top:0;}
+.privacy-summary>div:last-child {border:0;}
+.privacy-summary dt {font-weight:700;color:#1e2124;margin-bottom:3px;}
+.privacy-summary dd {margin:0;overflow-wrap:anywhere;}
+.privacy-summary dd>span {display:block;margin-top:3px;font-size:.8125rem;}
+.signup-actions {display:flex;justify-content:space-between;gap:12px;margin-top:28px;}
+.signup-btn {min-height:50px;padding:12px 20px;border-radius:6px;border:1px solid #8a949e;display:inline-flex;align-items:center;justify-content:center;gap:14px;font-weight:600;text-decoration:none;line-height:1.5;text-align:center;word-break:keep-all;}
+.signup-btn.primary {background:#18589a;border-color:#18589a;color:#fff;}
+.signup-btn.primary:hover {background:#124477;}
+.signup-btn.secondary {background:#fff;color:#273c4e;}
+.signup-btn.secondary:hover {background:#f3f7fb;}
+.signup-aside-card {padding:25px 24px;border:1px solid #d2e0ed;background:#edf4fb;border-radius:10px;}
+.aside-label {font-size:.75rem;color:#18589a;}
+.signup-aside h2 {font-size:1.1875rem;line-height:1.6;margin:8px 0 14px;letter-spacing:-.5px;}
+.signup-aside p {font-size:.875rem;line-height:1.8;color:#58616a;margin:0;word-break:keep-all;}
+.signup-aside ul {margin-top:22px;border-top:1px solid #d1deea;padding-top:15px;font-size:.8125rem;line-height:1.8;color:#3e5870;}
+.signup-aside li {position:relative;padding-left:13px;margin:6px 0;}
+.signup-aside li:before {position:absolute;left:0;top:0;content:'·';font-weight:700;}
+.signup-aside-note {padding:20px 4px;}
+.signup-aside-note strong {font-size:.875rem;}
+.signup-aside-note p {margin-top:6px;font-size:.8125rem;}
+.required-hint {font-size:.8125rem;color:#58616a;}
+.signup-field {margin:24px 0;}
+.signup-field label {display:block;font-weight:600;margin-bottom:8px;}
+.signup-field input {width:100%;min-width:0;border:1px solid #8a949e;border-radius:6px;min-height:50px;padding:11px 14px;color:#1e2124;background:#fff;}
+.signup-field input[aria-invalid="true"] {border:2px solid #b63226;}
+.signup-field input::placeholder {color:#66717d;}
+.signup-password {display:flex;gap:8px;align-items:stretch;}
+.signup-password input {flex:1;min-width:0;}
+.signup-password button {flex-shrink:0;min-width:66px;background:#fff;border:1px solid #8a949e;border-radius:6px;color:#385d7e;}
+.field-help,.field-error,.form-note {font-size:.8125rem;line-height:1.7;margin:7px 0 0;color:#58616a;}
+.field-error {color:#a62b20;}
+.consent-item>.field-error {margin-left:34px;}
+.form-note {padding:14px 16px;background:#f5f7fa;border-radius:6px;}
+.form-error-summary {padding:16px 18px;border:1px solid #d99b92;border-radius:6px;background:#fff4f2;color:#8d291e;margin-bottom:24px;font-size:.875rem;}
+.form-error-summary strong {display:block;margin-bottom:6px;}
+.form-error-summary ul {padding-left:18px;list-style:disc;}
+.form-error-summary a {text-decoration:underline;}
+.signup-card>.text-link {display:inline-flex;align-items:center;min-height:44px;color:#18589a;}
+.signup-complete {text-align:center;padding-top:40px;}
+.complete-symbol {width:66px;height:66px;display:grid;place-items:center;background:#edf4fb;color:#18589a;border-radius:50%;font-size:2rem;margin:0 auto 16px;}
+.complete-caption {font-size:.8125rem;color:#18589a;}
+.signup-complete h2 {font-size:1.75rem;margin:8px 0 12px;line-height:1.5;word-break:keep-all;}
+.signup-complete>p {font-size:.9375rem;color:#58616a;line-height:1.8;}
+.signup-after {margin-top:26px;text-align:left;background:#f7f9fb;padding:22px;border-radius:8px;}
+.signup-after h3 {font-size:1rem;margin:0 0 18px;}
+.signup-after>summary {cursor:pointer;color:#18589a;font-size:14px;font-weight:600;text-align:left;}
+.signup-after[open]>summary {margin-bottom:16px;}
+.signup-after ol {list-style:none;margin:0;padding:0;display:grid;gap:17px;}
+.signup-after li {display:flex;gap:12px;}
+.signup-after li>span {display:grid;place-items:center;width:25px;height:25px;flex-shrink:0;font-size:.75rem;border:1px solid #b6cbdc;border-radius:50%;color:#18589a;}
+.signup-after strong {font-size:.9375rem;}
+.signup-after p {font-size:.8125rem;margin:3px 0 0;color:#58616a;}
+.signup-footer {border-top:1px solid #d7dfe7;background:#f0f3f6;}
+.signup-footer>div {min-height:90px;flex-wrap:wrap;padding-top:24px;padding-bottom:24px;}
+.signup-footer p,.signup-footer a {font-size:.75rem;margin:0;color:#58616a;}
+.signup-footer strong {font-size:1rem;}
+@media(max-width:1000px) {.signup-layout {grid-template-columns:minmax(0,1fr) 240px;gap:20px;}.signup-card {padding:26px;}.signup-aside-card {padding:20px;}.signup-aside h2 {font-size:1.0625rem;}}
+@media(max-width:767px) {
+  .signup-prototype>div {padding:9px 16px;display:block;font-size:.6875rem;}.signup-prototype span {display:block;margin-top:3px;}
+  .signup-header>div {padding:16px;min-height:76px;gap:10px;}.signup-brand {gap:8px;}.signup-brand strong {font-size:1.125rem;}.signup-brand>span:last-child {display:none;}.brand-symbol {width:34px;height:34px;}.brand-symbol svg {width:23px;height:23px;}.signup-back {font-size:.75rem;gap:5px;}
+  .signup-main {padding:20px 16px 40px;}.signup-breadcrumb {margin-bottom:24px;font-size:.75rem;}.signup-heading {margin-bottom:24px;}.signup-heading h1 {font-size:1.75rem;}.signup-heading>p:last-child {font-size:.875rem;}.signup-eyebrow {font-size:.75rem;}
+  .signup-steps {margin-bottom:20px;}.signup-steps li {flex-direction:column;gap:8px;padding:12px 6px;min-height:98px;text-align:center;}.signup-steps li>span {width:26px;height:26px;font-size:.75rem;}.signup-steps li strong {font-size:.75rem;}
+  .signup-layout {display:block;}.signup-card {padding:22px 18px;}.signup-section-heading h2 {font-size:1.1875rem;}.signup-section-heading {gap:8px;}.section-number {font-size:.75rem;}.draft-badge {font-size:.6875rem;}.section-description {font-size:.8125rem;}.consent-all {padding:16px 13px;font-size:.875rem;gap:10px;}.consent-choice label {font-size:.875rem;gap:10px;}.required-label {font-size:.75rem;margin-right:5px;}.consent-details {margin-left:0;}.consent-details>div {padding:14px;}.consent-details summary {padding:12px 14px;}.signup-actions {gap:10px;}.signup-btn {font-size:.875rem;padding:12px;gap:8px;}.signup-actions>* {flex:1;}.signup-aside {margin-top:20px;}.signup-aside-card {padding:20px;}.signup-aside h2 br {display:none;}.signup-aside h2 {margin:6px 0 10px;}.signup-aside ul {margin-top:14px;}.signup-aside-note {padding:16px 4px;}
+  .signup-field {margin:22px 0;}.signup-field label {font-size:.9375rem;}.signup-field input {font-size:1rem;}.signup-complete h2 {font-size:1.375rem;}.signup-after {padding:18px;}.signup-footer>div {display:block;padding:22px 16px;}.signup-footer p {margin:7px 0;}.signup-footer a {display:inline-flex;align-items:center;min-height:32px;}
+}
+@media(max-width:359px) {.signup-brand strong {font-size:1rem;}.signup-back {font-size:.6875rem;}.signup-card {padding:20px 14px;}.signup-actions {flex-wrap:wrap;}.signup-actions>* {flex-basis:100%;}.signup-password button {min-width:56px;}}
+/* 가입 기본 단계는 접힌 약관과 간결한 입력 그리드로 구성합니다. */
+.verification-status {padding:14px 16px;background:#f3f6f9;border-left:3px solid #18589a;font-size:14px;margin-bottom:16px;}
+.verification-status p {margin:6px 0 0;color:#58616a;}
+@media(min-width:768px) {
+ .signup-page {font-size:15px;}
+ .signup-header>div {min-height:75px;padding-top:12px;padding-bottom:12px;}
+ .signup-brand strong {font-size:20px;}
+ .brand-symbol {width:30px;height:30px;border-radius:4px;}
+ .signup-main {padding-top:16px;padding-bottom:24px;}
+ .signup-breadcrumb {margin-bottom:8px;}
+ .signup-heading {margin-bottom:16px;}
+ .signup-heading h1 {font-size:32px;margin-bottom:4px;}
+ .signup-eyebrow {display:none;}
+ .signup-steps {margin-bottom:20px;}
+ .signup-steps li {min-height:56px;padding:10px;}
+ .signup-steps li strong {font-size:14px;}
+ .signup-card {padding:20px 24px;border-radius:4px;}
+ .signup-section-heading {margin-bottom:10px;}
+ .signup-section-heading h2 {font-size:20px;}
+ .section-description {margin-bottom:14px;font-size:13px;}
+ .consent-all {padding:12px 16px;}
+ .consent-item {margin-top:4px;padding:8px 0;}
+ .consent-details summary {padding:6px 12px;}
+ .signup-actions {margin-top:18px;padding-top:16px;}
+ .signup-btn {min-height:40px;padding:8px 16px;font-size:14px;}
+ #producerSignupForm,#verificationForm {display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px 20px;}
+ .signup-field {margin:0;}
+ .signup-field label {margin-bottom:4px;font-size:14px;}
+ .signup-field input {min-height:40px;padding:7px 10px;border-radius:3px;font-size:14px;}
+ .signup-field .field-help {line-height:1.4;margin-top:4px;font-size:12px;}
+ #producerSignupForm>.signup-actions,#producerSignupForm>.form-note,#verificationForm>button {grid-column:1/-1;}
+ #verificationForm>button {justify-self:start;}
+ .signup-footer>div {min-height:56px;padding-top:12px;padding-bottom:12px;}
+ .signup-prototype>div {padding-top:6px;padding-bottom:6px;}
+ .signup-aside-card {padding:20px;}
+ .signup-aside-card h2 {margin:8px 0;font-size:18px;}
+ .signup-aside-card p {margin:8px 0;font-size:13px;line-height:1.6;}
+ .signup-aside-card ul {padding-top:12px;margin-top:12px;}
+ .signup-aside-note {padding:12px 4px;}
+ .signup-main {padding-top:12px;padding-bottom:16px;}
+ .signup-heading {margin-bottom:12px;}
+ .signup-heading>p:last-child {display:none;}
+ .signup-card {padding:16px 24px;}
+ .signup-actions {margin-top:8px;padding-top:8px;}
+ .section-description {margin-bottom:10px;}
+ .signup-aside-note>summary {cursor:pointer;font-size:14px;font-weight:600;color:#385d7e;}
+ .signup-steps {margin-bottom:16px;}
+ .signup-page:has(#signupStep3:not([hidden])) .signup-layout {grid-template-columns:minmax(0,1fr);}
+ .signup-page:has(#signupStep3:not([hidden])) .signup-aside {display:none;}
+ #producerSignupForm {grid-template-columns:repeat(3,minmax(0,1fr));}
+ #producerSignupForm .signup-field:has(#signupPhone) {grid-column:3;grid-row:1;}
+ #producerSignupForm .signup-field:has(#signupPassword) {grid-column:1;grid-row:2;}
+ #producerSignupForm .signup-field:has(#signupPasswordConfirm) {grid-column:2;grid-row:2;}
+ #producerSignupForm>.form-note {padding:6px 10px;margin:0;}
+ #producerSignupForm>.signup-actions {padding:0;margin:0;}
+}
+@media(min-width:768px) and (max-width:1000px) {
+ #producerSignupForm {grid-template-columns:repeat(2,minmax(0,1fr));}
+ #producerSignupForm .signup-field:has(#signupPhone) {grid-column:auto;grid-row:auto;}
+}
+
+</style>
+</head>
+<body class="signup-page">
+  <a class="skip-link" href="#mainContent">본문 바로가기</a>
+  <header class="signup-header"><div>
+    <a class="signup-brand" href="../../src/main/webapp/main.html" aria-label="모두의온실 처음 화면"><span class="brand-symbol" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 21V11M12 15C4 16 3 9 3 5c7-1 10 3 9 8M12 11C12 5 16 2 22 3c0 6-3 10-10 8"/></svg></span><strong>모두의온실</strong><span>생산자 영농관리</span></a>
+    <a class="signup-back" href="producer-main-prototype.html">영농 화면 <span aria-hidden="true">↗</span></a>
+  </div></header>
+  <main class="signup-main" id="mainContent">
+    <nav class="signup-breadcrumb" aria-label="현재 위치"><a href="../../src/main/webapp/main.html">처음 화면</a><span aria-hidden="true">›</span><span aria-current="page">생산자 회원가입</span></nav>
+    <div class="signup-heading"><p class="signup-eyebrow">나의 농장과 재배 기록을 한곳에서</p><h1>생산자 회원가입</h1><p>회원정보를 등록한 뒤 농장·온실·재배 정보를 추가할 수 있습니다.</p></div>
+    <ol class="signup-steps" aria-label="회원가입 진행 단계">
+      <li data-step-indicator="1" aria-current="step"><span>1</span><strong>약관·개인정보 확인</strong></li>
+      <li data-step-indicator="2"><span>2</span><strong>농업경영체 인증</strong></li><li data-step-indicator="3"><span>3</span><strong>회원정보 입력</strong></li>
+      <li data-step-indicator="4"><span>4</span><strong>완료</strong></li>
+    </ol>
+    <div class="signup-layout">
+      <div class="signup-content">
+        <section class="signup-card" id="signupStep1" aria-labelledby="termsTitle">
+          <div class="signup-section-heading"><div><span class="section-number">01</span><h2 id="termsTitle" tabindex="-1">가입 전에 확인해주세요</h2></div><span class="draft-badge">동의 문구 검토안</span></div>
+          <p class="section-description">각 내용을 읽고 동의 여부를 선택해주세요. 운영기관과 개인정보 보유기간은 서비스 운영 전에 확정해야 합니다.</p>
+          <label class="consent-all"><input type="checkbox" id="agreeAll"><span>아래 필수 항목에 모두 동의합니다.</span></label>
+          <div class="consent-item">
+            <div class="consent-choice"><label><input type="checkbox" id="agreeTerms" aria-describedby="termsError"><span><b class="required-label">필수</b> 서비스 이용약관 동의</span></label></div>
+            <details class="consent-details"><summary>서비스 이용약관 내용</summary><div>
+              <p class="draft-note">서비스 범위와 운영 주체를 검토하기 위한 초안입니다.</p>
+              <h3>서비스 이용과 기록 관리</h3>
+              <p>화훼농민은 본인이 관리 권한을 가진 농장의 재배·작업·출하 기록을 작성하고 확인합니다. 실제 관찰·수행한 사실과 예정 사항을 구분해 기록합니다.</p>
+              <h3>계정과 농장 접근 권한</h3>
+              <p>개인별 계정 사용을 기본안으로 합니다. 다른 사람의 농장 기록 열람과 수정은 별도의 권한 부여가 필요합니다. 직원 초대와 농장 대표 변경 절차는 운영정책에서 정합니다.</p>
+              <h3>외부 기관 제출과 데이터 이용</h3>
+              <p>회원가입 자체로 농장 기록의 외부 제공이나 피해보상 신청 제출이 승인되지는 않습니다. 해당 기능을 이용할 때 대상과 제공 범위를 별도로 확인합니다.</p>
+              <p class="draft-note">확정할 내용: 운영기관·문의처, 가입/탈퇴, 기록 보관·반환, 이용 제한·이의제기, 약관 변경 절차.</p>
+            </div></details>
+            <p class="field-error" id="termsError" hidden></p>
+          </div>
+          <div class="consent-item">
+            <div class="consent-choice"><label><input type="checkbox" id="agreePrivacy" aria-describedby="privacyError"><span><b class="required-label">필수</b> 개인정보 수집·이용 동의</span></label></div>
+            <details class="consent-details"><summary>수집·이용 내용</summary><div>
+              <dl class="privacy-summary">
+                <div><dt>수집·이용 목적</dt><dd>계정 식별·관리, 계정 복구와 필요한 연락</dd></div>
+                <div><dt>입력 항목</dt><dd>이름, 아이디, 비밀번호, 휴대전화번호</dd></div>
+                <div><dt>보유·이용 기간</dt><dd><strong>운영정책 확정 필요</strong></dd></div>
+                <div><dt>동의 거부</dt><dd>동의를 거부할 수 있습니다. 현재 제안한 가입 방식에서는 필수 항목에 동의해야 다음 단계로 진행합니다.</dd></div>
+              </dl>
+              <p class="draft-note">실서비스 적용 전 개인정보처리자, 수집 근거, 항목별 필요성, 보유기간과 거부 시 영향에 맞춰 최종 고지문을 확정합니다.</p>
+            </div></details>
+            <p class="field-error" id="privacyError" hidden></p>
+          </div>
+          <div class="signup-actions"><a class="signup-btn secondary" href="../../src/main/webapp/main.html">동의하지 않고 나가기</a><button class="signup-btn primary" id="termsNext" type="button">농업경영체 인증 <span aria-hidden="true">→</span></button></div>
+        </section>
+        <section class="signup-card" id="signupStep2" aria-labelledby="verificationTitle" hidden>
+          <div class="signup-section-heading"><div><span class="section-number">02</span><h2 id="verificationTitle" tabindex="-1">농업경영체 인증</h2></div><span class="draft-badge">미인증</span></div>
+          <p class="section-description">농업경영체 등록정보를 입력해 주세요.</p>
+          <div class="verification-status" role="status" id="verificationStatus"><strong>미인증</strong></div>
+          <form id="verificationForm" novalidate>
+            <div class="signup-field"><label for="entityNumber">농업경영체 등록번호</label><input id="entityNumber" name="entityNumber" autocomplete="off" maxlength="50" placeholder="등록번호 입력" required></div>
+            <div class="signup-field"><label for="entityName">등록 경영주명/법인명</label><input id="entityName" name="entityName" autocomplete="off" maxlength="50" placeholder="등록정보에 기재된 명칭" required></div>
+            <button class="signup-btn secondary" type="submit">인증 요청</button>
+          </form>
+          <div class="signup-actions"><button class="signup-btn secondary" id="verificationPrevious" type="button">약관 확인</button><button class="signup-btn primary" id="verificationNext" type="button">다음 →</button></div>
+        </section>
+        <section class="signup-card" id="signupStep3" aria-labelledby="accountTitle" hidden>
+          <div class="signup-section-heading"><div><span class="section-number">03</span><h2 id="accountTitle" tabindex="-1">회원정보를 입력해주세요</h2></div><span class="required-hint">모든 항목 필수</span></div>
+          <p class="section-description">회원정보를 입력해 주세요. 농장·온실·재배 정보는 이후 등록할 수 있습니다.</p>
+          <div class="form-error-summary" id="signupErrors" role="alert" tabindex="-1" hidden></div>
+          <form id="producerSignupForm" novalidate>
+            <div class="signup-field"><label for="signupName">이름</label><input id="signupName" name="displayName" autocomplete="name" maxlength="50" required aria-describedby="signupNameError" placeholder="예: 김농부"><p class="field-error" id="signupNameError" hidden></p></div>
+            <div class="signup-field"><label for="signupId">아이디</label><input id="signupId" name="userId" autocomplete="username" autocapitalize="none" spellcheck="false" minlength="6" maxlength="20" required aria-describedby="signupIdHelp signupIdError" placeholder="예: flowerfarm01"><p class="field-help" id="signupIdHelp">영문 소문자로 시작하는 6~20자의 영문 소문자·숫자 조합</p><p class="field-error" id="signupIdError" hidden></p></div>
+            <div class="signup-field"><label for="signupPassword">비밀번호</label><div class="signup-password"><input type="password" id="signupPassword" name="password" autocomplete="new-password" minlength="10" maxlength="64" required aria-describedby="signupPasswordHelp signupPasswordError"><button type="button" data-toggle-password="signupPassword" aria-label="비밀번호 표시" aria-pressed="false">보기</button></div><p class="field-help" id="signupPasswordHelp">10~64자로 입력해주세요. 다른 서비스와 다른 비밀번호를 사용해주세요.</p><p class="field-error" id="signupPasswordError" hidden></p></div>
+            <div class="signup-field"><label for="signupPasswordConfirm">비밀번호 확인</label><div class="signup-password"><input type="password" id="signupPasswordConfirm" name="passwordConfirm" autocomplete="new-password" minlength="10" maxlength="64" required aria-describedby="signupPasswordConfirmError"><button type="button" data-toggle-password="signupPasswordConfirm" aria-label="비밀번호 확인 표시" aria-pressed="false">보기</button></div><p class="field-error" id="signupPasswordConfirmError" hidden></p></div>
+            <div class="signup-field"><label for="signupPhone">휴대전화번호</label><input type="tel" id="signupPhone" name="phone" autocomplete="tel-national" inputmode="tel" maxlength="15" required aria-describedby="signupPhoneHelp signupPhoneError" placeholder="예: 010-0000-0000"><p class="field-help" id="signupPhoneHelp">계정 복구·연락에 사용할 번호입니다.</p><p class="field-error" id="signupPhoneError" hidden></p></div>
+            <p class="form-note">아이디 중복 확인, 휴대전화 인증, 계정 생성은 운영 방식 확정 후 연결할 항목입니다.</p>
+            <div class="signup-actions"><button class="signup-btn secondary" id="accountPrevious" type="button">이전 단계</button><button class="signup-btn primary" type="submit">가입 완료 화면 보기 <span aria-hidden="true">→</span></button></div>
+          </form>
+        </section>
+        <section class="signup-card signup-complete" id="signupStep4" aria-labelledby="completeTitle" hidden>
+          <div class="complete-symbol" aria-hidden="true">✓</div><span class="complete-caption">회원가입 완료 화면</span><h2 id="completeTitle" tabindex="-1">회원정보 입력 완료</h2><p>영농 화면에서 농장·온실·재배 정보를 확인할 수 있습니다.</p>
+          <details class="signup-after"><summary>가입 다음 단계 안내</summary><div><ol><li><span>1</span><div><strong>농장·온실 정보 등록</strong><p>관리할 농장과 온실·구역을 등록합니다.</p></div></li><li><span>2</span><div><strong>재배 정보 등록</strong><p>품종·입고·수량·재배 조건과 출하 목표를 정합니다.</p></div></li><li><span>3</span><div><strong>재배일지 작성</strong><p>관찰한 생육과 실제 수행한 작업을 남깁니다.</p></div></li></ol></div></details>
+          <div class="signup-actions"><button type="button" class="signup-btn secondary" id="restartSignup">처음부터 다시 확인</button><a class="signup-btn primary" href="producer-main-prototype.html">영농 화면 <span aria-hidden="true">→</span></a></div>
+        </section>
+      </div>
+      <aside class="signup-aside" aria-label="가입 안내"><div class="signup-aside-card"><span class="aside-label">가입 안내</span><h2>회원가입은 간단하게,<br>농장 정보는 그다음에</h2><p>농업경영체 등록정보를 확인하고 계정을 만든 뒤, 영농 화면에서 나의 농장과 재배 정보를 차근차근 등록하는 흐름입니다.</p><ul><li>농업경영체 인증 후 회원정보 입력</li><li>농장·온실·재배 정보는 이후 등록</li><li>재배일지와 출하 기록 연결</li></ul></div><details class="signup-aside-note"><summary>가입 대상</summary><p>농장 대표·관리자를 위한 서비스입니다.</p></details></aside>
+    </div>
+  </main>
+  <footer class="signup-footer"><div><strong>모두의온실</strong><p>화훼농민의 농장과 재배 기록을 연결합니다.</p></div></footer>
+<script>
+'use strict';
+
+(() => {
+  const $ = selector => document.querySelector(selector);
+  const terms = $('#agreeTerms');
+  const privacy = $('#agreePrivacy');
+  const all = $('#agreeAll');
+  const form = $('#producerSignupForm');
+  const summary = $('#signupErrors');
+  const fieldIds = ['signupName', 'signupId', 'signupPassword', 'signupPasswordConfirm', 'signupPhone'];
+
+  function showStep(step) {
+    for (let index = 1; index <= 4; index++) {
+      $('#signupStep' + index).hidden = index !== step;
+      const indicator = document.querySelector('[data-step-indicator="' + index + '"]');
+      indicator.classList.toggle('is-done', index < step);
+      if (index === step) indicator.setAttribute('aria-current', 'step');
+      else indicator.removeAttribute('aria-current');
+    }
+    document.title = '모두의온실 - 생산자 회원가입 · ' + ['약관·개인정보 확인', '농업경영체 인증', '회원정보 입력', '회원정보 입력 완료'][step - 1];
+    const heading = $(['#termsTitle', '#verificationTitle', '#accountTitle', '#completeTitle'][step - 1]);
+    heading.focus({ preventScroll: true });
+    $('.signup-steps').scrollIntoView({ block: 'start', behavior: 'auto' });
+  }
+
+  function setError(id, text) {
+    const input = $('#' + id);
+    const error = $('#' + id + 'Error');
+    error.textContent = text;
+    error.hidden = !text;
+    if (text) input.setAttribute('aria-invalid', 'true');
+    else input.removeAttribute('aria-invalid');
+  }
+
+  function updateAllConsent() {
+    all.checked = terms.checked && privacy.checked;
+    all.indeterminate = terms.checked !== privacy.checked;
+  }
+
+  function validConsents() {
+    const missing = [];
+    [[terms, '#termsError', '서비스 이용약관 동의 여부를 확인해주세요.'], [privacy, '#privacyError', '개인정보 수집·이용 동의 여부를 확인해주세요.']].forEach(([checkbox, selector, text]) => {
+      $(selector).hidden = checkbox.checked;
+      $(selector).textContent = checkbox.checked ? '' : text;
+      if (!checkbox.checked) { checkbox.setAttribute('aria-invalid', 'true'); missing.push(checkbox); }
+      else checkbox.removeAttribute('aria-invalid');
+    });
+    if (missing.length) missing[0].focus();
+    return missing.length === 0;
+  }
+
+  all.addEventListener('change', () => {
+    terms.checked = all.checked;
+    privacy.checked = all.checked;
+    all.indeterminate = false;
+    [terms, privacy].forEach(checkbox => {
+      checkbox.removeAttribute('aria-invalid');
+      $('#' + (checkbox === terms ? 'termsError' : 'privacyError')).hidden = true;
+    });
+  });
+  [terms, privacy].forEach(checkbox => checkbox.addEventListener('change', () => {
+    updateAllConsent();
+    if (checkbox.checked) {
+      checkbox.removeAttribute('aria-invalid');
+      $('#' + (checkbox === terms ? 'termsError' : 'privacyError')).hidden = true;
+    }
+  }));
+  $('#termsNext').addEventListener('click', () => { if (validConsents()) showStep(2); });
+  $('#accountPrevious').addEventListener('click', () => showStep(2));
+  $('#verificationPrevious').addEventListener('click', () => showStep(1));
+  $('#verificationNext').addEventListener('click', () => { if (validConsents()) showStep(3); else showStep(1); });
+  $('#verificationForm').addEventListener('submit', event => {
+    event.preventDefault();
+    const form = event.currentTarget;
+    if (!form.checkValidity()) { form.reportValidity(); return; }
+    $('#verificationStatus').textContent = '현재 인증을 진행할 수 없습니다.';
+  });
+
+  document.querySelectorAll('[data-toggle-password]').forEach(button => button.addEventListener('click', () => {
+    const input = document.getElementById(button.dataset.togglePassword);
+    const visible = input.type === 'password';
+    input.type = visible ? 'text' : 'password';
+    button.textContent = visible ? '숨기기' : '보기';
+    button.setAttribute('aria-pressed', String(visible));
+    button.setAttribute('aria-label', (input.id === 'signupPassword' ? '비밀번호' : '비밀번호 확인') + (visible ? ' 숨기기' : ' 표시'));
+  }));
+
+  fieldIds.forEach(id => $('#' + id).addEventListener('input', () => {
+    setError(id, '');
+    summary.hidden = true;
+  }));
+
+  form.addEventListener('submit', event => {
+    event.preventDefault();
+    if (!validConsents()) { showStep(1); return; }
+    const errors = [];
+    const add = (id, text) => { setError(id, text); errors.push({ id, text }); };
+    fieldIds.forEach(id => setError(id, ''));
+    const name = $('#signupName').value.trim();
+    const userId = $('#signupId').value;
+    const password = $('#signupPassword').value;
+    const confirmation = $('#signupPasswordConfirm').value;
+    const phone = $('#signupPhone').value.replace(/[\s-]/g, '');
+    if (!name || name.length > 50) add('signupName', '이름을 1~50자로 입력해주세요.');
+    if (!/^[a-z][a-z0-9]{5,19}$/.test(userId)) add('signupId', '아이디는 영문 소문자로 시작하는 6~20자의 영문 소문자·숫자로 입력해주세요.');
+    if (!password.trim() || password.length < 10 || password.length > 64) add('signupPassword', '비밀번호는 공백만 사용하지 않고 10~64자로 입력해주세요.');
+    if (!confirmation || password !== confirmation) add('signupPasswordConfirm', '입력한 비밀번호와 일치하지 않습니다.');
+    if (!/^(?:010\d{8}|01[16789]\d{7,8})$/.test(phone)) add('signupPhone', '휴대전화번호 형식을 확인해주세요. 예: 010-0000-0000');
+    if (errors.length) {
+      summary.replaceChildren();
+      const title = document.createElement('strong');
+      title.textContent = '입력한 정보를 다시 확인해주세요.';
+      const list = document.createElement('ul');
+      errors.forEach(({ id, text }) => {
+        const item = document.createElement('li');
+        const link = document.createElement('a');
+        link.href = '#' + id;
+        link.textContent = text;
+        link.addEventListener('click', event => { event.preventDefault(); $('#' + id).focus(); });
+        item.append(link);
+        list.append(item);
+      });
+      summary.append(title, list);
+      summary.hidden = false;
+      summary.focus();
+      return;
+    }
+    $('#verificationForm').reset();
+    // UI 체험만 완료합니다. 요청·계정 생성·브라우저 저장을 수행하지 않습니다.
+    form.reset();
+    document.querySelectorAll('[data-toggle-password]').forEach(button => {
+      document.getElementById(button.dataset.togglePassword).type = 'password';
+      button.textContent = '보기';
+      button.setAttribute('aria-pressed', 'false');
+      button.setAttribute('aria-label', (button.dataset.togglePassword === 'signupPassword' ? '비밀번호' : '비밀번호 확인') + ' 표시');
+    });
+    summary.hidden = true;
+    showStep(4);
+  });
+
+  if (new URLSearchParams(location.search).get('view') === 'verification') showStep(2);
+
+  $('#restartSignup').addEventListener('click', () => {
+    form.reset();
+    $('#verificationForm').reset();
+    $('#verificationStatus').textContent = '미인증';
+    terms.checked = false;
+    privacy.checked = false;
+    updateAllConsent();
+    fieldIds.forEach(id => setError(id, ''));
+    $('#termsError').hidden = true;
+    $('#privacyError').hidden = true;
+    summary.hidden = true;
+    showStep(1);
+  });
+})();
+
+</script>
+</body>
+</html>

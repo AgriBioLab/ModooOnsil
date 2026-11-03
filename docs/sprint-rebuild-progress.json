@@ -1,0 +1,51 @@
+{
+  "history": {
+    "EPIC": "SCRUM-35",
+    "HUI": "SCRUM-36",
+    "HDAO": "SCRUM-37",
+    "HMVC": "SCRUM-38",
+    "HAUTH": "SCRUM-39",
+    "HLIST": "SCRUM-40",
+    "HDETAIL": "SCRUM-41"
+  },
+  "newSprint2": {
+    "E01": "SCRUM-42",
+    "E03": "SCRUM-43",
+    "E04": "SCRUM-44",
+    "E02": "SCRUM-45",
+    "E05": "SCRUM-46"
+  },
+  "oldSprint2": {
+    "E01": "SCRUM-5",
+    "E02": "SCRUM-6",
+    "E03": "SCRUM-7",
+    "E04": "SCRUM-8",
+    "E05": "SCRUM-9",
+    "E06": "SCRUM-10",
+    "R01": "SCRUM-11",
+    "R02": "SCRUM-12",
+    "R03": "SCRUM-13",
+    "A01": "SCRUM-14",
+    "P01": "SCRUM-15",
+    "P02": "SCRUM-16",
+    "P03": "SCRUM-17",
+    "S01": "SCRUM-18",
+    "S02": "SCRUM-19",
+    "S03": "SCRUM-20",
+    "D01": "SCRUM-21",
+    "D02": "SCRUM-22",
+    "U01": "SCRUM-23",
+    "U02": "SCRUM-24",
+    "U03": "SCRUM-25",
+    "Q01": "SCRUM-26",
+    "Q02": "SCRUM-27",
+    "Q03": "SCRUM-28",
+    "REL01": "SCRUM-29",
+    "REL02": "SCRUM-30",
+    "DAILY": "SCRUM-31",
+    "CHECK1": "SCRUM-32",
+    "CHECK2": "SCRUM-33",
+    "PM01": "SCRUM-34"
+  },
+  "status": "New issues and dependencies verified. See sprint-rebuild-receipt.json; old issue deletion is pending."
+}

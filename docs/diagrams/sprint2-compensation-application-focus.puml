@@ -1,0 +1,27 @@
+@startuml
+!pragma layout smetana
+left to right direction
+skinparam defaultFontName Malgun Gothic
+skinparam defaultFontSize 17
+skinparam shadowing false
+skinparam backgroundColor white
+skinparam ArrowColor #526474
+skinparam usecaseBorderColor #36566B
+skinparam rectangleBorderColor #36566B
+title 2차 핵심 목표 · 기존 기록을 활용한 피해보상 신청
+actor "화훼 농민" as Farmer
+rectangle "공공기관의 화훼 생산자 서비스" {
+  usecase "농장·재배·출하 기록을 관리한다" as Records #E8F2FC
+  usecase "피해보상을 신청한다" as Apply #E8F2FC
+  usecase "기존 재배·출하 이력을 조회한다" as History #E8F2FC
+}
+Farmer -- Records
+Farmer -- Apply
+Farmer -- History
+Apply ..> History : <<include>>
+legend bottom
+  핵심·필수 기능을 요약한 개념도
+  신청 과정에는 기존 이력 조회·확인이 항상 포함됨
+  피해내용 추가·기록 선택·제출은 신청 유스케이스의 단계
+endlegend
+@enduml

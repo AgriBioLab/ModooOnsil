@@ -1,0 +1,84 @@
+@charset "UTF-8";
+/* KRDS header/footer hierarchy, adapted to the existing producer workspace. */
+.producer-management {display:flex;flex-direction:column;min-height:100vh;}
+.producer-management .page-layout {flex:1;width:100%;min-height:0;}
+.producer-management #header,.producer-management .pm-service-footer {flex-shrink:0;}
+.producer-management .content {padding-bottom:32px;}
+.producer-management #krds-header {height:auto;border-bottom:0;background:#fff;}
+.pm-chrome-container {max-width:1920px;margin:0 auto;padding:0 24px;}
+.pm-header-utility {background:#f4f6f8;border-bottom:1px solid #e5e8eb;}
+.pm-header-utility .pm-chrome-container {display:flex;justify-content:flex-end;min-height:40px;}
+.producer-management .pm-header-utility .header-right {display:flex;gap:0;font-size:14px;}
+.pm-header-utility .header-right>* {display:inline-flex;align-items:center;min-height:40px;padding:0 16px;position:relative;}
+.pm-header-utility .header-right>*+*::before {content:"";position:absolute;left:0;top:14px;width:1px;height:12px;background:#cdd1d5;}
+.pm-header-utility .header-right>*:last-child {padding-right:0;}
+.producer-management .pm-header-utility .logout-btn {border:0;background:transparent;border-radius:0;}
+.producer-management #krds-header .header-inner {min-height:88px;height:auto;gap:20px;flex-wrap:nowrap;}
+.producer-management #krds-header .logo {gap:14px;}
+.producer-management #krds-header .logo-icon {width:44px;height:44px;border-radius:12px;flex-shrink:0;}
+.producer-management #krds-header .logo-icon .icon {width:28px;height:28px;}
+.pm-header-brand {display:flex;flex-direction:column;gap:3px;}
+.pm-header-brand strong {font-size:26px;line-height:1.4;letter-spacing:-.04em;}
+.pm-header-brand>span {font-size:13px;font-weight:400;color:#58616a;line-height:1.5;letter-spacing:-.02em;}
+.producer-management .html-menu {border-top:1px solid #e5e8eb;border-bottom:1px solid #cdd1d5;}
+.producer-management .html-menu-inner {min-height:60px;}
+.producer-management .pm-nav-item>a {font-size:16px;min-height:52px;}
+.producer-management #krds-header .all-menu-btn {display:flex;align-items:center;gap:8px;min-height:44px;padding:8px 14px;border-color:#8a949e;}
+.producer-management #krds-header .all-menu-panel {z-index:45;max-height:calc(100dvh - 88px);}
+.producer-management #krds-header .all-menu-user {min-height:60px;}
+.producer-management #krds-header a:focus-visible,.producer-management #krds-footer a:focus-visible,.producer-management #krds-header summary:focus-visible {outline:2px solid #18589a;outline-offset:4px;border-radius:3px;}
+.producer-management .pm-service-footer {border-top:1px solid #cdd1d5;background:#f4f6f8;color:#273341;}
+.producer-management .pm-service-footer .footer-inner {display:block;max-width:1920px;padding:32px 24px 20px;border-top:0;}
+.pm-footer-main {display:flex;justify-content:space-between;align-items:flex-start;gap:36px;padding-bottom:24px;}
+.pm-footer-logo {display:inline-flex;align-items:center;gap:12px;font-size:23px;line-height:1.5;}
+.pm-footer-logo .logo-icon {width:36px;height:36px;border-radius:10px;}
+.producer-management .pm-footer-brand>p {margin-top:12px;line-height:1.7;font-size:14px;color:#58616a;}
+.pm-footer-navigation {display:grid;grid-template-columns:repeat(3,max-content);gap:12px 32px;padding-top:5px;}
+.pm-footer-navigation a {display:inline-flex;align-items:center;min-height:36px;font-size:14px;font-weight:600;}
+.pm-footer-bottom {display:flex;align-items:center;justify-content:space-between;gap:20px;padding-top:16px;border-top:1px solid #cdd1d5;}
+.pm-footer-links {display:flex;gap:12px 24px;flex-wrap:wrap;align-items:center;}
+.pm-footer-sitemap {display:inline-flex;align-items:center;gap:12px;min-height:44px;font-size:15px;font-weight:700;}
+.pm-footer-sitemap .icon {width:18px;height:18px;}
+.producer-management .pm-footer-copyright {font-size:13px;color:#58616a;line-height:1.6;}
+.pm-service-footer a:hover {text-decoration:underline;text-underline-offset:4px;color:#18589a;}
+.pm-footer-main {display:grid;grid-template-columns:minmax(220px,.9fr) minmax(250px,1.2fr) auto;gap:28px;}
+.pm-footer-contact {min-width:0;}
+.pm-footer-contact h2 {font-size:15px;line-height:1.7;margin:0 0 8px;}
+.pm-fictional-label {display:inline-block;font-size:12px;font-weight:400;color:#58616a;margin-left:4px;}
+.pm-footer-contact address {font-style:normal;font-size:13px;line-height:1.8;overflow-wrap:anywhere;}
+.pm-footer-contact dl {display:grid;gap:4px;margin:10px 0 8px;font-size:13px;line-height:1.7;}
+.pm-footer-contact dl>div {display:flex;gap:12px;min-width:0;}
+.pm-footer-contact dt {min-width:68px;}
+.pm-footer-contact dd {margin:0;overflow-wrap:anywhere;min-width:0;}
+.producer-management .pm-footer-contact p {font-size:12px;color:#58616a;line-height:1.7;}
+.pm-footer-privacy {display:inline-flex;align-items:center;min-height:44px;font-size:15px;font-weight:700;color:#18589a;}
+.pm-privacy-document {max-width:900px;line-height:1.8;}
+.pm-privacy-document>section {margin-top:28px;}
+.pm-privacy-document h2 {font-size:20px;line-height:1.5;margin:0 0 10px;}
+.pm-privacy-document p {font-size:15px;}
+.pm-privacy-contact {border-top:1px solid #cdd1d5;margin-top:24px;padding-top:20px;display:grid;gap:10px;font-size:14px;}
+.pm-privacy-contact>div {display:grid;grid-template-columns:100px minmax(0,1fr);gap:12px;}
+.pm-privacy-contact dd {margin:0;overflow-wrap:anywhere;}
+@media(max-width:1023px) {
+ .pm-footer-main {grid-template-columns:repeat(2,minmax(0,1fr));}
+ .pm-footer-navigation {grid-column:1/-1;}
+ .pm-footer-navigation {grid-template-columns:repeat(2,max-content);gap:8px 24px;}
+}
+@media(max-width:767px) {
+ .producer-management .html-menu {display:none;}
+ .producer-management .pm-header-utility {display:none;}
+ .producer-management #krds-header .header-inner {min-height:80px;padding:0 16px;gap:12px;}
+ .producer-management #krds-header .logo {gap:8px;}
+ .producer-management #krds-header .logo-icon {width:34px;height:34px;border-radius:9px;}
+ .producer-management #krds-header .logo-icon .icon {width:23px;height:23px;}
+ .pm-header-brand strong {font-size:20px;}
+ .pm-header-brand>span {display:none;}
+ .producer-management #krds-header .all-menu-btn {padding:8px 10px;font-size:14px;}
+ .producer-management .pm-nav-item>a {font-size:14px;}
+ .producer-management .pm-service-footer .footer-inner {padding:24px 16px 20px;}
+ .pm-footer-main {grid-template-columns:minmax(0,1fr);gap:20px;padding-bottom:20px;}
+ .pm-footer-logo {font-size:21px;}
+ .pm-footer-navigation {grid-template-columns:repeat(2,minmax(0,1fr));width:100%;gap:4px 16px;}
+ .pm-footer-navigation a {font-size:14px;min-height:44px;}
+ .pm-footer-bottom {align-items:flex-start;flex-direction:column;gap:12px;}
+}

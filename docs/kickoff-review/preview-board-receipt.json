@@ -1,0 +1,24 @@
+{
+  "date": "2026-10-21",
+  "boardId": 2,
+  "name": "킥오프 리팩토링 사전 검토",
+  "type": "kanban",
+  "filterId": 10001,
+  "url": "https://tlals0028.atlassian.net/jira/people/712020%3A285b576e-701b-4304-bec2-0f6f031b3d8c/boards/2",
+  "keys": [
+    "SCRUM-75",
+    "SCRUM-76",
+    "SCRUM-77",
+    "SCRUM-78",
+    "SCRUM-79",
+    "SCRUM-80",
+    "SCRUM-81",
+    "SCRUM-82",
+    "SCRUM-83"
+  ],
+  "todoCount": 9,
+  "originalSprintId": 3,
+  "originalSprintState": "future",
+  "originalSprintStartKST": "2026-10-26",
+  "screenshot": "jira-preview-board.png"
+}

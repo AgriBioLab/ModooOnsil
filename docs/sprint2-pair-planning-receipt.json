@@ -1,0 +1,844 @@
+{
+  "asOf": "2026-10-21",
+  "managedPlanIssues": 31,
+  "topLevelTasks": 26,
+  "checklistSubtasks": 9,
+  "managedTotal": 40,
+  "epicOrder": [
+    {
+      "key": "SCRUM-42",
+      "title": "[2차] Spring 전환·리팩토링",
+      "color": "grey"
+    },
+    {
+      "key": "SCRUM-43",
+      "title": "[2차] 품질담당자 통계·전년도 비교",
+      "color": "blue"
+    },
+    {
+      "key": "SCRUM-44",
+      "title": "[2차] 품질담당자 마이페이지·서류·공통 계정",
+      "color": "purple"
+    },
+    {
+      "key": "SCRUM-45",
+      "title": "[2차] 생산자 가입·마이페이지·피해신청·본인 조회",
+      "color": "green"
+    },
+    {
+      "key": "SCRUM-46",
+      "title": "[2차] 통합 검증·수정·시연·제출",
+      "color": "orange"
+    }
+  ],
+  "map": {
+    "E01": "SCRUM-42",
+    "E03": "SCRUM-43",
+    "E04": "SCRUM-44",
+    "E02": "SCRUM-45",
+    "E05": "SCRUM-46",
+    "R01": "SCRUM-47",
+    "R02": "SCRUM-48",
+    "R03": "SCRUM-49",
+    "S01": "SCRUM-50",
+    "S02": "SCRUM-51",
+    "S03": "SCRUM-52",
+    "U01": "SCRUM-53",
+    "U02": "SCRUM-54",
+    "U03": "SCRUM-55",
+    "D01": "SCRUM-56",
+    "D02": "SCRUM-57",
+    "A01": "SCRUM-58",
+    "P01": "SCRUM-59",
+    "PM01": "SCRUM-60",
+    "P02": "SCRUM-61",
+    "P03": "SCRUM-62",
+    "Q01": "SCRUM-63",
+    "Q02": "SCRUM-64",
+    "Q03": "SCRUM-65",
+    "REL01": "SCRUM-66",
+    "REL02": "SCRUM-67",
+    "DAILY": "SCRUM-68",
+    "CHECK1": "SCRUM-69",
+    "CHECK2": "SCRUM-70",
+    "TECHPOC": "SCRUM-71",
+    "PDESIGN": "SCRUM-72"
+  },
+  "nativeBlocksCount": 52,
+  "edges": [
+    [
+      "SCRUM-47",
+      "SCRUM-48"
+    ],
+    [
+      "SCRUM-48",
+      "SCRUM-49"
+    ],
+    [
+      "SCRUM-48",
+      "SCRUM-59"
+    ],
+    [
+      "SCRUM-48",
+      "SCRUM-71"
+    ],
+    [
+      "SCRUM-49",
+      "SCRUM-61"
+    ],
+    [
+      "SCRUM-49",
+      "SCRUM-51"
+    ],
+    [
+      "SCRUM-49",
+      "SCRUM-57"
+    ],
+    [
+      "SCRUM-49",
+      "SCRUM-54"
+    ],
+    [
+      "SCRUM-49",
+      "SCRUM-69"
+    ],
+    [
+      "SCRUM-49",
+      "SCRUM-59"
+    ],
+    [
+      "SCRUM-50",
+      "SCRUM-51"
+    ],
+    [
+      "SCRUM-50",
+      "SCRUM-69"
+    ],
+    [
+      "SCRUM-51",
+      "SCRUM-52"
+    ],
+    [
+      "SCRUM-52",
+      "SCRUM-63"
+    ],
+    [
+      "SCRUM-52",
+      "SCRUM-64"
+    ],
+    [
+      "SCRUM-52",
+      "SCRUM-70"
+    ],
+    [
+      "SCRUM-53",
+      "SCRUM-54"
+    ],
+    [
+      "SCRUM-53",
+      "SCRUM-69"
+    ],
+    [
+      "SCRUM-53",
+      "SCRUM-60"
+    ],
+    [
+      "SCRUM-53",
+      "SCRUM-59"
+    ],
+    [
+      "SCRUM-54",
+      "SCRUM-55"
+    ],
+    [
+      "SCRUM-55",
+      "SCRUM-63"
+    ],
+    [
+      "SCRUM-55",
+      "SCRUM-64"
+    ],
+    [
+      "SCRUM-55",
+      "SCRUM-70"
+    ],
+    [
+      "SCRUM-56",
+      "SCRUM-57"
+    ],
+    [
+      "SCRUM-56",
+      "SCRUM-69"
+    ],
+    [
+      "SCRUM-57",
+      "SCRUM-63"
+    ],
+    [
+      "SCRUM-57",
+      "SCRUM-64"
+    ],
+    [
+      "SCRUM-57",
+      "SCRUM-70"
+    ],
+    [
+      "SCRUM-58",
+      "SCRUM-61"
+    ],
+    [
+      "SCRUM-58",
+      "SCRUM-69"
+    ],
+    [
+      "SCRUM-59",
+      "SCRUM-61"
+    ],
+    [
+      "SCRUM-59",
+      "SCRUM-60"
+    ],
+    [
+      "SCRUM-60",
+      "SCRUM-63"
+    ],
+    [
+      "SCRUM-60",
+      "SCRUM-64"
+    ],
+    [
+      "SCRUM-60",
+      "SCRUM-70"
+    ],
+    [
+      "SCRUM-61",
+      "SCRUM-62"
+    ],
+    [
+      "SCRUM-62",
+      "SCRUM-63"
+    ],
+    [
+      "SCRUM-62",
+      "SCRUM-64"
+    ],
+    [
+      "SCRUM-62",
+      "SCRUM-70"
+    ],
+    [
+      "SCRUM-63",
+      "SCRUM-65"
+    ],
+    [
+      "SCRUM-63",
+      "SCRUM-66"
+    ],
+    [
+      "SCRUM-64",
+      "SCRUM-65"
+    ],
+    [
+      "SCRUM-65",
+      "SCRUM-67"
+    ],
+    [
+      "SCRUM-66",
+      "SCRUM-67"
+    ],
+    [
+      "SCRUM-71",
+      "SCRUM-59"
+    ],
+    [
+      "SCRUM-71",
+      "SCRUM-69"
+    ],
+    [
+      "SCRUM-71",
+      "SCRUM-51"
+    ],
+    [
+      "SCRUM-71",
+      "SCRUM-54"
+    ],
+    [
+      "SCRUM-71",
+      "SCRUM-57"
+    ],
+    [
+      "SCRUM-72",
+      "SCRUM-59"
+    ],
+    [
+      "SCRUM-72",
+      "SCRUM-69"
+    ]
+  ],
+  "validationErrors": [],
+  "excludedFromEdits": [
+    "SCRUM-73",
+    "SCRUM-74"
+  ],
+  "reviewUrl": "https://tlals0028.atlassian.net/issues?jql=project%20%3D%20SCRUM%20AND%20labels%20%3D%20kickoff-refactoring-review%20ORDER%20BY%20key%20ASC",
+  "checklist": [
+    {
+      "key": "SCRUM-75",
+      "no": "01",
+      "title": "업무 패키지·공통 책임",
+      "parent": "SCRUM-47",
+      "state": "합의 대기"
+    },
+    {
+      "key": "SCRUM-76",
+      "no": "02",
+      "title": "소스·멤버 이름 규칙",
+      "parent": "SCRUM-47",
+      "state": "합의 대기"
+    },
+    {
+      "key": "SCRUM-77",
+      "no": "03",
+      "title": "인터페이스 대상·역할",
+      "parent": "SCRUM-47",
+      "state": "합의 대기"
+    },
+    {
+      "key": "SCRUM-78",
+      "no": "04",
+      "title": "Spring 계층·주입·트랜잭션",
+      "parent": "SCRUM-47",
+      "state": "합의 대기"
+    },
+    {
+      "key": "SCRUM-79",
+      "no": "05",
+      "title": "예외·응답·로그·롤백",
+      "parent": "SCRUM-47",
+      "state": "합의 대기"
+    },
+    {
+      "key": "SCRUM-80",
+      "no": "06",
+      "title": "MyBatis·JPA·DB 선택 근거",
+      "parent": "SCRUM-47",
+      "state": "합의 대기"
+    },
+    {
+      "key": "SCRUM-81",
+      "no": "07",
+      "title": "계정 보안·설정·객체 생성",
+      "parent": "SCRUM-47",
+      "state": "합의 대기"
+    },
+    {
+      "key": "SCRUM-82",
+      "no": "08",
+      "title": "UI 형식·경로·조회 방식",
+      "parent": "SCRUM-47",
+      "state": "합의 대기"
+    },
+    {
+      "key": "SCRUM-83",
+      "no": "09",
+      "title": "테스트·페어·완료 기준",
+      "parent": "SCRUM-47",
+      "state": "합의 대기"
+    }
+  ],
+  "attachment": {
+    "issue": "SCRUM-47",
+    "attachmentId": "10000",
+    "filename": "checklist-16x9.png"
+  },
+  "rows": [
+    {
+      "key": "SCRUM-42",
+      "title": "[2차] Spring 전환·리팩토링",
+      "parent": null,
+      "start": "2026-10-22",
+      "end": "2026-10-28",
+      "labels": [
+        "pair-programming",
+        "plan-e01",
+        "retrospective-action",
+        "spring-transition",
+        "sprint2-plan-15d",
+        "sprint2-plan-ordered"
+      ]
+    },
+    {
+      "key": "SCRUM-43",
+      "title": "[2차] 품질담당자 통계·전년도 비교",
+      "parent": null,
+      "start": "2026-10-26",
+      "end": "2026-11-06",
+      "labels": [
+        "pair-programming",
+        "plan-e03",
+        "retrospective-action",
+        "spring-transition",
+        "sprint2-plan-15d",
+        "sprint2-plan-ordered"
+      ]
+    },
+    {
+      "key": "SCRUM-44",
+      "title": "[2차] 품질담당자 마이페이지·서류·공통 계정",
+      "parent": null,
+      "start": "2026-10-26",
+      "end": "2026-11-06",
+      "labels": [
+        "pair-programming",
+        "plan-e04",
+        "retrospective-action",
+        "spring-transition",
+        "sprint2-plan-15d",
+        "sprint2-plan-ordered"
+      ]
+    },
+    {
+      "key": "SCRUM-45",
+      "title": "[2차] 생산자 가입·마이페이지·피해신청·본인 조회",
+      "parent": null,
+      "start": "2026-10-26",
+      "end": "2026-11-06",
+      "labels": [
+        "pair-programming",
+        "plan-e02",
+        "retrospective-action",
+        "spring-transition",
+        "sprint2-plan-15d",
+        "sprint2-plan-ordered"
+      ]
+    },
+    {
+      "key": "SCRUM-46",
+      "title": "[2차] 통합 검증·수정·시연·제출",
+      "parent": null,
+      "start": "2026-11-09",
+      "end": "2026-11-13",
+      "labels": [
+        "pair-programming",
+        "plan-e05",
+        "retrospective-action",
+        "spring-transition",
+        "sprint2-plan-15d",
+        "sprint2-plan-ordered"
+      ]
+    },
+    {
+      "key": "SCRUM-47",
+      "title": "[2차] Spring·DB 전환 기준·아키텍처·협업 규칙 설계",
+      "parent": "SCRUM-42",
+      "start": "2026-10-22",
+      "end": "2026-10-23",
+      "labels": [
+        "pair-programming",
+        "phase-design",
+        "plan-r01",
+        "refactor-first",
+        "retrospective-action",
+        "sprint2-plan-15d",
+        "sprint2-plan-ordered"
+      ]
+    },
+    {
+      "key": "SCRUM-48",
+      "title": "[2차] Spring·MyBatis 대표 기능 전환 및 연결 테스트",
+      "parent": "SCRUM-42",
+      "start": "2026-10-23",
+      "end": "2026-10-23",
+      "labels": [
+        "pair-programming",
+        "phase-implementation",
+        "phase-unit-test",
+        "plan-r02",
+        "refactor-first",
+        "retrospective-action",
+        "sprint2-plan-15d",
+        "sprint2-plan-ordered"
+      ]
+    },
+    {
+      "key": "SCRUM-49",
+      "title": "[2차] 기존 기능 Spring 전환·예외·접근 보호",
+      "parent": "SCRUM-42",
+      "start": "2026-10-26",
+      "end": "2026-10-28",
+      "labels": [
+        "pair-programming",
+        "phase-implementation",
+        "phase-unit-test",
+        "plan-r03",
+        "refactor-first",
+        "retrospective-action",
+        "sprint2-plan-15d",
+        "sprint2-plan-ordered"
+      ]
+    },
+    {
+      "key": "SCRUM-50",
+      "title": "[2차] 품질담당자 통계·전년도 비교 분석·설계 및 리뷰",
+      "parent": "SCRUM-43",
+      "start": "2026-10-26",
+      "end": "2026-10-28",
+      "labels": [
+        "pair-programming",
+        "phase-design",
+        "plan-s01",
+        "quality-core",
+        "retrospective-action",
+        "sprint2-plan-15d",
+        "sprint2-plan-ordered"
+      ]
+    },
+    {
+      "key": "SCRUM-51",
+      "title": "[2차] 품질담당자 통계조회 구현·단위 테스트",
+      "parent": "SCRUM-43",
+      "start": "2026-10-29",
+      "end": "2026-11-03",
+      "labels": [
+        "pair-programming",
+        "phase-implementation",
+        "phase-unit-test",
+        "plan-s02",
+        "quality-core",
+        "retrospective-action",
+        "sprint2-plan-15d",
+        "sprint2-plan-ordered"
+      ]
+    },
+    {
+      "key": "SCRUM-52",
+      "title": "[2차] 품질담당자 전년도 비교 구현·단위 테스트",
+      "parent": "SCRUM-43",
+      "start": "2026-11-04",
+      "end": "2026-11-06",
+      "labels": [
+        "pair-programming",
+        "phase-implementation",
+        "phase-unit-test",
+        "plan-s03",
+        "quality-core",
+        "retrospective-action",
+        "sprint2-plan-15d",
+        "sprint2-plan-ordered"
+      ]
+    },
+    {
+      "key": "SCRUM-53",
+      "title": "[2차] 공통 계정·역할별 마이페이지 분석·설계 및 리뷰",
+      "parent": "SCRUM-44",
+      "start": "2026-10-26",
+      "end": "2026-10-28",
+      "labels": [
+        "pair-programming",
+        "phase-design",
+        "plan-u01",
+        "retrospective-action",
+        "sprint2-plan-15d",
+        "sprint2-plan-ordered"
+      ]
+    },
+    {
+      "key": "SCRUM-54",
+      "title": "[2차] 품질담당자 마이페이지·비밀번호 변경 구현·테스트",
+      "parent": "SCRUM-44",
+      "start": "2026-10-29",
+      "end": "2026-11-03",
+      "labels": [
+        "pair-programming",
+        "phase-implementation",
+        "phase-unit-test",
+        "plan-u02",
+        "retrospective-action",
+        "sprint2-plan-15d",
+        "sprint2-plan-ordered"
+      ]
+    },
+    {
+      "key": "SCRUM-55",
+      "title": "[2차] 공통 비밀번호 찾기·재설정 구현·테스트",
+      "parent": "SCRUM-44",
+      "start": "2026-11-04",
+      "end": "2026-11-06",
+      "labels": [
+        "pair-programming",
+        "phase-implementation",
+        "phase-unit-test",
+        "plan-u03",
+        "retrospective-action",
+        "sprint2-plan-15d",
+        "sprint2-plan-ordered"
+      ]
+    },
+    {
+      "key": "SCRUM-56",
+      "title": "[2차] 기존 상세 서류·열람 권한 분석·설계",
+      "parent": "SCRUM-44",
+      "start": "2026-10-26",
+      "end": "2026-10-27",
+      "labels": [
+        "pair-programming",
+        "phase-design",
+        "plan-d01",
+        "retrospective-action",
+        "sprint2-plan-15d",
+        "sprint2-plan-ordered"
+      ]
+    },
+    {
+      "key": "SCRUM-57",
+      "title": "[2차] 보상 지급결과 상세 서류 열람 구현·테스트",
+      "parent": "SCRUM-44",
+      "start": "2026-10-29",
+      "end": "2026-11-03",
+      "labels": [
+        "pair-programming",
+        "phase-implementation",
+        "phase-unit-test",
+        "plan-d02",
+        "retrospective-action",
+        "sprint2-plan-15d",
+        "sprint2-plan-ordered"
+      ]
+    },
+    {
+      "key": "SCRUM-58",
+      "title": "[2차] 재해코드 공공 API·내부 데이터 매핑 분석·설계",
+      "parent": "SCRUM-45",
+      "start": "2026-10-26",
+      "end": "2026-10-27",
+      "labels": [
+        "pair-programming",
+        "phase-design",
+        "plan-a01",
+        "retrospective-action",
+        "sprint2-plan-15d",
+        "sprint2-plan-ordered"
+      ]
+    },
+    {
+      "key": "SCRUM-59",
+      "title": "[2차] 생산자 가입·로그인·역할 식별 구현·테스트",
+      "parent": "SCRUM-45",
+      "start": "2026-10-29",
+      "end": "2026-10-30",
+      "labels": [
+        "pair-programming",
+        "phase-implementation",
+        "phase-unit-test",
+        "plan-p01",
+        "retrospective-action",
+        "sprint2-plan-15d",
+        "sprint2-plan-ordered"
+      ]
+    },
+    {
+      "key": "SCRUM-60",
+      "title": "[2차] 생산자 마이페이지·업무 진입 구현·테스트",
+      "parent": "SCRUM-45",
+      "start": "2026-11-02",
+      "end": "2026-11-04",
+      "labels": [
+        "pair-programming",
+        "phase-implementation",
+        "phase-unit-test",
+        "plan-pm01",
+        "retrospective-action",
+        "sprint2-plan-15d",
+        "sprint2-plan-ordered"
+      ]
+    },
+    {
+      "key": "SCRUM-61",
+      "title": "[2차] 공공 재해코드 기반 피해신청 구현·테스트",
+      "parent": "SCRUM-45",
+      "start": "2026-11-02",
+      "end": "2026-11-04",
+      "labels": [
+        "pair-programming",
+        "phase-implementation",
+        "phase-unit-test",
+        "plan-p02",
+        "retrospective-action",
+        "sprint2-plan-15d",
+        "sprint2-plan-ordered"
+      ]
+    },
+    {
+      "key": "SCRUM-62",
+      "title": "[2차] 본인 피해신청 내역조회·접근 제한 구현·테스트",
+      "parent": "SCRUM-45",
+      "start": "2026-11-05",
+      "end": "2026-11-06",
+      "labels": [
+        "pair-programming",
+        "phase-implementation",
+        "phase-unit-test",
+        "plan-p03",
+        "retrospective-action",
+        "sprint2-plan-15d",
+        "sprint2-plan-ordered"
+      ]
+    },
+    {
+      "key": "SCRUM-63",
+      "title": "[2차] 통합·회귀 테스트 및 결과 기록",
+      "parent": "SCRUM-46",
+      "start": "2026-11-09",
+      "end": "2026-11-10",
+      "labels": [
+        "pair-programming",
+        "phase-integration-test",
+        "plan-q01",
+        "retrospective-action",
+        "sprint2-plan-15d",
+        "sprint2-plan-ordered"
+      ]
+    },
+    {
+      "key": "SCRUM-64",
+      "title": "[2차] 요구사항·권한·API·집계·DB 정합성 검증",
+      "parent": "SCRUM-46",
+      "start": "2026-11-09",
+      "end": "2026-11-10",
+      "labels": [
+        "pair-programming",
+        "phase-validation",
+        "plan-q02",
+        "retrospective-action",
+        "sprint2-plan-15d",
+        "sprint2-plan-ordered"
+      ]
+    },
+    {
+      "key": "SCRUM-65",
+      "title": "[2차] 통합 결함 수정·재검증",
+      "parent": "SCRUM-46",
+      "start": "2026-11-11",
+      "end": "2026-11-12",
+      "labels": [
+        "pair-programming",
+        "phase-implementation",
+        "phase-validation",
+        "plan-q03",
+        "retrospective-action",
+        "sprint2-plan-15d",
+        "sprint2-plan-ordered"
+      ]
+    },
+    {
+      "key": "SCRUM-66",
+      "title": "[2차] 발표자료·설계 근거 정리 및 시연 리허설",
+      "parent": "SCRUM-46",
+      "start": "2026-11-11",
+      "end": "2026-11-12",
+      "labels": [
+        "pair-programming",
+        "phase-presentation",
+        "plan-rel01",
+        "retrospective-action",
+        "sprint2-plan-15d",
+        "sprint2-plan-ordered"
+      ]
+    },
+    {
+      "key": "SCRUM-67",
+      "title": "[2차] 최종 검증·발표·제출 준비 점검",
+      "parent": "SCRUM-46",
+      "start": "2026-11-13",
+      "end": "2026-11-13",
+      "labels": [
+        "pair-programming",
+        "phase-presentation",
+        "phase-validation",
+        "plan-rel02",
+        "retrospective-action",
+        "sprint2-plan-15d",
+        "sprint2-plan-ordered"
+      ]
+    },
+    {
+      "key": "SCRUM-68",
+      "title": "[2차] 데일리 스크럼·회의록 운영 (15영업일)",
+      "parent": null,
+      "start": "2026-10-26",
+      "end": "2026-11-13",
+      "labels": [
+        "pair-programming",
+        "phase-scrum",
+        "plan-daily",
+        "retrospective-action",
+        "sprint-operation",
+        "sprint2-plan-15d",
+        "sprint2-plan-ordered"
+      ]
+    },
+    {
+      "key": "SCRUM-69",
+      "title": "[2차] 1주차 설계·전환 결과 점검 및 범위 조정",
+      "parent": null,
+      "start": "2026-10-30",
+      "end": "2026-10-30",
+      "labels": [
+        "pair-programming",
+        "phase-review",
+        "plan-check1",
+        "retrospective-action",
+        "sprint-operation",
+        "sprint2-plan-15d",
+        "sprint2-plan-ordered"
+      ]
+    },
+    {
+      "key": "SCRUM-70",
+      "title": "[2차] 핵심 업무 흐름 시연·기능 동결 점검",
+      "parent": null,
+      "start": "2026-11-06",
+      "end": "2026-11-06",
+      "labels": [
+        "pair-programming",
+        "phase-review",
+        "phase-validation",
+        "plan-check2",
+        "retrospective-action",
+        "sprint-operation",
+        "sprint2-plan-15d",
+        "sprint2-plan-ordered"
+      ]
+    },
+    {
+      "key": "SCRUM-71",
+      "title": "[2차] MyBatis·JPA 연동 및 DB 전환 검증",
+      "parent": "SCRUM-42",
+      "start": "2026-10-26",
+      "end": "2026-10-27",
+      "labels": [
+        "pair-programming",
+        "phase-implementation",
+        "phase-validation",
+        "retrospective-action",
+        "sprint2-plan-15d",
+        "sprint2-plan-ordered"
+      ]
+    },
+    {
+      "key": "SCRUM-72",
+      "title": "[2차] 생산자 액터 분석·설계 및 페어 리뷰",
+      "parent": "SCRUM-45",
+      "start": "2026-10-26",
+      "end": "2026-10-28",
+      "labels": [
+        "pair-programming",
+        "phase-design",
+        "producer-design",
+        "retrospective-action",
+        "sprint2-plan-15d",
+        "sprint2-plan-ordered"
+      ]
+    }
+  ]
+}

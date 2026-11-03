@@ -1,0 +1,135 @@
+{
+  "title": "2차 스프린트 리팩토링 합의 체크리스트",
+  "asOf": "2026-10-21",
+  "status": "합의 대기",
+  "parent": "SCRUM-47",
+  "reviewUrl": "https://tlals0028.atlassian.net/issues?jql=project%20%3D%20SCRUM%20AND%20labels%20%3D%20kickoff-refactoring-review%20ORDER%20BY%20key%20ASC",
+  "cards": [
+    {
+      "no": "01",
+      "title": "업무 패키지·공통 책임",
+      "lines": [
+        "업무별 패키지와 의존 방향",
+        "공통 영역의 대상·책임 명확화"
+      ],
+      "checks": [
+        "compensation·producer·damageapplication·disastercode·account 등 업무 경계와 기본 패키지를 팀이 확정한다.",
+        "업무 패키지 안에 필요한 계층을 두고 공통 설정·예외·형식·보안의 실제 재사용 범위를 구분한다.",
+        "이동 전후 import·스캔·테스트·설정 참조와 예외 사유를 기록한다."
+      ],
+      "key": "SCRUM-75"
+    },
+    {
+      "no": "02",
+      "title": "소스·멤버 이름 규칙",
+      "lines": [
+        "패키지 → 타입 → 멤버 → 구현",
+        "현재·변경 이름과 영향 기록"
+      ],
+      "checks": [
+        "파일명/타입 PascalCase, 메서드·변수 lowerCamelCase, 상수 UPPER_SNAKE_CASE와 공통 업무 용어를 합의한다.",
+        "현재→변경→의미→영향 파일/설정→담당/리뷰→검증 대응표를 작성한다.",
+        "이름 변경과 동작 변경을 구분하고 단계별 컴파일·회귀 결과를 기록한다."
+      ],
+      "key": "SCRUM-76"
+    },
+    {
+      "no": "03",
+      "title": "인터페이스 대상·역할",
+      "lines": [
+        "무엇을 제공·조회하는지 표시",
+        "Mapper·Repository·Client 구분"
+      ],
+      "checks": [
+        "DisasterCodeProvider·CompensationStatisticsQueryService·CurrentUserProvider처럼 업무 대상과 역할이 드러나는 이름을 검토한다.",
+        "공통 인터페이스의 사용자·입출력·실패 계약과 구현 대체 필요성을 기록한다.",
+        "Mapper·Repository·외부 API Client/Provider 책임을 구분하고 형식적인 인터페이스 증설을 피한다."
+      ],
+      "key": "SCRUM-77"
+    },
+    {
+      "no": "04",
+      "title": "Spring 계층·주입·트랜잭션",
+      "lines": [
+        "ActionFactory → Controller·DI",
+        "업무 로직 → Service로 분리"
+      ],
+      "checks": [
+        "수동 ActionFactory/Action의 요청·생성·예외 역할을 Controller·DI·공통 처리로 대응시킨다.",
+        "상세의 DAO 조합·계산 로직을 Service로 분리하고 Connection·트랜잭션·자원 관리 책임을 정한다.",
+        "기존 URL·화면·세션 흐름과 변경 후 요청→Service→데이터 접근→뷰를 검증한다."
+      ],
+      "key": "SCRUM-78"
+    },
+    {
+      "no": "05",
+      "title": "예외·응답·로그·롤백",
+      "lines": [
+        "입력·권한·API·DB 오류 구분",
+        "화면 안내·실패 응답·롤백 합의"
+      ],
+      "checks": [
+        "입력/미존재/미인증·권한/중복/공공 API 오류·지연/DB 오류를 구분한다.",
+        "Controller·Service·데이터 접근 계층 책임과 HTML/Ajax의 상태·문구·오류 응답을 합의한다.",
+        "공통 예외 처리·민감 정보 비노출·로그 수준·예외 재전파/롤백과 실패 테스트 기준을 정한다."
+      ],
+      "key": "SCRUM-79"
+    },
+    {
+      "no": "06",
+      "title": "MyBatis·JPA·DB 선택 근거",
+      "lines": [
+        "기능별 조회·쓰기 책임 확정",
+        "MySQL·MariaDB를 근거로 비교"
+      ],
+      "checks": [
+        "복합 조회/집계 SQL과 CRUD·관계·생명주기 기준으로 MyBatis/JPA 적용표를 작성한다.",
+        "MySQL/MariaDB의 SQL 호환·정합성·환경 재현·Spring 연동·유지보수·공수를 비교한다.",
+        "기존 TO_DATE/TO_CHAR·키/타입·NULL/일시·금액·집계와 이관/복구를 검증하고 선택 근거를 기록한다."
+      ],
+      "key": "SCRUM-80"
+    },
+    {
+      "no": "07",
+      "title": "계정 보안·설정·객체 생성",
+      "lines": [
+        "BCrypt·DB 설정 외부화",
+        "DTO·Entity 생성 규칙 구분"
+      ],
+      "checks": [
+        "가입·로그인·변경·재설정의 BCrypt 계약과 기존 계정 전환 절차를 정한다.",
+        "DB 접속 정보를 외부 설정으로 관리하고 비밀번호·토큰·개인정보 원문을 로그/응답에 남기지 않는다.",
+        "Lombok/Builder는 DTO/VO와 JPA Entity의 생성·관계·변경 책임을 구분해 범위를 결정한다."
+      ],
+      "key": "SCRUM-81"
+    },
+    {
+      "no": "08",
+      "title": "UI 형식·경로·조회 방식",
+      "lines": [
+        "숫자·날짜·기존 마스킹 통일",
+        "HTML 참조·비동기 필요성 점검"
+      ],
+      "checks": [
+        "금액·숫자·날짜·기존 마스킹과 최종 산정금 등 UI/ERD 누락을 대조한다.",
+        "index.html→main.html과 header.jsp의 참조를 Controller·뷰·링크로 전환한 뒤 미사용 파일을 정리한다.",
+        "요청 횟수·시간을 측정해 순차/중복 조회 개선과 비동기·로딩·오류 처리를 결정한다."
+      ],
+      "key": "SCRUM-82"
+    },
+    {
+      "no": "09",
+      "title": "테스트·페어·완료 기준",
+      "lines": [
+        "완료 PR 유지·남은 테스트 보강",
+        "결정·PR·검증 증거를 연결"
+      ],
+      "checks": [
+        "목록 보강 완료 PR #60은 재사용하고 상세·신규 기능의 조건/상황별 테스트를 구분한다.",
+        "분석·설계→구현·단위 테스트→통합 테스트→요구사항 검증→수정→발표 준비의 완료 증거를 정한다.",
+        "페어·PR 교차 리뷰·회의 목적/판단 기준/결정 근거·담당/기한을 데일리 회의록에 연결한다."
+      ],
+      "key": "SCRUM-83"
+    }
+  ]
+}

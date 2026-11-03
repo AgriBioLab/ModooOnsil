@@ -8,7 +8,7 @@
 <head>
 <%@ include file="common/head.jsp" %>
 
-<title>농산물품질 - 보상처리결과 조회</title>
+<title>모두의온실 - 보상처리결과 조회</title>
 
 <!-- 상세 CSS -->
 <link rel="stylesheet" href="${pageContext.request.contextPath}/resources/css/detail.css?v=20261006">

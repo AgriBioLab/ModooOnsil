@@ -1,0 +1,44 @@
+@startuml
+!pragma layout smetana
+left to right direction
+skinparam defaultFontName Malgun Gothic
+skinparam defaultFontSize 16
+skinparam shadowing false
+skinparam backgroundColor white
+skinparam packageStyle rectangle
+skinparam usecaseBorderColor #36566B
+skinparam ArrowColor #526474
+title 1차·2차 연결 · 서비스 개념 유스케이스 설계안
+actor "화훼 농민\n(생산자)" as Farmer
+rectangle "동일 공공기관이 제공하는 생산자·피해보상 정보 서비스" as System {
+  package "2차 · 기록 관리·피해보상 신청" {
+    usecase "생산자·농장 정보를 관리한다" as U1 #E8F2FC
+    usecase "화훼 재배·작업기록을 관리한다" as U2 #E8F2FC
+    usecase "출하이력을 관리한다" as U3 #E8F2FC
+    usecase "재배·출하 이력을 조회한다" as U4 #E8F2FC
+    usecase "기존 기록으로 피해보상을 신청한다" as U8 #E8F2FC
+  }
+  package "1차 · 피해보상 결과조회" {
+    usecase "피해보상 결과 목록을 조회한다" as U5 #EFF1F3
+    usecase "피해보상 결과를 검색한다" as U6 #EFF1F3
+    usecase "피해보상 결과 상세를 조회한다" as U7 #EFF1F3
+  }
+}
+actor "품질담당자" as Officer
+Farmer -- U1
+Farmer -- U2
+Farmer -- U3
+Farmer -- U4
+Farmer -- U8
+U8 ..> U4 : <<include>>
+U5 -- Officer
+U6 -- Officer
+U7 -- Officer
+note bottom of System
+  2차의 보상 신청에는 기존 이력 조회·확인이 항상 포함된다.
+  신청 시 선택한 기준정보·기록 버전을 보존한다.
+  include는 행동 포함 관계이며, 신청에서 지급까지의 진행 순서는 아니다.
+  보상금 산정·심사·지급을 이번 기능으로 가정하지 않는다.
+  로그인·로그아웃은 이 전체 개념도에서 생략했다.
+end note
+@enduml

@@ -1,0 +1,134 @@
+// 모두의온실 생산자 서비스 메인: 바로가기와 요약. 실제 조회는 producerFarm.html.
+'use strict';
+const $ = (selector) => document.querySelector(selector);
+const icon = (name) => `<svg class="icon" aria-hidden="true"><use href="#i-${name}"/></svg>`;
+const escapeHtml = (s) => String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const greenhouses = [
+ {id:'A',crop:'장미',variety:'쥬피터',temp:23.2,humidity:65,co2:610,week:9,phase:'생육 중',state:'normal',ec:1.6,ph:5.9},
+ {id:'B',crop:'국화',variety:'백마',temp:29.8,humidity:58,co2:560,week:6,phase:'생육 중',state:'high',ec:1.8,ph:5.8},
+ {id:'C',crop:'호접란',variety:'만천홍',temp:24.5,humidity:72,co2:650,week:7,phase:'생육 중',state:'normal',ec:1.75,ph:5.7},
+ {id:'D',crop:'카네이션',variety:'마스터',temp:22.1,humidity:68,co2:620,week:10,phase:'출하 준비',state:'normal',ec:1.7,ph:5.9},
+ {id:'E',crop:'호접란',variety:'만천홍',temp:24.1,humidity:74,co2:640,week:5,phase:'생육 중',state:'normal',ec:1.75,ph:5.7},
+ {id:'F',crop:'장미',variety:'쥬피터',temp:null,humidity:null,co2:null,week:8,phase:'생육 중',state:'offline',ec:null,ph:null},
+ ...Array.from({length:12},(_,i)=>({id:String.fromCharCode(71+i),crop:['호접란','장미','국화','카네이션'][i%4],variety:['만천홍','쥬피터','백마','마스터'][i%4],temp:23+(i%5)*.3,humidity:65+i%8,co2:600+i*3,week:5+i%6,phase:'생육 중',state:'normal',ec:1.75,ph:5.7}))
+];
+let selected='C', metric='temperature', filter='all';
+let tasks=[{id:1,title:'만천홍 분갈이',location:'C동 · 호접란 · 3주차 묘',time:'오전 11:00',done:false},{id:2,title:'생육 상태 측정',location:'A동 · 장미 · 대표 식물체',time:'오후 2:00',done:false},{id:3,title:'출하 전 품질 확인',location:'D동 · 카네이션 · 11/02 출하',time:'오후 4:00',done:false}];
+let journal=[];
+try{const saved=JSON.parse(localStorage.getItem('agribiolab-ui-demo-v1')||'null');if(saved&&Array.isArray(saved.tasks)&&saved.tasks.every(t=>typeof t.title==='string'&&typeof t.location==='string'&&typeof t.time==='string'&&typeof t.done==='boolean')){tasks=saved.tasks;}if(saved&&Array.isArray(saved.journal)){journal=saved.journal;}}catch(_){}
+function persist(){try{localStorage.setItem('agribiolab-ui-demo-v1',JSON.stringify({tasks,journal}));}catch(_){toast('브라우저 저장소를 사용할 수 없어 현재 화면에서만 유지됩니다.');}}
+let toastTimer;function toast(message){$('#toast').textContent=message;$('#toast').classList.add('show');clearTimeout(toastTimer);toastTimer=setTimeout(()=>$('#toast').classList.remove('show'),3500);}
+
+// 메인은 오늘의 요약만 보여주고, 전체 조회는 producerFarm.html로 이동합니다.
+function renderTasks() {
+  const completed = tasks.filter(task => task.done).length;
+  const pending = tasks.length - completed;
+  $('#homeTaskCount').textContent = pending;
+  const note = `전체 ${tasks.length}건 중 ${completed}건 완료`;
+  $('#homeTaskNote').textContent = note;
+  $('#homeWorkProgress').textContent = note;
+  const preview = tasks.slice(0, 3);
+  $('#homeWorkList').innerHTML = preview.length ? preview.map(task => `
+    <li class="home-work-item${task.done ? ' done' : ''}">
+      <input type="checkbox" data-home-task="${task.id}" id="home-task-${task.id}" ${task.done ? 'checked' : ''} aria-label="${escapeHtml(task.title)} 완료">
+      <label for="home-task-${task.id}"><strong>${escapeHtml(task.title)}</strong><small>${escapeHtml(task.location)} · ${escapeHtml(task.time)}</small></label>
+    </li>`).join('') : '<li class="home-work-empty">오늘 등록한 작업이 없습니다.</li>';
+  if (tasks.length > 3) {
+    $('#homeWorkList').insertAdjacentHTML('beforeend', `<li><button type="button" class="text-link" data-dialog="tasks">전체 ${tasks.length}건 보기</button></li>`);
+  }
+}
+
+function closeMenu() {
+  const menu = $('#producerMobileMenu');
+  if (menu) menu.open = false;
+}
+
+function syncHomeNavigation() {
+  document.querySelectorAll('[data-nav]').forEach(link => {
+    if (link.dataset.nav === 'home') link.setAttribute('aria-current', 'page');
+    else link.removeAttribute('aria-current');
+  });
+}
+
+const dialog = $('#detailDialog');
+function showDialog(kind){const g=greenhouses.find(g=>g.id===selected);let title='',body='';const note='<p class="modal-note">화면 검토용 예시입니다. 외부 센서·시세·행정 시스템과 연결되지 않습니다.</p>';
+if(kind==='demo-session'){title='로그아웃 · 시안 안내';body='<p>생산자 로그인은 연결되지 않은 UI 시안입니다. 현재 화면은 실제 로그인 세션을 사용하지 않습니다.</p>'; }
+else if(kind==='greenhouse-detail'||kind==='environment'){title=`${g.id}동 · ${kind==='environment'?'환경 상세':'재배 현황'}`;body=`<p>${g.crop} · ${g.variety} · 재배 ${g.week}주차 · ${g.state==='offline'?'10:00 이후 미수신':'10:30 수집 예시'}</p><div class="dialog-grid"><div class="detail-cell"><small>내부 온도</small><strong>${g.temp??'—'} °C</strong></div><div class="detail-cell"><small>내부 습도</small><strong>${g.humidity??'—'} %</strong></div><div class="detail-cell"><small>내부 CO₂</small><strong>${g.co2??'—'} ppm</strong></div><div class="detail-cell"><small>양액 EC / pH</small><strong>${g.ec??'—'} / ${g.ph??'—'}</strong></div></div><ul class="detail-list"><li>재배 단계 <small>${g.phase}</small></li><li>배지형태 <small>수태 · 예시</small></li><li>온도 설정 범위 <small>20~28 °C · 예시 설정</small></li></ul>${note}<button class="btn primary" data-dialog="journal-add">이 온실 재배일지 쓰기</button>`;}
+else if(kind==='greenhouses'){title='전체 온실 · 18개 동';body=`<p>온실을 선택하면 재배현황과 수집된 환경값을 볼 수 있습니다. 등록 버튼은 별도 온실 등록 화면의 항목 시안으로 연결됩니다.</p><ul class="detail-list">${greenhouses.map(x=>`<li><button class="text-link" data-select-gh="${x.id}" style="color:#18589a;font-size:12px">${x.id}동 · ${x.crop} / ${x.variety}</button><small>${x.state==='high'?'온도 확인':x.state==='offline'?'데이터 미수신':'정상 · '+x.temp.toFixed(1)+' °C'}</small></li>`).join('')}</ul>${note}`;}
+else if(kind==='journal-add'){title='재배일지 쓰기';body=`<p>작업한 온실과 내용을 짧게 남겨보세요. 이 시안에서는 현재 브라우저에만 저장합니다.</p><form id="journalForm"><div class="form-row"><div><label for="journalDate">작업일</label><input id="journalDate" name="date" type="date" value="2026-10-31" required></div><div><label for="journalGh">온실</label><select id="journalGh" name="greenhouse">${greenhouses.map(x=>`<option ${x.id===selected?'selected':''} value="${x.id}">${x.id}동 · ${x.crop}</option>`).join('')}</select></div></div><label for="journalType">작업 구분</label><select id="journalType" name="type"><option>분갈이</option><option>전정</option><option>이식</option><option>정식</option><option>방제</option><option>비료</option><option>관수</option><option>관찰</option></select><label for="journalText">작업 내용</label><textarea id="journalText" name="text" placeholder="예: 만천홍 3주차 묘 분갈이 진행" maxlength="1000" required></textarea><button class="btn primary" type="submit">시안에 기록 저장</button></form>`;}
+else if(kind==='journal'){title='나의 재배일지';body=`<p>온실별 작업 내용과 사용한 농약·비료·관수 기록을 모아보는 화면입니다.</p><ul class="detail-list">${journal.map(j=>`<li><span>${escapeHtml(j.type)} · ${escapeHtml(j.greenhouse)}동<br><small>${escapeHtml(j.text)}</small></span><small>${escapeHtml(j.date)}</small></li>`).join('')||'<li>10/30 · C동 · 호접란 관수 <small>예시 기록</small></li><li>10/29 · A동 · 1번 베드 전정 <small>예시 기록</small></li>'}</ul><button class="btn primary" data-dialog="journal-add">재배일지 쓰기</button>`;}
+else if(kind==='task-add'){title='오늘의 작업 추가';body='<p>오늘 할 일을 추가하고 대시보드에서 완료 여부를 표시하세요.</p><form id="taskForm"><label for="taskTitle">작업명</label><input id="taskTitle" name="title" placeholder="예: C동 생육 상태 측정" required maxlength="60"><div class="form-row"><div><label for="taskGh">대상 온실</label><select id="taskGh" name="greenhouse">'+greenhouses.map(x=>`<option value="${x.id}">${x.id}동 · ${x.crop}</option>`).join('')+'</select></div><div><label for="taskTime">예정 시간</label><input id="taskTime" name="time" type="time" value="15:00" required></div></div><button class="btn primary" type="submit">시안에 작업 추가</button></form>';}
+else if(kind==='notifications'){title='확인이 필요한 온실';body='<p>알림은 생산자가 설정한 기준과 수집 상태를 바탕으로 표시하는 구상입니다.</p><ul class="detail-list"><li><span><strong>B동 · 내부 온도 확인</strong><br><small>29.8 °C · 예시 설정 상한 28 °C 초과</small></span><small>10:30</small></li><li><span><strong>F동 · 환경 데이터 미수신</strong><br><small>현재값을 확인할 수 없습니다. 연결 상태를 확인하세요.</small></span><small>10:00 이후</small></li></ul>'+note;}
+else if(kind==='shipping'){title='다가오는 출하';body='<p>수확·출하일과 등급별 수량·단가를 해당 재배 기록에 연결합니다.</p><ul class="detail-list"><li><span>11/02 · D동 카네이션<br><small>출하 예정 · 품질 확인 전</small></span><small>예시 120박스</small></li><li><span>11/05 · A동 장미<br><small>출하 예정 · 수량 확인 전</small></span><small>예시 80박스</small></li></ul>'+note;}
+else if(kind==='growth'){title='생육기록';body='<p>C동 호접란 · 만천홍 · 대표 식물체 측정 항목</p><div class="dialog-grid"><div class="detail-cell"><small>생육주차</small><strong>7주차</strong></div><div class="detail-cell"><small>초장</small><strong>13 cm</strong></div><div class="detail-cell"><small>초폭</small><strong>23 cm</strong></div><div class="detail-cell"><small>엽수</small><strong>3개</strong></div></div><p class="modal-note">첨부 자료의 샘플값을 화면에 배치한 예시입니다. 측정일과 대표 식물체 ID를 연결해 기록하도록 설계합니다.</p>';}
+else if(kind==='market'){title='도매시장 시세 비교';body='<p>품목·품종·등급·거래단위를 맞춰 시장별 평균금액을 조회하는 화면을 제안합니다. 아래 금액은 모두 시안용입니다.</p><ul class="detail-list"><li>양재 aT · 호접란 · 특 <small>12,500원/분 · 예시</small></li><li>고양농협 · 호접란 · 특 <small>12,000원/분 · 예시</small></li><li>광주농협 <small>데이터 연결 전</small></li><li>음성 / 부경농협 / 영남농협 <small>데이터 연결 전</small></li></ul>'+note;}
+else if(kind==='compensation'){title='기존 기록으로 피해보상 신청';body='<p>농장과 재배 기록을 선택하고 피해 내용을 추가하는 흐름입니다.</p><div class="progress-steps"><span>1. 기록 선택</span><span>2. 피해내용 작성</span><span>3. 제출·접수 확인</span></div><ul class="detail-list"><li>농장·본인 정보 <small>등록 정보 불러오기</small></li><li>온실·품목·재배일지·출하 기록 <small>관련 기록 선택</small></li><li>피해일·내용·증빙사진 <small>신청 시 추가</small></li></ul><p class="modal-note">현재는 신청 흐름을 보여주는 시안입니다. 실제 제출은 제공하지 않으며, 심사·산정·지급은 별도 업무입니다.</p>';}
+else if(kind==='farm'||kind==='profile'){title='농장·내 정보';body='<p>농장정보와 온실·재배 기본정보를 한곳에서 관리합니다.</p><ul class="detail-list"><li>농장명 <small>나의 화훼농장 · 시안용 명칭</small></li><li>생산자 <small>김*수 · 가상 사용자</small></li><li>지역 <small>경기도 수원시</small></li><li>관리 온실 <small>18개 동</small></li><li>주요 품목 <small>호접란 · 장미 · 국화 · 카네이션</small></li></ul>'+note;}
+else if(kind==='greenhouse-add'){title='온실 등록 · 입력 항목 시안';body='<p>온실의 기본정보를 등록한 뒤 품목과 재배 회차를 연결합니다.</p><ul class="detail-list"><li>온실 식별 <small>동 이름 · 재배위치</small></li><li>유형·형태 <small>단동 / 연동 · 비닐 / 유리</small></li><li>규격 <small>측고 · 폭 · 길이 (m)</small></li><li>배지 <small>수태 / 코코피트 등</small></li><li>재배정보 <small>품목 · 품종 · 묘 구입처 · 정식일</small></li></ul><p class="modal-note">이 버튼에서는 등록 화면에 필요한 항목을 확인할 수 있습니다. 실제 온실 추가는 후속 구현 범위입니다.</p>';}
+else {title='농장 기록, 이렇게 시작하세요';body='<ul class="detail-list"><li>01 · 농장과 온실 등록 <small>재배 장소부터 정리</small></li><li>02 · 품목·품종·재배 회차 연결 <small>언제, 어디에 심었는지</small></li><li>03 · 작업·생육 기록 쌓기 <small>현장에서 짧게 기록</small></li><li>04 · 수확·출하 결과 기록 <small>지난 재배와 함께 확인</small></li><li>05 · 필요할 때 기존 기록 활용 <small>피해보상 신청 자료 선택</small></li></ul>'+note;}
+$('#dialogTitle').textContent=title;$('#dialogBody').innerHTML=body;if(!dialog.open)dialog.showModal();closeMenu();}
+
+document.addEventListener('common-layout-loaded', syncHomeNavigation);
+syncHomeNavigation();
+
+document.addEventListener('click', event => {
+  const trigger = event.target.closest('[data-dialog]');
+  if (trigger) {
+    if (trigger.dataset.dialog === 'tasks') {
+      $('#dialogTitle').textContent = '오늘의 작업 전체 보기';
+      $('#dialogBody').innerHTML = `<ul class="detail-list">${tasks.map(task => `<li><span>${escapeHtml(task.title)}<br><small>${escapeHtml(task.location)} · ${escapeHtml(task.time)}</small></span><small>${task.done ? '완료' : '예정'}</small></li>`).join('')}</ul>`;
+      dialog.showModal();
+      closeMenu();
+    } else showDialog(trigger.dataset.dialog);
+  }
+  const target = event.target.closest('[data-select-gh]');
+  if (target) location.href = `producerFarm.html?greenhouse=${encodeURIComponent(target.dataset.selectGh)}`;
+});
+
+$('#homeWorkList').addEventListener('change', event => {
+  const input = event.target.closest('[data-home-task]');
+  if (!input) return;
+  const task = tasks.find(item => String(item.id) === input.dataset.homeTask);
+  task.done = input.checked;
+  persist();
+  renderTasks();
+  toast(task.done ? '작업을 완료로 표시했습니다. · 시안 내 저장' : '작업을 미완료로 변경했습니다.');
+});
+
+$('#dialogBody').addEventListener('submit', event => {
+  event.preventDefault();
+  const form = event.target;
+  const data = new FormData(form);
+  if (form.id === 'journalForm') {
+    const text = String(data.get('text')).trim();
+    if (!text) { toast('작업 내용을 입력해 주세요.'); return; }
+    journal.unshift({ date: data.get('date'), greenhouse: data.get('greenhouse'), type: data.get('type'), text });
+    persist();
+    dialog.close();
+    toast('재배일지를 저장했습니다. 재배일지 메뉴에서 확인하세요.');
+  } else if (form.id === 'taskForm') {
+    const title = String(data.get('title')).trim();
+    if (!title) { toast('작업명을 입력해 주세요.'); return; }
+    const greenhouse = greenhouses.find(item => item.id === data.get('greenhouse'));
+    tasks.push({ id: Date.now(), title, location: `${greenhouse.id}동 · ${greenhouse.crop}`, time: String(data.get('time')), done: false });
+    persist();
+    renderTasks();
+    dialog.close();
+    toast('오늘의 작업에 추가했습니다. · 시안 내 저장');
+  }
+});
+
+$('#dialogClose').addEventListener('click', () => dialog.close());
+dialog.addEventListener('click', event => {
+  if (event.target !== dialog) return;
+  const rect = dialog.getBoundingClientRect();
+  if (event.clientX < rect.left || event.clientX > rect.right || event.clientY < rect.top || event.clientY > rect.bottom) dialog.close();
+});
+document.addEventListener('keydown', event => {
+  const menu = $('#producerMobileMenu');
+  if (event.key === 'Escape' && menu && menu.open) {
+    closeMenu();
+    menu.querySelector('summary').focus();
+  }
+});
+renderTasks();

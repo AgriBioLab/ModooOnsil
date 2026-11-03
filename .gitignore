@@ -34,3 +34,9 @@ db.properties
 .codex/
 node_modules/
 __screenshots__/
+
+.codex-attachments/
+.codex-remote-attachments/
+tmp/
+exports/
+outputs/

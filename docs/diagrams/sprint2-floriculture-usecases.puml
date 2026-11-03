@@ -1,0 +1,20 @@
+@startuml
+left to right direction
+skinparam defaultFontName Malgun Gothic
+skinparam shadowing false
+actor "화훼 농민\n(생산자)" as Farmer
+rectangle "화훼 생산자 정보·재배·출하 관리 서비스\n2차 스프린트 설계안" {
+  usecase "로그인·로그아웃" as UC1
+  usecase "생산자·농장 정보 관리" as UC2
+  usecase "화훼 재배현황 관리" as UC3
+  usecase "재배공정·작업기록 관리" as UC4
+  usecase "출하이력 관리" as UC5
+  usecase "재배·출하 이력 조회" as UC6
+}
+Farmer -- UC1
+Farmer -- UC2
+Farmer -- UC3
+Farmer -- UC4
+Farmer -- UC5
+Farmer -- UC6
+@enduml

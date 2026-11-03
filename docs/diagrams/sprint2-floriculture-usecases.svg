@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="740" viewBox="0 0 1200 740"><rect width="1200" height="740" fill="white"/><style>text{font-family:Malgun Gothic,sans-serif;fill:#182b3b;text-anchor:middle;dominant-baseline:middle}</style>
+<rect x="320" y="90" width="830" height="610" rx="12" fill="none" stroke="#36566b" stroke-width="2"/>
+<text x="735" y="43" font-size="30">2차 스프린트 유스케이스 · 설계안</text>
+<text x="735" y="125" font-size="25">화훼 생산자 정보·재배·출하 관리 서비스</text>
+<line x1="170" y1="395" x2="510" y2="205" stroke="#9baab4" stroke-width="2"/>
+<line x1="170" y1="395" x2="510" y2="290" stroke="#9baab4" stroke-width="2"/>
+<line x1="170" y1="395" x2="510" y2="375" stroke="#9baab4" stroke-width="2"/>
+<line x1="170" y1="395" x2="510" y2="460" stroke="#9baab4" stroke-width="2"/>
+<line x1="170" y1="395" x2="510" y2="545" stroke="#9baab4" stroke-width="2"/>
+<line x1="170" y1="395" x2="510" y2="630" stroke="#9baab4" stroke-width="2"/>
+<ellipse cx="760" cy="205" rx="250" ry="31" fill="#f1f7fb" stroke="#36566b" stroke-width="2"/>
+<text x="760" y="205" font-size="24">로그인·로그아웃</text>
+<ellipse cx="760" cy="290" rx="250" ry="31" fill="#f1f7fb" stroke="#36566b" stroke-width="2"/>
+<text x="760" y="290" font-size="24">생산자·농장 정보 관리</text>
+<ellipse cx="760" cy="375" rx="250" ry="31" fill="#f1f7fb" stroke="#36566b" stroke-width="2"/>
+<text x="760" y="375" font-size="24">화훼 재배현황 관리</text>
+<ellipse cx="760" cy="460" rx="250" ry="31" fill="#f1f7fb" stroke="#36566b" stroke-width="2"/>
+<text x="760" y="460" font-size="24">재배공정·작업기록 관리</text>
+<ellipse cx="760" cy="545" rx="250" ry="31" fill="#f1f7fb" stroke="#36566b" stroke-width="2"/>
+<text x="760" y="545" font-size="24">출하이력 관리</text>
+<ellipse cx="760" cy="630" rx="250" ry="31" fill="#f1f7fb" stroke="#36566b" stroke-width="2"/>
+<text x="760" y="630" font-size="24">재배·출하 이력 조회</text>
+<circle cx="170" cy="320" r="25" fill="white" stroke="#182b3b" stroke-width="3"/>
+<line x1="170" y1="345" x2="170" y2="420" stroke="#182b3b" stroke-width="3"/>
+<line x1="125" y1="375" x2="215" y2="375" stroke="#182b3b" stroke-width="3"/>
+<line x1="170" y1="420" x2="135" y2="465" stroke="#182b3b" stroke-width="3"/>
+<line x1="170" y1="420" x2="205" y2="465" stroke="#182b3b" stroke-width="3"/>
+<text x="170" y="505" font-size="26">화훼 농민</text>
+<text x="170" y="540" font-size="22">(생산자)</text>
+</svg>

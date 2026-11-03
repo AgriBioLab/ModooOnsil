@@ -4,7 +4,7 @@
 <head>
 <%@ include file="common/head.jsp" %>
 
-<title>농산물품질 - 품질담당자 로그인</title>
+<title>모두의온실 - 품질담당자 로그인</title>
 
 <!-- 로그인 CSS -->
 <link rel="stylesheet" href="${pageContext.request.contextPath}/resources/css/login.css">
@@ -16,7 +16,7 @@
 		<section class="login-panel" aria-labelledby="loginTitle">
 			<div class="login-brand">
 				<div class="login-logo">logo</div>
-				<p class="login-system-name">농산물품질</p>
+				<p class="login-system-name">모두의온실</p>
 			</div>
 
 			<h1 id="loginTitle" class="login-title">품질담당자 로그인</h1>
