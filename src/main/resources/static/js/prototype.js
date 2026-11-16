@@ -266,7 +266,7 @@ function signIn(member, initialPage='list', initialId=null){
  cycleFilters={status:'all',greenhouse:'all',name:''};ghFilters={name:'',type:'all',cover:'all',medium:'all'};envFilters={cycle:'all',from:'',to:'',comparison:'all'};
  issueFilters={cycle:'all',type:'all',status:'all',from:'',to:''};
  if($('#sidebarFoot'))$('#sidebarFoot').textContent=member.farmName;
- setupAccount();loadGreenhouseExtras();loadCycleExtras();loadSaved();render();
+ setupAccount();loadGreenhouseExtras();loadCycleExtras();loadIssueExtras();loadSaved();render();
  if(main)main.focus();
 }
 // Additional modules: cycle plans and measured greenhouse environment.
@@ -420,16 +420,39 @@ function renderEnvDetail(){
 }
 
 let selectedIssueId=null,issueListPage=1,issueFilters={cycle:'all',type:'all',status:'all',from:'',to:''};
+function storeIssueExtras(){try{localStorage.setItem(storageKey('issues'),JSON.stringify({issues:config.issueSamples}))}catch{}}
+function loadIssueExtras(){try{const saved=JSON.parse(localStorage.getItem(storageKey('issues'))||'null');if(Array.isArray(saved?.issues)&&saved.issues.length)config.issueSamples=saved.issues}catch{}}
 function renderIssues(detail){
  const issues=config.issueSamples;
  if(detail){
-  const issue=issues.find(item=>item.issueId===selectedIssueId);
+  const issue=issues.find(item=>item.issueId===selectedIssueId)||issues[0];
   if(!issue){go('issue-list');return}
+  selectedIssueId=issue.issueId;
   const cycle=getCycle(issue.cycleId);
   const reading=config.environmentChanges.find(item=>item.cycleId===issue.cycleId&&item.measuredAt===issue.occurredAt);
-  const facts=[['작기계획',cycle.name],['온실',gh(cycle.greenhouseId)?.name],['발생일시',formatAt(issue.occurredAt)],['이슈 유형',issue.issueType],['이슈 메시지',issue.message],['발생 측정값',issue.issueValue],['조치 상태',issue.status],['조치 내용',issue.actionContent],['조치 완료일시',formatAt(issue.actionCompletedAt)]];
-  main.innerHTML=moduleHeading('온실 환경 이슈 상세','','목록으로','issue-list')+`<section class="panel"><div class="panel-body"><dl class="profile-facts">${facts.map(([label,value])=>`<dt>${label}</dt><dd>${htmlText(value??'—')}</dd>`).join('')}</dl>${reading?'<button id="issueReading" class="btn">발생 시점 측정 보기</button>':''}</div></section>`;
-  bindModuleBack();if(reading)$('#issueReading').onclick=()=>go('env-detail',reading.environmentChangeId);return;
+  const facts=[['작기계획',cycle?.name||'—'],['온실',gh(cycle?.greenhouseId)?.name||'—'],['발생일시',formatAt(issue.occurredAt)],['이슈 유형',issue.issueType],['이슈 메시지',issue.message],['발생 측정값',issue.issueValue],['조치 상태',issue.status],['조치 내용',issue.actionContent],['조치 완료일시',formatAt(issue.actionCompletedAt)]];
+  main.innerHTML=moduleHeading('온실 환경 이슈 상세','','목록으로','issue-list')+
+  `<div class="module-scroll"><section class="panel"><div class="panel-head"><h2>이슈 정보</h2><span class="issue-status" data-status="${htmlText(issue.status)}">${htmlText(issue.status)}</span></div><div class="panel-body"><dl class="profile-facts">${facts.map(([label,value])=>`<dt>${label}</dt><dd>${htmlText(value??'—')}</dd>`).join('')}</dl>${reading?'<div style="margin-top:12px"><button id="issueReading" class="btn">발생 시점 측정 보기</button></div>':''}</div></section>
+  <section class="panel" style="margin-top:14px"><div class="panel-head"><h2>조치 등록 및 상태 변경</h2></div><div class="panel-body"><form id="issueActionForm"><div class="module-input-grid">
+  <div class="field"><label for="issueNextStatus">조치 상태 *</label><select id="issueNextStatus" class="ctrl">${options(['발생','조치중','조치 완료'].map(v=>({value:v,label:v})),issue.status)}</select></div>
+  <div class="field wide"><label for="issueActionInput">조치 내용</label><textarea id="issueActionInput" class="ctrl textarea" placeholder="조치 내용을 입력하세요 (조치 완료 시 필수)">${htmlText(issue.actionContent||'')}</textarea></div>
+  </div><div class="module-actions"><button type="button" class="btn" id="issueToList">목록</button><button type="submit" class="btn main">조치 저장</button></div></form></div></section></div>`;
+  bindModuleBack();
+  if(reading)$('#issueReading').onclick=()=>go('env-detail',reading.environmentChangeId);
+  $('#issueToList').onclick=()=>go('issue-list');
+  $('#issueActionForm').onsubmit=e=>{
+   e.preventDefault();
+   const nextStatus=$('#issueNextStatus').value;
+   const actionText=$('#issueActionInput').value.trim();
+   if(nextStatus==='조치 완료'&&!actionText){toast('조치 완료 시 조치 내용을 입력하세요.');return}
+   issue.status=nextStatus;
+   issue.actionContent=actionText||null;
+   issue.actionCompletedAt=nextStatus==='조치 완료'?(issue.actionCompletedAt||`${today()}T${new Date().toTimeString().slice(0,8)}`):null;
+   storeIssueExtras();
+   toast('이슈 조치 내용을 저장했습니다.');
+   renderIssues(true);
+  };
+  return;
  }
  const all=label=>({value:'all',label});
  const choose=(id,label,items,selected)=>`<label class="field" for="${id}">${label}<select id="${id}" class="ctrl">${options([all('전체'),...items],selected)}</select></label>`;
