@@ -14,20 +14,24 @@
     <div class="brand" id="brand">모두의온실<small>재배일지</small></div>
     <div class="navhead" id="navigationLabel">재배관리</div>
     <nav class="nav" id="navigation" aria-labelledby="navigationLabel">
-      <button class="navbtn" type="button" data-go="cycle-list">작기계획</button>
       <button class="navbtn" type="button" data-go="list" aria-current="location">재배일지</button>
+      <button class="navbtn" type="button" data-go="cycle-list">작기계획</button>
       <button class="navbtn" type="button" data-go="env-list">온실 환경변화</button>
     </nav>
     <div class="sidebar-foot" id="sidebarFoot"></div>
   </aside>
   <div class="workarea">
-    <header class="topbar"><span class="crumb" id="crumb">재배관리 / 재배일지</span>
+    <header class="topbar">
       <div class="header-account" aria-label="로그인 사용자 정보">
         <span class="header-identity"><strong id="userName">김철수</strong><span id="userCertification"> (농업경영체 인증회원)</span></span>
         <button class="btn xs header-btn" type="button" id="myInfoButton">내정보</button>
         <button class="btn xs header-btn" type="button" id="logoutButton">로그아웃</button>
-      </div></header>
-    <main id="main" tabindex="-1"></main>
+      </div>
+    </header>
+    <main>
+      <nav class="crumb" aria-label="현재 위치"><span id="crumb">재배관리 / 재배일지 / 목록</span></nav>
+      <div class="page-content" id="main" tabindex="-1"></div>
+    </main>
   </div>
 </div>
 <div class="notice-toast hidden" id="toast" role="status" aria-live="polite"></div>
