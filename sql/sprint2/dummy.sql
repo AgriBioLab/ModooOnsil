@@ -28,7 +28,7 @@ INSERT INTO `crop` (
     (940001, '장미', '레드나오미'),
     (940002, '호접란', '만천홍'),
     (940003, '호접란', '비비안'),
-    (940004, '호접란', '백색 대륜 품종');
+    (940004, '호접란', '주피터');
 
 INSERT INTO `crop_stage_standard` (
     `standard_id`, `crop_id`, `created_at`, `growth_stage`, `stage_duration_days`, `stage_order`, `day_temp_min`, `day_temp_max`, `night_temp_min`, `night_temp_max`, `humidity_min`, `humidity_max`, `co2_min`, `co2_max`, `radiation_min`, `radiation_max`, `light_min`, `light_max`, `soil_temp_min`, `soil_temp_max`, `soil_moisture_min`, `soil_moisture_max`, `soil_ec_min`, `soil_ec_max`, `soil_ph_min`, `soil_ph_max`

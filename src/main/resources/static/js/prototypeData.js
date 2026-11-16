@@ -72,7 +72,7 @@ const prototypeData = {
         },
         {
           "varietyId": "940004",
-          "name": "백색 대륜 품종"
+          "name": "주피터"
         }
       ]
     }
@@ -769,7 +769,7 @@ const prototypeData = {
     },
     {
       "id": "940010",
-      "name": "백색 대륜 품종 · 기준 미입력",
+      "name": "주피터 · 기준 미입력",
       "cropId": "940002",
       "varietyId": "940004",
       "stageId": null
