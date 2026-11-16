@@ -31,7 +31,7 @@ function error(s){const el=$('#formError');if(el){el.textContent=s;el.classList.
 function updateNavigation() {
  const entry = page.startsWith('cycle-') ? 'cycle-list' : page.startsWith('gh-') ? 'gh-list' : page.startsWith('env-') ? 'env-list' : page.startsWith('issue-') ? 'issue-list' : page==='profile' ? 'profile' : page==='cert' ? 'cert' : 'list';
  const current = $(`#navigation [data-go="${entry}"]`);
- for (const button of $('#navigation [data-go]')) {
+ for (const button of $$('#navigation [data-go]')) {
   if (button === current) button.setAttribute('aria-current', 'location');
   else button.removeAttribute('aria-current');
  }
