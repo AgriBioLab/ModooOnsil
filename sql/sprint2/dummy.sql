@@ -10,7 +10,7 @@ INSERT INTO `farm_member` (
     `member_id`, `farm_name`, `representative_name`, `username`, `password`, `certification_status`, `created_at`, `phone_number`, `email`, `farm_address`, `farm_address_detail`, `main_crop`, `farm_description`, `farm_business_number`, `certified_at`, `updated_at`
 ) VALUES
     (940001, '모두의 장미농장', '김민준', 'seedrose01', '!seed-login-disabled', '인증', '2026-07-01 09:00:00', '010-4829-3715', 'seed-workflow-rose@example.test', '경기도 고양시', '테스트 농장 1', '장미', '장미 재배 및 온실 환경 관리 농장', 'FLOW-940001', '2026-07-02 09:00:00', '2026-11-13 10:00:00'),
-    (940002, '해솔 호접란농장', '이서연', 'seedmum02', '!seed-login-disabled', '미인증', '2026-07-01 09:00:00', NULL, NULL, NULL, NULL, '호접란', NULL, NULL, NULL, NULL),
+    (940002, '해솔 호접란농장', '이서연', 'seedmum02', '!seed-login-disabled', '미인증', '2026-07-01 09:00:00', '010-7315-8492', 'haesol.orchid@example.com', '경기도 고양시 일산동구 호수로 595', '가동 102호', '호접란', '호접란 전용 온실 재배 및 생육 환경 관리 농장', NULL, NULL, NULL),
     (940003, '새싹농장', '박도윤', 'seedempty03', '!seed-login-disabled', '미인증', '2026-11-13 10:00:00', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
 
 INSERT INTO `greenhouse` (
@@ -20,7 +20,7 @@ INSERT INTO `greenhouse` (
     (940002, 940001, 'B온실', '2026-07-01 09:00:00', '단동', '유리', 1, 4.5, 8, 40, 320, '코코피트', NULL, NULL),
     (940004, 940002, 'A온실', '2026-07-01 09:00:00', '단동', '비닐', 1, 4.5, 8, 40, 320, '코코피트', NULL, NULL),
     (940005, 940002, 'B온실', '2026-07-01 09:00:00', '연동', '유리', 3, 4.5, 24, 40, 960, '수태', NULL, '2026-11-13 10:00:00'),
-    (940009, 940002, 'C온실', '2026-11-13 10:00:00', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
+    (940009, 940002, 'C온실', '2026-11-13 10:00:00', '단동', '유리', 2, 4.2, 10, 35, 350, '수태', NULL, NULL);
 
 INSERT INTO `crop` (
     `crop_id`, `crop_name`, `variety_name`

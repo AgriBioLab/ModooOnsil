@@ -134,14 +134,14 @@ const prototypeData = {
       "greenhouseId": "940009",
       "memberId": "940002",
       "name": "C온실",
-      "type": null,
-      "coverType": null,
-      "buildingCount": null,
-      "sideHeight": null,
-      "width": null,
-      "length": null,
-      "registeredArea": null,
-      "mediumType": null
+      "type": "단동",
+      "coverType": "유리",
+      "buildingCount": 2,
+      "sideHeight": 4.2,
+      "width": 10,
+      "length": 35,
+      "registeredArea": 350,
+      "mediumType": "수태"
     },
     {
       "greenhouseId": "941018",
@@ -1551,12 +1551,12 @@ const prototypeData = {
       "businessNumber": null,
       "username": "seedmum02",
       "farmName": "해솔 호접란농장",
-      "email": null,
-      "phone": null,
-      "address": null,
-      "addressDetail": null,
+      "email": "haesol.orchid@example.com",
+      "phone": "010-7315-8492",
+      "address": "경기도 고양시 일산동구 호수로 595",
+      "addressDetail": "가동 102호",
       "mainCrop": "호접란",
-      "description": null
+      "description": "호접란 전용 온실 재배 및 생육 환경 관리 농장"
     },
     {
       "id": "940003",
