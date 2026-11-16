@@ -447,7 +447,7 @@ function renderEnvList(){
    if(next.from&&next.to&&next.from>next.to){toast('측정 시작일과 종료일을 확인하세요.');return}
    envFilters=next;environmentListPage=1;renderEnvList();
  };
- if($('#envChartMetric'))$('#envChartMetric').onchange=e=>{envChartKey=e.target.value;renderEnvList()};$('[data-env-detail]').forEach(b=>b.onclick=()=>go('env-detail',b.dataset.envDetail));
+ if($('#envChartMetric'))$('#envChartMetric').onchange=e=>{envChartKey=e.target.value;renderEnvList()};$$('[data-env-detail]').forEach(b=>b.onclick=()=>go('env-detail',b.dataset.envDetail));
  bindPages('',()=>environmentListPage,v=>environmentListPage=v,rows.length,size,renderEnvList);
 }
 function renderEnvDetail(){
