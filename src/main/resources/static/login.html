@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>모두의온실 | 로그인</title>
+  <link rel="stylesheet" href="css/prototype.css">
+  <script src="js/prototypeData.js" defer></script>
+  <script src="js/prototype.js" defer></script>
+</head>
+<body data-page="login">
+<main id="signedOutOverlay" class="signed-out">
+  <section class="signed-out-card" aria-labelledby="loginTitle">
+    <p class="login-brand">모두의온실</p>
+    <h1 id="loginTitle">로그인</h1>
+    <form id="loginForm" class="login-form">
+      <label class="field" for="loginUsername">계정<select id="loginUsername" class="ctrl" required></select></label>
+      <label class="field" for="loginPassword">비밀번호<input id="loginPassword" class="ctrl" type="password" autocomplete="off" required aria-describedby="loginHelp"></label>
+      <p id="loginHelp">시연용 비밀번호는 <strong>demo</strong>입니다.</p>
+      <p id="loginError" class="errorbox" role="alert" hidden></p>
+      <button type="submit" class="btn main">로그인</button>
+      <div class="auth-links">
+        <span>처음이신가요?</span>
+        <a href="signup.html">회원가입</a>
+      </div>
+    </form>
+  </section>
+</main>
+<div class="notice-toast hidden" id="toast" role="status" aria-live="polite"></div>
+</body>
+</html>

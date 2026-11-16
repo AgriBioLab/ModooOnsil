@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>모두의온실 | 회원가입</title>
+  <link rel="stylesheet" href="css/prototype.css">
+  <script src="js/prototypeData.js" defer></script>
+  <script src="js/prototype.js" defer></script>
+</head>
+<body data-page="signup">
+<main id="signupOverlay" class="signed-out">
+  <section class="signed-out-card" aria-labelledby="signupTitle">
+    <p class="login-brand">모두의온실</p>
+    <h1 id="signupTitle">회원가입</h1>
+    <form id="signupForm" class="login-form">
+      <label class="field" for="signupFarmName">농장명 *<input id="signupFarmName" class="ctrl" type="text" maxlength="100" required placeholder="예: 푸른 화훼농장"></label>
+      <label class="field" for="signupRepresentativeName">대표자명 *<input id="signupRepresentativeName" class="ctrl" type="text" maxlength="50" required placeholder="예: 홍길동"></label>
+      <label class="field" for="signupUsername">아이디 *<input id="signupUsername" class="ctrl" type="text" maxlength="50" required placeholder="영문/숫자/밑줄"></label>
+      <label class="field" for="signupPassword">비밀번호 *<input id="signupPassword" class="ctrl" type="password" autocomplete="new-password" required placeholder="비밀번호 입력"></label>
+      <label class="field" for="signupEmail">이메일<input id="signupEmail" class="ctrl" type="email" maxlength="255" placeholder="example@farm.kr"></label>
+      <label class="field" for="signupPhone">연락처<input id="signupPhone" class="ctrl" type="tel" maxlength="20" placeholder="010-0000-0000"></label>
+      <label class="field" for="signupMainCrop">주요 재배 품목<input id="signupMainCrop" class="ctrl" type="text" maxlength="100" placeholder="예: 장미, 국화"></label>
+      <label class="field" for="signupBusinessNumber">농업경영체 등록번호 (선택)<input id="signupBusinessNumber" class="ctrl" type="text" maxlength="20" placeholder="입력 시 관리자 인증 대기(인증중)로 등록"></label>
+      <p id="signupError" class="errorbox" role="alert" hidden></p>
+      <button type="submit" class="btn main">가입하기</button>
+      <div class="auth-links">
+        <span>이미 계정이 있으신가요?</span>
+        <a href="login.html">로그인으로 돌아가기</a>
+      </div>
+    </form>
+  </section>
+</main>
+<div class="notice-toast hidden" id="toast" role="status" aria-live="polite"></div>
+</body>
+</html>

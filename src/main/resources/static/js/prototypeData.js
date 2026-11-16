@@ -1,12 +1,29 @@
+// MariaDB 'modooonsil-reduced-dummy' 스냅샷(2026-11-16T11:24:07)에서 생성한 정적 UI 데이터.
+// 직접 수정하지 말고 DB 내보내기 후 생성 스크립트를 다시 실행한다.
 const prototypeData = {
   "meta": {
     "project": "모두의온실",
-    "version": "2026-11-12-cycle-environment-change-erd-v2",
-    "today": "2026-11-12",
+    "version": "db-snapshot-2026-11-16T11:24:07",
+    "today": "2026-11-16",
     "user": "화훼 재배 농민",
-    "mode": "prototype",
+    "mode": "db-snapshot",
     "commonCrop": "호접란",
-    "commonVariety": "만천홍"
+    "commonVariety": "만천홍",
+    "source": {
+      "database": "modooonsil-reduced-dummy",
+      "exportedAt": "2026-11-16T11:24:07",
+      "counts": {
+        "farm_member": 3,
+        "greenhouse": 6,
+        "crop": 4,
+        "crop_stage_standard": 10,
+        "cultivation_plan": 7,
+        "cultivation_diary": 8,
+        "cultivation_diary_task": 16,
+        "greenhouse_environment_history": 15,
+        "greenhouse_issue": 5
+      }
+    }
   },
   "header": {
     "breadcrumb": [
@@ -15,54 +32,98 @@ const prototypeData = {
     ],
     "title": "재배일지",
     "currentUser": {
-      "id": "FARMER-DEMO-01",
-      "displayName": "김철수",
+      "id": "940001",
+      "displayName": "김시연",
       "role": "화훼농민",
-      "certification": "농업경영체 인증회원"
+      "certification": "인증",
+      "username": "seed_workflow_rose",
+      "farmName": "모두의 장미농장",
+      "email": "seed-workflow-rose@example.test",
+      "phone": "010-0000-0001",
+      "address": "경기도 고양시",
+      "addressDetail": "테스트 농장 1",
+      "mainCrop": "장미",
+      "description": "작기 및 환경 이력 시연용"
     }
   },
   "crops": [
     {
-      "cropId": "CR-ORCHID",
+      "cropId": "940001",
+      "name": "장미",
+      "varieties": [
+        {
+          "varietyId": "940001",
+          "name": "레드나오미"
+        }
+      ]
+    },
+    {
+      "cropId": "940002",
+      "name": "국화",
+      "varieties": [
+        {
+          "varietyId": "940002",
+          "name": "백마"
+        },
+        {
+          "varietyId": "940003",
+          "name": "신마"
+        }
+      ]
+    },
+    {
+      "cropId": "940004",
       "name": "호접란",
       "varieties": [
         {
-          "varietyId": "V-MH",
-          "name": "만천홍"
+          "varietyId": "940004",
+          "name": "시연용 백색 품종"
         }
       ]
     }
   ],
   "greenhouses": [
     {
-      "greenhouseId": "GH-A",
-      "name": "A동 온실",
-      "type": "연동형",
-      "mediumType": "바크"
+      "greenhouseId": "940001",
+      "memberId": "940001",
+      "name": "시연 1온실 (단동·유리·수태)",
+      "type": "단동",
+      "mediumType": "수태"
     },
     {
-      "greenhouseId": "GH-B",
-      "name": "B동 온실",
-      "type": "단동형",
-      "mediumType": "바크"
+      "greenhouseId": "940002",
+      "memberId": "940001",
+      "name": "시연 2온실 (단동·유리·코코피트)",
+      "type": "단동",
+      "mediumType": "코코피트"
     },
     {
-      "greenhouseId": "GH-C",
-      "name": "C동 온실",
-      "type": "단동형",
-      "mediumType": "바크"
+      "greenhouseId": "940004",
+      "memberId": "940002",
+      "name": "시연 4온실 (단동·비닐·코코피트)",
+      "type": "단동",
+      "mediumType": "코코피트"
     },
     {
-      "greenhouseId": "GH-D",
-      "name": "D동 온실",
-      "type": "단동형",
-      "mediumType": "바크"
+      "greenhouseId": "940005",
+      "memberId": "940002",
+      "name": "시연 5온실 (연동·유리·수태)",
+      "type": "연동",
+      "mediumType": "수태"
     },
     {
-      "greenhouseId": "GH-E",
-      "name": "E동 온실",
-      "type": "단동형",
-      "mediumType": "바크"
+      "greenhouseId": "940009",
+      "memberId": "940002",
+      "name": "시연 9온실 (미등록 정보)",
+      "type": null,
+      "mediumType": null
+    },
+    {
+      "greenhouseId": "941018",
+      "memberId": "940001",
+      "name": "햇살 27온실",
+      "type": "연동",
+      "mediumType": "수태"
     }
   ],
   "growthStages": [
@@ -116,432 +177,463 @@ const prototypeData = {
   ],
   "cycles": [
     {
-      "cycleId": "CY-MH-A1",
-      "name": "2026년 호접란 A동 1차",
-      "cropId": "CR-ORCHID",
-      "varietyId": "V-MH",
-      "greenhouseId": "GH-A",
-      "actualStartDate": "2026-09-01",
-      "status": "진행",
+      "cycleId": "940001",
+      "memberId": "940001",
+      "greenhouseId": "940001",
+      "cropId": "940001",
+      "varietyId": "940001",
+      "environmentStandardSetId": "940001",
       "stageHistory": [
         {
-          "eventId": "EV-A-01",
+          "eventId": "940001",
           "stageId": "VEG",
-          "effectiveDate": "2026-09-01",
-          "sourceDiaryId": null,
-          "reason": ""
+          "effectiveDate": "2026-10-02",
+          "effectiveAt": "2026-10-02T08:30:15",
+          "sourceDiaryId": "940001",
+          "reason": null
         },
         {
-          "eventId": "EV-A-02",
+          "eventId": "940002",
           "stageId": "IND",
-          "effectiveDate": "2026-11-08",
-          "sourceDiaryId": "D-A-1108",
-          "reason": "새 잎과 생육 상태를 확인해 꽃눈유도 단계로 전환 / 야간 온도 관리 조건을 확인한 뒤 다음 단계 적용"
-        }
-      ],
-      "plannedStartAt": "2026-08-27T09:00",
-      "expectedEndAt": "2027-02-28T18:00",
-      "registeredAt": "2026-08-12T11:00:00",
-      "actualStartAt": "2026-09-01T08:30",
-      "actualEndAt": null,
-      "endReason": null,
-      "environmentStandardSetId": "STD-MH-2026",
-      "memberId": "FARMER-DEMO-01"
-    },
-    {
-      "cycleId": "CY-MH-B1",
-      "name": "2026년 호접란 B동 1차",
-      "cropId": "CR-ORCHID",
-      "varietyId": "V-MH",
-      "greenhouseId": "GH-B",
-      "actualStartDate": "2026-10-03",
-      "status": "진행",
-      "stageHistory": [
-        {
-          "eventId": "EV-B-01",
-          "stageId": "VEG",
-          "effectiveDate": "2026-10-03",
-          "sourceDiaryId": null,
-          "reason": ""
-        }
-      ],
-      "plannedStartAt": "2026-09-28T09:00",
-      "expectedEndAt": "2027-02-15T18:00",
-      "registeredAt": "2026-08-12T11:00:00",
-      "actualStartAt": "2026-10-03T09:00",
-      "actualEndAt": null,
-      "endReason": null,
-      "environmentStandardSetId": "STD-MH-2026",
-      "memberId": "FARMER-DEMO-01"
-    },
-    {
-      "cycleId": "CY-MH-C2",
-      "name": "2026년 호접란 C동 2차",
-      "cropId": "CR-ORCHID",
-      "varietyId": "V-MH",
-      "greenhouseId": "GH-C",
-      "actualStartDate": "2026-08-18",
-      "status": "진행",
-      "stageHistory": [
-        {
-          "eventId": "EV-C-01",
-          "stageId": "VEG",
-          "effectiveDate": "2026-08-18",
-          "sourceDiaryId": null,
-          "reason": ""
+          "effectiveDate": "2026-10-24",
+          "effectiveAt": "2026-10-24T08:30:15",
+          "sourceDiaryId": "940002",
+          "reason": "잎과 줄기의 생장이 안정되어 꽃눈유도기로 전환"
         },
         {
-          "eventId": "EV-C-02",
-          "stageId": "IND",
-          "effectiveDate": "2026-09-28",
-          "sourceDiaryId": "D-C-0928",
-          "reason": "꽃눈 형성 시작 상태를 확인"
-        },
-        {
-          "eventId": "EV-C-03",
+          "eventId": "940003",
           "stageId": "REP",
-          "effectiveDate": "2026-10-30",
-          "sourceDiaryId": "D-C-1030",
-          "reason": "꽃대 발달과 화아 생육 관찰 결과 반영 / 재배 담당자 현장 관찰 결과 최종 확인"
+          "effectiveDate": "2026-11-09",
+          "effectiveAt": "2026-11-09T08:30:15",
+          "sourceDiaryId": "940003",
+          "reason": "꽃봉오리 형성을 확인해 생식생장기로 전환"
         }
       ],
-      "plannedStartAt": "2026-08-15T09:00",
-      "expectedEndAt": "2027-01-31T18:00",
-      "registeredAt": "2026-08-12T11:00:00",
-      "actualStartAt": "2026-08-18T09:30",
+      "actualStartDate": "2026-10-01",
+      "plannedStartAt": "2026-10-01T00:00:00",
+      "expectedEndAt": "2026-12-20T23:59:59",
+      "actualStartAt": "2026-10-01T00:00:00",
       "actualEndAt": null,
-      "endReason": null,
-      "environmentStandardSetId": "STD-MH-2026",
-      "memberId": "FARMER-DEMO-01"
+      "registeredAt": "2026-07-02T09:00:00",
+      "name": "장미 가을 작기 · 환경 및 이슈 시연",
+      "status": "진행",
+      "endReason": null
     },
     {
-      "cycleId": "CY-MH-D0",
-      "name": "2026년 호접란 D동 1차",
-      "cropId": "CR-ORCHID",
-      "varietyId": "V-MH",
-      "greenhouseId": "GH-D",
-      "actualStartDate": "2026-05-01",
+      "cycleId": "940002",
+      "memberId": "940001",
+      "greenhouseId": "940002",
+      "cropId": "940001",
+      "varietyId": "940001",
+      "environmentStandardSetId": "940003",
+      "stageHistory": [
+        {
+          "eventId": "940005",
+          "stageId": "REP",
+          "effectiveDate": "2026-09-20",
+          "effectiveAt": "2026-09-20T08:30:15",
+          "sourceDiaryId": "940005",
+          "reason": null
+        }
+      ],
+      "actualStartDate": "2026-07-10",
+      "plannedStartAt": "2026-07-10T00:00:00",
+      "expectedEndAt": "2026-09-20T23:59:59",
+      "actualStartAt": "2026-07-10T00:00:00",
+      "actualEndAt": "2026-09-20T23:59:59",
+      "registeredAt": "2026-07-02T09:00:00",
+      "name": "장미 여름 작기 · 정상 종료",
       "status": "종료",
-      "stageHistory": [
-        {
-          "eventId": "EV-D-01",
-          "stageId": "VEG",
-          "effectiveDate": "2026-05-01",
-          "sourceDiaryId": null,
-          "reason": ""
-        },
-        {
-          "eventId": "EV-D-02",
-          "stageId": "IND",
-          "effectiveDate": "2026-07-03",
-          "sourceDiaryId": null,
-          "reason": "꽃눈유도 개시 시연 데이터"
-        },
-        {
-          "eventId": "EV-D-03",
-          "stageId": "REP",
-          "effectiveDate": "2026-08-20",
-          "sourceDiaryId": null,
-          "reason": "생식생장기 진입 시연 데이터"
-        }
-      ],
-      "plannedStartAt": "2026-05-01T08:00",
-      "expectedEndAt": "2026-11-01T18:00",
-      "registeredAt": "2026-04-20T09:30:00",
-      "actualStartAt": "2026-05-01T08:00",
-      "actualEndAt": "2026-11-03T17:00",
-      "endReason": "재배 일정 완료",
-      "environmentStandardSetId": "STD-MH-2026",
-      "memberId": "FARMER-DEMO-01"
+      "endReason": "예정 수확 완료"
     },
     {
-      "cycleId": "CY-MH-E2",
-      "name": "2026년 호접란 E동 2차",
-      "cropId": "CR-ORCHID",
-      "varietyId": "V-MH",
-      "greenhouseId": "GH-E",
-      "actualStartDate": null,
-      "status": "미진행",
+      "cycleId": "940003",
+      "memberId": "940001",
+      "greenhouseId": "940002",
+      "cropId": "940001",
+      "varietyId": "940001",
+      "environmentStandardSetId": "940001",
       "stageHistory": [],
-      "plannedStartAt": "2026-11-20T09:00",
-      "expectedEndAt": "2027-04-30T18:00",
-      "registeredAt": "2026-11-07T09:00",
+      "actualStartDate": null,
+      "plannedStartAt": "2026-11-20T00:00:00",
+      "expectedEndAt": "2027-01-20T23:59:59",
       "actualStartAt": null,
       "actualEndAt": null,
-      "endReason": null,
-      "environmentStandardSetId": "STD-MH-2026",
-      "memberId": "FARMER-DEMO-01"
+      "registeredAt": "2026-07-02T09:00:00",
+      "name": "장미 겨울 작기 · 시작 전",
+      "status": "미진행",
+      "endReason": null
+    },
+    {
+      "cycleId": "940005",
+      "memberId": "940002",
+      "greenhouseId": "940004",
+      "cropId": "940002",
+      "varietyId": "940002",
+      "environmentStandardSetId": "940005",
+      "stageHistory": [],
+      "actualStartDate": "2026-11-03",
+      "plannedStartAt": "2026-11-01T00:00:00",
+      "expectedEndAt": "2026-12-29T23:59:59",
+      "actualStartAt": "2026-11-03T00:00:00",
+      "actualEndAt": null,
+      "registeredAt": "2026-07-02T09:00:00",
+      "name": "국화 가을 작기 · 일지 없음",
+      "status": "진행",
+      "endReason": null
+    },
+    {
+      "cycleId": "940006",
+      "memberId": "940002",
+      "greenhouseId": "940005",
+      "cropId": "940002",
+      "varietyId": "940003",
+      "environmentStandardSetId": "940007",
+      "stageHistory": [],
+      "actualStartDate": null,
+      "plannedStartAt": "2026-11-08T00:00:00",
+      "expectedEndAt": "2027-01-09T23:59:59",
+      "actualStartAt": null,
+      "actualEndAt": null,
+      "registeredAt": "2026-07-02T09:00:00",
+      "name": "국화 가을 작기 · 시작 예정일 경과",
+      "status": "미진행",
+      "endReason": null
+    },
+    {
+      "cycleId": "940008",
+      "memberId": "940002",
+      "greenhouseId": "940009",
+      "cropId": "940004",
+      "varietyId": "940004",
+      "environmentStandardSetId": "940010",
+      "stageHistory": [],
+      "actualStartDate": null,
+      "plannedStartAt": "2026-12-01T00:00:00",
+      "expectedEndAt": "2027-02-10T23:59:59",
+      "actualStartAt": null,
+      "actualEndAt": null,
+      "registeredAt": "2026-11-13T10:10:00",
+      "name": "호접란 겨울 작기 · 기준 미입력",
+      "status": "미진행",
+      "endReason": null
+    },
+    {
+      "cycleId": "940009",
+      "memberId": "940001",
+      "greenhouseId": "940002",
+      "cropId": "940001",
+      "varietyId": "940001",
+      "environmentStandardSetId": "940001",
+      "stageHistory": [
+        {
+          "eventId": "940008",
+          "stageId": "VEG",
+          "effectiveDate": "2026-11-08",
+          "effectiveAt": "2026-11-08T09:20:00",
+          "sourceDiaryId": "940008",
+          "reason": null
+        },
+        {
+          "eventId": "940009",
+          "stageId": "IND",
+          "effectiveDate": "2026-11-12",
+          "effectiveAt": "2026-11-12T13:30:00",
+          "sourceDiaryId": "940009",
+          "reason": "꽃눈 형성을 확인해 단계 변경"
+        }
+      ],
+      "actualStartDate": "2026-10-04",
+      "plannedStartAt": "2026-10-01T00:00:00",
+      "expectedEndAt": "2026-11-10T23:59:59",
+      "actualStartAt": "2026-10-04T00:00:00",
+      "actualEndAt": null,
+      "registeredAt": "2026-09-20T09:00:00",
+      "name": "장미 가을 작기 · 비교용 2온실",
+      "status": "진행",
+      "endReason": null
     }
   ],
   "sampleDiaries": [
     {
-      "diaryId": "D-A-0902",
-      "cycleId": "CY-MH-A1",
-      "workDate": "2026-09-02",
+      "diaryId": "940001",
+      "cycleId": "940001",
+      "workDate": "2026-10-02",
+      "workedAt": "2026-10-02T08:30:15",
       "stageId": "VEG",
-      "createdAt": "2026-09-02T17:10:00",
-      "updatedAt": "2026-09-02T17:10:00",
+      "createdAt": "2026-10-02T09:05:00",
+      "updatedAt": null,
+      "stageChangeReason": null,
       "tasks": [
         {
-          "taskId": "T-A0902-01",
-          "name": "이식 후 활착 점검",
-          "type": "생육 관리",
-          "startedAt": "2026-09-02T09:20:00",
-          "status": "완료",
-          "content": "뿌리와 잎 상태 관찰 후 기록"
-        }
-      ],
-      "stageChangeReason": ""
-    },
-    {
-      "diaryId": "D-A-1107",
-      "cycleId": "CY-MH-A1",
-      "workDate": "2026-11-07",
-      "stageId": "VEG",
-      "createdAt": "2026-11-07T18:00:00",
-      "updatedAt": "2026-11-07T18:00:00",
-      "tasks": [
-        {
-          "taskId": "T-A1107-01",
-          "name": "배지 수분 확인",
-          "type": "생육 관리",
-          "startedAt": "2026-11-07T08:40:00",
-          "status": "완료",
-          "content": "바크 배지의 건조 정도 확인"
-        },
-        {
-          "taskId": "T-A1107-02",
-          "name": "오전 관수",
+          "taskId": "940001",
+          "startedAt": "2026-10-02T09:00:00",
+          "name": "양액 관수",
           "type": "관수",
-          "startedAt": "2026-11-07T09:00:00",
           "status": "완료",
-          "content": "수분 상태 확인 후 오전 관수"
-        }
-      ],
-      "stageChangeReason": ""
-    },
-    {
-      "diaryId": "D-A-1108",
-      "cycleId": "CY-MH-A1",
-      "workDate": "2026-11-08",
-      "stageId": "IND",
-      "createdAt": "2026-11-08T16:12:00",
-      "updatedAt": "2026-11-08T16:12:00",
-      "tasks": [
-        {
-          "taskId": "T-A1108-01",
-          "name": "생육단계 전환 점검",
-          "type": "생육 관리",
-          "startedAt": "2026-11-08T10:00:00",
-          "status": "완료",
-          "content": "꽃눈유도 전환을 위한 생육상태 확인"
+          "content": "양액 관수 작업 결과 기록"
         },
         {
-          "taskId": "T-A1108-02",
-          "name": "온실 온도 설정 확인",
-          "type": "환경 조절",
-          "startedAt": "2026-11-08T14:30:00",
-          "status": "완료",
-          "content": "야간 온도 제어 설정 및 기록 확인"
-        }
-      ],
-      "stageChangeReason": "새 잎과 생육 상태를 확인해 꽃눈유도 단계로 전환 / 야간 온도 관리 조건을 확인한 뒤 다음 단계 적용"
-    },
-    {
-      "diaryId": "D-A-1110",
-      "cycleId": "CY-MH-A1",
-      "workDate": "2026-11-10",
-      "stageId": "IND",
-      "createdAt": "2026-11-10T09:10:00",
-      "updatedAt": "2026-11-10T16:45:00",
-      "tasks": [
-        {
-          "taskId": "T-A1110-01",
-          "name": "오전 관수",
+          "taskId": "940002",
+          "startedAt": "2026-10-02T10:05:00",
+          "name": "양액 관수",
           "type": "관수",
-          "startedAt": "2026-11-10T08:30:00",
-          "status": "완료",
-          "content": "만천홍 배지 수분 확인 후 관수"
-        },
-        {
-          "taskId": "T-A1110-02",
-          "name": "잎 상태 확인",
-          "type": "생육 관리",
-          "startedAt": "2026-11-10T11:20:00",
-          "status": "완료",
-          "content": "잎색과 뿌리 상태 관찰"
-        },
-        {
-          "taskId": "T-A1110-03",
-          "name": "환기 설정 점검",
-          "type": "환경 조절",
-          "startedAt": "2026-11-10T16:00:00",
           "status": "미완료",
-          "content": "환기 설정값 확인 예정"
-        }
-      ],
-      "stageChangeReason": ""
-    },
-    {
-      "diaryId": "D-B-1105",
-      "cycleId": "CY-MH-B1",
-      "workDate": "2026-11-05",
-      "stageId": "VEG",
-      "createdAt": "2026-11-05T17:00:00",
-      "updatedAt": "2026-11-05T17:00:00",
-      "tasks": [
+          "content": null
+        },
         {
-          "taskId": "T-B1105-01",
-          "name": "정기 방제",
+          "taskId": "940003",
+          "startedAt": "2026-10-02T09:10:00",
+          "name": "병해충 예찰",
           "type": "방제",
-          "startedAt": "2026-11-05T10:00:00",
           "status": "완료",
-          "content": "계획된 방제 작업 후 시설 점검"
+          "content": "병해충 예찰 작업 결과 기록"
         },
         {
-          "taskId": "T-B1105-02",
-          "name": "작업 도구 정리",
-          "type": "기타",
-          "startedAt": "2026-11-05T16:10:00",
-          "status": "완료",
-          "content": "작업 도구 세척 및 정리"
-        }
-      ],
-      "stageChangeReason": ""
-    },
-    {
-      "diaryId": "D-B-1111",
-      "cycleId": "CY-MH-B1",
-      "workDate": "2026-11-11",
-      "stageId": "VEG",
-      "createdAt": "2026-11-11T08:20:00",
-      "updatedAt": "2026-11-11T08:20:00",
-      "tasks": [
-        {
-          "taskId": "T-B1111-01",
-          "name": "오전 관수",
-          "type": "관수",
-          "startedAt": "2026-11-11T08:00:00",
-          "status": "완료",
-          "content": "오전 배지 상태 확인 후 관수"
-        },
-        {
-          "taskId": "T-B1111-02",
-          "name": "잎 점검",
-          "type": "생육 관리",
-          "startedAt": "2026-11-11T11:20:00",
+          "taskId": "940004",
+          "startedAt": "2026-10-02T10:15:00",
+          "name": "병해충 예찰",
+          "type": "방제",
           "status": "미완료",
-          "content": "신엽 성장 상태 확인 예정"
+          "content": null
         },
         {
-          "taskId": "T-B1111-03",
-          "name": "환기 설정 확인",
+          "taskId": "940005",
+          "startedAt": "2026-10-02T09:20:00",
+          "name": "환기창 조절",
           "type": "환경 조절",
-          "startedAt": "2026-11-11T15:00:00",
-          "status": "미완료",
-          "content": "오후 환기 설정 조정 예정"
+          "status": "완료",
+          "content": "환기창 조절 작업 결과 기록"
         },
         {
-          "taskId": "T-B1111-04",
-          "name": "작업 장비 소독",
-          "type": "기타",
-          "startedAt": "2026-11-11T17:30:00",
+          "taskId": "940006",
+          "startedAt": "2026-10-02T10:25:00",
+          "name": "환기창 조절",
+          "type": "환경 조절",
           "status": "미완료",
-          "content": "사용 장비 소독 및 정리 예정"
+          "content": null
         }
-      ],
-      "stageChangeReason": ""
+      ]
     },
     {
-      "diaryId": "D-C-0928",
-      "cycleId": "CY-MH-C2",
-      "workDate": "2026-09-28",
+      "diaryId": "940002",
+      "cycleId": "940001",
+      "workDate": "2026-10-24",
+      "workedAt": "2026-10-24T08:30:15",
       "stageId": "IND",
-      "createdAt": "2026-09-28T14:30:00",
-      "updatedAt": "2026-09-28T14:30:00",
+      "createdAt": "2026-10-24T09:05:00",
+      "updatedAt": "2026-10-25T10:00:00",
+      "stageChangeReason": "잎과 줄기의 생장이 안정되어 꽃눈유도기로 전환",
       "tasks": [
         {
-          "taskId": "T-C0928-01",
-          "name": "꽃눈 확인",
+          "taskId": "940007",
+          "startedAt": "2026-10-24T09:00:00",
+          "name": "꽃봉오리 확인",
           "type": "생육 관리",
-          "startedAt": "2026-09-28T09:00:00",
           "status": "완료",
-          "content": "꽃눈 형성 상태 관찰"
-        }
-      ],
-      "stageChangeReason": "꽃눈 형성 시작 상태를 확인"
-    },
-    {
-      "diaryId": "D-C-1030",
-      "cycleId": "CY-MH-C2",
-      "workDate": "2026-10-30",
-      "stageId": "REP",
-      "createdAt": "2026-10-30T17:20:00",
-      "updatedAt": "2026-10-30T17:20:00",
-      "tasks": [
-        {
-          "taskId": "T-C1030-01",
-          "name": "꽃대 생장 점검",
-          "type": "생육 관리",
-          "startedAt": "2026-10-30T09:40:00",
-          "status": "완료",
-          "content": "꽃대 길이와 굵기 관찰"
+          "content": "꽃봉오리 확인 작업 결과 기록"
         },
         {
-          "taskId": "T-C1030-02",
-          "name": "온실 환경 확인",
-          "type": "환경 조절",
-          "startedAt": "2026-10-30T15:00:00",
-          "status": "완료",
-          "content": "온실 환경 제어값 확인"
-        }
-      ],
-      "stageChangeReason": "꽃대 발달과 화아 생육 관찰 결과 반영 / 재배 담당자 현장 관찰 결과 최종 확인"
-    },
-    {
-      "diaryId": "D-C-1109",
-      "cycleId": "CY-MH-C2",
-      "workDate": "2026-11-09",
-      "stageId": "REP",
-      "createdAt": "2026-11-09T16:44:00",
-      "updatedAt": "2026-11-09T16:44:00",
-      "tasks": [
-        {
-          "taskId": "T-C1109-01",
-          "name": "잎과 꽃대 관찰",
+          "taskId": "940008",
+          "startedAt": "2026-10-24T10:05:00",
+          "name": "꽃봉오리 확인",
           "type": "생육 관리",
-          "startedAt": "2026-11-09T09:40:00",
-          "status": "완료",
-          "content": "꽃대 성장과 잎 상태 기록"
+          "status": "미완료",
+          "content": null
         },
         {
-          "taskId": "T-C1109-02",
-          "name": "오전 관수",
-          "type": "관수",
-          "startedAt": "2026-11-09T10:00:00",
-          "status": "완료",
-          "content": "배지 상태 확인 후 관수"
-        },
-        {
-          "taskId": "T-C1109-03",
-          "name": "시설 점검",
+          "taskId": "940009",
+          "startedAt": "2026-10-24T09:10:00",
+          "name": "작업 통로 정리",
           "type": "기타",
-          "startedAt": "2026-11-09T16:20:00",
           "status": "완료",
-          "content": "창 개폐 및 시설 상태 점검"
+          "content": "작업 통로 정리 작업 결과 기록"
+        },
+        {
+          "taskId": "940010",
+          "startedAt": "2026-10-24T10:15:00",
+          "name": "작업 통로 정리",
+          "type": "기타",
+          "status": "미완료",
+          "content": null
         }
-      ],
-      "stageChangeReason": ""
+      ]
+    },
+    {
+      "diaryId": "940003",
+      "cycleId": "940001",
+      "workDate": "2026-11-09",
+      "workedAt": "2026-11-09T08:30:15",
+      "stageId": "REP",
+      "createdAt": "2026-11-09T09:05:00",
+      "updatedAt": null,
+      "stageChangeReason": "꽃봉오리 형성을 확인해 생식생장기로 전환",
+      "tasks": [
+        {
+          "taskId": "940011",
+          "startedAt": "2026-11-09T09:20:00",
+          "name": "개화 상태 확인",
+          "type": "생육 관리",
+          "status": "완료",
+          "content": null
+        }
+      ]
+    },
+    {
+      "diaryId": "940004",
+      "cycleId": "940001",
+      "workDate": "2026-11-12",
+      "workedAt": "2026-11-12T08:30:15",
+      "stageId": "REP",
+      "createdAt": "2026-11-12T09:05:00",
+      "updatedAt": null,
+      "stageChangeReason": null,
+      "tasks": []
+    },
+    {
+      "diaryId": "940005",
+      "cycleId": "940002",
+      "workDate": "2026-09-20",
+      "workedAt": "2026-09-20T08:30:15",
+      "stageId": "REP",
+      "createdAt": "2026-09-20T09:05:00",
+      "updatedAt": null,
+      "stageChangeReason": null,
+      "tasks": [
+        {
+          "taskId": "940012",
+          "startedAt": "2026-09-20T09:25:00",
+          "name": "수확 후 정리",
+          "type": "기타",
+          "status": "완료",
+          "content": "시연용 작업 완료"
+        }
+      ]
+    },
+    {
+      "diaryId": "940008",
+      "cycleId": "940009",
+      "workDate": "2026-11-08",
+      "workedAt": "2026-11-08T09:20:00",
+      "stageId": "VEG",
+      "createdAt": "2026-11-08T10:00:00",
+      "updatedAt": null,
+      "stageChangeReason": null,
+      "tasks": [
+        {
+          "taskId": "940014",
+          "startedAt": "2026-11-08T09:20:00",
+          "name": "배지 수분 저하로 추가 관수",
+          "type": "관수",
+          "status": "완료",
+          "content": "관수 후 배지 수분 54% 확인"
+        }
+      ]
+    },
+    {
+      "diaryId": "940009",
+      "cycleId": "940009",
+      "workDate": "2026-11-12",
+      "workedAt": "2026-11-12T13:30:00",
+      "stageId": "IND",
+      "createdAt": "2026-11-13T08:45:00",
+      "updatedAt": "2026-11-13T09:10:00",
+      "stageChangeReason": "꽃눈 형성을 확인해 단계 변경",
+      "tasks": [
+        {
+          "taskId": "940015",
+          "startedAt": "2026-11-12T13:35:00",
+          "name": "고온 대응 측창 개방",
+          "type": "환경 조절",
+          "status": "완료",
+          "content": "측창 개방 후 온도 재측정"
+        },
+        {
+          "taskId": "940016",
+          "startedAt": "2026-11-12T15:00:00",
+          "name": "황색 점착 트랩 교체",
+          "type": "방제",
+          "status": "미완료",
+          "content": null
+        }
+      ]
+    },
+    {
+      "diaryId": "940010",
+      "cycleId": "940009",
+      "workDate": "2026-11-13",
+      "workedAt": "2026-11-13T08:30:00",
+      "stageId": "IND",
+      "createdAt": "2026-11-13T08:35:00",
+      "updatedAt": null,
+      "stageChangeReason": null,
+      "tasks": [
+        {
+          "taskId": "940017",
+          "startedAt": "2026-11-13T08:30:00",
+          "name": "습도 센서 연결 점검",
+          "type": "기타",
+          "status": "완료",
+          "content": "커넥터 재결합 후 측정 정상 복귀"
+        }
+      ]
     }
   ],
   "issueSamples": [
     {
-      "issueId": "ISS-B-01",
-      "cycleId": "CY-MH-B1",
+      "issueId": "940001",
+      "cycleId": "940001",
+      "occurredAt": "2026-10-03T08:00:00",
+      "actionCompletedAt": null,
       "issueType": "온도",
-      "occurredAt": "2026-11-11T07:30:00",
-      "message": "온실 내부 온도 측정값 확인 필요",
-      "status": "발생"
+      "message": "온도 하한 미만 · 발생",
+      "status": "발생",
+      "issueValue": 17.99,
+      "actionContent": null
+    },
+    {
+      "issueId": "940002",
+      "cycleId": "940001",
+      "occurredAt": "2026-10-03T08:01:00",
+      "actionCompletedAt": null,
+      "issueType": "온도",
+      "message": "온도 하한 미만 · 조치중",
+      "status": "조치중",
+      "issueValue": 17.99,
+      "actionContent": "설비와 센서 상태를 점검 중"
+    },
+    {
+      "issueId": "940003",
+      "cycleId": "940001",
+      "occurredAt": "2026-10-03T08:02:00",
+      "actionCompletedAt": "2026-10-03T11:30:00",
+      "issueType": "온도",
+      "message": "온도 하한 미만 · 조치 완료",
+      "status": "조치 완료",
+      "issueValue": 17.99,
+      "actionContent": "설비 조정 후 재측정 완료"
+    },
+    {
+      "issueId": "940055",
+      "cycleId": "940009",
+      "occurredAt": "2026-11-08T09:15:00",
+      "actionCompletedAt": "2026-11-08T09:45:00",
+      "issueType": "배지수분량",
+      "message": "배지 수분이 기준 하한 미만으로 떨어짐",
+      "status": "조치 완료",
+      "issueValue": 36,
+      "actionContent": "추가 관수 후 09:45에 배지 수분 54% 확인"
+    },
+    {
+      "issueId": "940056",
+      "cycleId": "940009",
+      "occurredAt": "2026-11-12T13:30:00",
+      "actionCompletedAt": "2026-11-12T14:10:00",
+      "issueType": "온도",
+      "message": "한낮 온도가 기준 상한을 초과함",
+      "status": "조치 완료",
+      "issueValue": 31.2,
+      "actionContent": "측창을 개방하고 14:10에 온도 25.4℃ 확인"
     }
   ],
   "rules": {
@@ -574,24 +666,7 @@ const prototypeData = {
     ],
     "stageChangeReasonInput": "생육단계가 변경되는 경우 단일 변경 사유 입력칸 필수"
   },
-  "formDefaults": {
-    "newDiaryTasks": [
-      {
-        "name": "오전 관수",
-        "time": "09:00",
-        "type": "관수",
-        "status": "완료",
-        "content": "바크 배지 수분 확인 후 오전 관수 실시"
-      },
-      {
-        "name": "꽃대 생육 점검",
-        "time": "10:30",
-        "type": "생육 관리",
-        "status": "미완료",
-        "content": "꽃대와 잎의 생육상태를 확인하고 특이사항 기록"
-      }
-    ]
-  },
+  "formDefaults": {},
   "pagination": {
     "pageSize": 5,
     "cyclePageSize": 5,
@@ -599,12 +674,74 @@ const prototypeData = {
   },
   "standardSets": [
     {
-      "id": "STD-MH-2026",
-      "name": "호접란 만천홍 재배단계별 환경 기준 (시연)",
-      "cropId": "CR-ORCHID",
-      "varietyId": "V-MH",
-      "referenceType": "프로토타입 예시값",
-      "confirmed": false
+      "id": "940001",
+      "name": "레드나오미 · 영양생장기",
+      "cropId": "940001",
+      "varietyId": "940001",
+      "stageId": "VEG"
+    },
+    {
+      "id": "940002",
+      "name": "레드나오미 · 꽃눈유도기",
+      "cropId": "940001",
+      "varietyId": "940001",
+      "stageId": "IND"
+    },
+    {
+      "id": "940003",
+      "name": "레드나오미 · 생식생장기",
+      "cropId": "940001",
+      "varietyId": "940001",
+      "stageId": "REP"
+    },
+    {
+      "id": "940004",
+      "name": "백마 · 영양생장기",
+      "cropId": "940002",
+      "varietyId": "940002",
+      "stageId": "VEG"
+    },
+    {
+      "id": "940005",
+      "name": "백마 · 꽃눈유도기",
+      "cropId": "940002",
+      "varietyId": "940002",
+      "stageId": "IND"
+    },
+    {
+      "id": "940006",
+      "name": "백마 · 생식생장기",
+      "cropId": "940002",
+      "varietyId": "940002",
+      "stageId": "REP"
+    },
+    {
+      "id": "940007",
+      "name": "신마 · 영양생장기",
+      "cropId": "940002",
+      "varietyId": "940003",
+      "stageId": "VEG"
+    },
+    {
+      "id": "940008",
+      "name": "신마 · 꽃눈유도기",
+      "cropId": "940002",
+      "varietyId": "940003",
+      "stageId": "IND"
+    },
+    {
+      "id": "940009",
+      "name": "신마 · 생식생장기",
+      "cropId": "940002",
+      "varietyId": "940003",
+      "stageId": "REP"
+    },
+    {
+      "id": "940010",
+      "name": "시연용 백색 품종 · 기준 미입력",
+      "cropId": "940004",
+      "varietyId": "940004",
+      "stageId": null
     }
   ],
   "measurementFields": [
@@ -665,48 +802,49 @@ const prototypeData = {
   ],
   "stageEnvironmentalCriteria": [
     {
-      "criterionId": "CRIT-VEG",
-      "setId": "STD-MH-2026",
-      "cropId": "CR-ORCHID",
+      "criterionId": "940001",
+      "setId": "940001",
+      "cropId": "940001",
+      "varietyId": "940001",
       "stageId": "VEG",
       "stageOrder": 1,
-      "standardDays": 56,
+      "standardDays": 21,
       "thresholds": {
         "dayTempC": [
-          22,
-          29
+          18,
+          28
         ],
         "nightTempC": [
-          18,
-          24
+          14,
+          20
         ],
         "humidityPct": [
-          60,
+          50,
           80
         ],
         "co2Ppm": [
-          450,
-          900
+          400,
+          1000
         ],
         "solarWm2": [
-          80,
-          420
+          200,
+          800
         ],
         "lightUmolM2S": [
-          120,
-          360
+          150,
+          550
         ],
         "substrateTempC": [
-          18,
-          27
+          16,
+          25
         ],
         "substrateMoisturePct": [
-          35,
+          40,
           70
         ],
         "substrateEcMsCm": [
-          0.8,
-          1.7
+          1.2,
+          2.4
         ],
         "substratePh": [
           5.5,
@@ -715,98 +853,406 @@ const prototypeData = {
       }
     },
     {
-      "criterionId": "CRIT-IND",
-      "setId": "STD-MH-2026",
-      "cropId": "CR-ORCHID",
+      "criterionId": "940002",
+      "setId": "940002",
+      "cropId": "940001",
+      "varietyId": "940001",
       "stageId": "IND",
       "stageOrder": 2,
-      "standardDays": 42,
+      "standardDays": 14,
       "thresholds": {
         "dayTempC": [
-          20,
-          27
+          19,
+          29
         ],
         "nightTempC": [
-          16,
+          15,
           21
         ],
         "humidityPct": [
-          55,
-          75
+          50,
+          80
         ],
         "co2Ppm": [
-          450,
-          850
+          400,
+          1000
         ],
         "solarWm2": [
-          75,
-          390
+          200,
+          800
         ],
         "lightUmolM2S": [
-          110,
-          330
+          150,
+          550
         ],
         "substrateTempC": [
-          17,
-          26
+          16,
+          25
         ],
         "substrateMoisturePct": [
-          32,
-          68
+          40,
+          70
         ],
         "substrateEcMsCm": [
-          0.8,
-          1.6
+          1.2,
+          2.4
         ],
         "substratePh": [
           5.5,
-          6.4
+          6.5
         ]
       }
     },
     {
-      "criterionId": "CRIT-REP",
-      "setId": "STD-MH-2026",
-      "cropId": "CR-ORCHID",
+      "criterionId": "940003",
+      "setId": "940003",
+      "cropId": "940001",
+      "varietyId": "940001",
       "stageId": "REP",
       "stageOrder": 3,
-      "standardDays": 65,
+      "standardDays": 28,
       "thresholds": {
         "dayTempC": [
           20,
-          28
+          30
         ],
         "nightTempC": [
-          17,
+          16,
           22
         ],
         "humidityPct": [
-          55,
-          78
+          50,
+          80
         ],
         "co2Ppm": [
-          450,
-          900
+          400,
+          1000
         ],
         "solarWm2": [
-          90,
-          450
+          200,
+          800
         ],
         "lightUmolM2S": [
-          130,
-          380
+          150,
+          550
         ],
         "substrateTempC": [
-          18,
-          27
+          16,
+          25
         ],
         "substrateMoisturePct": [
-          35,
+          40,
           70
         ],
         "substrateEcMsCm": [
-          0.8,
-          1.8
+          1.2,
+          2.4
+        ],
+        "substratePh": [
+          5.5,
+          6.5
+        ]
+      }
+    },
+    {
+      "criterionId": "940004",
+      "setId": "940004",
+      "cropId": "940002",
+      "varietyId": "940002",
+      "stageId": "VEG",
+      "stageOrder": 1,
+      "standardDays": 21,
+      "thresholds": {
+        "dayTempC": [
+          18,
+          28
+        ],
+        "nightTempC": [
+          14,
+          20
+        ],
+        "humidityPct": [
+          50,
+          80
+        ],
+        "co2Ppm": [
+          400,
+          1000
+        ],
+        "solarWm2": [
+          200,
+          800
+        ],
+        "lightUmolM2S": [
+          150,
+          550
+        ],
+        "substrateTempC": [
+          16,
+          25
+        ],
+        "substrateMoisturePct": [
+          40,
+          70
+        ],
+        "substrateEcMsCm": [
+          1.2,
+          2.4
+        ],
+        "substratePh": [
+          5.5,
+          6.5
+        ]
+      }
+    },
+    {
+      "criterionId": "940005",
+      "setId": "940005",
+      "cropId": "940002",
+      "varietyId": "940002",
+      "stageId": "IND",
+      "stageOrder": 2,
+      "standardDays": 14,
+      "thresholds": {
+        "dayTempC": [
+          19,
+          29
+        ],
+        "nightTempC": [
+          15,
+          21
+        ],
+        "humidityPct": [
+          50,
+          80
+        ],
+        "co2Ppm": [
+          400,
+          1000
+        ],
+        "solarWm2": [
+          200,
+          800
+        ],
+        "lightUmolM2S": [
+          150,
+          550
+        ],
+        "substrateTempC": [
+          16,
+          25
+        ],
+        "substrateMoisturePct": [
+          40,
+          70
+        ],
+        "substrateEcMsCm": [
+          1.2,
+          2.4
+        ],
+        "substratePh": [
+          5.5,
+          6.5
+        ]
+      }
+    },
+    {
+      "criterionId": "940006",
+      "setId": "940006",
+      "cropId": "940002",
+      "varietyId": "940002",
+      "stageId": "REP",
+      "stageOrder": 3,
+      "standardDays": 28,
+      "thresholds": {
+        "dayTempC": [
+          20,
+          30
+        ],
+        "nightTempC": [
+          16,
+          22
+        ],
+        "humidityPct": [
+          50,
+          80
+        ],
+        "co2Ppm": [
+          400,
+          1000
+        ],
+        "solarWm2": [
+          200,
+          800
+        ],
+        "lightUmolM2S": [
+          150,
+          550
+        ],
+        "substrateTempC": [
+          16,
+          25
+        ],
+        "substrateMoisturePct": [
+          40,
+          70
+        ],
+        "substrateEcMsCm": [
+          1.2,
+          2.4
+        ],
+        "substratePh": [
+          5.5,
+          6.5
+        ]
+      }
+    },
+    {
+      "criterionId": "940007",
+      "setId": "940007",
+      "cropId": "940002",
+      "varietyId": "940003",
+      "stageId": "VEG",
+      "stageOrder": 1,
+      "standardDays": 21,
+      "thresholds": {
+        "dayTempC": [
+          18,
+          28
+        ],
+        "nightTempC": [
+          14,
+          20
+        ],
+        "humidityPct": [
+          50,
+          80
+        ],
+        "co2Ppm": [
+          400,
+          1000
+        ],
+        "solarWm2": [
+          200,
+          800
+        ],
+        "lightUmolM2S": [
+          150,
+          550
+        ],
+        "substrateTempC": [
+          16,
+          25
+        ],
+        "substrateMoisturePct": [
+          40,
+          70
+        ],
+        "substrateEcMsCm": [
+          1.2,
+          2.4
+        ],
+        "substratePh": [
+          5.5,
+          6.5
+        ]
+      }
+    },
+    {
+      "criterionId": "940008",
+      "setId": "940008",
+      "cropId": "940002",
+      "varietyId": "940003",
+      "stageId": "IND",
+      "stageOrder": 2,
+      "standardDays": 14,
+      "thresholds": {
+        "dayTempC": [
+          19,
+          29
+        ],
+        "nightTempC": [
+          15,
+          21
+        ],
+        "humidityPct": [
+          50,
+          80
+        ],
+        "co2Ppm": [
+          400,
+          1000
+        ],
+        "solarWm2": [
+          200,
+          800
+        ],
+        "lightUmolM2S": [
+          150,
+          550
+        ],
+        "substrateTempC": [
+          16,
+          25
+        ],
+        "substrateMoisturePct": [
+          40,
+          70
+        ],
+        "substrateEcMsCm": [
+          1.2,
+          2.4
+        ],
+        "substratePh": [
+          5.5,
+          6.5
+        ]
+      }
+    },
+    {
+      "criterionId": "940009",
+      "setId": "940009",
+      "cropId": "940002",
+      "varietyId": "940003",
+      "stageId": "REP",
+      "stageOrder": 3,
+      "standardDays": 28,
+      "thresholds": {
+        "dayTempC": [
+          20,
+          30
+        ],
+        "nightTempC": [
+          16,
+          22
+        ],
+        "humidityPct": [
+          50,
+          80
+        ],
+        "co2Ppm": [
+          400,
+          1000
+        ],
+        "solarWm2": [
+          200,
+          800
+        ],
+        "lightUmolM2S": [
+          150,
+          550
+        ],
+        "substrateTempC": [
+          16,
+          25
+        ],
+        "substrateMoisturePct": [
+          40,
+          70
+        ],
+        "substrateEcMsCm": [
+          1.2,
+          2.4
         ],
         "substratePh": [
           5.5,
@@ -840,214 +1286,258 @@ const prototypeData = {
   },
   "environmentChanges": [
     {
-      "environmentChangeId": "ENVCH-001",
-      "cycleId": "CY-MH-A1",
-      "insideTempC": 23.4,
-      "humidityPct": 67,
-      "co2Ppm": 670,
-      "solarWm2": 205,
-      "lightUmolM2S": 228,
-      "substrateTempC": 22.1,
-      "substrateMoisturePct": 54,
-      "substrateEcMsCm": 1.25,
-      "substratePh": 5.9,
-      "measuredAt": "2026-11-12T08:00:00"
-    },
-    {
-      "environmentChangeId": "ENVCH-002",
-      "cycleId": "CY-MH-A1",
-      "insideTempC": 23.6,
-      "humidityPct": 69,
-      "co2Ppm": 690,
-      "solarWm2": 30,
-      "lightUmolM2S": 90,
-      "substrateTempC": 20.8,
-      "substrateMoisturePct": 51,
-      "substrateEcMsCm": 1.2,
-      "substratePh": 6.0,
-      "measuredAt": "2026-11-11T19:30:00"
-    },
-    {
-      "environmentChangeId": "ENVCH-003",
-      "cycleId": "CY-MH-A1",
-      "insideTempC": 22.0,
-      "humidityPct": 81,
-      "co2Ppm": 620,
-      "solarWm2": 195,
-      "lightUmolM2S": 200,
-      "substrateTempC": 21.5,
-      "substrateMoisturePct": 49,
-      "substrateEcMsCm": 1.2,
-      "substratePh": 5.8,
-      "measuredAt": "2026-11-11T09:00:00"
-    },
-    {
-      "environmentChangeId": "ENVCH-004",
-      "cycleId": "CY-MH-A1",
-      "insideTempC": 24.5,
+      "environmentChangeId": "940001",
+      "cycleId": "940001",
+      "measuredAt": "2026-10-03T08:00:00",
+      "insideTempC": 17.99,
       "humidityPct": 65,
-      "co2Ppm": 700,
-      "solarWm2": 240,
-      "lightUmolM2S": 255,
-      "substrateTempC": 22.8,
-      "substrateMoisturePct": 56,
-      "substrateEcMsCm": 1.15,
-      "substratePh": 6.1,
-      "measuredAt": "2026-11-10T14:20:00"
-    },
-    {
-      "environmentChangeId": "ENVCH-005",
-      "cycleId": "CY-MH-A1",
-      "insideTempC": 22.4,
-      "humidityPct": 68,
-      "co2Ppm": 640,
-      "solarWm2": 215,
-      "lightUmolM2S": 215,
-      "substrateTempC": 21.9,
-      "substrateMoisturePct": 50,
-      "substrateEcMsCm": 1.1,
-      "substratePh": 5.8,
-      "measuredAt": "2026-11-08T09:00:00"
-    },
-    {
-      "environmentChangeId": "ENVCH-006",
-      "cycleId": "CY-MH-A1",
-      "insideTempC": 24.0,
-      "humidityPct": 73,
-      "co2Ppm": 610,
-      "solarWm2": 198,
-      "lightUmolM2S": 221,
-      "substrateTempC": 22.5,
-      "substrateMoisturePct": 48,
-      "substrateEcMsCm": 1.05,
-      "substratePh": 6.0,
-      "measuredAt": "2026-11-07T10:10:00"
-    },
-    {
-      "environmentChangeId": "ENVCH-007",
-      "cycleId": "CY-MH-B1",
-      "insideTempC": 23.2,
-      "humidityPct": 72,
-      "co2Ppm": 610,
-      "solarWm2": 220,
-      "lightUmolM2S": 198,
-      "substrateTempC": 21.1,
-      "substrateMoisturePct": 62,
-      "substrateEcMsCm": 1.0,
-      "substratePh": 5.9,
-      "measuredAt": "2026-11-12T08:00:00"
-    },
-    {
-      "environmentChangeId": "ENVCH-008",
-      "cycleId": "CY-MH-B1",
-      "insideTempC": 30.2,
-      "humidityPct": 75,
-      "co2Ppm": 660,
-      "solarWm2": 230,
-      "lightUmolM2S": 230,
-      "substrateTempC": 24.1,
-      "substrateMoisturePct": 71,
-      "substrateEcMsCm": 1.45,
-      "substratePh": 6.0,
-      "measuredAt": "2026-11-11T07:45:00"
-    },
-    {
-      "environmentChangeId": "ENVCH-009",
-      "cycleId": "CY-MH-B1",
-      "insideTempC": 24.9,
-      "humidityPct": 63,
-      "co2Ppm": 700,
-      "solarWm2": 295,
-      "lightUmolM2S": 290,
-      "substrateTempC": 22.0,
-      "substrateMoisturePct": 58,
-      "substrateEcMsCm": 1.2,
-      "substratePh": 5.8,
-      "measuredAt": "2026-11-10T15:00:00"
-    },
-    {
-      "environmentChangeId": "ENVCH-010",
-      "cycleId": "CY-MH-B1",
-      "insideTempC": 20.4,
-      "humidityPct": 65,
-      "co2Ppm": 600,
-      "solarWm2": 30,
-      "lightUmolM2S": 90,
-      "substrateTempC": 20.5,
-      "substrateMoisturePct": 58,
-      "substrateEcMsCm": 1.1,
-      "substratePh": 5.9,
-      "measuredAt": "2026-11-09T20:30:00"
-    },
-    {
-      "environmentChangeId": "ENVCH-011",
-      "cycleId": "CY-MH-C2",
-      "insideTempC": 25.0,
-      "humidityPct": 68,
-      "co2Ppm": 710,
-      "solarWm2": 340,
-      "lightUmolM2S": 310,
-      "substrateTempC": 23.0,
+      "co2Ppm": 650,
+      "solarWm2": 450,
+      "lightUmolM2S": 300,
+      "substrateTempC": 20,
       "substrateMoisturePct": 55,
-      "substrateEcMsCm": 2.1,
-      "substratePh": 5.8,
-      "measuredAt": "2026-11-12T09:10:00"
+      "substrateEcMsCm": 1.8,
+      "substratePh": 6
     },
     {
-      "environmentChangeId": "ENVCH-012",
-      "cycleId": "CY-MH-C2",
-      "insideTempC": 19.3,
-      "humidityPct": 62,
-      "co2Ppm": 680,
-      "solarWm2": 110,
-      "lightUmolM2S": 140,
-      "substrateTempC": 20.0,
-      "substrateMoisturePct": 52,
-      "substrateEcMsCm": 1.55,
-      "substratePh": 5.4,
-      "measuredAt": "2026-11-11T17:10:00"
+      "environmentChangeId": "940002",
+      "cycleId": "940001",
+      "measuredAt": "2026-10-03T08:01:00",
+      "insideTempC": 17.99,
+      "humidityPct": 65,
+      "co2Ppm": 650,
+      "solarWm2": 450,
+      "lightUmolM2S": 300,
+      "substrateTempC": 20,
+      "substrateMoisturePct": 55,
+      "substrateEcMsCm": 1.8,
+      "substratePh": 6
     },
     {
-      "environmentChangeId": "ENVCH-013",
-      "cycleId": "CY-MH-C2",
-      "insideTempC": 25.0,
-      "humidityPct": 66,
-      "co2Ppm": 750,
+      "environmentChangeId": "940003",
+      "cycleId": "940001",
+      "measuredAt": "2026-10-03T08:02:00",
+      "insideTempC": 17.99,
+      "humidityPct": 65,
+      "co2Ppm": 650,
+      "solarWm2": 450,
+      "lightUmolM2S": 300,
+      "substrateTempC": 20,
+      "substrateMoisturePct": 55,
+      "substrateEcMsCm": 1.8,
+      "substratePh": 6
+    },
+    {
+      "environmentChangeId": "940128",
+      "cycleId": "940009",
+      "measuredAt": "2026-11-08T09:00:00",
+      "insideTempC": 25,
+      "humidityPct": 67,
+      "co2Ppm": 659,
       "solarWm2": 320,
-      "lightUmolM2S": 315,
-      "substrateTempC": 21.9,
-      "substrateMoisturePct": 56,
-      "substrateEcMsCm": 1.15,
-      "substratePh": 5.9,
-      "measuredAt": "2026-10-30T10:20:00"
+      "lightUmolM2S": 230,
+      "substrateTempC": 20,
+      "substrateMoisturePct": 55,
+      "substrateEcMsCm": 1.8,
+      "substratePh": 6
     },
     {
-      "environmentChangeId": "ENVCH-014",
-      "cycleId": "CY-MH-D0",
-      "insideTempC": 24.0,
+      "environmentChangeId": "940135",
+      "cycleId": "940009",
+      "measuredAt": "2026-11-10T03:00:00",
+      "insideTempC": 19,
       "humidityPct": 69,
-      "co2Ppm": 700,
-      "solarWm2": 220,
-      "lightUmolM2S": 240,
-      "substrateTempC": 22.0,
-      "substrateMoisturePct": 54,
-      "substrateEcMsCm": 1.15,
-      "substratePh": 6.0,
-      "measuredAt": "2026-11-03T14:00:00"
+      "co2Ppm": 675,
+      "solarWm2": 0,
+      "lightUmolM2S": 0,
+      "substrateTempC": 20,
+      "substrateMoisturePct": 55,
+      "substrateEcMsCm": 1.8,
+      "substratePh": 6
     },
     {
-      "environmentChangeId": "ENVCH-015",
-      "cycleId": "CY-MH-B1",
-      "insideTempC": null,
-      "humidityPct": 74,
-      "co2Ppm": 645,
-      "solarWm2": null,
-      "lightUmolM2S": 135,
-      "substrateTempC": 21.4,
-      "substrateMoisturePct": 60,
-      "substrateEcMsCm": 1.1,
-      "substratePh": 5.9,
-      "measuredAt": "2026-11-12T06:10:00"
+      "environmentChangeId": "940140",
+      "cycleId": "940009",
+      "measuredAt": "2026-11-11T09:00:00",
+      "insideTempC": 25,
+      "humidityPct": 70,
+      "co2Ppm": 683,
+      "solarWm2": 320,
+      "lightUmolM2S": 230,
+      "substrateTempC": 20,
+      "substrateMoisturePct": 55,
+      "substrateEcMsCm": 1.8,
+      "substratePh": 6
+    },
+    {
+      "environmentChangeId": "940141",
+      "cycleId": "940009",
+      "measuredAt": "2026-11-11T18:00:00",
+      "insideTempC": 23,
+      "humidityPct": 70,
+      "co2Ppm": 683,
+      "solarWm2": 0,
+      "lightUmolM2S": 0,
+      "substrateTempC": 20,
+      "substrateMoisturePct": 55,
+      "substrateEcMsCm": 1.8,
+      "substratePh": 6
+    },
+    {
+      "environmentChangeId": "940143",
+      "cycleId": "940009",
+      "measuredAt": "2026-11-12T09:00:00",
+      "insideTempC": 23,
+      "humidityPct": null,
+      "co2Ppm": 691,
+      "solarWm2": 320,
+      "lightUmolM2S": 230,
+      "substrateTempC": 20,
+      "substrateMoisturePct": 55,
+      "substrateEcMsCm": 1.8,
+      "substratePh": 6
+    },
+    {
+      "environmentChangeId": "940149",
+      "cycleId": "940009",
+      "measuredAt": "2026-11-13T18:00:00",
+      "insideTempC": 22,
+      "humidityPct": 68,
+      "co2Ppm": 699,
+      "solarWm2": 0,
+      "lightUmolM2S": 0,
+      "substrateTempC": 20,
+      "substrateMoisturePct": 55,
+      "substrateEcMsCm": 1.8,
+      "substratePh": 6
+    },
+    {
+      "environmentChangeId": "940150",
+      "cycleId": "940005",
+      "measuredAt": "2026-11-13T09:00:00",
+      "insideTempC": 23,
+      "humidityPct": 68,
+      "co2Ppm": 620,
+      "solarWm2": 380,
+      "lightUmolM2S": 250,
+      "substrateTempC": 21,
+      "substrateMoisturePct": 56,
+      "substrateEcMsCm": 1.7,
+      "substratePh": 6.1
+    },
+    {
+      "environmentChangeId": "940151",
+      "cycleId": "940009",
+      "measuredAt": "2026-11-08T09:15:00",
+      "insideTempC": 23,
+      "humidityPct": 68,
+      "co2Ppm": 650,
+      "solarWm2": 320,
+      "lightUmolM2S": 230,
+      "substrateTempC": 20,
+      "substrateMoisturePct": 36,
+      "substrateEcMsCm": 1.8,
+      "substratePh": 6
+    },
+    {
+      "environmentChangeId": "940152",
+      "cycleId": "940009",
+      "measuredAt": "2026-11-08T09:45:00",
+      "insideTempC": 23,
+      "humidityPct": 69,
+      "co2Ppm": 650,
+      "solarWm2": 330,
+      "lightUmolM2S": 240,
+      "substrateTempC": 20,
+      "substrateMoisturePct": 54,
+      "substrateEcMsCm": 1.8,
+      "substratePh": 6
+    },
+    {
+      "environmentChangeId": "940153",
+      "cycleId": "940009",
+      "measuredAt": "2026-11-12T13:30:00",
+      "insideTempC": 31.2,
+      "humidityPct": 68,
+      "co2Ppm": 650,
+      "solarWm2": 600,
+      "lightUmolM2S": 410,
+      "substrateTempC": 21,
+      "substrateMoisturePct": 55,
+      "substrateEcMsCm": 1.8,
+      "substratePh": 6
+    },
+    {
+      "environmentChangeId": "940154",
+      "cycleId": "940009",
+      "measuredAt": "2026-11-12T14:10:00",
+      "insideTempC": 25.4,
+      "humidityPct": 67,
+      "co2Ppm": 650,
+      "solarWm2": 550,
+      "lightUmolM2S": 380,
+      "substrateTempC": 21,
+      "substrateMoisturePct": 55,
+      "substrateEcMsCm": 1.8,
+      "substratePh": 6
+    },
+    {
+      "environmentChangeId": "940156",
+      "cycleId": "940005",
+      "measuredAt": "2026-11-13T09:10:00",
+      "insideTempC": 23,
+      "humidityPct": 85,
+      "co2Ppm": 620,
+      "solarWm2": 380,
+      "lightUmolM2S": 250,
+      "substrateTempC": 21,
+      "substrateMoisturePct": 56,
+      "substrateEcMsCm": 1.7,
+      "substratePh": 6.1
+    }
+  ],
+  "members": [
+    {
+      "id": "940001",
+      "displayName": "김시연",
+      "role": "화훼농민",
+      "certification": "인증",
+      "username": "seed_workflow_rose",
+      "farmName": "모두의 장미농장",
+      "email": "seed-workflow-rose@example.test",
+      "phone": "010-0000-0001",
+      "address": "경기도 고양시",
+      "addressDetail": "테스트 농장 1",
+      "mainCrop": "장미",
+      "description": "작기 및 환경 이력 시연용"
+    },
+    {
+      "id": "940002",
+      "displayName": "이시연",
+      "role": "화훼농민",
+      "certification": "미인증",
+      "username": "seed_workflow_mum",
+      "farmName": "해솔 국화농장",
+      "email": null,
+      "phone": null,
+      "address": null,
+      "addressDetail": null,
+      "mainCrop": null,
+      "description": null
+    },
+    {
+      "id": "940003",
+      "displayName": "박시연",
+      "role": "화훼농민",
+      "certification": "미인증",
+      "username": "seed_workflow_empty",
+      "farmName": "새싹농장",
+      "email": null,
+      "phone": null,
+      "address": null,
+      "addressDetail": null,
+      "mainCrop": null,
+      "description": null
     }
   ]
 };
