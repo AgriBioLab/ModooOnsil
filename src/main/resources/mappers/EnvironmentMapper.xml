@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="kr.swdl.modooonsil.repository.EnvironmentMapper">
+    <select id="readings" resultType="map">
+        SELECT t.environment_history_id AS environmentHistoryId, t.plan_id AS planId, t.measured_at AS measuredAt, t.temperature, t.humidity, t.co2, t.radiation, t.light, t.soil_temperature AS soilTemperature, t.soil_moisture AS soilMoisture, t.soil_ec AS soilEc, t.soil_ph AS soilPh FROM greenhouse_environment_history t JOIN cultivation_plan p ON p.plan_id = t.plan_id
+        WHERE p.member_id = #{memberId} AND t.plan_id = #{planId}
+        <if test="from != null">AND t.measured_at &gt;= #{from}</if>
+        <if test="to != null">AND t.measured_at &lt; #{to}</if>
+        ORDER BY t.measured_at DESC, t.environment_history_id DESC
+    </select>
+
+    <select id="reading" resultType="map">
+        SELECT t.environment_history_id AS environmentHistoryId, t.plan_id AS planId, t.measured_at AS measuredAt, t.temperature, t.humidity, t.co2, t.radiation, t.light, t.soil_temperature AS soilTemperature, t.soil_moisture AS soilMoisture, t.soil_ec AS soilEc, t.soil_ph AS soilPh FROM greenhouse_environment_history t JOIN cultivation_plan p ON p.plan_id = t.plan_id
+        WHERE p.member_id = #{memberId} AND t.plan_id = #{planId} AND t.environment_history_id = #{environmentHistoryId}
+    </select>
+
+    <select id="issues" resultType="map">
+        SELECT t.issue_id AS issueId, t.plan_id AS planId, t.issue_type AS issueType, t.issue_message AS issueMessage, t.occurred_at AS occurredAt, t.issue_status AS issueStatus, t.issue_value AS issueValue, t.action_content AS actionContent, t.action_completed_at AS actionCompletedAt FROM greenhouse_issue t JOIN cultivation_plan p ON p.plan_id = t.plan_id
+        WHERE p.member_id = #{memberId} AND t.plan_id = #{planId}
+        <if test="from != null">AND t.occurred_at &gt;= #{from}</if>
+        <if test="to != null">AND t.occurred_at &lt; #{to}</if>
+        <if test="type != null">AND t.issue_type = #{type}</if>
+        <if test="status != null">AND t.issue_status = #{status}</if>
+        ORDER BY t.occurred_at DESC, t.issue_id DESC
+    </select>
+
+    <select id="issue" resultType="map">
+        SELECT t.issue_id AS issueId, t.plan_id AS planId, t.issue_type AS issueType, t.issue_message AS issueMessage, t.occurred_at AS occurredAt, t.issue_status AS issueStatus, t.issue_value AS issueValue, t.action_content AS actionContent, t.action_completed_at AS actionCompletedAt FROM greenhouse_issue t JOIN cultivation_plan p ON p.plan_id = t.plan_id
+        WHERE p.member_id = #{memberId} AND t.plan_id = #{planId} AND t.issue_id = #{issueId}
+    </select>
+
+    <insert id="insertReading" useGeneratedKeys="true" keyProperty="environmentHistoryId" keyColumn="environment_history_id">
+        INSERT INTO greenhouse_environment_history (plan_id, measured_at, temperature, humidity, co2, radiation, light, soil_temperature, soil_moisture, soil_ec, soil_ph)
+        VALUES (#{planId}, #{measuredAt}, #{temperature}, #{humidity}, #{co2}, #{radiation}, #{light}, #{soilTemperature}, #{soilMoisture}, #{soilEc}, #{soilPh})
+    </insert>
+
+    <insert id="insertIssue" useGeneratedKeys="true" keyProperty="issueId" keyColumn="issue_id">
+        INSERT INTO greenhouse_issue (plan_id, issue_type, issue_message, occurred_at, issue_status, issue_value)
+        VALUES (#{planId}, #{issueType}, #{issueMessage}, #{occurredAt}, '발생', #{issueValue})
+    </insert>
+
+    <select id="existingDeviceReading" resultType="map">
+        SELECT environment_history_id AS environmentHistoryId, plan_id AS planId, measured_at AS measuredAt, temperature, humidity, co2, radiation, light, soil_temperature AS soilTemperature, soil_moisture AS soilMoisture, soil_ec AS soilEc, soil_ph AS soilPh FROM greenhouse_environment_history
+        WHERE plan_id = #{planId} AND measured_at = #{measuredAt} ORDER BY environment_history_id LIMIT 1
+    </select>
+
+    <update id="startIssue">
+        UPDATE greenhouse_issue SET issue_status = '조치중'
+        WHERE issue_id = #{issueId} AND plan_id = #{planId} AND issue_status = '발생'
+    </update>
+
+    <update id="finishIssue">
+        UPDATE greenhouse_issue SET issue_status = '조치 완료', action_content = #{actionContent}, action_completed_at = CURRENT_TIMESTAMP
+        WHERE issue_id = #{issueId} AND plan_id = #{planId} AND issue_status = '조치중'
+    </update>
+
+    <update id="updateAction">
+        UPDATE greenhouse_issue SET action_content = #{actionContent} WHERE issue_id = #{issueId} AND plan_id = #{planId}
+    </update>
+</mapper>

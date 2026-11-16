@@ -1,0 +1,182 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="kr.swdl.modooonsil.repository.FarmMapper">
+    <select id="profile" resultType="map">
+        SELECT member_id AS memberId, farm_name AS farmName, representative_name AS representativeName, username, phone_number AS phoneNumber, email, farm_address AS farmAddress, farm_address_detail AS farmAddressDetail, main_crop AS mainCrop, farm_description AS farmDescription, certification_status AS certificationStatus, certified_at AS certifiedAt, farm_business_number AS farmBusinessNumber, created_at AS createdAt, updated_at AS updatedAt FROM farm_member WHERE member_id = #{memberId}
+    </select>
+
+    <select id="credentials" resultType="map">
+        SELECT member_id AS memberId, password FROM farm_member WHERE username = #{username} ORDER BY member_id LIMIT 1
+    </select>
+
+    <select id="passwordByMember" resultType="map">
+        SELECT password FROM farm_member WHERE member_id = #{memberId}
+    </select>
+
+    <select id="countUsername" resultType="int">
+        SELECT COUNT(*) FROM farm_member WHERE username = #{username}
+    </select>
+
+    <select id="countEmail" resultType="int">
+        SELECT COUNT(*) FROM farm_member WHERE email = #{email} AND member_id &lt;&gt; #{memberId}
+    </select>
+
+    <insert id="insertMember" useGeneratedKeys="true" keyProperty="memberId" keyColumn="member_id">
+        INSERT INTO farm_member (farm_name, representative_name, username, password, email, certification_status, created_at)
+        VALUES (#{farmName}, #{representativeName}, #{username}, #{password}, #{email}, '미인증', CURRENT_TIMESTAMP)
+    </insert>
+
+    <update id="updateMember">
+        UPDATE farm_member
+        SET farm_name = #{farmName},
+            representative_name = #{representativeName},
+            phone_number = #{phoneNumber},
+            email = #{email},
+            farm_address = #{farmAddress},
+            farm_address_detail = #{farmAddressDetail},
+            main_crop = #{mainCrop},
+            farm_description = #{farmDescription},
+            updated_at = CURRENT_TIMESTAMP
+        WHERE member_id = #{memberId}
+    </update>
+
+    <update id="updatePassword">
+        UPDATE farm_member SET password = #{password}, updated_at = CURRENT_TIMESTAMP WHERE member_id = #{memberId} AND password = #{previous}
+    </update>
+
+    <select id="greenhouses" resultType="map">
+        SELECT greenhouse_id AS greenhouseId, member_id AS memberId, greenhouse_name AS greenhouseName, greenhouse_type AS greenhouseType, cover_type AS coverType, building_count AS buildingCount, side_height AS sideHeight, width, length, registered_area AS registeredArea, medium_type AS mediumType, greenhouse_image_url AS greenhouseImageUrl, created_at AS createdAt, updated_at AS updatedAt FROM greenhouse WHERE member_id = #{memberId}
+        <if test="name != null">AND LOCATE(#{name}, greenhouse_name) &gt; 0</if>
+        <if test="type != null">AND greenhouse_type = #{type}</if>
+        <if test="cover != null">AND cover_type = #{cover}</if>
+        <if test="medium != null">AND medium_type = #{medium}</if>
+        ORDER BY created_at DESC, greenhouse_id DESC
+    </select>
+
+    <select id="greenhouse" resultType="map">
+        SELECT greenhouse_id AS greenhouseId, member_id AS memberId, greenhouse_name AS greenhouseName, greenhouse_type AS greenhouseType, cover_type AS coverType, building_count AS buildingCount, side_height AS sideHeight, width, length, registered_area AS registeredArea, medium_type AS mediumType, greenhouse_image_url AS greenhouseImageUrl, created_at AS createdAt, updated_at AS updatedAt FROM greenhouse WHERE greenhouse_id = #{greenhouseId} AND member_id = #{memberId}
+    </select>
+
+    <select id="lockGreenhouse" resultType="long">
+        SELECT greenhouse_id FROM greenhouse WHERE greenhouse_id = #{greenhouseId} AND member_id = #{memberId} FOR UPDATE
+    </select>
+
+    <insert id="insertGreenhouse" useGeneratedKeys="true" keyProperty="greenhouseId" keyColumn="greenhouse_id">
+        INSERT INTO greenhouse (member_id, greenhouse_name, greenhouse_type, cover_type, building_count, side_height, width, length, registered_area, medium_type, greenhouse_image_url, created_at)
+        VALUES (#{memberId}, #{greenhouseName}, #{greenhouseType}, #{coverType}, #{buildingCount}, #{sideHeight}, #{width}, #{length}, #{registeredArea}, #{mediumType}, #{greenhouseImageUrl}, CURRENT_TIMESTAMP)
+    </insert>
+
+    <update id="updateGreenhouse">
+        UPDATE greenhouse
+        SET greenhouse_name = #{greenhouseName},
+            greenhouse_type = #{greenhouseType},
+            cover_type = #{coverType},
+            building_count = #{buildingCount},
+            side_height = #{sideHeight},
+            width = #{width},
+            length = #{length},
+            registered_area = #{registeredArea},
+            medium_type = #{mediumType},
+            greenhouse_image_url = #{greenhouseImageUrl},
+            updated_at = CURRENT_TIMESTAMP
+        WHERE greenhouse_id = #{greenhouseId} AND member_id = #{memberId}
+    </update>
+
+    <delete id="deleteGreenhouse">
+        DELETE FROM greenhouse WHERE greenhouse_id = #{greenhouseId} AND member_id = #{memberId}
+        AND NOT EXISTS (SELECT 1 FROM cultivation_plan p WHERE p.greenhouse_id = greenhouse.greenhouse_id)
+    </delete>
+
+    <select id="crops" resultType="map">
+        SELECT crop_id AS cropId, crop_name AS cropName, variety_name AS varietyName FROM crop
+        <where>
+            <if test="name != null">AND LOCATE(#{name}, crop_name) &gt; 0</if>
+            <if test="variety != null">AND LOCATE(#{variety}, variety_name) &gt; 0</if>
+        </where>
+        ORDER BY crop_name, variety_name, crop_id
+    </select>
+
+    <select id="crop" resultType="map">
+        SELECT crop_id AS cropId, crop_name AS cropName, variety_name AS varietyName FROM crop WHERE crop_id = #{cropId}
+    </select>
+
+    <select id="lockCrop" resultType="long">
+        SELECT crop_id FROM crop WHERE crop_id = #{cropId} FOR UPDATE
+    </select>
+
+    <insert id="insertCrop" useGeneratedKeys="true" keyProperty="cropId" keyColumn="crop_id">
+        INSERT INTO crop (crop_name, variety_name)
+        VALUES (#{cropName}, #{varietyName})
+    </insert>
+
+    <update id="updateCrop">
+        UPDATE crop
+        SET crop_name = #{cropName},
+            variety_name = #{varietyName}
+        WHERE crop_id = #{cropId}
+    </update>
+
+    <delete id="deleteCrop">
+        DELETE FROM crop WHERE crop_id = #{cropId}
+        AND NOT EXISTS (SELECT 1 FROM crop_stage_standard s WHERE s.crop_id = crop.crop_id)
+    </delete>
+
+    <select id="standards" resultType="map">
+        SELECT standard_id AS standardId, crop_id AS cropId, created_at AS createdAt, growth_stage AS growthStage, stage_duration_days AS stageDurationDays, stage_order AS stageOrder, day_temp_min AS dayTempMin, day_temp_max AS dayTempMax, night_temp_min AS nightTempMin, night_temp_max AS nightTempMax, humidity_min AS humidityMin, humidity_max AS humidityMax, co2_min AS co2Min, co2_max AS co2Max, radiation_min AS radiationMin, radiation_max AS radiationMax, light_min AS lightMin, light_max AS lightMax, soil_temp_min AS soilTempMin, soil_temp_max AS soilTempMax, soil_moisture_min AS soilMoistureMin, soil_moisture_max AS soilMoistureMax, soil_ec_min AS soilEcMin, soil_ec_max AS soilEcMax, soil_ph_min AS soilPhMin, soil_ph_max AS soilPhMax FROM crop_stage_standard WHERE crop_id = #{cropId} ORDER BY stage_order, standard_id
+    </select>
+
+    <select id="standard" resultType="map">
+        SELECT standard_id AS standardId, crop_id AS cropId, created_at AS createdAt, growth_stage AS growthStage, stage_duration_days AS stageDurationDays, stage_order AS stageOrder, day_temp_min AS dayTempMin, day_temp_max AS dayTempMax, night_temp_min AS nightTempMin, night_temp_max AS nightTempMax, humidity_min AS humidityMin, humidity_max AS humidityMax, co2_min AS co2Min, co2_max AS co2Max, radiation_min AS radiationMin, radiation_max AS radiationMax, light_min AS lightMin, light_max AS lightMax, soil_temp_min AS soilTempMin, soil_temp_max AS soilTempMax, soil_moisture_min AS soilMoistureMin, soil_moisture_max AS soilMoistureMax, soil_ec_min AS soilEcMin, soil_ec_max AS soilEcMax, soil_ph_min AS soilPhMin, soil_ph_max AS soilPhMax FROM crop_stage_standard WHERE crop_id = #{cropId} AND standard_id = #{standardId}
+    </select>
+
+    <select id="lockStandard" resultType="map">
+        SELECT standard_id AS standardId, crop_id AS cropId, created_at AS createdAt, growth_stage AS growthStage, stage_duration_days AS stageDurationDays, stage_order AS stageOrder, day_temp_min AS dayTempMin, day_temp_max AS dayTempMax, night_temp_min AS nightTempMin, night_temp_max AS nightTempMax, humidity_min AS humidityMin, humidity_max AS humidityMax, co2_min AS co2Min, co2_max AS co2Max, radiation_min AS radiationMin, radiation_max AS radiationMax, light_min AS lightMin, light_max AS lightMax, soil_temp_min AS soilTempMin, soil_temp_max AS soilTempMax, soil_moisture_min AS soilMoistureMin, soil_moisture_max AS soilMoistureMax, soil_ec_min AS soilEcMin, soil_ec_max AS soilEcMax, soil_ph_min AS soilPhMin, soil_ph_max AS soilPhMax FROM crop_stage_standard WHERE standard_id = #{standardId} FOR UPDATE
+    </select>
+
+    <select id="countStageOrder" resultType="int">
+        SELECT COUNT(*) FROM crop_stage_standard WHERE crop_id = #{cropId} AND stage_order = #{stageOrder} AND standard_id &lt;&gt; #{standardId}
+    </select>
+
+    <select id="countStageName" resultType="int">
+        SELECT COUNT(*) FROM crop_stage_standard WHERE crop_id = #{cropId} AND growth_stage = #{growthStage} AND standard_id &lt;&gt; #{standardId}
+    </select>
+
+    <insert id="insertStandard" useGeneratedKeys="true" keyProperty="standardId" keyColumn="standard_id">
+        INSERT INTO crop_stage_standard (crop_id, created_at, growth_stage, stage_duration_days, stage_order, day_temp_min, day_temp_max, night_temp_min, night_temp_max, humidity_min, humidity_max, co2_min, co2_max, radiation_min, radiation_max, light_min, light_max, soil_temp_min, soil_temp_max, soil_moisture_min, soil_moisture_max, soil_ec_min, soil_ec_max, soil_ph_min, soil_ph_max)
+        VALUES (#{cropId}, CURRENT_TIMESTAMP, #{growthStage}, #{stageDurationDays}, #{stageOrder}, #{dayTempMin}, #{dayTempMax}, #{nightTempMin}, #{nightTempMax}, #{humidityMin}, #{humidityMax}, #{co2Min}, #{co2Max}, #{radiationMin}, #{radiationMax}, #{lightMin}, #{lightMax}, #{soilTempMin}, #{soilTempMax}, #{soilMoistureMin}, #{soilMoistureMax}, #{soilEcMin}, #{soilEcMax}, #{soilPhMin}, #{soilPhMax})
+    </insert>
+
+    <update id="updateStandard">
+        UPDATE crop_stage_standard
+        SET growth_stage = #{growthStage},
+            stage_duration_days = #{stageDurationDays},
+            stage_order = #{stageOrder},
+            day_temp_min = #{dayTempMin},
+            day_temp_max = #{dayTempMax},
+            night_temp_min = #{nightTempMin},
+            night_temp_max = #{nightTempMax},
+            humidity_min = #{humidityMin},
+            humidity_max = #{humidityMax},
+            co2_min = #{co2Min},
+            co2_max = #{co2Max},
+            radiation_min = #{radiationMin},
+            radiation_max = #{radiationMax},
+            light_min = #{lightMin},
+            light_max = #{lightMax},
+            soil_temp_min = #{soilTempMin},
+            soil_temp_max = #{soilTempMax},
+            soil_moisture_min = #{soilMoistureMin},
+            soil_moisture_max = #{soilMoistureMax},
+            soil_ec_min = #{soilEcMin},
+            soil_ec_max = #{soilEcMax},
+            soil_ph_min = #{soilPhMin},
+            soil_ph_max = #{soilPhMax}
+        WHERE crop_id = #{cropId} AND standard_id = #{standardId}
+        AND NOT EXISTS (SELECT 1 FROM cultivation_plan p WHERE p.standard_id = crop_stage_standard.standard_id AND p.plan_status IN ('진행', '종료'))
+    </update>
+
+    <delete id="deleteStandard">
+        DELETE FROM crop_stage_standard WHERE crop_id = #{cropId} AND standard_id = #{standardId}
+        AND NOT EXISTS (SELECT 1 FROM cultivation_plan p WHERE p.standard_id = crop_stage_standard.standard_id)
+    </delete>
+</mapper>

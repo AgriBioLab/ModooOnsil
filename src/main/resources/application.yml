@@ -1,1 +1,14 @@
-spring.application.name=ModooOnsil
+spring:
+  application:
+    name: ModooOnsil
+  datasource:
+    url: ${MODOO_DB_URL:jdbc:mariadb://127.0.0.1:3306/modooonsil}
+    username: ${MODOO_DB_USER:root}
+    password: ${MODOO_DB_PASSWORD:}
+mybatis:
+  mapper-locations: classpath:/mappers/*.xml
+  configuration:
+    default-statement-timeout: 15
+    call-setters-on-nulls: true
+modoo:
+  device-token: ${MODOO_DEVICE_TOKEN:}

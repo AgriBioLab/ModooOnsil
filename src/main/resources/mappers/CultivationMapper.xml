@@ -1,0 +1,160 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="kr.swdl.modooonsil.repository.CultivationMapper">
+    <select id="plans" resultType="map">
+        SELECT p.plan_id AS planId, p.greenhouse_id AS greenhouseId, p.member_id AS memberId, p.standard_id AS standardId, p.plan_name AS planName, p.plan_status AS planStatus, p.planned_start_date AS plannedStartDate, p.planned_end_date AS plannedEndDate, p.created_at AS createdAt, p.actual_start_date AS actualStartDate, p.actual_end_date AS actualEndDate, p.end_reason AS endReason, g.greenhouse_name AS greenhouseName, c.crop_id AS cropId,
+               c.crop_name AS cropName, c.variety_name AS varietyName, s.growth_stage AS growthStage
+        FROM cultivation_plan p
+        JOIN greenhouse g ON g.greenhouse_id = p.greenhouse_id
+        JOIN crop_stage_standard s ON s.standard_id = p.standard_id
+        JOIN crop c ON c.crop_id = s.crop_id
+        WHERE p.member_id = #{memberId}
+        <if test="greenhouseId != null">AND p.greenhouse_id = #{greenhouseId}</if>
+        <if test="cropId != null">AND c.crop_id = #{cropId}</if>
+        <if test="status != null">AND p.plan_status = #{status}</if>
+        ORDER BY p.created_at DESC, p.plan_id DESC
+    </select>
+
+    <select id="plan" resultType="map">
+        SELECT p.plan_id AS planId, p.greenhouse_id AS greenhouseId, p.member_id AS memberId, p.standard_id AS standardId, p.plan_name AS planName, p.plan_status AS planStatus, p.planned_start_date AS plannedStartDate, p.planned_end_date AS plannedEndDate, p.created_at AS createdAt, p.actual_start_date AS actualStartDate, p.actual_end_date AS actualEndDate, p.end_reason AS endReason, g.greenhouse_name AS greenhouseName, c.crop_id AS cropId,
+               c.crop_name AS cropName, c.variety_name AS varietyName, s.growth_stage AS growthStage
+        FROM cultivation_plan p
+        JOIN greenhouse g ON g.greenhouse_id = p.greenhouse_id
+        JOIN crop_stage_standard s ON s.standard_id = p.standard_id
+        JOIN crop c ON c.crop_id = s.crop_id
+        WHERE p.member_id = #{memberId} AND p.plan_id = #{planId}
+    </select>
+
+    <select id="lockPlan" resultType="map">
+        SELECT plan_id AS planId, greenhouse_id AS greenhouseId, member_id AS memberId, standard_id AS standardId, plan_name AS planName, plan_status AS planStatus, planned_start_date AS plannedStartDate, planned_end_date AS plannedEndDate, created_at AS createdAt, actual_start_date AS actualStartDate, actual_end_date AS actualEndDate, end_reason AS endReason FROM cultivation_plan WHERE plan_id = #{planId} AND member_id = #{memberId} FOR UPDATE
+    </select>
+
+    <select id="lockDevicePlan" resultType="map">
+        SELECT plan_id AS planId, greenhouse_id AS greenhouseId, member_id AS memberId, standard_id AS standardId, plan_name AS planName, plan_status AS planStatus, planned_start_date AS plannedStartDate, planned_end_date AS plannedEndDate, created_at AS createdAt, actual_start_date AS actualStartDate, actual_end_date AS actualEndDate, end_reason AS endReason FROM cultivation_plan WHERE plan_id = #{planId} FOR UPDATE
+    </select>
+
+    <select id="activeInGreenhouse" resultType="int">
+        SELECT COUNT(*) FROM cultivation_plan WHERE greenhouse_id = #{greenhouseId} AND plan_status = '진행'
+    </select>
+
+    <insert id="insertPlan" useGeneratedKeys="true" keyProperty="planId" keyColumn="plan_id">
+        INSERT INTO cultivation_plan (greenhouse_id, member_id, standard_id, plan_name, plan_status, planned_start_date, planned_end_date, created_at)
+        VALUES (#{greenhouseId}, #{memberId}, #{standardId}, #{planName}, '미진행', #{plannedStartDate}, #{plannedEndDate}, CURRENT_TIMESTAMP)
+    </insert>
+
+    <update id="updatePlan">
+        UPDATE cultivation_plan
+        SET greenhouse_id = #{greenhouseId},
+            standard_id = #{standardId},
+            plan_name = #{planName},
+            planned_start_date = #{plannedStartDate},
+            planned_end_date = #{plannedEndDate}
+        WHERE plan_id = #{planId} AND member_id = #{memberId} AND plan_status = '미진행'
+    </update>
+
+    <update id="startPlan">
+        UPDATE cultivation_plan SET plan_status = '진행', actual_start_date = #{actualStartDate}
+        WHERE plan_id = #{planId} AND member_id = #{memberId} AND plan_status = '미진행'
+    </update>
+
+    <update id="endPlan">
+        UPDATE cultivation_plan SET plan_status = '종료', actual_end_date = #{actualEndDate}, end_reason = #{endReason}
+        WHERE plan_id = #{planId} AND member_id = #{memberId} AND plan_status = '진행'
+    </update>
+
+    <select id="operationsAfterDate" resultType="int">
+        SELECT
+        (SELECT COUNT(*) FROM cultivation_diary WHERE plan_id = #{planId} AND worked_at &gt;= #{to}) +
+        (SELECT COUNT(*) FROM greenhouse_environment_history WHERE plan_id = #{planId} AND measured_at &gt;= #{to}) +
+        (SELECT COUNT(*) FROM greenhouse_issue WHERE plan_id = #{planId} AND occurred_at &gt;= #{to})
+    </select>
+
+    <delete id="deletePlan">
+        DELETE FROM cultivation_plan WHERE plan_id = #{planId} AND member_id = #{memberId} AND plan_status = '미진행'
+        AND NOT EXISTS (SELECT 1 FROM cultivation_diary d WHERE d.plan_id = cultivation_plan.plan_id)
+        AND NOT EXISTS (SELECT 1 FROM greenhouse_environment_history h WHERE h.plan_id = cultivation_plan.plan_id)
+        AND NOT EXISTS (SELECT 1 FROM greenhouse_issue i WHERE i.plan_id = cultivation_plan.plan_id)
+    </delete>
+
+    <select id="diaries" resultType="map">
+        SELECT d.diary_id AS diaryId, d.plan_id AS planId, d.worked_at AS workedAt, d.created_at AS createdAt, d.growth_stage AS growthStage, d.updated_at AS updatedAt, d.stage_change_reason AS stageChangeReason, p.plan_name AS planName, g.greenhouse_name AS greenhouseName,
+               c.crop_name AS cropName, c.variety_name AS varietyName,
+               (SELECT COUNT(*) FROM cultivation_diary_task t WHERE t.diary_id = d.diary_id) AS taskCount
+        FROM cultivation_diary d
+        JOIN cultivation_plan p ON p.plan_id = d.plan_id
+        JOIN greenhouse g ON g.greenhouse_id = p.greenhouse_id
+        JOIN crop_stage_standard s ON s.standard_id = p.standard_id
+        JOIN crop c ON c.crop_id = s.crop_id
+        WHERE p.member_id = #{memberId}
+        <if test="planId != null">AND d.plan_id = #{planId}</if>
+        <if test="cropName != null">AND c.crop_name = #{cropName}</if>
+        <if test="varietyName != null">AND c.variety_name = #{varietyName}</if>
+        <if test="greenhouseId != null">AND p.greenhouse_id = #{greenhouseId}</if>
+        <if test="from != null">AND d.worked_at &gt;= #{from}</if>
+        <if test="to != null">AND d.worked_at &lt; #{to}</if>
+        ORDER BY d.worked_at DESC, d.diary_id DESC
+    </select>
+
+    <select id="diary" resultType="map">
+        SELECT d.diary_id AS diaryId, d.plan_id AS planId, d.worked_at AS workedAt, d.created_at AS createdAt, d.growth_stage AS growthStage, d.updated_at AS updatedAt, d.stage_change_reason AS stageChangeReason, p.plan_name AS planName, g.greenhouse_name AS greenhouseName,
+               c.crop_name AS cropName, c.variety_name AS varietyName,
+               (SELECT COUNT(*) FROM cultivation_diary_task t WHERE t.diary_id = d.diary_id) AS taskCount
+        FROM cultivation_diary d
+        JOIN cultivation_plan p ON p.plan_id = d.plan_id
+        JOIN greenhouse g ON g.greenhouse_id = p.greenhouse_id
+        JOIN crop_stage_standard s ON s.standard_id = p.standard_id
+        JOIN crop c ON c.crop_id = s.crop_id
+        WHERE p.member_id = #{memberId} AND d.diary_id = #{diaryId}
+    </select>
+
+    <select id="lockDiary" resultType="map">
+        SELECT d.diary_id AS diaryId, d.plan_id AS planId, d.worked_at AS workedAt, d.created_at AS createdAt, d.growth_stage AS growthStage, d.updated_at AS updatedAt, d.stage_change_reason AS stageChangeReason FROM cultivation_diary d
+        JOIN cultivation_plan p ON p.plan_id = d.plan_id
+        WHERE d.diary_id = #{diaryId} AND p.member_id = #{memberId} FOR UPDATE
+    </select>
+
+    <select id="countDiaryDate" resultType="int">
+        SELECT COUNT(*) FROM cultivation_diary WHERE plan_id = #{planId} AND worked_at &gt;= #{from} AND worked_at &lt; #{to}
+    </select>
+
+    <select id="neighborDiaries" resultType="map">
+        SELECT diary_id AS diaryId, plan_id AS planId, worked_at AS workedAt, created_at AS createdAt, growth_stage AS growthStage, updated_at AS updatedAt, stage_change_reason AS stageChangeReason FROM cultivation_diary WHERE plan_id = #{planId} ORDER BY worked_at, diary_id
+    </select>
+
+    <insert id="insertDiary" useGeneratedKeys="true" keyProperty="diaryId" keyColumn="diary_id">
+        INSERT INTO cultivation_diary (plan_id, worked_at, created_at, growth_stage, stage_change_reason)
+        VALUES (#{planId}, #{workedAt}, CURRENT_TIMESTAMP, #{growthStage}, #{stageChangeReason})
+    </insert>
+
+    <update id="touchDiary">
+        UPDATE cultivation_diary SET updated_at = CURRENT_TIMESTAMP WHERE diary_id = #{diaryId} AND plan_id = #{planId}
+    </update>
+
+    <delete id="deleteDiary">
+        DELETE FROM cultivation_diary WHERE diary_id = #{diaryId} AND plan_id = #{planId}
+        AND NOT EXISTS (SELECT 1 FROM cultivation_diary_task t WHERE t.diary_id = cultivation_diary.diary_id)
+    </delete>
+
+    <select id="diaryTasks" resultType="map">
+        SELECT task_id AS taskId, diary_id AS diaryId, task_type AS taskType, task_name AS taskName, task_time AS taskTime, task_status AS taskStatus, task_content AS taskContent FROM cultivation_diary_task WHERE diary_id = #{diaryId} ORDER BY task_time, task_id
+    </select>
+
+    <insert id="insertTask" useGeneratedKeys="true" keyProperty="taskId" keyColumn="task_id">
+        INSERT INTO cultivation_diary_task (diary_id, task_type, task_name, task_time, task_status, task_content)
+        VALUES (#{diaryId}, #{taskType}, #{taskName}, #{taskTime}, #{taskStatus}, #{taskContent})
+    </insert>
+
+    <update id="updateTask">
+        UPDATE cultivation_diary_task
+        SET task_type = #{taskType},
+            task_name = #{taskName},
+            task_time = #{taskTime},
+            task_status = #{taskStatus},
+            task_content = #{taskContent}
+        WHERE diary_id = #{diaryId} AND task_id = #{taskId}
+    </update>
+
+    <delete id="deleteTask">
+        DELETE FROM cultivation_diary_task WHERE diary_id = #{diaryId} AND task_id = #{taskId}
+    </delete>
+</mapper>
