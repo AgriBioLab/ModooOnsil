@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>모두의온실 | 작기계획·작기 중 온실 환경변화·재배일지</title>
+  <link rel="stylesheet" href="resources/css/prototype.css">
+  <script src="resources/js/prototypeData.js" defer></script>
+  <script src="resources/js/prototype.js" defer></script>
+</head>
+<body>
+<div class="app">
+  <aside class="sidebar" aria-label="서비스 탐색">
+    <div class="brand" id="brand">모두의온실<small>재배일지</small></div>
+    <div class="navhead">메뉴</div><nav class="nav" id="navigation" aria-label="서비스 메뉴"></nav>
+    <div class="sidebar-foot" id="sidebarFoot">재배일지</div>
+  </aside>
+  <div class="workarea">
+    <header class="topbar"><span class="crumb" id="crumb">재배관리 / 재배일지</span>
+      <div class="header-account" aria-label="로그인 사용자 정보">
+        <span class="header-identity"><strong id="userName">김철수</strong><span id="userCertification"> (농업경영체 인증회원)</span></span>
+        <button class="btn xs header-btn" type="button" id="myInfoButton">내정보</button>
+        <button class="btn xs header-btn" type="button" id="logoutButton">로그아웃</button>
+      </div></header>
+    <main id="main" tabindex="-1"></main>
+  </div>
+</div>
+<div class="notice-toast hidden" id="toast" role="status" aria-live="polite"></div>
+<dialog id="profileDialog" class="account-dialog" aria-labelledby="profileTitle">
+  <h2 id="profileTitle">내정보</h2>
+  <dl class="profile-facts"><dt>이름</dt><dd id="profileName"></dd><dt>회원유형</dt><dd id="profileRole"></dd><dt>인증상태</dt><dd id="profileCertification"></dd></dl>
+  <div class="dialog-actions"><button type="button" class="btn" id="profileClose">닫기</button></div>
+</dialog>
+<dialog id="logoutDialog" class="account-dialog" aria-labelledby="logoutTitle">
+  <h2 id="logoutTitle">로그아웃</h2><p>현재 시연 화면에서 로그아웃하시겠습니까?</p>
+  <div class="dialog-actions"><button type="button" class="btn" id="logoutCancel">취소</button><button type="button" class="btn main" id="logoutConfirm">로그아웃</button></div>
+</dialog>
+<div id="signedOutOverlay" class="signed-out" hidden role="status"><div class="signed-out-card"><h2>로그아웃되었습니다.</h2><p>화면 시연을 계속하려면 다시 로그인하세요.</p><button id="demoLogin" type="button" class="btn main">시연 로그인</button></div></div>
+
+<dialog id="cycleStartDialog" class="account-dialog" aria-labelledby="cycleStartTitle"><h2 id="cycleStartTitle">작기 실제 시작일시 등록</h2><div class="field"><label for="cycleStartTime">실제 시작일시 *</label><input class="ctrl" type="datetime-local" id="cycleStartTime"></div><div class="dialog-actions"><button class="btn" type="button" data-close-dialog="cycleStartDialog">취소</button><button class="btn main" type="button" id="cycleStartConfirm">작기 시작</button></div></dialog>
+<dialog id="cycleEndDialog" class="account-dialog" aria-labelledby="cycleEndTitle"><h2 id="cycleEndTitle">작기 종료</h2><div class="field"><label for="cycleEndTime">실제 종료일시 *</label><input class="ctrl" type="datetime-local" id="cycleEndTime"></div><div class="field"><label for="cycleEndReason">종료 사유</label><textarea class="ctrl textarea" id="cycleEndReason" placeholder="종료 사유를 입력하세요"></textarea></div><div class="dialog-actions"><button class="btn" type="button" data-close-dialog="cycleEndDialog">취소</button><button class="btn main" type="button" id="cycleEndConfirm">종료 확정</button></div></dialog>
+
+</body>
+</html>
