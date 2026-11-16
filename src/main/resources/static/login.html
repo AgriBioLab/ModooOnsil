@@ -14,9 +14,9 @@
     <p class="login-brand">모두의온실</p>
     <h1 id="loginTitle">로그인</h1>
     <form id="loginForm" class="login-form">
-      <label class="field" for="loginUsername">계정<select id="loginUsername" class="ctrl" required></select></label>
-      <label class="field" for="loginPassword">비밀번호<input id="loginPassword" class="ctrl" type="password" autocomplete="off" required aria-describedby="loginHelp"></label>
-      <p id="loginHelp">시연용 비밀번호는 <strong>demo</strong>입니다.</p>
+      <label class="field" for="loginUsername">아이디<input id="loginUsername" class="ctrl" type="text" minlength="6" maxlength="20" autocomplete="username" required placeholder="아이디를 입력하세요"></label>
+      <label class="field" for="loginPassword">비밀번호<input id="loginPassword" class="ctrl" type="password" minlength="10" maxlength="64" autocomplete="off" required aria-describedby="loginHelp"></label>
+      <p id="loginHelp">기본 아이디: <strong>seedmum02</strong> / 비밀번호: <strong>modoodemo01</strong></p>
       <p id="loginError" class="errorbox" role="alert" hidden></p>
       <button type="submit" class="btn main">로그인</button>
       <div class="auth-links">

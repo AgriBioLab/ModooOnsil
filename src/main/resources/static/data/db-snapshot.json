@@ -18,16 +18,16 @@
     {
       "member_id": 940001,
       "farm_name": "모두의 장미농장",
-      "representative_name": "김시연",
-      "username": "seed_workflow_rose",
+      "representative_name": "김민준",
+      "username": "seedrose01",
       "password": "!seed-login-disabled",
       "created_at": "2026-07-01 09:00:00",
-      "phone_number": "010-0000-0001",
+      "phone_number": "010-4829-3715",
       "email": "seed-workflow-rose@example.test",
       "farm_address": "경기도 고양시",
       "farm_address_detail": "테스트 농장 1",
       "main_crop": "장미",
-      "farm_description": "작기 및 환경 이력 시연용",
+      "farm_description": "장미 재배 및 온실 환경 관리 농장",
       "certified_at": "2026-07-02 09:00:00",
       "updated_at": "2026-11-13 10:00:00",
       "farm_business_number": "FLOW-940001",
@@ -35,16 +35,16 @@
     },
     {
       "member_id": 940002,
-      "farm_name": "해솔 국화농장",
-      "representative_name": "이시연",
-      "username": "seed_workflow_mum",
+      "farm_name": "해솔 호접란농장",
+      "representative_name": "이서연",
+      "username": "seedmum02",
       "password": "!seed-login-disabled",
       "created_at": "2026-07-01 09:00:00",
       "phone_number": null,
       "email": null,
       "farm_address": null,
       "farm_address_detail": null,
-      "main_crop": null,
+      "main_crop": "호접란",
       "farm_description": null,
       "certified_at": null,
       "updated_at": null,
@@ -54,8 +54,8 @@
     {
       "member_id": 940003,
       "farm_name": "새싹농장",
-      "representative_name": "박시연",
-      "username": "seed_workflow_empty",
+      "representative_name": "박도윤",
+      "username": "seedempty03",
       "password": "!seed-login-disabled",
       "created_at": "2026-11-13 10:00:00",
       "phone_number": null,
@@ -74,7 +74,7 @@
     {
       "greenhouse_id": 940001,
       "member_id": 940001,
-      "greenhouse_name": "시연 1온실 (단동·유리·수태)",
+      "greenhouse_name": "A온실",
       "created_at": "2026-07-01 09:00:00",
       "greenhouse_type": "단동",
       "cover_type": "유리",
@@ -90,7 +90,7 @@
     {
       "greenhouse_id": 940002,
       "member_id": 940001,
-      "greenhouse_name": "시연 2온실 (단동·유리·코코피트)",
+      "greenhouse_name": "B온실",
       "created_at": "2026-07-01 09:00:00",
       "greenhouse_type": "단동",
       "cover_type": "유리",
@@ -106,7 +106,7 @@
     {
       "greenhouse_id": 940004,
       "member_id": 940002,
-      "greenhouse_name": "시연 4온실 (단동·비닐·코코피트)",
+      "greenhouse_name": "A온실",
       "created_at": "2026-07-01 09:00:00",
       "greenhouse_type": "단동",
       "cover_type": "비닐",
@@ -122,7 +122,7 @@
     {
       "greenhouse_id": 940005,
       "member_id": 940002,
-      "greenhouse_name": "시연 5온실 (연동·유리·수태)",
+      "greenhouse_name": "B온실",
       "created_at": "2026-07-01 09:00:00",
       "greenhouse_type": "연동",
       "cover_type": "유리",
@@ -138,7 +138,7 @@
     {
       "greenhouse_id": 940009,
       "member_id": 940002,
-      "greenhouse_name": "시연 9온실 (미등록 정보)",
+      "greenhouse_name": "C온실",
       "created_at": "2026-11-13 10:00:00",
       "greenhouse_type": null,
       "cover_type": null,
@@ -153,8 +153,8 @@
     },
     {
       "greenhouse_id": 941018,
-      "member_id": 940001,
-      "greenhouse_name": "햇살 27온실",
+      "member_id": 940002,
+      "greenhouse_name": "D온실",
       "created_at": "2026-01-08 09:00:00",
       "greenhouse_type": "연동",
       "cover_type": "비닐",
@@ -176,18 +176,18 @@
     },
     {
       "crop_id": 940002,
-      "crop_name": "국화",
-      "variety_name": "백마"
+      "crop_name": "호접란",
+      "variety_name": "만천홍"
     },
     {
       "crop_id": 940003,
-      "crop_name": "국화",
-      "variety_name": "신마"
+      "crop_name": "호접란",
+      "variety_name": "비비안"
     },
     {
       "crop_id": 940004,
       "crop_name": "호접란",
-      "variety_name": "시연용 백색 품종"
+      "variety_name": "백색 대륜 품종"
     }
   ],
   "crop_stage_standard": [
@@ -475,10 +475,10 @@
   "cultivation_plan": [
     {
       "plan_id": 940001,
-      "greenhouse_id": 940001,
-      "member_id": 940001,
-      "standard_id": 940001,
-      "plan_name": "장미 가을 작기 · 환경 및 이슈 시연",
+      "greenhouse_id": 940004,
+      "member_id": 940002,
+      "standard_id": 940004,
+      "plan_name": "2026년 가을 1차 작기",
       "plan_status": "진행",
       "planned_start_date": "2026-10-01",
       "planned_end_date": "2026-12-20",
@@ -489,10 +489,10 @@
     },
     {
       "plan_id": 940002,
-      "greenhouse_id": 940002,
-      "member_id": 940001,
-      "standard_id": 940003,
-      "plan_name": "장미 여름 작기 · 정상 종료",
+      "greenhouse_id": 940004,
+      "member_id": 940002,
+      "standard_id": 940006,
+      "plan_name": "2026년 여름 작기",
       "plan_status": "종료",
       "planned_start_date": "2026-07-10",
       "planned_end_date": "2026-09-20",
@@ -503,10 +503,10 @@
     },
     {
       "plan_id": 940003,
-      "greenhouse_id": 940002,
-      "member_id": 940001,
-      "standard_id": 940001,
-      "plan_name": "장미 겨울 작기 · 시작 전",
+      "greenhouse_id": 940009,
+      "member_id": 940002,
+      "standard_id": 940004,
+      "plan_name": "2026년 겨울 1차 작기",
       "plan_status": "미진행",
       "planned_start_date": "2026-11-20",
       "planned_end_date": "2027-01-20",
@@ -517,10 +517,10 @@
     },
     {
       "plan_id": 940005,
-      "greenhouse_id": 940004,
+      "greenhouse_id": 940005,
       "member_id": 940002,
       "standard_id": 940005,
-      "plan_name": "국화 가을 작기 · 일지 없음",
+      "plan_name": "2026년 가을 2차 작기",
       "plan_status": "진행",
       "planned_start_date": "2026-11-01",
       "planned_end_date": "2026-12-29",
@@ -534,7 +534,7 @@
       "greenhouse_id": 940005,
       "member_id": 940002,
       "standard_id": 940007,
-      "plan_name": "국화 가을 작기 · 시작 예정일 경과",
+      "plan_name": "2026년 늦가을 작기",
       "plan_status": "미진행",
       "planned_start_date": "2026-11-08",
       "planned_end_date": "2027-01-09",
@@ -548,7 +548,7 @@
       "greenhouse_id": 940009,
       "member_id": 940002,
       "standard_id": 940010,
-      "plan_name": "호접란 겨울 작기 · 기준 미입력",
+      "plan_name": "2026년 동계 작기",
       "plan_status": "미진행",
       "planned_start_date": "2026-12-01",
       "planned_end_date": "2027-02-10",
@@ -559,10 +559,10 @@
     },
     {
       "plan_id": 940009,
-      "greenhouse_id": 940002,
-      "member_id": 940001,
-      "standard_id": 940001,
-      "plan_name": "장미 가을 작기 · 비교용 2온실",
+      "greenhouse_id": 940009,
+      "member_id": 940002,
+      "standard_id": 940004,
+      "plan_name": "2026년 가을 3차 작기",
       "plan_status": "진행",
       "planned_start_date": "2026-10-01",
       "planned_end_date": "2026-11-10",
@@ -753,7 +753,7 @@
       "task_name": "수확 후 정리",
       "task_time": "2026-09-20 09:25:00",
       "task_status": "완료",
-      "task_content": "시연용 작업 완료"
+      "task_content": "수확 후 정리 작업 완료"
     },
     {
       "task_id": 940014,

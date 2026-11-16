@@ -33,17 +33,18 @@ const prototypeData = {
     "title": "재배일지",
     "currentUser": {
       "id": "940001",
-      "displayName": "김시연",
+      "displayName": "김민준",
       "role": "화훼농민",
       "certification": "인증",
-      "username": "seed_workflow_rose",
+      "businessNumber": "FLOW-940001",
+      "username": "seedrose01",
       "farmName": "모두의 장미농장",
       "email": "seed-workflow-rose@example.test",
-      "phone": "010-0000-0001",
+      "phone": "010-4829-3715",
       "address": "경기도 고양시",
       "addressDetail": "테스트 농장 1",
       "mainCrop": "장미",
-      "description": "작기 및 환경 이력 시연용"
+      "description": "장미 재배 및 온실 환경 관리 농장"
     }
   },
   "crops": [
@@ -59,25 +60,19 @@ const prototypeData = {
     },
     {
       "cropId": "940002",
-      "name": "국화",
-      "varieties": [
-        {
-          "varietyId": "940002",
-          "name": "백마"
-        },
-        {
-          "varietyId": "940003",
-          "name": "신마"
-        }
-      ]
-    },
-    {
-      "cropId": "940004",
       "name": "호접란",
       "varieties": [
         {
+          "varietyId": "940002",
+          "name": "만천홍"
+        },
+        {
+          "varietyId": "940003",
+          "name": "비비안"
+        },
+        {
           "varietyId": "940004",
-          "name": "시연용 백색 품종"
+          "name": "백색 대륜 품종"
         }
       ]
     }
@@ -86,43 +81,79 @@ const prototypeData = {
     {
       "greenhouseId": "940001",
       "memberId": "940001",
-      "name": "시연 1온실 (단동·유리·수태)",
+      "name": "A온실",
       "type": "단동",
+      "coverType": "유리",
+      "buildingCount": 1,
+      "sideHeight": 4.5,
+      "width": 8,
+      "length": 40,
+      "registeredArea": 320,
       "mediumType": "수태"
     },
     {
       "greenhouseId": "940002",
       "memberId": "940001",
-      "name": "시연 2온실 (단동·유리·코코피트)",
+      "name": "B온실",
       "type": "단동",
+      "coverType": "유리",
+      "buildingCount": 1,
+      "sideHeight": 4.5,
+      "width": 8,
+      "length": 40,
+      "registeredArea": 320,
       "mediumType": "코코피트"
     },
     {
       "greenhouseId": "940004",
       "memberId": "940002",
-      "name": "시연 4온실 (단동·비닐·코코피트)",
+      "name": "A온실",
       "type": "단동",
+      "coverType": "비닐",
+      "buildingCount": 1,
+      "sideHeight": 4.5,
+      "width": 8,
+      "length": 40,
+      "registeredArea": 320,
       "mediumType": "코코피트"
     },
     {
       "greenhouseId": "940005",
       "memberId": "940002",
-      "name": "시연 5온실 (연동·유리·수태)",
+      "name": "B온실",
       "type": "연동",
+      "coverType": "유리",
+      "buildingCount": 3,
+      "sideHeight": 4.5,
+      "width": 24,
+      "length": 40,
+      "registeredArea": 960,
       "mediumType": "수태"
     },
     {
       "greenhouseId": "940009",
       "memberId": "940002",
-      "name": "시연 9온실 (미등록 정보)",
+      "name": "C온실",
       "type": null,
+      "coverType": null,
+      "buildingCount": null,
+      "sideHeight": null,
+      "width": null,
+      "length": null,
+      "registeredArea": null,
       "mediumType": null
     },
     {
       "greenhouseId": "941018",
-      "memberId": "940001",
-      "name": "햇살 27온실",
+      "memberId": "940002",
+      "name": "D온실",
       "type": "연동",
+      "coverType": "비닐",
+      "buildingCount": 3,
+      "sideHeight": 4,
+      "width": 11,
+      "length": 35,
+      "registeredArea": 385,
       "mediumType": "수태"
     }
   ],
@@ -178,11 +209,11 @@ const prototypeData = {
   "cycles": [
     {
       "cycleId": "940001",
-      "memberId": "940001",
-      "greenhouseId": "940001",
-      "cropId": "940001",
-      "varietyId": "940001",
-      "environmentStandardSetId": "940001",
+      "memberId": "940002",
+      "greenhouseId": "940004",
+      "cropId": "940002",
+      "varietyId": "940002",
+      "environmentStandardSetId": "940004",
       "stageHistory": [
         {
           "eventId": "940001",
@@ -215,17 +246,17 @@ const prototypeData = {
       "actualStartAt": "2026-10-01T00:00:00",
       "actualEndAt": null,
       "registeredAt": "2026-07-02T09:00:00",
-      "name": "장미 가을 작기 · 환경 및 이슈 시연",
+      "name": "2026년 가을 1차 작기",
       "status": "진행",
       "endReason": null
     },
     {
       "cycleId": "940002",
-      "memberId": "940001",
-      "greenhouseId": "940002",
-      "cropId": "940001",
-      "varietyId": "940001",
-      "environmentStandardSetId": "940003",
+      "memberId": "940002",
+      "greenhouseId": "940004",
+      "cropId": "940002",
+      "varietyId": "940002",
+      "environmentStandardSetId": "940006",
       "stageHistory": [
         {
           "eventId": "940005",
@@ -242,17 +273,17 @@ const prototypeData = {
       "actualStartAt": "2026-07-10T00:00:00",
       "actualEndAt": "2026-09-20T23:59:59",
       "registeredAt": "2026-07-02T09:00:00",
-      "name": "장미 여름 작기 · 정상 종료",
+      "name": "2026년 여름 작기",
       "status": "종료",
       "endReason": "예정 수확 완료"
     },
     {
       "cycleId": "940003",
-      "memberId": "940001",
-      "greenhouseId": "940002",
-      "cropId": "940001",
-      "varietyId": "940001",
-      "environmentStandardSetId": "940001",
+      "memberId": "940002",
+      "greenhouseId": "940009",
+      "cropId": "940002",
+      "varietyId": "940002",
+      "environmentStandardSetId": "940004",
       "stageHistory": [],
       "actualStartDate": null,
       "plannedStartAt": "2026-11-20T00:00:00",
@@ -260,14 +291,14 @@ const prototypeData = {
       "actualStartAt": null,
       "actualEndAt": null,
       "registeredAt": "2026-07-02T09:00:00",
-      "name": "장미 겨울 작기 · 시작 전",
+      "name": "2026년 겨울 1차 작기",
       "status": "미진행",
       "endReason": null
     },
     {
       "cycleId": "940005",
       "memberId": "940002",
-      "greenhouseId": "940004",
+      "greenhouseId": "940005",
       "cropId": "940002",
       "varietyId": "940002",
       "environmentStandardSetId": "940005",
@@ -278,7 +309,7 @@ const prototypeData = {
       "actualStartAt": "2026-11-03T00:00:00",
       "actualEndAt": null,
       "registeredAt": "2026-07-02T09:00:00",
-      "name": "국화 가을 작기 · 일지 없음",
+      "name": "2026년 가을 2차 작기",
       "status": "진행",
       "endReason": null
     },
@@ -296,7 +327,7 @@ const prototypeData = {
       "actualStartAt": null,
       "actualEndAt": null,
       "registeredAt": "2026-07-02T09:00:00",
-      "name": "국화 가을 작기 · 시작 예정일 경과",
+      "name": "2026년 늦가을 작기",
       "status": "미진행",
       "endReason": null
     },
@@ -304,7 +335,7 @@ const prototypeData = {
       "cycleId": "940008",
       "memberId": "940002",
       "greenhouseId": "940009",
-      "cropId": "940004",
+      "cropId": "940002",
       "varietyId": "940004",
       "environmentStandardSetId": "940010",
       "stageHistory": [],
@@ -314,17 +345,17 @@ const prototypeData = {
       "actualStartAt": null,
       "actualEndAt": null,
       "registeredAt": "2026-11-13T10:10:00",
-      "name": "호접란 겨울 작기 · 기준 미입력",
+      "name": "2026년 동계 작기",
       "status": "미진행",
       "endReason": null
     },
     {
       "cycleId": "940009",
-      "memberId": "940001",
-      "greenhouseId": "940002",
-      "cropId": "940001",
-      "varietyId": "940001",
-      "environmentStandardSetId": "940001",
+      "memberId": "940002",
+      "greenhouseId": "940009",
+      "cropId": "940002",
+      "varietyId": "940002",
+      "environmentStandardSetId": "940004",
       "stageHistory": [
         {
           "eventId": "940008",
@@ -349,7 +380,7 @@ const prototypeData = {
       "actualStartAt": "2026-10-04T00:00:00",
       "actualEndAt": null,
       "registeredAt": "2026-09-20T09:00:00",
-      "name": "장미 가을 작기 · 비교용 2온실",
+      "name": "2026년 가을 3차 작기",
       "status": "진행",
       "endReason": null
     }
@@ -506,7 +537,7 @@ const prototypeData = {
           "name": "수확 후 정리",
           "type": "기타",
           "status": "완료",
-          "content": "시연용 작업 완료"
+          "content": "수확 후 정리 작업 완료"
         }
       ]
     },
@@ -696,50 +727,50 @@ const prototypeData = {
     },
     {
       "id": "940004",
-      "name": "백마 · 영양생장기",
+      "name": "만천홍 · 영양생장기",
       "cropId": "940002",
       "varietyId": "940002",
       "stageId": "VEG"
     },
     {
       "id": "940005",
-      "name": "백마 · 꽃눈유도기",
+      "name": "만천홍 · 꽃눈유도기",
       "cropId": "940002",
       "varietyId": "940002",
       "stageId": "IND"
     },
     {
       "id": "940006",
-      "name": "백마 · 생식생장기",
+      "name": "만천홍 · 생식생장기",
       "cropId": "940002",
       "varietyId": "940002",
       "stageId": "REP"
     },
     {
       "id": "940007",
-      "name": "신마 · 영양생장기",
+      "name": "비비안 · 영양생장기",
       "cropId": "940002",
       "varietyId": "940003",
       "stageId": "VEG"
     },
     {
       "id": "940008",
-      "name": "신마 · 꽃눈유도기",
+      "name": "비비안 · 꽃눈유도기",
       "cropId": "940002",
       "varietyId": "940003",
       "stageId": "IND"
     },
     {
       "id": "940009",
-      "name": "신마 · 생식생장기",
+      "name": "비비안 · 생식생장기",
       "cropId": "940002",
       "varietyId": "940003",
       "stageId": "REP"
     },
     {
       "id": "940010",
-      "name": "시연용 백색 품종 · 기준 미입력",
-      "cropId": "940004",
+      "name": "백색 대륜 품종 · 기준 미입력",
+      "cropId": "940002",
       "varietyId": "940004",
       "stageId": null
     }
@@ -1499,38 +1530,41 @@ const prototypeData = {
   "members": [
     {
       "id": "940001",
-      "displayName": "김시연",
+      "displayName": "김민준",
       "role": "화훼농민",
       "certification": "인증",
-      "username": "seed_workflow_rose",
+      "businessNumber": "FLOW-940001",
+      "username": "seedrose01",
       "farmName": "모두의 장미농장",
       "email": "seed-workflow-rose@example.test",
-      "phone": "010-0000-0001",
+      "phone": "010-4829-3715",
       "address": "경기도 고양시",
       "addressDetail": "테스트 농장 1",
       "mainCrop": "장미",
-      "description": "작기 및 환경 이력 시연용"
+      "description": "장미 재배 및 온실 환경 관리 농장"
     },
     {
       "id": "940002",
-      "displayName": "이시연",
+      "displayName": "이서연",
       "role": "화훼농민",
       "certification": "미인증",
-      "username": "seed_workflow_mum",
-      "farmName": "해솔 국화농장",
+      "businessNumber": null,
+      "username": "seedmum02",
+      "farmName": "해솔 호접란농장",
       "email": null,
       "phone": null,
       "address": null,
       "addressDetail": null,
-      "mainCrop": null,
+      "mainCrop": "호접란",
       "description": null
     },
     {
       "id": "940003",
-      "displayName": "박시연",
+      "displayName": "박도윤",
       "role": "화훼농민",
       "certification": "미인증",
-      "username": "seed_workflow_empty",
+      "businessNumber": null,
+      "username": "seedempty03",
       "farmName": "새싹농장",
       "email": null,
       "phone": null,
