@@ -307,6 +307,7 @@ function stageRows(c){const stages=config.growthStages.map(s=>{const k=getCriter
 function renderCycleDetail(){const c=getSelectedCycle();if(!c){go('cycle-list');return}const diaries=diaryRows.filter(d=>d.cycleId===c.cycleId),samples=config.environmentChanges.filter(s=>s.cycleId===c.cycleId);
  main.innerHTML=moduleHeading('작기계획 상세','', '작기계획 목록으로','cycle-list')+`<div class="module-scroll"><section class="panel"><div class="panel-head"><h2>작기 기본정보</h2><span class="counter">${htmlText(cycleStatus(c))}</span></div><div class="panel-body"><div class="module-facts">${[
  ['작기계획명',c.name],['온실',gh(c.greenhouseId)?.name||'—'],['품목',cropOf(c)?.name||'—'],['품종',varietyOf(c)?.name||'—'],['작기 상태',cycleStatus(c)],['단계별 환경 기준',stdSet(c.environmentStandardSetId)?.name||'—'],['계획 시작일',dateFrom(c.plannedStartAt)||'—'],['예상 종료일',dateFrom(c.expectedEndAt)||'—'],['실제 시작일',dateFrom(c.actualStartAt)||'—'],['실제 종료일',dateFrom(c.actualEndAt)||'—'],['작기계획 등록일시',formatAt(c.registeredAt)],['종료 사유',c.endReason||'—']].map(([a,b])=>`<div><span>${htmlText(a)}</span><strong>${htmlText(b)}</strong></div>`).join('')}</div></div></section>
+ ${cycleTimelineChart(c)}
  <section class="panel"><div class="panel-head"><h2>생육단계별 환경 기준과 일정</h2></div><div class="tablewrap"><table class="data-table module-table"><thead><tr><th>생육단계</th><th>기준 기간</th><th>계획상 시작일</th><th>실제 시작일</th><th>주간 온도 기준</th><th>야간 온도 기준</th><th>습도 기준</th><th>배지 EC 기준</th></tr></thead><tbody>${stageRows(c)}</tbody></table></div></section>
  <section class="panel"><div class="panel-head"><h2>연결된 재배기록</h2></div><div class="panel-body"><div class="record-links"><div><span>재배일지작업 등록 건수</span><strong>${diaries.length}건</strong></div><div><span>작기 중 온실 환경변화 기록 건수</span><strong>${samples.length}건</strong></div><button class="btn" id="cycleViewDiary">재배일지작업 목록 조회</button><button class="btn" id="cycleViewEnv">온실 환경변화 기록 조회</button></div></div></section></div>
  <section class="panel hidden" id="cycleStartPanel"><div class="panel-head"><h2>작기 실제 시작일 등록</h2></div><div class="panel-body"><div class="filterbar"><div class="field"><label for="cycleStartTime">실제 시작일 *</label><input class="ctrl" type="date" id="cycleStartTime"></div><button class="btn" type="button" id="cycleStartCancel">취소</button><button class="btn main" type="button" id="cycleStartConfirm">작기 시작 확정</button></div></div></section>
@@ -378,6 +379,50 @@ function readingTests(r){
 function countExceeded(r){return readingTests(r).filter(s=>s.status==='기준 이탈').length}
 function countMissing(r){return readingTests(r).filter(s=>s.status==='미측정').length}
 function getCycleForReading(r){return config.cycles.find(c=>c.cycleId===r.cycleId)}
+let envChartKey='insideTempC';
+function envLineChart(rows){
+ const fields=config.measurementFields||[];
+ const field=fields.find(f=>f.key===envChartKey)||fields[0]||{key:'insideTempC',label:'온실 내부 온도 측정값',unit:'°C'};
+ const pts=rows.slice().sort((a,b)=>a.measuredAt.localeCompare(b.measuredAt)).filter(r=>r[field.key]!==null&&r[field.key]!==undefined);
+ let body='<p class="empty" style="padding:20px">그래프에 표시할 측정값이 없습니다.</p>';
+ if(pts.length){
+  const vals=pts.map(r=>Number(r[field.key]));
+  let min=Math.min(...vals),max=Math.max(...vals);
+  if(min===max){min-=1;max+=1}
+  const padL=48,padR=18,padT=16,padB=28,w=760,h=210,pw=w-padL-padR,ph=h-padT-padB;
+  const xAt=i=>pts.length===1?padL+pw/2:padL+(i/(pts.length-1))*pw;
+  const yAt=v=>padT+ph-((v-min)/(max-min))*ph;
+  const poly=pts.map((r,i)=>`${xAt(i).toFixed(1)},${yAt(Number(r[field.key])).toFixed(1)}`).join(' ');
+  const mid=((min+max)/2).toFixed(1);
+  const grid=[min,(min+max)/2,max].map((v,idx)=>`<line x1="${padL}" y1="${yAt(v).toFixed(1)}" x2="${w-padR}" y2="${yAt(v).toFixed(1)}" stroke="#e6ece8"/><text x="${padL-6}" y="${(yAt(v)+4).toFixed(1)}" text-anchor="end" font-size="11" fill="#666">${idx===1?mid:v.toFixed(1)}</text>`).join('');
+  const dots=pts.map((r,i)=>`<circle cx="${xAt(i).toFixed(1)}" cy="${yAt(Number(r[field.key])).toFixed(1)}" r="3.5" fill="#2f6b45"><title>${formatAt(r.measuredAt)} : ${r[field.key]} ${htmlText(field.unit)}</title></circle>`).join('');
+  const xLabels=[0,Math.floor((pts.length-1)/2),pts.length-1].filter((v,i,a)=>a.indexOf(v)===i).map(i=>`<text x="${xAt(i).toFixed(1)}" y="${h-8}" text-anchor="${i===0?'start':i===pts.length-1?'end':'middle'}" font-size="11" fill="#666">${formatAt(pts[i].measuredAt).slice(5)}</text>`).join('');
+  body=`<svg class="chart-svg" viewBox="0 0 ${w} ${h}" role="img" aria-label="${htmlText(field.label)} 추이 그래프">${grid}<polyline fill="none" stroke="#2f6b45" stroke-width="2" points="${poly}"/>${dots}${xLabels}</svg>`;
+ }
+ return `<section class="panel chart-section" aria-label="온실 환경변화 추이"><div class="panel-head"><h2>환경변화 추이 그래프</h2><label style="display:flex;align-items:center;gap:6px;font-size:12px"><span>항목</span><select id="envChartMetric" class="ctrl" style="width:auto;min-height:28px;padding:2px 8px">${options(fields.map(f=>({value:f.key,label:`${f.label} (${f.unit})`})),field.key)}</select></label></div><div class="panel-body">${body}</div></section>`;
+}
+function issueSummaryChart(rows){
+ const total=Math.max(1,rows.length);
+ const statusCounts=['발생','조치중','조치 완료'].map(st=>({label:st,count:rows.filter(r=>r.status===st).length}));
+ const typeMap=new Map();
+ for(const r of rows)typeMap.set(r.issueType,(typeMap.get(r.issueType)||0)+1);
+ const typeCounts=[...typeMap.entries()].map(([label,count])=>({label,count})).sort((a,b)=>b.count-a.count);
+ const bar=(label,count,statusAttr='')=>`<div class="bar-row"><span>${htmlText(label)}</span><div class="bar-track"><div class="bar-fill" ${statusAttr?`data-status="${htmlText(statusAttr)}"`:''} style="width:${Math.round((count/total)*100)}%"></div></div><strong style="text-align:right">${count}건</strong></div>`;
+ return `<section class="panel chart-section" aria-label="이슈 현황 요약"><div class="panel-head"><h2>이슈 현황 요약</h2><span class="counter">총 ${rows.length}건</span></div><div class="panel-body"><div class="chart-grid"><div><h3 style="margin:0 0 8px;font-size:13px">조치 상태별</h3><div class="bar-list">${statusCounts.map(x=>bar(x.label,x.count,x.label)).join('')}</div></div><div><h3 style="margin:0 0 8px;font-size:13px">이슈 유형별</h3><div class="bar-list">${typeCounts.length?typeCounts.map(x=>bar(x.label,x.count)).join(''):'<span class="muted">표시할 데이터가 없습니다.</span>'}</div></div></div></div></section>`;
+}
+function cycleTimelineChart(c){
+ const startMs=new Date(c.plannedStartAt||today()).getTime(),endMs=new Date(c.expectedEndAt||today()).getTime();
+ const nowMs=c.actualEndAt?new Date(c.actualEndAt).getTime():new Date(today()+'T23:59:59').getTime();
+ const totalMs=Math.max(1,endMs-startMs);
+ const pct=c.status==='미진행'?0:c.status==='종료'?100:Math.max(0,Math.min(100,Math.round(((nowMs-startMs)/totalMs)*100)));
+ const stages=config.growthStages.map((st,i)=>{
+  const k=getCriteria(c,st.stageId);const days=k?.standardDays||20;
+  const eff=c.stageHistory.find(h=>h.stageId===st.stageId);
+  return {name:st.name,days,cls:`s${i+1}`,date:eff?eff.effectiveDate:'미전환'};
+ });
+ const sumDays=stages.reduce((a,x)=>a+x.days,0)||1;
+ return `<section class="panel chart-section"><div class="panel-head"><h2>작기 일정 · 생육단계 진행</h2><span class="counter">진행률 ${pct}%</span></div><div class="panel-body"><div class="timeline-meta"><span>계획 시작: ${dateFrom(c.plannedStartAt)||'—'}</span><span>예상 종료: ${dateFrom(c.expectedEndAt)||'—'}</span></div><div class="bar-track" style="height:10px;margin:6px 0 12px"><div class="bar-fill" style="width:${pct}%"></div></div><div class="timeline-bar">${stages.map(x=>`<div class="timeline-seg ${x.cls}" style="width:${((x.days/sumDays)*100).toFixed(1)}%" title="${htmlText(x.name)} (${x.days}일)">${htmlText(x.name)}</div>`).join('')}</div><div class="timeline-meta">${stages.map(x=>`<span>${htmlText(x.name)}: ${htmlText(x.date)}</span>`).join('')}</div></div></section>`;
+}
 function renderEnvList(){
  const rows=config.environmentChanges.filter(s=>{
    const matchesCycle=envFilters.cycle==='all'||s.cycleId===envFilters.cycle;
@@ -393,6 +438,7 @@ function renderEnvList(){
  <div class="field"><label for="envFrom">측정 시작일</label><input type="date" class="ctrl" id="envFrom" value="${envFilters.from}"></div>
  <div class="field"><label for="envTo">측정 종료일</label><input type="date" class="ctrl" id="envTo" value="${envFilters.to}"></div>
  <button class="btn" id="envDoFilter">조회</button></div></div></section>
+ ${envLineChart(rows)}
  <section class="panel list-section" aria-label="온실 환경변화 목록"><div class="tablewrap"><table class="data-table module-table env-table"><thead><tr><th class="row-index">번호</th><th>작기계획명</th><th>온실명</th><th>환경변화 측정일시</th><th>해당 날짜의 실제 생육단계</th><th>온실 내부 온도 측정값</th><th>온실 내부 습도 측정값</th><th>미측정 항목 수</th></tr></thead>
  <tbody>${shown.map((r,i)=>{const c=getCycleForReading(r);return `<tr><td class="row-index">${rows.length-from-i}</td><td>${htmlText(c?.name||'—')}</td><td>${htmlText(gh(c?.greenhouseId)?.name||'—')}</td><td><button class="linkbtn" data-env-detail="${r.environmentChangeId}">${formatAt(r.measuredAt)}</button></td><td>${htmlText(readingStage(r)?getStage(readingStage(r)).name:'미확인')}</td><td>${fmtVal(r.insideTempC)} °C</td><td>${fmtVal(r.humidityPct)} %RH</td><td>${countMissing(r)}개</td></tr>`}).join('')||'<tr><td colspan="8" class="empty">조회 결과가 없습니다.</td></tr>'}</tbody></table></div></section>
  ${pageControls(rows.length,environmentListPage,size,'온실 환경변화')}`;
@@ -401,7 +447,7 @@ function renderEnvList(){
    if(next.from&&next.to&&next.from>next.to){toast('측정 시작일과 종료일을 확인하세요.');return}
    envFilters=next;environmentListPage=1;renderEnvList();
  };
- $$('[data-env-detail]').forEach(b=>b.onclick=()=>go('env-detail',b.dataset.envDetail));
+ if($('#envChartMetric'))$('#envChartMetric').onchange=e=>{envChartKey=e.target.value;renderEnvList()};$('[data-env-detail]').forEach(b=>b.onclick=()=>go('env-detail',b.dataset.envDetail));
  bindPages('',()=>environmentListPage,v=>environmentListPage=v,rows.length,size,renderEnvList);
 }
 function renderEnvDetail(){
@@ -466,6 +512,7 @@ function renderIssues(detail){
  <label class="field" for="issueFrom">시작일<input id="issueFrom" class="ctrl" type="date" value="${issueFilters.from}"></label>
  <label class="field" for="issueTo">종료일<input id="issueTo" class="ctrl" type="date" value="${issueFilters.to}"></label>
  <button class="btn" type="submit">조회</button></form></div></section>
+ ${issueSummaryChart(rows)}
  <section class="panel list-section" aria-label="온실 환경 이슈 목록"><div class="tablewrap"><table class="data-table module-table"><thead><tr><th>발생일시</th><th>작기계획</th><th>이슈 유형</th><th>이슈 내용</th><th>조치 상태</th></tr></thead>
  <tbody>${pagedIssues.map(item=>`<tr><td>${formatAt(item.occurredAt)}</td><td>${htmlText(getCycle(item.cycleId)?.name)}</td><td>${htmlText(item.issueType)}</td><td><button class="linkbtn" data-issue="${item.issueId}">${htmlText(item.message)}</button></td><td><span class="issue-status" data-status="${htmlText(item.status)}">${htmlText(item.status)}</span></td></tr>`).join('')||'<tr><td colspan="5" class="empty">조회된 이슈가 없습니다.</td></tr>'}</tbody></table></div></section>
  ${pageControls(rows.length,issueListPage,size,'온실 환경 이슈')}`;
