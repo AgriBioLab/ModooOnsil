@@ -382,12 +382,7 @@ function renderEnvList(){
  const rows=config.environmentChanges.filter(s=>{
    const matchesCycle=envFilters.cycle==='all'||s.cycleId===envFilters.cycle;
    const matchesDate=(!envFilters.from||dateFrom(s.measuredAt)>=envFilters.from)&&(!envFilters.to||dateFrom(s.measuredAt)<=envFilters.to);
-   const tests=readingTests(s);
-   const matchesStatus=envFilters.comparison==='all'||
-     (envFilters.comparison==='out'?countExceeded(s)>0:
-     envFilters.comparison==='normal'?countExceeded(s)===0&&tests.some(x=>x.status==='기준 충족')&&!tests.some(x=>x.status==='미측정'):
-     tests.some(x=>x.status==='미측정'));
-   return matchesCycle&&matchesDate&&matchesStatus;
+   return matchesCycle&&matchesDate;
  }).sort((a,b)=>b.measuredAt.localeCompare(a.measuredAt));
  const size=config.pagination.environmentPageSize||7;
  environmentListPage=Math.min(Math.max(1,environmentListPage),Math.max(1,Math.ceil(rows.length/size)));
@@ -397,13 +392,12 @@ function renderEnvList(){
  <div class="field"><label for="envCycle">작기계획</label><select class="ctrl" id="envCycle">${options([{value:'all',label:'전체 작기계획'},...config.cycles.map(c=>({value:c.cycleId,label:c.name}))],envFilters.cycle)}</select></div>
  <div class="field"><label for="envFrom">측정 시작일</label><input type="date" class="ctrl" id="envFrom" value="${envFilters.from}"></div>
  <div class="field"><label for="envTo">측정 종료일</label><input type="date" class="ctrl" id="envTo" value="${envFilters.to}"></div>
- <div class="field"><label for="envState">환경 기준 비교 결과</label><select class="ctrl" id="envState">${options([{value:'all',label:'전체 비교 결과'},{value:'normal',label:'비교 가능한 항목에서 기준 이탈 없음'},{value:'out',label:'기준 이탈 항목 있음'},{value:'missing',label:'미측정 항목 있음'}],envFilters.comparison)}</select></div>
  <button class="btn" id="envDoFilter">조회</button></div></div></section>
- <section class="panel list-section" aria-label="온실 환경변화 목록"><div class="tablewrap"><table class="data-table module-table env-table"><thead><tr><th class="row-index">번호</th><th>작기계획명</th><th>온실명</th><th>환경변화 측정일시</th><th>해당 날짜의 실제 생육단계</th><th>온실 내부 온도 측정값</th><th>온실 내부 습도 측정값</th><th>기준 이탈 항목 수</th><th>미측정 항목 수</th></tr></thead>
- <tbody>${shown.map((r,i)=>{const c=getCycleForReading(r);return `<tr><td class="row-index">${rows.length-from-i}</td><td>${htmlText(c?.name||'—')}</td><td>${htmlText(gh(c?.greenhouseId)?.name||'—')}</td><td><button class="linkbtn" data-env-detail="${r.environmentChangeId}">${formatAt(r.measuredAt)}</button></td><td>${htmlText(readingStage(r)?getStage(readingStage(r)).name:'미확인')}</td><td>${fmtVal(r.insideTempC)} °C</td><td>${fmtVal(r.humidityPct)} %RH</td><td>${countExceeded(r)}개</td><td>${countMissing(r)}개</td></tr>`}).join('')||'<tr><td colspan="9" class="empty">조회 결과가 없습니다.</td></tr>'}</tbody></table></div></section>
+ <section class="panel list-section" aria-label="온실 환경변화 목록"><div class="tablewrap"><table class="data-table module-table env-table"><thead><tr><th class="row-index">번호</th><th>작기계획명</th><th>온실명</th><th>환경변화 측정일시</th><th>해당 날짜의 실제 생육단계</th><th>온실 내부 온도 측정값</th><th>온실 내부 습도 측정값</th><th>미측정 항목 수</th></tr></thead>
+ <tbody>${shown.map((r,i)=>{const c=getCycleForReading(r);return `<tr><td class="row-index">${rows.length-from-i}</td><td>${htmlText(c?.name||'—')}</td><td>${htmlText(gh(c?.greenhouseId)?.name||'—')}</td><td><button class="linkbtn" data-env-detail="${r.environmentChangeId}">${formatAt(r.measuredAt)}</button></td><td>${htmlText(readingStage(r)?getStage(readingStage(r)).name:'미확인')}</td><td>${fmtVal(r.insideTempC)} °C</td><td>${fmtVal(r.humidityPct)} %RH</td><td>${countMissing(r)}개</td></tr>`}).join('')||'<tr><td colspan="8" class="empty">조회 결과가 없습니다.</td></tr>'}</tbody></table></div></section>
  ${pageControls(rows.length,environmentListPage,size,'온실 환경변화')}`;
  $('#envDoFilter').onclick=()=>{
-   const next={cycle:$('#envCycle').value,from:$('#envFrom').value,to:$('#envTo').value,comparison:$('#envState').value};
+   const next={cycle:$('#envCycle').value,from:$('#envFrom').value,to:$('#envTo').value,comparison:'all'};
    if(next.from&&next.to&&next.from>next.to){toast('측정 시작일과 종료일을 확인하세요.');return}
    envFilters=next;environmentListPage=1;renderEnvList();
  };
@@ -413,14 +407,14 @@ function renderEnvList(){
 function renderEnvDetail(){
  const r=getReading(selectedMeasurementId);if(!r){go('env-list');return}
  selectedMeasurementId=r.environmentChangeId;
- const c=getCycleForReading(r),tested=readingTests(r),bad=tested.filter(x=>x.status==='기준 이탈').length,missing=countMissing(r);
+ const c=getCycleForReading(r),tested=readingTests(r),missing=countMissing(r);
  main.innerHTML=moduleHeading('온실 환경변화 상세','', '목록으로','env-list')+
- `<div class="module-scroll"><section class="panel"><div class="panel-head"><h2>환경변화 측정 기본정보</h2><span class="counter">기준 이탈 ${bad}개 · 미측정 ${missing}개</span></div><div class="panel-body"><div class="module-facts compact">
- ${[['환경변화 기록 일련번호',r.environmentChangeId],['작기계획명',c?.name||'—'],['온실명 (작기계획 연결)',gh(c?.greenhouseId)?.name||'—'],['측정일시',formatAt(r.measuredAt)],['해당 날짜의 실제 생육단계',getStage(readingStage(r)).name],['적용 단계별 환경 기준',stdSet(c?.environmentStandardSetId)?.name||'—']].map(([a,b])=>`<div><span>${htmlText(a)}</span><strong>${htmlText(b)}</strong></div>`).join('')}
+ `<div class="module-scroll"><section class="panel"><div class="panel-head"><h2>환경변화 측정 기본정보</h2><span class="counter">미측정 ${missing}개</span></div><div class="panel-body"><div class="module-facts compact">
+ ${[['작기계획명',c?.name||'—'],['온실명',gh(c?.greenhouseId)?.name||'—'],['측정일시',formatAt(r.measuredAt)],['해당 날짜의 실제 생육단계',getStage(readingStage(r)).name]].map(([a,b])=>`<div><span>${htmlText(a)}</span><strong>${htmlText(b)}</strong></div>`).join('')}
  </div></div></section>
- <section class="panel"><div class="panel-head"><h2>온실 환경변화 측정값과 생육단계별 환경 기준 비교</h2><span class="counter">환경측정 항목 9개</span></div><div class="tablewrap"><table class="data-table module-table metric-table"><thead><tr><th>환경측정 항목명</th><th>실제 측정값</th><th>기준 최저값</th><th>기준 최고값</th><th>비교 결과</th></tr></thead><tbody>
- ${tested.map(x=>`<tr><td>${htmlText(x.label)}</td><td>${x.value===null||x.value===undefined?'미측정':`${x.value} ${htmlText(x.unit)}`}</td><td>${x.range?`${x.range[0]} ${htmlText(x.unit)}`:'—'}</td><td>${x.range?`${x.range[1]} ${htmlText(x.unit)}`:'—'}</td><td><span class="metric-status ${x.status==='기준 이탈'?'emphasis':''}">${x.status}</span></td></tr>`).join('')}
- </tbody></table></div><div class="panel-body"><p class="module-hint">온실 내부 온도 측정값의 주간·야간 기준 적용 여부는 아직 합의되지 않아 판정하지 않습니다. 다른 8개 항목만 생육단계별 최저·최고 기준과 비교합니다.</p></div></section></div>
+ <section class="panel"><div class="panel-head"><h2>온실 환경변화 측정값</h2><span class="counter">환경측정 항목 9개</span></div><div class="tablewrap"><table class="data-table module-table metric-table"><thead><tr><th>환경측정 항목명</th><th>실제 측정값</th></tr></thead><tbody>
+ ${tested.map(x=>`<tr><td>${htmlText(x.label)}</td><td>${x.value===null||x.value===undefined?'미측정':`${x.value} ${htmlText(x.unit)}`}</td></tr>`).join('')}
+ </tbody></table></div></section></div>
  <div class="module-actions"><button class="btn" id="envBack">목록</button><button class="btn" id="envCycleDetail">해당 작기계획 조회</button></div>`;
  bindModuleBack();$('#envBack').onclick=()=>go('env-list');$('#envCycleDetail').onclick=()=>go('cycle-detail',c.cycleId);
 }
