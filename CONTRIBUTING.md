@@ -99,7 +99,7 @@ feat_compensationDetailUI   feat_responsiveUI   ...
 ## 5. 현재 저장소의 정적 화면 경로
 
 - Spring Boot는 `src/main/resources/static/`의 정적 화면을 제공합니다.
-- HTML은 `static/`에, 스타일과 화면 동작은 각각 `static/resources/css/`, `static/resources/js/`에 둡니다.
+- HTML은 `static/`에, 스타일과 화면 동작은 각각 `static/css/`, `static/js/`에 둡니다.
 - 공통 화면이나 스타일을 수정할 때는 팀에 먼저 알리고, PR의 확인 요청에 수정 범위를 적습니다.
 
 ## 6. 저장소 설정
