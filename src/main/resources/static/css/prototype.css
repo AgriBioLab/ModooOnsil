@@ -222,5 +222,15 @@ a.btn.main { color: #fff; }
 .timeline-seg.s2 { background: #3b6f4e; }
 .timeline-seg.s3 { background: #1f4d31; }
 .timeline-meta { display: flex; justify-content: space-between; font-size: 12px; color: var(--muted); }
+.tabbar { display: flex; gap: 6px; border-bottom: 1px solid var(--line); margin-bottom: 12px; }
+.tabbtn { border: 1px solid var(--line); border-bottom: 0; background: #f6f6f6; color: #555; padding: 8px 14px; font-size: 12px; font-weight: 600; cursor: pointer; }
+.tabbtn[aria-selected="true"] { background: #fff; color: #183e26; border-color: #b7cdb9; border-bottom: 1px solid #fff; margin-bottom: -1px; }
+.profile-summary-card { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 14px 16px; border: 1px solid var(--line); background: #fff; margin-bottom: 12px; }
+.profile-summary-card h2 { margin: 0 0 4px; font-size: 16px; }
+.profile-summary-card p { margin: 0; font-size: 12px; color: var(--muted); }
+.stepper { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 16px; }
+.step-item { border: 1px solid var(--line); padding: 9px 10px; font-size: 12px; color: var(--muted); background: #fafafa; text-align: center; }
+.step-item[aria-current="step"] { border-color: #333; background: #fff; color: #111; font-weight: 700; }
+.signup-card-wide { max-width: 560px; width: 100%; }
 
 

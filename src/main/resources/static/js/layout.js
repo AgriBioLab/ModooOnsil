@@ -8,12 +8,12 @@
     <a class="navbtn" href="cycle-list.html" data-go="cycle-list">작기계획</a>
     <div class="navgroup" role="group" aria-label="온실">
       <div class="navhead nav-group-title">온실</div>
-      <a class="navbtn nav-sub" href="greenhouse-list.html" data-go="gh-list">온실 등록 &amp; 목록</a>
       <a class="navbtn nav-sub" href="env-list.html" data-go="env-list">온실 환경변화</a>
       <a class="navbtn nav-sub" href="issue-list.html" data-go="issue-list">온실 환경 이슈</a>
+      <a class="navbtn nav-sub" href="greenhouse-list.html" data-go="gh-list">온실 정보</a>
     </div>
     <a class="navbtn" href="mypage.html" data-go="profile">내정보</a>
-    <a class="navbtn" href="certification.html" data-go="cert">농업경영체 인증</a>
+    <a class="navbtn" href="mypage.html?tab=cert" data-go="cert">농업경영체 인증</a>
   </nav>
   <div class="sidebar-foot" id="sidebarFoot"></div>
 </aside>`;

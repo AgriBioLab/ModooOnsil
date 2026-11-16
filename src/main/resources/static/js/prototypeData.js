@@ -3,7 +3,7 @@
 const prototypeData = {
   "meta": {
     "project": "모두의온실",
-    "version": "db-snapshot-2026-11-16T11:24:07",
+    "version": "db-snapshot-2026-11-16T08:53:17",
     "today": "2026-11-16",
     "user": "화훼 재배 농민",
     "mode": "db-snapshot",
@@ -15,12 +15,12 @@ const prototypeData = {
       "counts": {
         "farm_member": 3,
         "greenhouse": 6,
-        "crop": 4,
-        "crop_stage_standard": 10,
+        "crop": 16,
+        "crop_stage_standard": 46,
         "cultivation_plan": 7,
         "cultivation_diary": 8,
-        "cultivation_diary_task": 16,
-        "greenhouse_environment_history": 15,
+        "cultivation_diary_task": 30,
+        "greenhouse_environment_history": 47,
         "greenhouse_issue": 5
       }
     }
@@ -55,6 +55,14 @@ const prototypeData = {
         {
           "varietyId": "940001",
           "name": "레드나오미"
+        },
+        {
+          "varietyId": "940005",
+          "name": "핑크뷰티"
+        },
+        {
+          "varietyId": "940006",
+          "name": "레드윙"
         }
       ]
     },
@@ -73,6 +81,64 @@ const prototypeData = {
         {
           "varietyId": "940004",
           "name": "주피터"
+        },
+        {
+          "varietyId": "940007",
+          "name": "리틀프린스"
+        },
+        {
+          "varietyId": "940008",
+          "name": "아리홍"
+        },
+        {
+          "varietyId": "940009",
+          "name": "핑크드림"
+        }
+      ]
+    },
+    {
+      "cropId": "940010",
+      "name": "국화",
+      "varieties": [
+        {
+          "varietyId": "940010",
+          "name": "백마"
+        },
+        {
+          "varietyId": "940011",
+          "name": "신마"
+        },
+        {
+          "varietyId": "940012",
+          "name": "백강"
+        }
+      ]
+    },
+    {
+      "cropId": "940013",
+      "name": "거베라",
+      "varieties": [
+        {
+          "varietyId": "940013",
+          "name": "브리즈"
+        },
+        {
+          "varietyId": "940014",
+          "name": "하모니"
+        }
+      ]
+    },
+    {
+      "cropId": "940015",
+      "name": "카네이션",
+      "varieties": [
+        {
+          "varietyId": "940015",
+          "name": "마블매직"
+        },
+        {
+          "varietyId": "940016",
+          "name": "퍼플뷰티"
         }
       ]
     }
@@ -507,6 +573,22 @@ const prototypeData = {
           "type": "생육 관리",
           "status": "완료",
           "content": null
+        },
+        {
+          "taskId": "940109",
+          "startedAt": "2026-11-09T08:40:00",
+          "name": "양액 관수 및 배액 점검",
+          "type": "관수",
+          "status": "완료",
+          "content": "배지 수분 적정 수준"
+        },
+        {
+          "taskId": "940110",
+          "startedAt": "2026-11-09T13:00:00",
+          "name": "주간 환기창 자동 개폐 확인",
+          "type": "환경 조절",
+          "status": "미완료",
+          "content": null
         }
       ]
     },
@@ -519,7 +601,32 @@ const prototypeData = {
       "createdAt": "2026-11-12T09:05:00",
       "updatedAt": null,
       "stageChangeReason": null,
-      "tasks": []
+      "tasks": [
+        {
+          "taskId": "940104",
+          "startedAt": "2026-11-12T08:30:00",
+          "name": "양액 EC·pH 점검 및 관수",
+          "type": "관수",
+          "status": "완료",
+          "content": "EC 1.8 mS/cm, pH 6.0 확인"
+        },
+        {
+          "taskId": "940105",
+          "startedAt": "2026-11-12T10:15:00",
+          "name": "화경 유인 및 지주 고정",
+          "type": "생육 관리",
+          "status": "완료",
+          "content": "생식생장기 화경 꺾임 방지"
+        },
+        {
+          "taskId": "940106",
+          "startedAt": "2026-11-12T17:00:00",
+          "name": "야간 보온 커튼 점검",
+          "type": "환경 조절",
+          "status": "미완료",
+          "content": null
+        }
+      ]
     },
     {
       "diaryId": "940005",
@@ -538,6 +645,22 @@ const prototypeData = {
           "type": "기타",
           "status": "완료",
           "content": "수확 후 정리 작업 완료"
+        },
+        {
+          "taskId": "940113",
+          "startedAt": "2026-09-20T08:30:00",
+          "name": "최종 출하 등급 선별",
+          "type": "생육 관리",
+          "status": "완료",
+          "content": "특품·상품 선별 완료"
+        },
+        {
+          "taskId": "940114",
+          "startedAt": "2026-09-20T11:00:00",
+          "name": "관수 라인 세척 및 소독",
+          "type": "기타",
+          "status": "완료",
+          "content": "차기 작기 준비 완료"
         }
       ]
     },
@@ -558,6 +681,22 @@ const prototypeData = {
           "type": "관수",
           "status": "완료",
           "content": "관수 후 배지 수분 54% 확인"
+        },
+        {
+          "taskId": "940111",
+          "startedAt": "2026-11-08T10:30:00",
+          "name": "잎 생장 및 뿌리 활착 점검",
+          "type": "생육 관리",
+          "status": "완료",
+          "content": "뿌리 상태 양호"
+        },
+        {
+          "taskId": "940112",
+          "startedAt": "2026-11-08T15:00:00",
+          "name": "온실 내부 응애 예찰",
+          "type": "방제",
+          "status": "미완료",
+          "content": null
         }
       ]
     },
@@ -586,6 +725,22 @@ const prototypeData = {
           "type": "방제",
           "status": "미완료",
           "content": null
+        },
+        {
+          "taskId": "940107",
+          "startedAt": "2026-11-12T09:00:00",
+          "name": "오전 점적 관수",
+          "type": "관수",
+          "status": "완료",
+          "content": "관수량 정상 공급"
+        },
+        {
+          "taskId": "940108",
+          "startedAt": "2026-11-12T11:00:00",
+          "name": "꽃눈 분화 상태 확인",
+          "type": "생육 관리",
+          "status": "미완료",
+          "content": null
         }
       ]
     },
@@ -596,7 +751,7 @@ const prototypeData = {
       "workedAt": "2026-11-13T08:30:00",
       "stageId": "IND",
       "createdAt": "2026-11-13T08:35:00",
-      "updatedAt": null,
+      "updatedAt": "2026-11-13T11:20:00",
       "stageChangeReason": null,
       "tasks": [
         {
@@ -606,6 +761,30 @@ const prototypeData = {
           "type": "기타",
           "status": "완료",
           "content": "커넥터 재결합 후 측정 정상 복귀"
+        },
+        {
+          "taskId": "940101",
+          "startedAt": "2026-11-13T09:00:00",
+          "name": "아침 배지 수분 점검 및 관수",
+          "type": "관수",
+          "status": "완료",
+          "content": "배지 수분 55% 유지 확인"
+        },
+        {
+          "taskId": "940102",
+          "startedAt": "2026-11-13T10:30:00",
+          "name": "오전 차광막 개폐 조절",
+          "type": "환경 조절",
+          "status": "완료",
+          "content": "광도 300~420 범위 유지"
+        },
+        {
+          "taskId": "940103",
+          "startedAt": "2026-11-13T14:00:00",
+          "name": "신엽 병해충 예찰",
+          "type": "방제",
+          "status": "미완료",
+          "content": null
         }
       ]
     }
@@ -625,7 +804,7 @@ const prototypeData = {
     {
       "issueId": "940002",
       "cycleId": "940001",
-      "occurredAt": "2026-10-03T08:01:00",
+      "occurredAt": "2026-10-03T07:00:00",
       "actionCompletedAt": null,
       "issueType": "온도",
       "message": "온도 하한 미만 · 조치중",
@@ -636,8 +815,8 @@ const prototypeData = {
     {
       "issueId": "940003",
       "cycleId": "940001",
-      "occurredAt": "2026-10-03T08:02:00",
-      "actionCompletedAt": "2026-10-03T11:30:00",
+      "occurredAt": "2026-10-03T05:00:00",
+      "actionCompletedAt": "2026-10-03T11:00:00",
       "issueType": "온도",
       "message": "온도 하한 미만 · 조치 완료",
       "status": "조치 완료",
@@ -647,24 +826,24 @@ const prototypeData = {
     {
       "issueId": "940055",
       "cycleId": "940009",
-      "occurredAt": "2026-11-08T09:15:00",
-      "actionCompletedAt": "2026-11-08T09:45:00",
+      "occurredAt": "2026-11-08T10:00:00",
+      "actionCompletedAt": "2026-11-08T11:00:00",
       "issueType": "배지수분량",
       "message": "배지 수분이 기준 하한 미만으로 떨어짐",
       "status": "조치 완료",
       "issueValue": 36,
-      "actionContent": "추가 관수 후 09:45에 배지 수분 54% 확인"
+      "actionContent": "추가 관수 후 11:00에 배지 수분 54% 확인"
     },
     {
       "issueId": "940056",
       "cycleId": "940009",
-      "occurredAt": "2026-11-12T13:30:00",
-      "actionCompletedAt": "2026-11-12T14:10:00",
+      "occurredAt": "2026-11-12T13:00:00",
+      "actionCompletedAt": "2026-11-12T14:00:00",
       "issueType": "온도",
       "message": "한낮 온도가 기준 상한을 초과함",
       "status": "조치 완료",
       "issueValue": 31.2,
-      "actionContent": "측창을 개방하고 14:10에 온도 25.4℃ 확인"
+      "actionContent": "측창을 개방하고 14:00에 온도 25.4℃ 확인"
     }
   ],
   "rules": {
@@ -773,6 +952,258 @@ const prototypeData = {
       "cropId": "940002",
       "varietyId": "940004",
       "stageId": null
+    },
+    {
+      "id": "940011",
+      "name": "핑크뷰티 · 영양생장기",
+      "cropId": "940001",
+      "varietyId": "940005",
+      "stageId": "VEG"
+    },
+    {
+      "id": "940012",
+      "name": "핑크뷰티 · 꽃눈유도기",
+      "cropId": "940001",
+      "varietyId": "940005",
+      "stageId": "IND"
+    },
+    {
+      "id": "940013",
+      "name": "핑크뷰티 · 생식생장기",
+      "cropId": "940001",
+      "varietyId": "940005",
+      "stageId": "REP"
+    },
+    {
+      "id": "940014",
+      "name": "레드윙 · 영양생장기",
+      "cropId": "940001",
+      "varietyId": "940006",
+      "stageId": "VEG"
+    },
+    {
+      "id": "940015",
+      "name": "레드윙 · 꽃눈유도기",
+      "cropId": "940001",
+      "varietyId": "940006",
+      "stageId": "IND"
+    },
+    {
+      "id": "940016",
+      "name": "레드윙 · 생식생장기",
+      "cropId": "940001",
+      "varietyId": "940006",
+      "stageId": "REP"
+    },
+    {
+      "id": "940017",
+      "name": "리틀프린스 · 영양생장기",
+      "cropId": "940002",
+      "varietyId": "940007",
+      "stageId": "VEG"
+    },
+    {
+      "id": "940018",
+      "name": "리틀프린스 · 꽃눈유도기",
+      "cropId": "940002",
+      "varietyId": "940007",
+      "stageId": "IND"
+    },
+    {
+      "id": "940019",
+      "name": "리틀프린스 · 생식생장기",
+      "cropId": "940002",
+      "varietyId": "940007",
+      "stageId": "REP"
+    },
+    {
+      "id": "940020",
+      "name": "아리홍 · 영양생장기",
+      "cropId": "940002",
+      "varietyId": "940008",
+      "stageId": "VEG"
+    },
+    {
+      "id": "940021",
+      "name": "아리홍 · 꽃눈유도기",
+      "cropId": "940002",
+      "varietyId": "940008",
+      "stageId": "IND"
+    },
+    {
+      "id": "940022",
+      "name": "아리홍 · 생식생장기",
+      "cropId": "940002",
+      "varietyId": "940008",
+      "stageId": "REP"
+    },
+    {
+      "id": "940023",
+      "name": "핑크드림 · 영양생장기",
+      "cropId": "940002",
+      "varietyId": "940009",
+      "stageId": "VEG"
+    },
+    {
+      "id": "940024",
+      "name": "핑크드림 · 꽃눈유도기",
+      "cropId": "940002",
+      "varietyId": "940009",
+      "stageId": "IND"
+    },
+    {
+      "id": "940025",
+      "name": "핑크드림 · 생식생장기",
+      "cropId": "940002",
+      "varietyId": "940009",
+      "stageId": "REP"
+    },
+    {
+      "id": "940026",
+      "name": "백마 · 영양생장기",
+      "cropId": "940010",
+      "varietyId": "940010",
+      "stageId": "VEG"
+    },
+    {
+      "id": "940027",
+      "name": "백마 · 꽃눈유도기",
+      "cropId": "940010",
+      "varietyId": "940010",
+      "stageId": "IND"
+    },
+    {
+      "id": "940028",
+      "name": "백마 · 생식생장기",
+      "cropId": "940010",
+      "varietyId": "940010",
+      "stageId": "REP"
+    },
+    {
+      "id": "940029",
+      "name": "신마 · 영양생장기",
+      "cropId": "940010",
+      "varietyId": "940011",
+      "stageId": "VEG"
+    },
+    {
+      "id": "940030",
+      "name": "신마 · 꽃눈유도기",
+      "cropId": "940010",
+      "varietyId": "940011",
+      "stageId": "IND"
+    },
+    {
+      "id": "940031",
+      "name": "신마 · 생식생장기",
+      "cropId": "940010",
+      "varietyId": "940011",
+      "stageId": "REP"
+    },
+    {
+      "id": "940032",
+      "name": "백강 · 영양생장기",
+      "cropId": "940010",
+      "varietyId": "940012",
+      "stageId": "VEG"
+    },
+    {
+      "id": "940033",
+      "name": "백강 · 꽃눈유도기",
+      "cropId": "940010",
+      "varietyId": "940012",
+      "stageId": "IND"
+    },
+    {
+      "id": "940034",
+      "name": "백강 · 생식생장기",
+      "cropId": "940010",
+      "varietyId": "940012",
+      "stageId": "REP"
+    },
+    {
+      "id": "940035",
+      "name": "브리즈 · 영양생장기",
+      "cropId": "940013",
+      "varietyId": "940013",
+      "stageId": "VEG"
+    },
+    {
+      "id": "940036",
+      "name": "브리즈 · 꽃눈유도기",
+      "cropId": "940013",
+      "varietyId": "940013",
+      "stageId": "IND"
+    },
+    {
+      "id": "940037",
+      "name": "브리즈 · 생식생장기",
+      "cropId": "940013",
+      "varietyId": "940013",
+      "stageId": "REP"
+    },
+    {
+      "id": "940038",
+      "name": "하모니 · 영양생장기",
+      "cropId": "940013",
+      "varietyId": "940014",
+      "stageId": "VEG"
+    },
+    {
+      "id": "940039",
+      "name": "하모니 · 꽃눈유도기",
+      "cropId": "940013",
+      "varietyId": "940014",
+      "stageId": "IND"
+    },
+    {
+      "id": "940040",
+      "name": "하모니 · 생식생장기",
+      "cropId": "940013",
+      "varietyId": "940014",
+      "stageId": "REP"
+    },
+    {
+      "id": "940041",
+      "name": "마블매직 · 영양생장기",
+      "cropId": "940015",
+      "varietyId": "940015",
+      "stageId": "VEG"
+    },
+    {
+      "id": "940042",
+      "name": "마블매직 · 꽃눈유도기",
+      "cropId": "940015",
+      "varietyId": "940015",
+      "stageId": "IND"
+    },
+    {
+      "id": "940043",
+      "name": "마블매직 · 생식생장기",
+      "cropId": "940015",
+      "varietyId": "940015",
+      "stageId": "REP"
+    },
+    {
+      "id": "940044",
+      "name": "퍼플뷰티 · 영양생장기",
+      "cropId": "940015",
+      "varietyId": "940016",
+      "stageId": "VEG"
+    },
+    {
+      "id": "940045",
+      "name": "퍼플뷰티 · 꽃눈유도기",
+      "cropId": "940015",
+      "varietyId": "940016",
+      "stageId": "IND"
+    },
+    {
+      "id": "940046",
+      "name": "퍼플뷰티 · 생식생장기",
+      "cropId": "940015",
+      "varietyId": "940016",
+      "stageId": "REP"
     }
   ],
   "measurementFields": [
@@ -1290,6 +1721,1842 @@ const prototypeData = {
           6.5
         ]
       }
+    },
+    {
+      "criterionId": "940011",
+      "setId": "940011",
+      "cropId": "940001",
+      "varietyId": "940005",
+      "stageId": "VEG",
+      "stageOrder": 1,
+      "standardDays": 21,
+      "thresholds": {
+        "dayTempC": [
+          18,
+          28
+        ],
+        "nightTempC": [
+          14,
+          20
+        ],
+        "humidityPct": [
+          50,
+          80
+        ],
+        "co2Ppm": [
+          400,
+          1000
+        ],
+        "solarWm2": [
+          200,
+          800
+        ],
+        "lightUmolM2S": [
+          150,
+          550
+        ],
+        "substrateTempC": [
+          16,
+          25
+        ],
+        "substrateMoisturePct": [
+          40,
+          70
+        ],
+        "substrateEcMsCm": [
+          1.2,
+          2.4
+        ],
+        "substratePh": [
+          5.5,
+          6.5
+        ]
+      }
+    },
+    {
+      "criterionId": "940012",
+      "setId": "940012",
+      "cropId": "940001",
+      "varietyId": "940005",
+      "stageId": "IND",
+      "stageOrder": 2,
+      "standardDays": 14,
+      "thresholds": {
+        "dayTempC": [
+          19,
+          29
+        ],
+        "nightTempC": [
+          15,
+          21
+        ],
+        "humidityPct": [
+          50,
+          80
+        ],
+        "co2Ppm": [
+          400,
+          1000
+        ],
+        "solarWm2": [
+          200,
+          800
+        ],
+        "lightUmolM2S": [
+          150,
+          550
+        ],
+        "substrateTempC": [
+          16,
+          25
+        ],
+        "substrateMoisturePct": [
+          40,
+          70
+        ],
+        "substrateEcMsCm": [
+          1.2,
+          2.4
+        ],
+        "substratePh": [
+          5.5,
+          6.5
+        ]
+      }
+    },
+    {
+      "criterionId": "940013",
+      "setId": "940013",
+      "cropId": "940001",
+      "varietyId": "940005",
+      "stageId": "REP",
+      "stageOrder": 3,
+      "standardDays": 28,
+      "thresholds": {
+        "dayTempC": [
+          20,
+          30
+        ],
+        "nightTempC": [
+          16,
+          22
+        ],
+        "humidityPct": [
+          50,
+          80
+        ],
+        "co2Ppm": [
+          400,
+          1000
+        ],
+        "solarWm2": [
+          200,
+          800
+        ],
+        "lightUmolM2S": [
+          150,
+          550
+        ],
+        "substrateTempC": [
+          16,
+          25
+        ],
+        "substrateMoisturePct": [
+          40,
+          70
+        ],
+        "substrateEcMsCm": [
+          1.2,
+          2.4
+        ],
+        "substratePh": [
+          5.5,
+          6.5
+        ]
+      }
+    },
+    {
+      "criterionId": "940014",
+      "setId": "940014",
+      "cropId": "940001",
+      "varietyId": "940006",
+      "stageId": "VEG",
+      "stageOrder": 1,
+      "standardDays": 21,
+      "thresholds": {
+        "dayTempC": [
+          18,
+          28
+        ],
+        "nightTempC": [
+          14,
+          20
+        ],
+        "humidityPct": [
+          50,
+          80
+        ],
+        "co2Ppm": [
+          400,
+          1000
+        ],
+        "solarWm2": [
+          200,
+          800
+        ],
+        "lightUmolM2S": [
+          150,
+          550
+        ],
+        "substrateTempC": [
+          16,
+          25
+        ],
+        "substrateMoisturePct": [
+          40,
+          70
+        ],
+        "substrateEcMsCm": [
+          1.2,
+          2.4
+        ],
+        "substratePh": [
+          5.5,
+          6.5
+        ]
+      }
+    },
+    {
+      "criterionId": "940015",
+      "setId": "940015",
+      "cropId": "940001",
+      "varietyId": "940006",
+      "stageId": "IND",
+      "stageOrder": 2,
+      "standardDays": 14,
+      "thresholds": {
+        "dayTempC": [
+          19,
+          29
+        ],
+        "nightTempC": [
+          15,
+          21
+        ],
+        "humidityPct": [
+          50,
+          80
+        ],
+        "co2Ppm": [
+          400,
+          1000
+        ],
+        "solarWm2": [
+          200,
+          800
+        ],
+        "lightUmolM2S": [
+          150,
+          550
+        ],
+        "substrateTempC": [
+          16,
+          25
+        ],
+        "substrateMoisturePct": [
+          40,
+          70
+        ],
+        "substrateEcMsCm": [
+          1.2,
+          2.4
+        ],
+        "substratePh": [
+          5.5,
+          6.5
+        ]
+      }
+    },
+    {
+      "criterionId": "940016",
+      "setId": "940016",
+      "cropId": "940001",
+      "varietyId": "940006",
+      "stageId": "REP",
+      "stageOrder": 3,
+      "standardDays": 28,
+      "thresholds": {
+        "dayTempC": [
+          20,
+          30
+        ],
+        "nightTempC": [
+          16,
+          22
+        ],
+        "humidityPct": [
+          50,
+          80
+        ],
+        "co2Ppm": [
+          400,
+          1000
+        ],
+        "solarWm2": [
+          200,
+          800
+        ],
+        "lightUmolM2S": [
+          150,
+          550
+        ],
+        "substrateTempC": [
+          16,
+          25
+        ],
+        "substrateMoisturePct": [
+          40,
+          70
+        ],
+        "substrateEcMsCm": [
+          1.2,
+          2.4
+        ],
+        "substratePh": [
+          5.5,
+          6.5
+        ]
+      }
+    },
+    {
+      "criterionId": "940017",
+      "setId": "940017",
+      "cropId": "940002",
+      "varietyId": "940007",
+      "stageId": "VEG",
+      "stageOrder": 1,
+      "standardDays": 35,
+      "thresholds": {
+        "dayTempC": [
+          24,
+          30
+        ],
+        "nightTempC": [
+          20,
+          24
+        ],
+        "humidityPct": [
+          60,
+          80
+        ],
+        "co2Ppm": [
+          400,
+          900
+        ],
+        "solarWm2": [
+          150,
+          500
+        ],
+        "lightUmolM2S": [
+          120,
+          350
+        ],
+        "substrateTempC": [
+          20,
+          26
+        ],
+        "substrateMoisturePct": [
+          45,
+          70
+        ],
+        "substrateEcMsCm": [
+          0.8,
+          1.5
+        ],
+        "substratePh": [
+          5.5,
+          6.2
+        ]
+      }
+    },
+    {
+      "criterionId": "940018",
+      "setId": "940018",
+      "cropId": "940002",
+      "varietyId": "940007",
+      "stageId": "IND",
+      "stageOrder": 2,
+      "standardDays": 28,
+      "thresholds": {
+        "dayTempC": [
+          20,
+          25
+        ],
+        "nightTempC": [
+          16,
+          20
+        ],
+        "humidityPct": [
+          55,
+          75
+        ],
+        "co2Ppm": [
+          400,
+          900
+        ],
+        "solarWm2": [
+          150,
+          550
+        ],
+        "lightUmolM2S": [
+          140,
+          380
+        ],
+        "substrateTempC": [
+          18,
+          24
+        ],
+        "substrateMoisturePct": [
+          40,
+          65
+        ],
+        "substrateEcMsCm": [
+          0.9,
+          1.6
+        ],
+        "substratePh": [
+          5.5,
+          6.2
+        ]
+      }
+    },
+    {
+      "criterionId": "940019",
+      "setId": "940019",
+      "cropId": "940002",
+      "varietyId": "940007",
+      "stageId": "REP",
+      "stageOrder": 3,
+      "standardDays": 42,
+      "thresholds": {
+        "dayTempC": [
+          21,
+          26
+        ],
+        "nightTempC": [
+          17,
+          21
+        ],
+        "humidityPct": [
+          55,
+          75
+        ],
+        "co2Ppm": [
+          400,
+          900
+        ],
+        "solarWm2": [
+          150,
+          550
+        ],
+        "lightUmolM2S": [
+          140,
+          380
+        ],
+        "substrateTempC": [
+          18,
+          24
+        ],
+        "substrateMoisturePct": [
+          40,
+          65
+        ],
+        "substrateEcMsCm": [
+          0.9,
+          1.6
+        ],
+        "substratePh": [
+          5.5,
+          6.2
+        ]
+      }
+    },
+    {
+      "criterionId": "940020",
+      "setId": "940020",
+      "cropId": "940002",
+      "varietyId": "940008",
+      "stageId": "VEG",
+      "stageOrder": 1,
+      "standardDays": 35,
+      "thresholds": {
+        "dayTempC": [
+          24,
+          30
+        ],
+        "nightTempC": [
+          20,
+          24
+        ],
+        "humidityPct": [
+          60,
+          80
+        ],
+        "co2Ppm": [
+          400,
+          900
+        ],
+        "solarWm2": [
+          150,
+          500
+        ],
+        "lightUmolM2S": [
+          120,
+          350
+        ],
+        "substrateTempC": [
+          20,
+          26
+        ],
+        "substrateMoisturePct": [
+          45,
+          70
+        ],
+        "substrateEcMsCm": [
+          0.8,
+          1.5
+        ],
+        "substratePh": [
+          5.5,
+          6.2
+        ]
+      }
+    },
+    {
+      "criterionId": "940021",
+      "setId": "940021",
+      "cropId": "940002",
+      "varietyId": "940008",
+      "stageId": "IND",
+      "stageOrder": 2,
+      "standardDays": 28,
+      "thresholds": {
+        "dayTempC": [
+          20,
+          25
+        ],
+        "nightTempC": [
+          16,
+          20
+        ],
+        "humidityPct": [
+          55,
+          75
+        ],
+        "co2Ppm": [
+          400,
+          900
+        ],
+        "solarWm2": [
+          150,
+          550
+        ],
+        "lightUmolM2S": [
+          140,
+          380
+        ],
+        "substrateTempC": [
+          18,
+          24
+        ],
+        "substrateMoisturePct": [
+          40,
+          65
+        ],
+        "substrateEcMsCm": [
+          0.9,
+          1.6
+        ],
+        "substratePh": [
+          5.5,
+          6.2
+        ]
+      }
+    },
+    {
+      "criterionId": "940022",
+      "setId": "940022",
+      "cropId": "940002",
+      "varietyId": "940008",
+      "stageId": "REP",
+      "stageOrder": 3,
+      "standardDays": 42,
+      "thresholds": {
+        "dayTempC": [
+          21,
+          26
+        ],
+        "nightTempC": [
+          17,
+          21
+        ],
+        "humidityPct": [
+          55,
+          75
+        ],
+        "co2Ppm": [
+          400,
+          900
+        ],
+        "solarWm2": [
+          150,
+          550
+        ],
+        "lightUmolM2S": [
+          140,
+          380
+        ],
+        "substrateTempC": [
+          18,
+          24
+        ],
+        "substrateMoisturePct": [
+          40,
+          65
+        ],
+        "substrateEcMsCm": [
+          0.9,
+          1.6
+        ],
+        "substratePh": [
+          5.5,
+          6.2
+        ]
+      }
+    },
+    {
+      "criterionId": "940023",
+      "setId": "940023",
+      "cropId": "940002",
+      "varietyId": "940009",
+      "stageId": "VEG",
+      "stageOrder": 1,
+      "standardDays": 35,
+      "thresholds": {
+        "dayTempC": [
+          24,
+          30
+        ],
+        "nightTempC": [
+          20,
+          24
+        ],
+        "humidityPct": [
+          60,
+          80
+        ],
+        "co2Ppm": [
+          400,
+          900
+        ],
+        "solarWm2": [
+          150,
+          500
+        ],
+        "lightUmolM2S": [
+          120,
+          350
+        ],
+        "substrateTempC": [
+          20,
+          26
+        ],
+        "substrateMoisturePct": [
+          45,
+          70
+        ],
+        "substrateEcMsCm": [
+          0.8,
+          1.5
+        ],
+        "substratePh": [
+          5.5,
+          6.2
+        ]
+      }
+    },
+    {
+      "criterionId": "940024",
+      "setId": "940024",
+      "cropId": "940002",
+      "varietyId": "940009",
+      "stageId": "IND",
+      "stageOrder": 2,
+      "standardDays": 28,
+      "thresholds": {
+        "dayTempC": [
+          20,
+          25
+        ],
+        "nightTempC": [
+          16,
+          20
+        ],
+        "humidityPct": [
+          55,
+          75
+        ],
+        "co2Ppm": [
+          400,
+          900
+        ],
+        "solarWm2": [
+          150,
+          550
+        ],
+        "lightUmolM2S": [
+          140,
+          380
+        ],
+        "substrateTempC": [
+          18,
+          24
+        ],
+        "substrateMoisturePct": [
+          40,
+          65
+        ],
+        "substrateEcMsCm": [
+          0.9,
+          1.6
+        ],
+        "substratePh": [
+          5.5,
+          6.2
+        ]
+      }
+    },
+    {
+      "criterionId": "940025",
+      "setId": "940025",
+      "cropId": "940002",
+      "varietyId": "940009",
+      "stageId": "REP",
+      "stageOrder": 3,
+      "standardDays": 42,
+      "thresholds": {
+        "dayTempC": [
+          21,
+          26
+        ],
+        "nightTempC": [
+          17,
+          21
+        ],
+        "humidityPct": [
+          55,
+          75
+        ],
+        "co2Ppm": [
+          400,
+          900
+        ],
+        "solarWm2": [
+          150,
+          550
+        ],
+        "lightUmolM2S": [
+          140,
+          380
+        ],
+        "substrateTempC": [
+          18,
+          24
+        ],
+        "substrateMoisturePct": [
+          40,
+          65
+        ],
+        "substrateEcMsCm": [
+          0.9,
+          1.6
+        ],
+        "substratePh": [
+          5.5,
+          6.2
+        ]
+      }
+    },
+    {
+      "criterionId": "940026",
+      "setId": "940026",
+      "cropId": "940010",
+      "varietyId": "940010",
+      "stageId": "VEG",
+      "stageOrder": 1,
+      "standardDays": 24,
+      "thresholds": {
+        "dayTempC": [
+          18,
+          26
+        ],
+        "nightTempC": [
+          14,
+          19
+        ],
+        "humidityPct": [
+          55,
+          75
+        ],
+        "co2Ppm": [
+          400,
+          1000
+        ],
+        "solarWm2": [
+          200,
+          750
+        ],
+        "lightUmolM2S": [
+          150,
+          500
+        ],
+        "substrateTempC": [
+          16,
+          23
+        ],
+        "substrateMoisturePct": [
+          45,
+          70
+        ],
+        "substrateEcMsCm": [
+          1.2,
+          2
+        ],
+        "substratePh": [
+          5.8,
+          6.5
+        ]
+      }
+    },
+    {
+      "criterionId": "940027",
+      "setId": "940027",
+      "cropId": "940010",
+      "varietyId": "940010",
+      "stageId": "IND",
+      "stageOrder": 2,
+      "standardDays": 21,
+      "thresholds": {
+        "dayTempC": [
+          18,
+          25
+        ],
+        "nightTempC": [
+          15,
+          19
+        ],
+        "humidityPct": [
+          50,
+          70
+        ],
+        "co2Ppm": [
+          400,
+          1000
+        ],
+        "solarWm2": [
+          200,
+          750
+        ],
+        "lightUmolM2S": [
+          150,
+          500
+        ],
+        "substrateTempC": [
+          16,
+          23
+        ],
+        "substrateMoisturePct": [
+          40,
+          65
+        ],
+        "substrateEcMsCm": [
+          1.2,
+          2
+        ],
+        "substratePh": [
+          5.8,
+          6.5
+        ]
+      }
+    },
+    {
+      "criterionId": "940028",
+      "setId": "940028",
+      "cropId": "940010",
+      "varietyId": "940010",
+      "stageId": "REP",
+      "stageOrder": 3,
+      "standardDays": 35,
+      "thresholds": {
+        "dayTempC": [
+          17,
+          24
+        ],
+        "nightTempC": [
+          13,
+          18
+        ],
+        "humidityPct": [
+          50,
+          70
+        ],
+        "co2Ppm": [
+          400,
+          900
+        ],
+        "solarWm2": [
+          180,
+          700
+        ],
+        "lightUmolM2S": [
+          140,
+          480
+        ],
+        "substrateTempC": [
+          15,
+          22
+        ],
+        "substrateMoisturePct": [
+          40,
+          65
+        ],
+        "substrateEcMsCm": [
+          1.1,
+          1.9
+        ],
+        "substratePh": [
+          5.8,
+          6.5
+        ]
+      }
+    },
+    {
+      "criterionId": "940029",
+      "setId": "940029",
+      "cropId": "940010",
+      "varietyId": "940011",
+      "stageId": "VEG",
+      "stageOrder": 1,
+      "standardDays": 24,
+      "thresholds": {
+        "dayTempC": [
+          18,
+          26
+        ],
+        "nightTempC": [
+          14,
+          19
+        ],
+        "humidityPct": [
+          55,
+          75
+        ],
+        "co2Ppm": [
+          400,
+          1000
+        ],
+        "solarWm2": [
+          200,
+          750
+        ],
+        "lightUmolM2S": [
+          150,
+          500
+        ],
+        "substrateTempC": [
+          16,
+          23
+        ],
+        "substrateMoisturePct": [
+          45,
+          70
+        ],
+        "substrateEcMsCm": [
+          1.2,
+          2
+        ],
+        "substratePh": [
+          5.8,
+          6.5
+        ]
+      }
+    },
+    {
+      "criterionId": "940030",
+      "setId": "940030",
+      "cropId": "940010",
+      "varietyId": "940011",
+      "stageId": "IND",
+      "stageOrder": 2,
+      "standardDays": 21,
+      "thresholds": {
+        "dayTempC": [
+          18,
+          25
+        ],
+        "nightTempC": [
+          15,
+          19
+        ],
+        "humidityPct": [
+          50,
+          70
+        ],
+        "co2Ppm": [
+          400,
+          1000
+        ],
+        "solarWm2": [
+          200,
+          750
+        ],
+        "lightUmolM2S": [
+          150,
+          500
+        ],
+        "substrateTempC": [
+          16,
+          23
+        ],
+        "substrateMoisturePct": [
+          40,
+          65
+        ],
+        "substrateEcMsCm": [
+          1.2,
+          2
+        ],
+        "substratePh": [
+          5.8,
+          6.5
+        ]
+      }
+    },
+    {
+      "criterionId": "940031",
+      "setId": "940031",
+      "cropId": "940010",
+      "varietyId": "940011",
+      "stageId": "REP",
+      "stageOrder": 3,
+      "standardDays": 35,
+      "thresholds": {
+        "dayTempC": [
+          17,
+          24
+        ],
+        "nightTempC": [
+          13,
+          18
+        ],
+        "humidityPct": [
+          50,
+          70
+        ],
+        "co2Ppm": [
+          400,
+          900
+        ],
+        "solarWm2": [
+          180,
+          700
+        ],
+        "lightUmolM2S": [
+          140,
+          480
+        ],
+        "substrateTempC": [
+          15,
+          22
+        ],
+        "substrateMoisturePct": [
+          40,
+          65
+        ],
+        "substrateEcMsCm": [
+          1.1,
+          1.9
+        ],
+        "substratePh": [
+          5.8,
+          6.5
+        ]
+      }
+    },
+    {
+      "criterionId": "940032",
+      "setId": "940032",
+      "cropId": "940010",
+      "varietyId": "940012",
+      "stageId": "VEG",
+      "stageOrder": 1,
+      "standardDays": 24,
+      "thresholds": {
+        "dayTempC": [
+          18,
+          26
+        ],
+        "nightTempC": [
+          14,
+          19
+        ],
+        "humidityPct": [
+          55,
+          75
+        ],
+        "co2Ppm": [
+          400,
+          1000
+        ],
+        "solarWm2": [
+          200,
+          750
+        ],
+        "lightUmolM2S": [
+          150,
+          500
+        ],
+        "substrateTempC": [
+          16,
+          23
+        ],
+        "substrateMoisturePct": [
+          45,
+          70
+        ],
+        "substrateEcMsCm": [
+          1.2,
+          2
+        ],
+        "substratePh": [
+          5.8,
+          6.5
+        ]
+      }
+    },
+    {
+      "criterionId": "940033",
+      "setId": "940033",
+      "cropId": "940010",
+      "varietyId": "940012",
+      "stageId": "IND",
+      "stageOrder": 2,
+      "standardDays": 21,
+      "thresholds": {
+        "dayTempC": [
+          18,
+          25
+        ],
+        "nightTempC": [
+          15,
+          19
+        ],
+        "humidityPct": [
+          50,
+          70
+        ],
+        "co2Ppm": [
+          400,
+          1000
+        ],
+        "solarWm2": [
+          200,
+          750
+        ],
+        "lightUmolM2S": [
+          150,
+          500
+        ],
+        "substrateTempC": [
+          16,
+          23
+        ],
+        "substrateMoisturePct": [
+          40,
+          65
+        ],
+        "substrateEcMsCm": [
+          1.2,
+          2
+        ],
+        "substratePh": [
+          5.8,
+          6.5
+        ]
+      }
+    },
+    {
+      "criterionId": "940034",
+      "setId": "940034",
+      "cropId": "940010",
+      "varietyId": "940012",
+      "stageId": "REP",
+      "stageOrder": 3,
+      "standardDays": 35,
+      "thresholds": {
+        "dayTempC": [
+          17,
+          24
+        ],
+        "nightTempC": [
+          13,
+          18
+        ],
+        "humidityPct": [
+          50,
+          70
+        ],
+        "co2Ppm": [
+          400,
+          900
+        ],
+        "solarWm2": [
+          180,
+          700
+        ],
+        "lightUmolM2S": [
+          140,
+          480
+        ],
+        "substrateTempC": [
+          15,
+          22
+        ],
+        "substrateMoisturePct": [
+          40,
+          65
+        ],
+        "substrateEcMsCm": [
+          1.1,
+          1.9
+        ],
+        "substratePh": [
+          5.8,
+          6.5
+        ]
+      }
+    },
+    {
+      "criterionId": "940035",
+      "setId": "940035",
+      "cropId": "940013",
+      "varietyId": "940013",
+      "stageId": "VEG",
+      "stageOrder": 1,
+      "standardDays": 25,
+      "thresholds": {
+        "dayTempC": [
+          18,
+          25
+        ],
+        "nightTempC": [
+          13,
+          17
+        ],
+        "humidityPct": [
+          55,
+          75
+        ],
+        "co2Ppm": [
+          400,
+          900
+        ],
+        "solarWm2": [
+          200,
+          750
+        ],
+        "lightUmolM2S": [
+          150,
+          500
+        ],
+        "substrateTempC": [
+          16,
+          22
+        ],
+        "substrateMoisturePct": [
+          45,
+          70
+        ],
+        "substrateEcMsCm": [
+          1.2,
+          2
+        ],
+        "substratePh": [
+          5.5,
+          6.2
+        ]
+      }
+    },
+    {
+      "criterionId": "940036",
+      "setId": "940036",
+      "cropId": "940013",
+      "varietyId": "940013",
+      "stageId": "IND",
+      "stageOrder": 2,
+      "standardDays": 20,
+      "thresholds": {
+        "dayTempC": [
+          18,
+          25
+        ],
+        "nightTempC": [
+          13,
+          17
+        ],
+        "humidityPct": [
+          50,
+          70
+        ],
+        "co2Ppm": [
+          400,
+          900
+        ],
+        "solarWm2": [
+          200,
+          750
+        ],
+        "lightUmolM2S": [
+          160,
+          520
+        ],
+        "substrateTempC": [
+          16,
+          22
+        ],
+        "substrateMoisturePct": [
+          45,
+          70
+        ],
+        "substrateEcMsCm": [
+          1.2,
+          2
+        ],
+        "substratePh": [
+          5.5,
+          6.2
+        ]
+      }
+    },
+    {
+      "criterionId": "940037",
+      "setId": "940037",
+      "cropId": "940013",
+      "varietyId": "940013",
+      "stageId": "REP",
+      "stageOrder": 3,
+      "standardDays": 30,
+      "thresholds": {
+        "dayTempC": [
+          17,
+          24
+        ],
+        "nightTempC": [
+          12,
+          16
+        ],
+        "humidityPct": [
+          50,
+          70
+        ],
+        "co2Ppm": [
+          400,
+          900
+        ],
+        "solarWm2": [
+          200,
+          750
+        ],
+        "lightUmolM2S": [
+          160,
+          520
+        ],
+        "substrateTempC": [
+          16,
+          22
+        ],
+        "substrateMoisturePct": [
+          45,
+          70
+        ],
+        "substrateEcMsCm": [
+          1.2,
+          2
+        ],
+        "substratePh": [
+          5.5,
+          6.2
+        ]
+      }
+    },
+    {
+      "criterionId": "940038",
+      "setId": "940038",
+      "cropId": "940013",
+      "varietyId": "940014",
+      "stageId": "VEG",
+      "stageOrder": 1,
+      "standardDays": 25,
+      "thresholds": {
+        "dayTempC": [
+          18,
+          25
+        ],
+        "nightTempC": [
+          13,
+          17
+        ],
+        "humidityPct": [
+          55,
+          75
+        ],
+        "co2Ppm": [
+          400,
+          900
+        ],
+        "solarWm2": [
+          200,
+          750
+        ],
+        "lightUmolM2S": [
+          150,
+          500
+        ],
+        "substrateTempC": [
+          16,
+          22
+        ],
+        "substrateMoisturePct": [
+          45,
+          70
+        ],
+        "substrateEcMsCm": [
+          1.2,
+          2
+        ],
+        "substratePh": [
+          5.5,
+          6.2
+        ]
+      }
+    },
+    {
+      "criterionId": "940039",
+      "setId": "940039",
+      "cropId": "940013",
+      "varietyId": "940014",
+      "stageId": "IND",
+      "stageOrder": 2,
+      "standardDays": 20,
+      "thresholds": {
+        "dayTempC": [
+          18,
+          25
+        ],
+        "nightTempC": [
+          13,
+          17
+        ],
+        "humidityPct": [
+          50,
+          70
+        ],
+        "co2Ppm": [
+          400,
+          900
+        ],
+        "solarWm2": [
+          200,
+          750
+        ],
+        "lightUmolM2S": [
+          160,
+          520
+        ],
+        "substrateTempC": [
+          16,
+          22
+        ],
+        "substrateMoisturePct": [
+          45,
+          70
+        ],
+        "substrateEcMsCm": [
+          1.2,
+          2
+        ],
+        "substratePh": [
+          5.5,
+          6.2
+        ]
+      }
+    },
+    {
+      "criterionId": "940040",
+      "setId": "940040",
+      "cropId": "940013",
+      "varietyId": "940014",
+      "stageId": "REP",
+      "stageOrder": 3,
+      "standardDays": 30,
+      "thresholds": {
+        "dayTempC": [
+          17,
+          24
+        ],
+        "nightTempC": [
+          12,
+          16
+        ],
+        "humidityPct": [
+          50,
+          70
+        ],
+        "co2Ppm": [
+          400,
+          900
+        ],
+        "solarWm2": [
+          200,
+          750
+        ],
+        "lightUmolM2S": [
+          160,
+          520
+        ],
+        "substrateTempC": [
+          16,
+          22
+        ],
+        "substrateMoisturePct": [
+          45,
+          70
+        ],
+        "substrateEcMsCm": [
+          1.2,
+          2
+        ],
+        "substratePh": [
+          5.5,
+          6.2
+        ]
+      }
+    },
+    {
+      "criterionId": "940041",
+      "setId": "940041",
+      "cropId": "940015",
+      "varietyId": "940015",
+      "stageId": "VEG",
+      "stageOrder": 1,
+      "standardDays": 28,
+      "thresholds": {
+        "dayTempC": [
+          16,
+          23
+        ],
+        "nightTempC": [
+          10,
+          14
+        ],
+        "humidityPct": [
+          55,
+          75
+        ],
+        "co2Ppm": [
+          400,
+          900
+        ],
+        "solarWm2": [
+          200,
+          700
+        ],
+        "lightUmolM2S": [
+          150,
+          480
+        ],
+        "substrateTempC": [
+          14,
+          20
+        ],
+        "substrateMoisturePct": [
+          45,
+          70
+        ],
+        "substrateEcMsCm": [
+          1.2,
+          2
+        ],
+        "substratePh": [
+          6,
+          6.8
+        ]
+      }
+    },
+    {
+      "criterionId": "940042",
+      "setId": "940042",
+      "cropId": "940015",
+      "varietyId": "940015",
+      "stageId": "IND",
+      "stageOrder": 2,
+      "standardDays": 21,
+      "thresholds": {
+        "dayTempC": [
+          16,
+          22
+        ],
+        "nightTempC": [
+          10,
+          14
+        ],
+        "humidityPct": [
+          50,
+          70
+        ],
+        "co2Ppm": [
+          400,
+          900
+        ],
+        "solarWm2": [
+          200,
+          700
+        ],
+        "lightUmolM2S": [
+          160,
+          500
+        ],
+        "substrateTempC": [
+          14,
+          20
+        ],
+        "substrateMoisturePct": [
+          40,
+          65
+        ],
+        "substrateEcMsCm": [
+          1.2,
+          2
+        ],
+        "substratePh": [
+          6,
+          6.8
+        ]
+      }
+    },
+    {
+      "criterionId": "940043",
+      "setId": "940043",
+      "cropId": "940015",
+      "varietyId": "940015",
+      "stageId": "REP",
+      "stageOrder": 3,
+      "standardDays": 35,
+      "thresholds": {
+        "dayTempC": [
+          15,
+          22
+        ],
+        "nightTempC": [
+          9,
+          13
+        ],
+        "humidityPct": [
+          50,
+          70
+        ],
+        "co2Ppm": [
+          400,
+          900
+        ],
+        "solarWm2": [
+          200,
+          700
+        ],
+        "lightUmolM2S": [
+          160,
+          500
+        ],
+        "substrateTempC": [
+          14,
+          20
+        ],
+        "substrateMoisturePct": [
+          40,
+          65
+        ],
+        "substrateEcMsCm": [
+          1.2,
+          2
+        ],
+        "substratePh": [
+          6,
+          6.8
+        ]
+      }
+    },
+    {
+      "criterionId": "940044",
+      "setId": "940044",
+      "cropId": "940015",
+      "varietyId": "940016",
+      "stageId": "VEG",
+      "stageOrder": 1,
+      "standardDays": 28,
+      "thresholds": {
+        "dayTempC": [
+          16,
+          23
+        ],
+        "nightTempC": [
+          10,
+          14
+        ],
+        "humidityPct": [
+          55,
+          75
+        ],
+        "co2Ppm": [
+          400,
+          900
+        ],
+        "solarWm2": [
+          200,
+          700
+        ],
+        "lightUmolM2S": [
+          150,
+          480
+        ],
+        "substrateTempC": [
+          14,
+          20
+        ],
+        "substrateMoisturePct": [
+          45,
+          70
+        ],
+        "substrateEcMsCm": [
+          1.2,
+          2
+        ],
+        "substratePh": [
+          6,
+          6.8
+        ]
+      }
+    },
+    {
+      "criterionId": "940045",
+      "setId": "940045",
+      "cropId": "940015",
+      "varietyId": "940016",
+      "stageId": "IND",
+      "stageOrder": 2,
+      "standardDays": 21,
+      "thresholds": {
+        "dayTempC": [
+          16,
+          22
+        ],
+        "nightTempC": [
+          10,
+          14
+        ],
+        "humidityPct": [
+          50,
+          70
+        ],
+        "co2Ppm": [
+          400,
+          900
+        ],
+        "solarWm2": [
+          200,
+          700
+        ],
+        "lightUmolM2S": [
+          160,
+          500
+        ],
+        "substrateTempC": [
+          14,
+          20
+        ],
+        "substrateMoisturePct": [
+          40,
+          65
+        ],
+        "substrateEcMsCm": [
+          1.2,
+          2
+        ],
+        "substratePh": [
+          6,
+          6.8
+        ]
+      }
+    },
+    {
+      "criterionId": "940046",
+      "setId": "940046",
+      "cropId": "940015",
+      "varietyId": "940016",
+      "stageId": "REP",
+      "stageOrder": 3,
+      "standardDays": 35,
+      "thresholds": {
+        "dayTempC": [
+          15,
+          22
+        ],
+        "nightTempC": [
+          9,
+          13
+        ],
+        "humidityPct": [
+          50,
+          70
+        ],
+        "co2Ppm": [
+          400,
+          900
+        ],
+        "solarWm2": [
+          200,
+          700
+        ],
+        "lightUmolM2S": [
+          160,
+          500
+        ],
+        "substrateTempC": [
+          14,
+          20
+        ],
+        "substrateMoisturePct": [
+          40,
+          65
+        ],
+        "substrateEcMsCm": [
+          1.2,
+          2
+        ],
+        "substratePh": [
+          6,
+          6.8
+        ]
+      }
     }
   ],
   "cyclePolicies": {
@@ -1333,7 +3600,7 @@ const prototypeData = {
     {
       "environmentChangeId": "940002",
       "cycleId": "940001",
-      "measuredAt": "2026-10-03T08:01:00",
+      "measuredAt": "2026-10-03T07:00:00",
       "insideTempC": 17.99,
       "humidityPct": 65,
       "co2Ppm": 650,
@@ -1347,7 +3614,7 @@ const prototypeData = {
     {
       "environmentChangeId": "940003",
       "cycleId": "940001",
-      "measuredAt": "2026-10-03T08:02:00",
+      "measuredAt": "2026-10-03T05:00:00",
       "insideTempC": 17.99,
       "humidityPct": 65,
       "co2Ppm": 650,
@@ -1459,7 +3726,7 @@ const prototypeData = {
     {
       "environmentChangeId": "940151",
       "cycleId": "940009",
-      "measuredAt": "2026-11-08T09:15:00",
+      "measuredAt": "2026-11-08T10:00:00",
       "insideTempC": 23,
       "humidityPct": 68,
       "co2Ppm": 650,
@@ -1473,7 +3740,7 @@ const prototypeData = {
     {
       "environmentChangeId": "940152",
       "cycleId": "940009",
-      "measuredAt": "2026-11-08T09:45:00",
+      "measuredAt": "2026-11-08T11:00:00",
       "insideTempC": 23,
       "humidityPct": 69,
       "co2Ppm": 650,
@@ -1487,7 +3754,7 @@ const prototypeData = {
     {
       "environmentChangeId": "940153",
       "cycleId": "940009",
-      "measuredAt": "2026-11-12T13:30:00",
+      "measuredAt": "2026-11-12T13:00:00",
       "insideTempC": 31.2,
       "humidityPct": 68,
       "co2Ppm": 650,
@@ -1501,7 +3768,7 @@ const prototypeData = {
     {
       "environmentChangeId": "940154",
       "cycleId": "940009",
-      "measuredAt": "2026-11-12T14:10:00",
+      "measuredAt": "2026-11-12T14:00:00",
       "insideTempC": 25.4,
       "humidityPct": 67,
       "co2Ppm": 650,
@@ -1515,7 +3782,7 @@ const prototypeData = {
     {
       "environmentChangeId": "940156",
       "cycleId": "940005",
-      "measuredAt": "2026-11-13T09:10:00",
+      "measuredAt": "2026-11-13T15:00:00",
       "insideTempC": 23,
       "humidityPct": 85,
       "co2Ppm": 620,
@@ -1525,6 +3792,454 @@ const prototypeData = {
       "substrateMoisturePct": 56,
       "substrateEcMsCm": 1.7,
       "substratePh": 6.1
+    },
+    {
+      "environmentChangeId": "940201",
+      "cycleId": "940001",
+      "measuredAt": "2026-10-03T06:00:00",
+      "insideTempC": 18.4,
+      "humidityPct": 72,
+      "co2Ppm": 740,
+      "solarWm2": 25,
+      "lightUmolM2S": 18,
+      "substrateTempC": 19.5,
+      "substrateMoisturePct": 56,
+      "substrateEcMsCm": 1.75,
+      "substratePh": 6
+    },
+    {
+      "environmentChangeId": "940202",
+      "cycleId": "940001",
+      "measuredAt": "2026-10-03T09:00:00",
+      "insideTempC": 20.8,
+      "humidityPct": 66,
+      "co2Ppm": 630,
+      "solarWm2": 310,
+      "lightUmolM2S": 210,
+      "substrateTempC": 20.1,
+      "substrateMoisturePct": 55,
+      "substrateEcMsCm": 1.8,
+      "substratePh": 6
+    },
+    {
+      "environmentChangeId": "940203",
+      "cycleId": "940001",
+      "measuredAt": "2026-10-03T10:00:00",
+      "insideTempC": 22.6,
+      "humidityPct": 62,
+      "co2Ppm": 580,
+      "solarWm2": 480,
+      "lightUmolM2S": 320,
+      "substrateTempC": 20.5,
+      "substrateMoisturePct": 54,
+      "substrateEcMsCm": 1.8,
+      "substratePh": 6
+    },
+    {
+      "environmentChangeId": "940204",
+      "cycleId": "940001",
+      "measuredAt": "2026-10-03T11:00:00",
+      "insideTempC": 24.3,
+      "humidityPct": 59,
+      "co2Ppm": 540,
+      "solarWm2": 610,
+      "lightUmolM2S": 410,
+      "substrateTempC": 21,
+      "substrateMoisturePct": 54,
+      "substrateEcMsCm": 1.82,
+      "substratePh": 6
+    },
+    {
+      "environmentChangeId": "940205",
+      "cycleId": "940001",
+      "measuredAt": "2026-10-03T12:00:00",
+      "insideTempC": 25.9,
+      "humidityPct": 56,
+      "co2Ppm": 510,
+      "solarWm2": 710,
+      "lightUmolM2S": 480,
+      "substrateTempC": 21.4,
+      "substrateMoisturePct": 53,
+      "substrateEcMsCm": 1.82,
+      "substratePh": 6.1
+    },
+    {
+      "environmentChangeId": "940206",
+      "cycleId": "940001",
+      "measuredAt": "2026-10-03T13:00:00",
+      "insideTempC": 26.5,
+      "humidityPct": 55,
+      "co2Ppm": 495,
+      "solarWm2": 730,
+      "lightUmolM2S": 495,
+      "substrateTempC": 21.8,
+      "substrateMoisturePct": 53,
+      "substrateEcMsCm": 1.85,
+      "substratePh": 6.1
+    },
+    {
+      "environmentChangeId": "940207",
+      "cycleId": "940001",
+      "measuredAt": "2026-10-03T14:00:00",
+      "insideTempC": 25.7,
+      "humidityPct": 57,
+      "co2Ppm": 520,
+      "solarWm2": 640,
+      "lightUmolM2S": 430,
+      "substrateTempC": 21.7,
+      "substrateMoisturePct": 52,
+      "substrateEcMsCm": 1.85,
+      "substratePh": 6.1
+    },
+    {
+      "environmentChangeId": "940208",
+      "cycleId": "940001",
+      "measuredAt": "2026-10-03T15:00:00",
+      "insideTempC": 24.1,
+      "humidityPct": 60,
+      "co2Ppm": 555,
+      "solarWm2": 470,
+      "lightUmolM2S": 310,
+      "substrateTempC": 21.3,
+      "substrateMoisturePct": 58,
+      "substrateEcMsCm": 1.78,
+      "substratePh": 6
+    },
+    {
+      "environmentChangeId": "940209",
+      "cycleId": "940001",
+      "measuredAt": "2026-10-03T16:00:00",
+      "insideTempC": 22.4,
+      "humidityPct": 63,
+      "co2Ppm": 600,
+      "solarWm2": 260,
+      "lightUmolM2S": 175,
+      "substrateTempC": 20.9,
+      "substrateMoisturePct": 57,
+      "substrateEcMsCm": 1.78,
+      "substratePh": 6
+    },
+    {
+      "environmentChangeId": "940210",
+      "cycleId": "940001",
+      "measuredAt": "2026-10-03T18:00:00",
+      "insideTempC": 19.8,
+      "humidityPct": 68,
+      "co2Ppm": 680,
+      "solarWm2": 15,
+      "lightUmolM2S": 10,
+      "substrateTempC": 20.2,
+      "substrateMoisturePct": 56,
+      "substrateEcMsCm": 1.78,
+      "substratePh": 6
+    },
+    {
+      "environmentChangeId": "940211",
+      "cycleId": "940002",
+      "measuredAt": "2026-09-19T07:00:00",
+      "insideTempC": 20.2,
+      "humidityPct": 74,
+      "co2Ppm": 720,
+      "solarWm2": 85,
+      "lightUmolM2S": 60,
+      "substrateTempC": 20.4,
+      "substrateMoisturePct": 58,
+      "substrateEcMsCm": 1.65,
+      "substratePh": 5.9
+    },
+    {
+      "environmentChangeId": "940212",
+      "cycleId": "940002",
+      "measuredAt": "2026-09-19T09:00:00",
+      "insideTempC": 22.5,
+      "humidityPct": 68,
+      "co2Ppm": 640,
+      "solarWm2": 340,
+      "lightUmolM2S": 230,
+      "substrateTempC": 20.8,
+      "substrateMoisturePct": 57,
+      "substrateEcMsCm": 1.68,
+      "substratePh": 5.9
+    },
+    {
+      "environmentChangeId": "940213",
+      "cycleId": "940002",
+      "measuredAt": "2026-09-19T11:00:00",
+      "insideTempC": 25.1,
+      "humidityPct": 62,
+      "co2Ppm": 560,
+      "solarWm2": 590,
+      "lightUmolM2S": 400,
+      "substrateTempC": 21.5,
+      "substrateMoisturePct": 55,
+      "substrateEcMsCm": 1.7,
+      "substratePh": 6
+    },
+    {
+      "environmentChangeId": "940214",
+      "cycleId": "940002",
+      "measuredAt": "2026-09-19T13:00:00",
+      "insideTempC": 27.4,
+      "humidityPct": 58,
+      "co2Ppm": 510,
+      "solarWm2": 720,
+      "lightUmolM2S": 490,
+      "substrateTempC": 22.1,
+      "substrateMoisturePct": 54,
+      "substrateEcMsCm": 1.72,
+      "substratePh": 6
+    },
+    {
+      "environmentChangeId": "940215",
+      "cycleId": "940002",
+      "measuredAt": "2026-09-19T15:00:00",
+      "insideTempC": 26.2,
+      "humidityPct": 60,
+      "co2Ppm": 540,
+      "solarWm2": 510,
+      "lightUmolM2S": 345,
+      "substrateTempC": 21.9,
+      "substrateMoisturePct": 53,
+      "substrateEcMsCm": 1.72,
+      "substratePh": 6
+    },
+    {
+      "environmentChangeId": "940216",
+      "cycleId": "940002",
+      "measuredAt": "2026-09-19T17:00:00",
+      "insideTempC": 23.8,
+      "humidityPct": 65,
+      "co2Ppm": 610,
+      "solarWm2": 190,
+      "lightUmolM2S": 130,
+      "substrateTempC": 21.3,
+      "substrateMoisturePct": 56,
+      "substrateEcMsCm": 1.68,
+      "substratePh": 6
+    },
+    {
+      "environmentChangeId": "940217",
+      "cycleId": "940002",
+      "measuredAt": "2026-09-19T19:00:00",
+      "insideTempC": 21.1,
+      "humidityPct": 71,
+      "co2Ppm": 690,
+      "solarWm2": 0,
+      "lightUmolM2S": 0,
+      "substrateTempC": 20.7,
+      "substrateMoisturePct": 56,
+      "substrateEcMsCm": 1.68,
+      "substratePh": 6
+    },
+    {
+      "environmentChangeId": "940218",
+      "cycleId": "940002",
+      "measuredAt": "2026-09-19T21:00:00",
+      "insideTempC": 19.6,
+      "humidityPct": 73,
+      "co2Ppm": 730,
+      "solarWm2": 0,
+      "lightUmolM2S": 0,
+      "substrateTempC": 20.3,
+      "substrateMoisturePct": 56,
+      "substrateEcMsCm": 1.68,
+      "substratePh": 6
+    },
+    {
+      "environmentChangeId": "940219",
+      "cycleId": "940005",
+      "measuredAt": "2026-11-13T06:00:00",
+      "insideTempC": 18.8,
+      "humidityPct": 76,
+      "co2Ppm": 750,
+      "solarWm2": 0,
+      "lightUmolM2S": 0,
+      "substrateTempC": 19.8,
+      "substrateMoisturePct": 57,
+      "substrateEcMsCm": 1.68,
+      "substratePh": 6.1
+    },
+    {
+      "environmentChangeId": "940220",
+      "cycleId": "940005",
+      "measuredAt": "2026-11-13T07:00:00",
+      "insideTempC": 19.6,
+      "humidityPct": 74,
+      "co2Ppm": 710,
+      "solarWm2": 75,
+      "lightUmolM2S": 50,
+      "substrateTempC": 20,
+      "substrateMoisturePct": 57,
+      "substrateEcMsCm": 1.68,
+      "substratePh": 6.1
+    },
+    {
+      "environmentChangeId": "940221",
+      "cycleId": "940005",
+      "measuredAt": "2026-11-13T08:00:00",
+      "insideTempC": 21.2,
+      "humidityPct": 71,
+      "co2Ppm": 660,
+      "solarWm2": 210,
+      "lightUmolM2S": 145,
+      "substrateTempC": 20.4,
+      "substrateMoisturePct": 56,
+      "substrateEcMsCm": 1.7,
+      "substratePh": 6.1
+    },
+    {
+      "environmentChangeId": "940222",
+      "cycleId": "940005",
+      "measuredAt": "2026-11-13T10:00:00",
+      "insideTempC": 24,
+      "humidityPct": 65,
+      "co2Ppm": 590,
+      "solarWm2": 480,
+      "lightUmolM2S": 325,
+      "substrateTempC": 21.2,
+      "substrateMoisturePct": 55,
+      "substrateEcMsCm": 1.72,
+      "substratePh": 6.1
+    },
+    {
+      "environmentChangeId": "940223",
+      "cycleId": "940005",
+      "measuredAt": "2026-11-13T11:00:00",
+      "insideTempC": 25.4,
+      "humidityPct": 62,
+      "co2Ppm": 550,
+      "solarWm2": 590,
+      "lightUmolM2S": 400,
+      "substrateTempC": 21.6,
+      "substrateMoisturePct": 54,
+      "substrateEcMsCm": 1.74,
+      "substratePh": 6.1
+    },
+    {
+      "environmentChangeId": "940224",
+      "cycleId": "940005",
+      "measuredAt": "2026-11-13T12:00:00",
+      "insideTempC": 26.3,
+      "humidityPct": 60,
+      "co2Ppm": 520,
+      "solarWm2": 660,
+      "lightUmolM2S": 445,
+      "substrateTempC": 22,
+      "substrateMoisturePct": 54,
+      "substrateEcMsCm": 1.74,
+      "substratePh": 6.1
+    },
+    {
+      "environmentChangeId": "940225",
+      "cycleId": "940005",
+      "measuredAt": "2026-11-13T13:00:00",
+      "insideTempC": 26.8,
+      "humidityPct": 59,
+      "co2Ppm": 505,
+      "solarWm2": 675,
+      "lightUmolM2S": 455,
+      "substrateTempC": 22.1,
+      "substrateMoisturePct": 53,
+      "substrateEcMsCm": 1.75,
+      "substratePh": 6.1
+    },
+    {
+      "environmentChangeId": "940226",
+      "cycleId": "940005",
+      "measuredAt": "2026-11-13T14:00:00",
+      "insideTempC": 25.9,
+      "humidityPct": 61,
+      "co2Ppm": 530,
+      "solarWm2": 540,
+      "lightUmolM2S": 365,
+      "substrateTempC": 21.9,
+      "substrateMoisturePct": 58,
+      "substrateEcMsCm": 1.7,
+      "substratePh": 6.1
+    },
+    {
+      "environmentChangeId": "940227",
+      "cycleId": "940005",
+      "measuredAt": "2026-11-13T16:00:00",
+      "insideTempC": 23.5,
+      "humidityPct": 66,
+      "co2Ppm": 600,
+      "solarWm2": 220,
+      "lightUmolM2S": 150,
+      "substrateTempC": 21.3,
+      "substrateMoisturePct": 57,
+      "substrateEcMsCm": 1.7,
+      "substratePh": 6.1
+    },
+    {
+      "environmentChangeId": "940228",
+      "cycleId": "940005",
+      "measuredAt": "2026-11-13T18:00:00",
+      "insideTempC": 20.9,
+      "humidityPct": 71,
+      "co2Ppm": 680,
+      "solarWm2": 0,
+      "lightUmolM2S": 0,
+      "substrateTempC": 20.6,
+      "substrateMoisturePct": 57,
+      "substrateEcMsCm": 1.7,
+      "substratePh": 6.1
+    },
+    {
+      "environmentChangeId": "940229",
+      "cycleId": "940009",
+      "measuredAt": "2026-11-13T06:00:00",
+      "insideTempC": 18.6,
+      "humidityPct": 73,
+      "co2Ppm": 745,
+      "solarWm2": 0,
+      "lightUmolM2S": 0,
+      "substrateTempC": 19.6,
+      "substrateMoisturePct": 56,
+      "substrateEcMsCm": 1.78,
+      "substratePh": 6
+    },
+    {
+      "environmentChangeId": "940230",
+      "cycleId": "940009",
+      "measuredAt": "2026-11-13T10:00:00",
+      "insideTempC": 23.8,
+      "humidityPct": 64,
+      "co2Ppm": 615,
+      "solarWm2": 430,
+      "lightUmolM2S": 295,
+      "substrateTempC": 20.6,
+      "substrateMoisturePct": 55,
+      "substrateEcMsCm": 1.8,
+      "substratePh": 6
+    },
+    {
+      "environmentChangeId": "940231",
+      "cycleId": "940009",
+      "measuredAt": "2026-11-13T12:00:00",
+      "insideTempC": 26.1,
+      "humidityPct": 60,
+      "co2Ppm": 560,
+      "solarWm2": 620,
+      "lightUmolM2S": 420,
+      "substrateTempC": 21.3,
+      "substrateMoisturePct": 54,
+      "substrateEcMsCm": 1.82,
+      "substratePh": 6
+    },
+    {
+      "environmentChangeId": "940232",
+      "cycleId": "940009",
+      "measuredAt": "2026-11-13T15:00:00",
+      "insideTempC": 24.9,
+      "humidityPct": 63,
+      "co2Ppm": 595,
+      "solarWm2": 410,
+      "lightUmolM2S": 280,
+      "substrateTempC": 21.1,
+      "substrateMoisturePct": 56,
+      "substrateEcMsCm": 1.8,
+      "substratePh": 6
     }
   ],
   "members": [
