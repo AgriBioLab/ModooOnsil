@@ -1,1 +1,17 @@
-spring.application.name=ModooOnsil
+server:
+  port: ${SERVER_PORT}
+spring:
+  application:
+    name: ModooOnsil
+  datasource:
+    driver-class-name: ${DB_DRIVER_NAME}
+    url: ${DB_URL}
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
+  thymeleaf:
+    prefix: classpath:/templates/
+    suffix: .html
+    cache: false
+    check-template-location: true
+  config:
+    import: optional:file:.env[.properties]
