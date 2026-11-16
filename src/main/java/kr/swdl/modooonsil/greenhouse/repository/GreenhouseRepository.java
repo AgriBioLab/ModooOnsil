@@ -1,0 +1,7 @@
+package kr.swdl.modooonsil.greenhouse.repository;
+
+import org.apache.ibatis.annotations.Mapper;
+
+@Mapper
+public interface GreenhouseRepository {
+}
