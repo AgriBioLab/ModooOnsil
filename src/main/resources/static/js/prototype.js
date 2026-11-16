@@ -26,16 +26,18 @@ function loadSaved(){let saved;try{saved=JSON.parse(localStorage.getItem(storeKe
 }
 function toast(s){let el=$('#toast');el.textContent=s;el.classList.remove('hidden');clearTimeout(toastTimer);toastTimer=setTimeout(()=>el.classList.add('hidden'),3400)}
 function error(s){const el=$('#formError');if(el){el.textContent=s;el.classList.remove('hidden')}toast(s)}
-function nav(){let nodes=[];for(const item of config.navigation){
- const active=(item.key==='diaries'&&['list','create','detail','edit'].includes(page))||(item.key==='cycles'&&page.startsWith('cycle-'))||(item.key==='environment'&&page.startsWith('env-'));
- nodes.push(`<button class="navbtn ${active?'active':''}" type="button" data-go="${item.key}" ${item.enabled?'':'disabled aria-disabled="true"'}>${htmlText(item.label)}</button>`);
- for(const child of item.children||[])nodes.push(`<button class="navbtn sub ${page===child.key?'active':''}" type="button" data-go="${child.key}" ${child.enabled?'':'disabled aria-disabled="true"'}>${htmlText(child.label)}</button>`)}
- $('#navigation').innerHTML=nodes.join('');$$('[data-go]',$('#navigation')).forEach(b=>{if(!b.disabled)b.addEventListener('click',()=>go(b.dataset.go))});
- const cat=page.startsWith('cycle-')?'작기계획':page.startsWith('env-')?'작기 중 온실 환경변화':'재배일지';const state=page.startsWith('cycle-')?page.slice(6):page.startsWith('env-')?page.slice(4):page;
- $('#crumb').textContent=['재배관리',cat,({list:'목록',create:'등록',detail:'상세',edit:'수정'})[state]||'목록'].join(' / ');
- $('#sidebarFoot').textContent=`${cat} · ${config.meta.commonCrop} ${config.meta.commonVariety}`;
+function updateNavigation() {
+ const entry = page.startsWith('cycle-') ? 'cycle-list' : page.startsWith('env-') ? 'env-list' : 'list';
+ const current = $(`#navigation [data-go="${entry}"]`);
+ for (const button of $$('#navigation [data-go]')) {
+  if (button === current) button.setAttribute('aria-current', 'location');
+  else button.removeAttribute('aria-current');
+ }
+ const state = page.replace(/^(cycle-|env-)/, '');
+ const step = {list:'목록',create:'등록',detail:'상세',edit:'수정'}[state] || '목록';
+ $('#crumb').textContent = ['재배관리', current.textContent, step].join(' / ');
 }
-function go(target,id){if(target==='diaries')target='list';if(target==='cycles')target='cycle-list';if(target==='environment')target='env-list';
+function go(target,id){
  if(target.startsWith('cycle-')&&id)selectedCycleId=id;
  else if(target.startsWith('env-')&&id)selectedMeasurementId=id;
  else if(id)selectedId=id;
@@ -43,7 +45,7 @@ function go(target,id){if(target==='diaries')target='list';if(target==='cycles')
  page=target;render();}
 function heading(title,description='',back=false){return `<div class="pagehead"><div><h1>${title}</h1>${description?`<p>${htmlText(description)}</p>`:''}</div>${back?'<button type="button" class="backlink" id="returnList">← 재배일지 목록으로</button>':''}</div>`}
 function bindBack(){const el=$('#returnList');if(el)el.addEventListener('click',()=>go('list'))}
-function render(){nav();if(page.startsWith('cycle-')){if(page==='cycle-list')renderCycleList();else if(page==='cycle-detail')renderCycleDetail();else renderCycleEditor(page==='cycle-edit')}
+function render(){updateNavigation();if(page.startsWith('cycle-')){if(page==='cycle-list')renderCycleList();else if(page==='cycle-detail')renderCycleDetail();else renderCycleEditor(page==='cycle-edit')}
  else if(page.startsWith('env-')){if(page==='env-list')renderEnvList();else renderEnvDetail()}
  else if(page==='list')renderList();else if(page==='detail')renderDetail();else renderEditor(page==='edit')}
 function renderList(){const rows=diaryRows.filter(d=>{
@@ -279,7 +281,11 @@ function renderEnvDetail(){
 }
 
 async function init(){try{const r=await fetch('./shared.json',{cache:'no-store'});if(r.ok)config=await r.json()}catch{}
- $('#brand').innerHTML=`${htmlText(config.meta.project)}<small>화훼 재배 관리</small>`;$('#sidebarFoot').textContent=`재배일지 · ${config.meta.commonCrop} ${config.meta.commonVariety}`;
+ $('#brand').innerHTML=`${htmlText(config.meta.project)}<small>화훼 재배 관리</small>`;
+ $('#sidebarFoot').textContent=`${config.meta.commonCrop} · ${config.meta.commonVariety}`;
+ for (const button of $$('#navigation [data-go]')) {
+  button.addEventListener('click', () => go(button.dataset.go));
+ }
  setupAccount();loadCycleExtras();loadSaved();render();
  $$('[data-close-dialog]').forEach(button=>{
   button.addEventListener('click',()=>document.getElementById(button.dataset.closeDialog).close());
