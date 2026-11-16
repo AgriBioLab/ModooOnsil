@@ -1,4 +1,7 @@
 package kr.swdl.modooonsil.crop.stagestandard.repository;
 
-public class CropStageStandardRepository {
+import org.apache.ibatis.annotations.Mapper;
+
+@Mapper
+public interface CropStageStandardRepository {
 }

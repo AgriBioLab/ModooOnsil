@@ -1,4 +1,7 @@
 package kr.swdl.modooonsil.member.repository;
 
-public class MemberRepository {
+import org.apache.ibatis.annotations.Mapper;
+
+@Mapper
+public interface MemberRepository {
 }
