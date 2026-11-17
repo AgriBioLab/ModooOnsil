@@ -137,7 +137,7 @@
       const matches = [expected, 'modoodemo01', 'demo'].includes(current.value);
       return {
         curPw: current.value ? (matches ? '' : '현재 비밀번호가 일치하지 않습니다.') : '현재 비밀번호를 입력하세요.',
-        newPw: next.value.length < 10 || next.value.length > 64 ? '새 비밀번호를 10~64자로 입력하세요.' : '',
+        newPw: next.value.length < 8 || next.value.length > 20 ? '새 비밀번호를 8~20자로 입력하세요.' : '',
         chkPw: confirmation.value ? (confirmation.value === next.value ? '' : '새 비밀번호와 일치하지 않습니다.') : '새 비밀번호를 한 번 더 입력하세요.'
       };
     }, () => {

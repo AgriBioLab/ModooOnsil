@@ -2,7 +2,7 @@
 // HTTP(S) 환경에서는 fragments/*.html을 fetch하고, file:// 환경에서는 동일 마크업 폴백을 사용한다.
 (function () {
   const SIDEBAR_HTML = `<aside class="sidebar" aria-label="서비스 탐색">
-  <div class="brand" id="brand">모두의온실<small>화훼 재배 관리</small></div>
+  <div class="brand" id="brand">모두의온실<small>재배 관리</small></div>
   <nav class="nav" id="navigation" aria-label="주 메뉴">
     <a class="navbtn" href="diary-list.html" data-go="list">재배일지작업</a>
     <a class="navbtn" href="cycle-list.html" data-go="cycle-list">작기계획</a>
@@ -54,7 +54,7 @@
     loadFragment('footerSlot', 'fragments/footer.html', FOOTER_HTML),
   ]);
 
-  const accountKey = name => 'modoo-' + name + ':' + prototypeData.meta.version;
+  const accountKey = name => 'modoo-' + name + ':' + sampleData.meta.version;
   const signupKey = () => accountKey('signup-members');
   let toastTimer;
 
@@ -102,7 +102,7 @@
       try { registeredMembers = loadSignupMembers(); } catch { registeredMembers = []; }
     }
     const changes = loadMemberChanges();
-    return [...prototypeData.members, ...registeredMembers].map(member => ({
+    return [...sampleData.members, ...registeredMembers].map(member => ({
       ...member,
       ...changes[member.username]
     }));

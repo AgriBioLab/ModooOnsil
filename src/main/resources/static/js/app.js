@@ -5,8 +5,8 @@ const escapeHtml=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;'
 const htmlText=escapeHtml, clone=x=>JSON.parse(JSON.stringify(x));
 const pageNums=(cur,total)=>{if(total<=7)return Array.from({length:total},(_,i)=>i+1);let s=Math.max(2,cur-2),e=Math.min(total-1,cur+2);if(cur<=3)e=5;if(cur>=total-2)s=total-4;const list=[1];if(s>2)list.push('...');for(let i=s;i<=e;i++)list.push(i);if(e<total-1)list.push('...');list.push(total);return list};
 const pageBtns=(cur,total,attr)=>pageNums(cur,total).map(p=>p==='...'?'<span class="page-ellipsis" aria-hidden="true">…</span>':`<button type="button" class="page-button" ${attr}="${p}" ${p===cur?'aria-current="page"':''} aria-label="${p}페이지">${p}</button>`).join('');
-const storageKey=kind=>`modoo-sprint2:${prototypeData.meta.version}:${config.header.currentUser.id}:${kind}`;
-let config=clone(prototypeData), diaryRows=[], page='list',selectedId=null,working=[],editRow=null,selectedStage='VEG',filterCycle='all',filterGreenhouse='all',filterCrop='all',filterVariety='all',filterDate='',listPage=1;
+const storageKey=kind=>`modoo-sprint2:${sampleData.meta.version}:${config.header.currentUser.id}:${kind}`;
+let config=clone(sampleData), diaryRows=[], page='list',selectedId=null,working=[],editRow=null,selectedStage='VEG',filterCycle='all',filterGreenhouse='all',filterCrop='all',filterVariety='all',filterDate='',listPage=1;
 const main=$('#main'), today=()=>config.meta.today;
 const options=(values,sel)=>values.map(x=>`<option value="${escapeHtml(x.value)}" ${String(x.value)===String(sel)?'selected':''}>${escapeHtml(x.label)}</option>`).join('');
 const getCycle=id=>config.cycles.find(c=>c.cycleId===id)||config.cycles[0];
@@ -158,7 +158,7 @@ function profileFacts(facts) {
 }
 
 function signIn(member, initialPage='list', initialId=null){
- config=clone(prototypeData);config.header.currentUser=member;
+ config=clone(sampleData);config.header.currentUser=member;
  config.greenhouses=config.greenhouses.filter(row=>row.memberId===member.id);
  config.cycles=config.cycles.filter(row=>row.memberId===member.id);
  const ids=new Set(config.cycles.map(row=>row.cycleId));
@@ -189,7 +189,7 @@ function storeCycleExtras(){try{localStorage.setItem(storageKey("cycles"),JSON.s
 function loadCycleExtras(){try{const saved=JSON.parse(localStorage.getItem(storageKey("cycles"))||'null');if(Array.isArray(saved?.cycles)){
   // Only replace records with compatible full objects. Avoid erasing seed data on older versions.
   config.cycles=saved.cycles.filter(c=>c&&c.cycleId&&c.greenhouseId&&c.environmentStandardSetId).map(c=>({...c,stageHistory:Array.isArray(c.stageHistory)?c.stageHistory:[]}));
-  if(!config.cycles.length)throw Error('empty');
+  if(!config.cycles.length)throw Error('empty');const seed10=sampleData.cycles.find(x=>x.cycleId==='940010');if(seed10&&!config.cycles.some(x=>x.cycleId==='940010'))config.cycles.push(clone(seed10));const c9=config.cycles.find(x=>x.cycleId==='940009');if(c9&&!c9.stageHistory.some(h=>h.eventId==='940010'))c9.stageHistory.push({eventId:'940010',stageId:'BLO',effectiveDate:'2026-11-14',effectiveAt:'2026-11-14T09:00:00',sourceDiaryId:null,reason:'?? ?? ? ?? ?? ??'});
  }}catch{}}
 function cycleStatus(c){return c.status||'미진행'}
 function moduleHeading(title,caption='',backLabel='',onback=''){
@@ -204,7 +204,7 @@ function renderCycleList(){let list=config.cycles.filter(c=>(cycleFilters.status
  const usedCropIds=new Set(config.cycles.map(c=>c.cropId)),usedVarIds=new Set(config.cycles.map(c=>c.varietyId));const crops=config.crops.filter(c=>usedCropIds.has(c.cropId)).map(c=>({value:c.cropId,label:c.name})),varieties=config.crops.filter(c=>usedCropIds.has(c.cropId)&&(cycleFilters.crop==='all'||c.cropId===cycleFilters.crop)).flatMap(c=>c.varieties.filter(v=>usedVarIds.has(v.varietyId)).map(v=>({...v,cropId:c.cropId})));
  const size=config.pagination.cyclePageSize||5;cycleListPage=Math.min(Math.max(1,cycleListPage),Math.max(1,Math.ceil(list.length/size)));let from=(cycleListPage-1)*size,rows=list.slice(from,from+size);
  main.innerHTML=moduleHeading('작기계획 목록')+`<section class="panel search-section" aria-label="검색 조건"><div class="panel-body"><div class="filterbar module-filter"><div class="field"><label for="cycleFilterGH">온실</label><select class="ctrl" id="cycleFilterGH">${options([{value:'all',label:'전체 온실'},...config.greenhouses.map(g=>({value:g.greenhouseId,label:g.name}))],cycleFilters.greenhouse)}</select></div><div class="field crop-filter"><label for="cycleFilterCrop">품목</label><select class="ctrl" id="cycleFilterCrop">${options([{value:'all',label:'전체 품목'},...crops],cycleFilters.crop)}</select></div><div class="field variety-filter"><label for="cycleFilterVariety">품종</label><select class="ctrl" id="cycleFilterVariety">${options([{value:'all',label:'전체 품종'},...varieties.map(v=>({value:v.varietyId,label:v.name}))],cycleFilters.variety)}</select></div><div class="field"><label for="cycleFilterState">작기 상태</label><select class="ctrl" id="cycleFilterState">${options(['all','미진행','진행','종료'].map(s=>({value:s,label:s==='all'?'전체 상태':s})),cycleFilters.status)}</select></div><div class="field query"><label for="cycleFilterName">작기계획명</label><input class="ctrl" id="cycleFilterName" value="${htmlText(cycleFilters.name)}" placeholder="작기계획명을 입력하세요"></div><button type="button" class="btn filter-submit" id="cycleDoFilter">검색</button></div></div></section>
- <section class="panel list-section" aria-label="작기계획 목록"><div class="panel-head"><div class="panel-head-title"><h2>작기계획 목록</h2><span class="counter">총 ${list.length}건</span></div><button type="button" class="btn main xs" id="cycleCreate">+ 작기계획 등록</button></div><div class="tablewrap"><table class="data-table module-table"><thead><tr><th class="row-index">번호</th><th>작기계획명</th><th>온실</th><th>품목</th><th>품종</th><th>작기 상태</th><th>계획 시작일</th><th>실제 시작일</th><th>예상 종료일</th></tr></thead><tbody>${rows.map((c,i)=>`<tr><td class="row-index">${list.length-from-i}</td><td><button class="linkbtn" data-cycle-detail="${c.cycleId}">${htmlText(c.name)}</button></td><td>${htmlText(gh(c.greenhouseId)?.name||'—')}</td><td>${htmlText(cropOf(c)?.name||'—')}</td><td>${htmlText(varietyOf(c)?.name||'—')}</td><td>${htmlText(cycleStatus(c))}</td><td class="tnum">${dateFrom(c.plannedStartAt)||'—'}</td><td class="tnum">${dateFrom(c.actualStartAt)||'—'}</td><td class="tnum">${dateFrom(c.expectedEndAt)||'—'}</td></tr>`).join('')||'<tr><td colspan="9" class="empty">조회 결과가 없습니다.</td></tr>'}</tbody></table></div>${pageControls(list.length,cycleListPage,size,'작기계획')}</section>`;
+ <section class="panel list-section" aria-label="작기계획 목록"><div class="panel-head"><div class="panel-head-title"><h2>작기계획 목록</h2><span class="counter">총 ${list.length}건</span></div><button type="button" class="btn main xs" id="cycleCreate">+ 작기계획 등록</button></div><div class="tablewrap"><table class="data-table module-table"><thead><tr><th class="row-index">번호</th><th>작기계획명</th><th>온실</th><th>품목</th><th>품종</th><th>작기 상태</th></tr></thead><tbody>${rows.map((c,i)=>`<tr><td class="row-index">${list.length-from-i}</td><td><button class="linkbtn" data-cycle-detail="${c.cycleId}">${htmlText(c.name)}</button></td><td>${htmlText(gh(c.greenhouseId)?.name||'—')}</td><td>${htmlText(cropOf(c)?.name||'—')}</td><td>${htmlText(varietyOf(c)?.name||'—')}</td><td>${htmlText(cycleStatus(c))}</td></tr>`).join('')||'<tr><td colspan="6" class="empty">조회 결과가 없습니다.</td></tr>'}</tbody></table></div>${pageControls(list.length,cycleListPage,size,'작기계획')}</section>`;
  $('#cycleFilterCrop').onchange=()=>{const sel=$('#cycleFilterCrop').value;const possible=config.crops.filter(c=>usedCropIds.has(c.cropId)&&(sel==='all'||c.cropId===sel)).flatMap(c=>c.varieties.filter(v=>usedVarIds.has(v.varietyId)).map(v=>({value:v.varietyId,label:v.name})));const vEl=$('#cycleFilterVariety');const old=vEl.value;vEl.innerHTML=options([{value:'all',label:'전체 품종'},...possible],possible.some(v=>v.value===old)?old:'all')};
  $('#cycleDoFilter').onclick=()=>{cycleFilters={status:$('#cycleFilterState').value,greenhouse:$('#cycleFilterGH').value,crop:$('#cycleFilterCrop').value,variety:$('#cycleFilterVariety').value,name:$('#cycleFilterName').value.trim()};cycleListPage=1;renderCycleList()};$('#cycleFilterName').onkeydown=e=>{if(e.key==='Enter')$('#cycleDoFilter').click()};$('#cycleCreate').onclick=()=>go('cycle-create');
  $$('[data-cycle-detail]').forEach(b=>b.onclick=()=>go('cycle-detail',b.dataset.cycleDetail));bindPages('',()=>cycleListPage,v=>cycleListPage=v,list.length,size,renderCycleList);
@@ -378,7 +378,6 @@ function renderEnvList(){
  <div class="field"><label for="envFrom">측정 시작일</label><input type="date" class="ctrl" id="envFrom" value="${envFilters.from}"></div>
  <div class="field"><label for="envTo">측정 종료일</label><input type="date" class="ctrl" id="envTo" value="${envFilters.to}"></div>
  <button class="btn filter-submit" id="envDoFilter">검색</button></div></div></section>
- ${envLineChart(rows, selectedCycle)}
  <section class="panel list-section" aria-label="1시간 단위 환경측정 목록"><div class="panel-head"><h2>1시간 단위 환경측정 목록</h2><span class="counter">${htmlText(ghName)} · ${htmlText(cropOf(selectedCycle)?.name||'—')} (${htmlText(varietyOf(selectedCycle)?.name||'—')}) · 총 ${rows.length}건</span></div><div class="tablewrap"><table class="data-table module-table env-table"><thead><tr><th class="row-index">번호</th><th>측정일시</th><th>온도(°C)</th><th>습도(%RH)</th><th>CO₂(ppm)</th><th>일사량(W/m²)</th><th>광도</th><th>배지수분(%)</th><th>미측정</th></tr></thead>
  <tbody>${shown.map((r,i)=>`<tr><td class="row-index">${rows.length-from-i}</td><td><button class="linkbtn" data-env-detail="${r.environmentChangeId}">${formatAt(r.measuredAt)}</button></td><td class="tnum">${fmtVal(r.insideTempC)}</td><td class="tnum">${fmtVal(r.humidityPct)}</td><td class="tnum">${fmtVal(r.co2Ppm)}</td><td class="tnum">${fmtVal(r.solarWm2)}</td><td class="tnum">${fmtVal(r.lightUmolM2S)}</td><td class="tnum">${fmtVal(r.substrateMoisturePct)}</td><td>${countMissing(r)}개</td></tr>`).join('')||'<tr><td colspan="9" class="empty">해당 작기의 측정 기록이 없습니다.</td></tr>'}</tbody></table></div>${pageControls(rows.length,environmentListPage,size,'온실 환경변화')}</section>`;
  $('#envCycle').onchange=()=>{envFilters.cycle=$('#envCycle').value;environmentListPage=1;renderEnvList()};
@@ -469,7 +468,7 @@ function renderIssues(detail){
 }
 let selectedGhId=null,ghListPage=1,ghFilters={name:'',type:'all',cover:'all',medium:'all'};
 function storeGreenhouseExtras(){try{localStorage.setItem(storageKey('greenhouses'),JSON.stringify({greenhouses:config.greenhouses}))}catch{}}
-function loadGreenhouseExtras(){try{const saved=JSON.parse(localStorage.getItem(storageKey('greenhouses'))||'null');if(Array.isArray(saved?.greenhouses)&&saved.greenhouses.length)config.greenhouses=saved.greenhouses.map(g=>(g.imageUrl!==undefined&&!String(g.imageUrl||'').endsWith('.svg'))?g:{...g,imageUrl:prototypeData.greenhouses.find(x=>x.greenhouseId===g.greenhouseId)?.imageUrl??null})}catch{}}
+function loadGreenhouseExtras(){try{const saved=JSON.parse(localStorage.getItem(storageKey('greenhouses'))||'null');if(Array.isArray(saved?.greenhouses)&&saved.greenhouses.length)config.greenhouses=saved.greenhouses.map(g=>(g.imageUrl!==undefined&&!String(g.imageUrl||'').endsWith('.svg'))?g:{...g,imageUrl:sampleData.greenhouses.find(x=>x.greenhouseId===g.greenhouseId)?.imageUrl??null})}catch{}}
 function renderGreenhouseList(){
  const rows=config.greenhouses.filter(g=>(!ghFilters.name||g.name.includes(ghFilters.name))&&(ghFilters.type==='all'||g.type===ghFilters.type)&&(ghFilters.cover==='all'||g.coverType===ghFilters.cover)&&(ghFilters.medium==='all'||g.mediumType===ghFilters.medium));
  const size=Number(config.pagination?.pageSize)||5;ghListPage=Math.min(Math.max(1,ghListPage),Math.max(1,Math.ceil(rows.length/size)));const from=(ghListPage-1)*size,paged=rows.slice(from,from+size);
@@ -659,301 +658,12 @@ function renderStandardPage(){
  $('#tabStdCrops').onclick=()=>{state.tab='crops';renderStandardPage()};
  if($('#stdBackCycle'))$('#stdBackCycle').onclick=()=>{location.href='cycle-list.html?view=cycle-detail&id='+encodeURIComponent(fromCycleId)};
 }
-function setupLogin() {
- const form = $('#loginForm');
- const username = $('#loginUsername');
- const password = $('#loginPassword');
- const toggle = $('#loginPasswordToggle');
- const feedback = $('#loginError');
- username.value = loadAuthUser() || 'seedmum02';
- toggle.onclick = () => {
-  const reveal = password.type === 'password';
-  password.type = reveal ? 'text' : 'password';
-  toggle.textContent = reveal ? '비밀번호 숨기기' : '비밀번호 보기';
- };
- form.addEventListener('input', () => { feedback.textContent = ''; });
- form.onsubmit = event => {
-  event.preventDefault();
-  const member = allMembers().find(row => row.username === username.value.trim());
-  const pw = password.value;
-  if (member && (pw === 'modoodemo01' || pw === 'demo' || pw === member.demoPassword)) {
-   saveAuthUser(member.username);
-   location.href = 'diary-list.html';
-   return;
-  }
-  feedback.textContent = '아이디와 비밀번호를 확인하세요.';
-  feedback.focus();
- };
-}
-
-const signupStages = ['회원정보 입력', '농업경영체 인증', '완료'];
-const signupUsernamePattern = /^[a-z][a-z0-9]{5,19}$/;
-
-function signupProgress(step) {
- return `<ol class="krds-step-wrap" aria-label="회원가입 단계">
-  ${signupStages.map((label, index) => {
-   const number = index + 1;
-   const state = number === step ? 'class="active" aria-current="step"' : number < step ? 'class="done"' : '';
-   return `<li ${state}><span><span class="step">${number}단계</span><span class="step-tit">${label}</span></span></li>`;
-  }).join('')}
- </ol>`;
-}
-
-function signupField(id, label, { type = 'text', required = false, attributes = '', hint = '', checkLabel = '' } = {}) {
- return `<div class="form-group">
-  <label class="form-label" for="${id}">${label}${required ? ' <span class="required" aria-hidden="true">*</span>' : ''}</label>
-  <div class="${checkLabel ? 'auth-input-row' : 'form-conts'}">
-   <input id="${id}" class="krds-input medium" type="${type}" aria-describedby="${hint ? id + '-hint ' : ''}${id}-feedback" ${required ? 'required' : ''} ${attributes}>
-   ${checkLabel ? `<button type="button" class="krds-btn medium secondary" data-check="${id}" aria-label="${checkLabel} 중복 확인">중복 확인</button>` : ''}
-  </div>
-  ${hint ? `<p id="${id}-hint" class="auth-hint">${hint}</p>` : ''}
-  <p id="${id}-feedback" class="auth-feedback" aria-live="polite"></p>
- </div>`;
-}
-
-function signupFeedback(input, message, state = 'error') {
- const feedback = document.getElementById(input.id + '-feedback');
- const invalid = Boolean(message) && state === 'error';
- input.closest('.form-group').classList.toggle('is-error', invalid);
- if (invalid) input.setAttribute('aria-invalid', 'true');
- else input.removeAttribute('aria-invalid');
- feedback.dataset.state = state;
- feedback.textContent = message;
-}
-
-function signupDuplicateMessage(members, key, value) {
- const normalized = value.trim().toLowerCase();
- if (!normalized || !members.some(member => member[key]?.trim().toLowerCase() === normalized)) return '';
- return key === 'username' ? '이미 사용 중인 아이디입니다.' : '이미 사용 중인 이메일입니다.';
-}
-
-function setupSignup() {
- const mount = $('#signupStepMount');
- let step = 1;
- let draft = {};
- let businessNumber = '';
- let certStatus = '미인증';
- let savedMember;
-
- function showStep(content, title = signupStages[step - 1]) {
-  mount.innerHTML = signupProgress(step) + `<section class="panel signup-panel" aria-labelledby="signupStepTitle">
-   <div class="panel-head"><h2 id="signupStepTitle" tabindex="-1">${title}</h2></div>
-   <div class="panel-body">${content}</div>
-  </section>`;
- }
-
- function focusStep() {
-  $('#signupStepTitle', mount).focus();
- }
-
- function renderMemberForm(conflicts = {}) {
-  step = 1;
-  showStep(`<form id="signupForm" class="login-form" novalidate>
-   ${signupField('signupFarmName', '농장명', { required: true, attributes: 'maxlength="100" autocomplete="organization"' })}
-   ${signupField('signupRepresentativeName', '대표자명', { required: true, attributes: 'maxlength="50" autocomplete="name"' })}
-   ${signupField('signupUsername', '아이디', {
-    required: true, attributes: 'minlength="6" maxlength="20" autocomplete="username" autocapitalize="none" spellcheck="false"',
-    hint: '영문 소문자로 시작하는 영문 소문자·숫자 6~20자', checkLabel: '아이디'
-   })}
-   ${signupField('signupPassword', '비밀번호', {
-    type: 'password', required: true, attributes: 'minlength="10" maxlength="64" autocomplete="new-password"', hint: '10~64자로 입력하세요.'
-   })}
-   ${signupField('signupPasswordConfirm', '비밀번호 확인', {
-    type: 'password', required: true, attributes: 'minlength="10" maxlength="64" autocomplete="new-password"'
-   })}
-   ${signupField('signupEmail', '이메일 (선택)', { type: 'email', attributes: 'maxlength="255" autocomplete="email"', checkLabel: '이메일' })}
-   ${signupField('signupPhone', '연락처 (선택)', { type: 'tel', attributes: 'maxlength="20" autocomplete="tel"' })}
-   ${signupField('signupMainCrop', '주요 재배 품목 (선택)', { attributes: 'maxlength="100"' })}
-   <div class="signup-actions"><button type="submit" class="krds-btn medium primary" id="signupNextBtn">다음</button></div>
-  </form>`);
-
-  const form = $('#signupForm', mount);
-  const input = id => form.elements.namedItem(id);
-  const value = id => input(id).value.trim();
-  for (const [id, text] of Object.entries(draft)) input(id).value = text;
-
-  const fieldsToCheck = {
-   signupUsername: {
-    key: 'username', label: '아이디', empty: '아이디를 입력하세요.',
-    validate: () => signupUsernamePattern.test(value('signupUsername')) ? '' : '아이디 형식을 확인하세요.'
-   },
-   signupEmail: {
-    key: 'email', label: '이메일', empty: '이메일을 입력하세요.',
-    validate: () => input('signupEmail').validity.typeMismatch ? '이메일 주소 형식을 확인하세요.' : ''
-   }
-  };
-
-  const displayErrors = errors => {
-   const entries = Object.entries(errors);
-   for (const [id, message] of entries) signupFeedback(input(id), message);
-   const firstError = entries.find(([, message]) => message);
-   if (firstError) input(firstError[0]).focus();
-   return Boolean(firstError);
-  };
-
-  form.addEventListener('input', ({ target }) => signupFeedback(target, ''));
-  for (const button of $$('[data-check]', form)) {
-   const id = button.dataset.check;
-   const field = fieldsToCheck[id];
-   button.onclick = () => {
-    const current = value(id);
-    const message = !current ? field.empty :
-     field.validate() || signupDuplicateMessage(allMembers(), field.key, current);
-    signupFeedback(input(id), message || '사용할 수 있는 ' + field.label + '입니다.', message ? 'error' : 'success');
-    if (message) input(id).focus();
-   };
-  }
-  form.onsubmit = event => {
-   event.preventDefault();
-   const members = allMembers();
-   const password = input('signupPassword').value;
-   const confirmation = input('signupPasswordConfirm').value;
-   const errors = {
-    signupFarmName: value('signupFarmName') ? '' : '농장명을 입력하세요.',
-    signupRepresentativeName: value('signupRepresentativeName') ? '' : '대표자명을 입력하세요.',
-    signupUsername: !value('signupUsername') ? '아이디를 입력하세요.' : fieldsToCheck.signupUsername.validate() ||
-     signupDuplicateMessage(members, 'username', value('signupUsername')),
-    signupPassword: password.length >= 10 && password.length <= 64 ? '' : '비밀번호를 10~64자로 입력하세요.',
-    signupPasswordConfirm: confirmation && confirmation === password ? '' : '비밀번호와 같은 값을 입력하세요.',
-    signupEmail: fieldsToCheck.signupEmail.validate() || signupDuplicateMessage(members, 'email', value('signupEmail'))
-   };
-   if (displayErrors(errors)) return;
-   draft = Object.fromEntries($$('input', form).map(field => [field.id, field.value]));
-   renderCertificationForm();
-   focusStep();
-  };
-  displayErrors(conflicts);
- }
-
- function renderCertificationForm() {
-  step = 2;
-  showStep(`<form id="signupCertificationForm" class="login-form">
-   <p class="signup-cert-status" role="status">인증 상태
-    <span id="signupCertStatus" class="krds-badge bg-light-gray">${certStatus}</span>
-   </p>
-   ${signupField('signupBusinessNumber', '농업경영체 등록번호 (선택)', { attributes: 'maxlength="20"' })}
-   <div class="signup-actions">
-    <button type="button" class="krds-btn medium tertiary" id="signupPrevBtn">이전</button>
-    <button type="button" class="krds-btn medium secondary" id="signupCertBtn">인증 요청</button>
-    <button type="submit" class="krds-btn medium primary">가입하기</button>
-   </div>
-   <p class="auth-feedback" id="signupSaveError" role="alert" data-state="error"></p>
-  </form>`);
-
-  const form = $('#signupCertificationForm', mount);
-  const input = $('#signupBusinessNumber', form);
-  const status = $('#signupCertStatus', form);
-  const submit = $('button[type="submit"]', form);
-  input.value = businessNumber;
-  status.classList.toggle('bg-light-information', certStatus === '인증중');
-  status.classList.toggle('bg-light-gray', certStatus !== '인증중');
-
-  function updateCertification() {
-   certStatus = businessNumber ? '인증중' : '미인증';
-   status.textContent = certStatus;
-   status.classList.toggle('bg-light-information', Boolean(businessNumber));
-   status.classList.toggle('bg-light-gray', !businessNumber);
-  }
-
-  input.oninput = () => {
-   signupFeedback(input, '');
-   businessNumber = '';
-   updateCertification();
-  };
-  $('#signupCertBtn', form).onclick = () => {
-   businessNumber = input.value.trim();
-   if (!businessNumber) {
-    signupFeedback(input, '농업경영체 등록번호를 입력하세요.');
-    input.focus();
-    return;
-   }
-   signupFeedback(input, '');
-   updateCertification();
-  };
-  $('#signupPrevBtn', form).onclick = () => {
-   businessNumber = input.value.trim();
-   updateCertification();
-   renderMemberForm();
-   focusStep();
-  };
-  form.onsubmit = async event => {
-   event.preventDefault();
-   if (submit.disabled) return;
-   businessNumber = input.value.trim();
-   updateCertification();
-   const newMember = {
-    id: 'MEM-' + Date.now(),
-    displayName: draft.signupRepresentativeName.trim(),
-    role: '화훼농민',
-    certification: certStatus,
-    businessNumber: businessNumber || null,
-    username: draft.signupUsername.trim(),
-    demoPassword: draft.signupPassword,
-    farmName: draft.signupFarmName.trim(),
-    email: draft.signupEmail.trim() || null,
-    phone: draft.signupPhone.trim() || null,
-    address: null,
-    addressDetail: null,
-    mainCrop: draft.signupMainCrop.trim() || null,
-    description: null
-   };
-   const register = () => {
-    if (!form.isConnected) return;
-    const registered = loadSignupMembers();
-    const members = allMembers(registered);
-    const conflicts = {
-     signupUsername: signupDuplicateMessage(members, 'username', newMember.username),
-     signupEmail: signupDuplicateMessage(members, 'email', newMember.email || '')
-    };
-    if (Object.values(conflicts).some(Boolean)) {
-     renderMemberForm(conflicts);
-     return;
-    }
-    localStorage.setItem(signupKey(), JSON.stringify([...registered, newMember]));
-    saveAuthUser(newMember.username);
-    savedMember = newMember;
-    draft = {};
-    renderCompletion();
-    focusStep();
-   };
-   submit.disabled = true;
-   $('#signupSaveError', form).textContent = '';
-   try {
-    if (navigator.locks) await navigator.locks.request(signupKey(), register);
-    else register();
-   } catch {
-    $('#signupSaveError', form).textContent = '회원정보를 저장하지 못했습니다. 다시 시도해 주세요.';
-   } finally {
-    submit.disabled = false;
-   }
-  };
- }
-
- function renderCompletion() {
-  step = 3;
-  showStep(`<div class="login-form">
-   ${profileFacts([['농장명', savedMember.farmName], ['아이디', savedMember.username], ['인증 상태', savedMember.certification]])}
-   <div class="signup-actions"><a class="krds-btn medium primary" href="login.html">로그인으로 이동</a></div>
-  </div>`, '회원가입 완료');
- }
-
- renderMemberForm();
-}
-
 async function init(){
  const hostPage=document.body?.dataset?.page||'entry';
  if(hostPage==='entry'){
   const saved=loadAuthUser();
   const member=allMembers().find(row=>row.username===saved);
   location.replace(member?'diary-list.html':'login.html');return;
- }
- if (hostPage === 'login') {
-  setupLogin();
-  return;
- }
- if (hostPage === 'signup') {
-  setupSignup();
-  return;
  }
  await ready;
  const savedUser=loadAuthUser();

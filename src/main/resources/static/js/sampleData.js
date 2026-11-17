@@ -1,6 +1,6 @@
 // MariaDB 'modooonsil-reduced-dummy' 스냅샷(2026-11-16T11:24:07)에서 생성한 정적 UI 데이터.
 // 직접 수정하지 말고 DB 내보내기 후 생성 스크립트를 다시 실행한다.
-const prototypeData = {
+const sampleData = {
   "meta": {
     "project": "모두의온실",
     "version": "db-snapshot-2026-11-16T08:53:17",
@@ -24,6 +24,21 @@ const prototypeData = {
         "greenhouse_issue": 5
       }
     }
+  },
+  "authDefaults": {
+    "loginUsername": "seedmum02",
+    "loginPassword": "modoodemo01",
+    "signup": {
+      "signupFarmName": "해솔 호접란농장",
+      "signupRepresentativeName": "이서연",
+      "signupUsername": "haesol02",
+      "signupEmail": "haesol.orchid@example.com",
+      "signupPassword": "modoodemo01",
+      "signupPasswordConfirm": "modoodemo01",
+      "signupPhone": "010-7315-8492",
+      "signupMainCrop": "호접란"
+    },
+    "businessNumber": "123-45-67890"
   },
   "header": {
     "breadcrumb": [
@@ -444,6 +459,14 @@ const prototypeData = {
           "effectiveAt": "2026-11-12T13:30:00",
           "sourceDiaryId": "940009",
           "reason": "꽃눈 형성을 확인해 단계 변경"
+        },
+        {
+          "eventId": "940010",
+          "stageId": "BLO",
+          "effectiveDate": "2026-11-14",
+          "effectiveAt": "2026-11-14T09:00:00",
+          "sourceDiaryId": null,
+          "reason": "꽃대 신장 및 개화 진행 확인"
         }
       ],
       "actualStartDate": "2026-10-04",
@@ -453,6 +476,33 @@ const prototypeData = {
       "actualEndAt": null,
       "registeredAt": "2026-09-20T09:00:00",
       "name": "2026년 가을 3차 작기",
+      "status": "진행",
+      "endReason": null
+    },
+    {
+      "cycleId": "940010",
+      "memberId": "940002",
+      "greenhouseId": "941018",
+      "cropId": "940002",
+      "varietyId": "940004",
+      "environmentStandardSetId": "940010",
+      "stageHistory": [
+        {
+          "eventId": "940011",
+          "stageId": "VEG",
+          "effectiveDate": "2026-11-10",
+          "effectiveAt": "2026-11-10T09:00:00",
+          "sourceDiaryId": null,
+          "reason": null
+        }
+      ],
+      "actualStartDate": "2026-11-10",
+      "plannedStartAt": "2026-11-10T00:00:00",
+      "expectedEndAt": "2027-01-25T23:59:59",
+      "actualStartAt": "2026-11-10T00:00:00",
+      "actualEndAt": null,
+      "registeredAt": "2026-11-05T09:00:00",
+      "name": "2026년 초겨울 1차 작기",
       "status": "진행",
       "endReason": null
     }

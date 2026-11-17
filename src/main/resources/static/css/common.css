@@ -308,6 +308,19 @@ a.btn.main { color: #fff; }
   --primary-pressed: var(--krds-color-light-success-80, #1f4727);
   --primary-soft: var(--krds-color-light-success-10, #d8eedd);
   --primary-text: var(--krds-color-light-success-70, #285d33);
+  --krds-light-color-button-primary-fill: var(--primary);
+  --krds-light-color-button-primary-fill-hover: var(--primary-hover);
+  --krds-light-color-button-primary-fill-pressed: var(--primary-pressed);
+  --krds-light-color-button-secondary-fill: #ffffff;
+  --krds-light-color-button-secondary-fill-hover: var(--primary-soft);
+  --krds-light-color-button-secondary-border: var(--primary);
+  --krds-light-color-text-primary: var(--primary-text);
+  --krds-light-color-border-primary: var(--primary);
+  --krds-light-color-surface-primary-subtler: var(--primary-soft);
+  --krds-light-color-action-primary: var(--primary);
+  --krds-light-color-action-primary-hover: var(--primary-hover);
+  --krds-light-color-action-primary-pressed: var(--primary-pressed);
+  --krds-light-color-element-primary: var(--primary);
   --sidebar: 240px;
   --top: 60px;
 }
@@ -1639,4 +1652,145 @@ select.ctrl:disabled {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+
+/* ??? ? ???? KRDS ????(.krds-btn, .krds-input) ?? ?? ? ??? ?? */
+.krds-btn {
+  border-radius: 6px;
+}
+
+.krds-btn.primary {
+  background-color: var(--primary);
+  border-color: var(--primary);
+  color: #ffffff;
+}
+
+.krds-btn.primary:hover:not(:disabled) {
+  background-color: var(--primary-hover);
+  border-color: var(--primary-hover);
+}
+
+.krds-btn.secondary {
+  background-color: #ffffff;
+  color: var(--primary-text);
+  border-color: var(--primary);
+}
+
+.signed-out-page .signed-out {
+  background: var(--soft);
+}
+
+.krds-btn.secondary:hover:not(:disabled) {
+  background-color: var(--primary-soft);
+}
+
+.krds-input {
+  border-radius: 6px;
+  border-color: var(--line-dark);
+  font-size: 14px;
+}
+
+.krds-input:focus,
+.krds-input:focus-visible {
+  outline: none;
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(38, 115, 55, 0.14);
+}
+
+/* ???? 2? ? ? ? ?? ?? ? ?? ? ?? ?? ?? */
+.signup-shell {
+  min-height: 100dvh;
+  height: auto;
+  display: flex;
+  flex-direction: column;
+}
+
+.signup-container {
+  max-width: 920px;
+  padding: 20px 24px 28px;
+}
+
+.signup-container h1 {
+  margin: 0 0 14px;
+  font-size: 24px;
+}
+
+.krds-step-wrap {
+  width: 100%;
+  display: flex;
+  margin-bottom: 18px;
+}
+
+.krds-step-wrap > li {
+  flex: 1 1 0;
+}
+
+.krds-step-wrap > li:last-child {
+  flex: 0 0 auto;
+}
+
+.krds-step-wrap > li:last-child > span {
+  padding-right: 0;
+}
+
+.krds-step-wrap > li.active > span::before,
+.krds-step-wrap > li.active > span::after,
+.krds-step-wrap > li.done > span::before,
+.krds-step-wrap > li.done > span::after {
+  background-color: var(--primary) !important;
+  border-color: var(--primary) !important;
+}
+
+.signup-form-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px 20px;
+}
+
+.signup-form-grid .form-group {
+  margin: 0;
+}
+
+.signup-footer {
+  flex: none;
+  width: 100%;
+  margin-top: auto;
+  background: var(--paper);
+  border-top: 1px solid var(--line);
+  padding: 14px 28px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  font-size: 13px;
+  color: var(--muted);
+}
+
+@media (max-width: 720px) {
+  .signup-form-grid {
+    grid-template-columns: 1fr;
+  }
+  .signup-footer {
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 14px 18px;
+  }
+}
+
+.krds-step-wrap {
+  width: 100%;
+  display: flex;
+  margin-bottom: 18px;
+}
+
+.krds-step-wrap > li {
+  flex: 1 1 0;
+}
+
+.krds-step-wrap > li:last-child {
+  flex: 0 0 auto;
+}
+
+.krds-step-wrap > li:last-child > span {
+  padding-right: 0;
 }
