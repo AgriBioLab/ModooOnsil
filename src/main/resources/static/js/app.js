@@ -26,27 +26,41 @@ function loadSaved(){let saved;try{saved=JSON.parse(localStorage.getItem(storage
  diaryRows=Array.isArray(saved?.diaries)?saved.diaries:clone(config.sampleDiaries);
  if(saved?.cycleStageHistories)for(const c of config.cycles){if(Array.isArray(saved.cycleStageHistories[c.cycleId]))c.stageHistory=saved.cycleStageHistories[c.cycleId].map(e=>{const {reasons,...rest}=e;return {...rest,reason:toReason(e.reason||reasons)}})}
  diaryRows.forEach(d=>{delete d.title;d.stageChangeReason=toReason(d.stageChangeReason||d.stageChangeReasons);delete d.stageChangeReasons;d.tasks=(d.tasks||[]).map(t=>({...t,startedAt:t.startedAt||makeStarted(d.workDate,t.time||'09:00'),name:t.name||t.type,content:t.content??''})).sort(timeSort)});
+ loadStandards();
 }
 function error(s){const el=$('#formError');if(el){el.textContent=s;el.classList.remove('hidden')}toast(s)}
 function updateNavigation() {
- const entry = page==='cycle-create' ? 'cycle-create' : (page.startsWith('cycle-')||page==='standard') ? 'cycle-list' : page==='gh-create' ? 'gh-create' : page.startsWith('gh-') ? 'gh-list' : page.startsWith('env-') ? 'env-list' : page.startsWith('issue-') ? 'issue-list' : page==='create' ? 'create' : 'list';
+ const isStd = page==='standard'||page==='standard-create';
+ const stdModal = window.__stdState?.cropModal;
+ const stdDetail = window.__stdState?.cropDetailId;
+ const isStdCreate = page==='standard-create' || (stdModal && !stdModal.varietyId);
+ const entry = isStd ? (isStdCreate?'standard-create':'standard') : page==='cycle-create' ? 'cycle-create' : page.startsWith('cycle-') ? 'cycle-list' : page==='gh-create' ? 'gh-create' : page.startsWith('gh-') ? 'gh-list' : page.startsWith('env-') ? 'env-list' : page.startsWith('issue-') ? 'issue-list' : page==='create' ? 'create' : 'list';
  const current = setCurrentMenu(entry);
- if (page==='standard') { $('#crumb').textContent='작기계획 / 생육단계별 환경기준'; return; }
+ if (isStd) {
+  $('#crumb').textContent = isStdCreate ? '재배품목 / 품목 · 품종 등록' : stdModal?.varietyId ? '재배품목 / 품목 · 품종 수정' : stdDetail ? '재배품목 / 품목 · 품종 상세' : '재배품목 / 품목 · 품종 목록';
+  return;
+ }
  const state = page.replace(/^(cycle-|gh-|env-|issue-)/, '');
  const step = {list:'목록',create:'등록',detail:'상세',edit:'수정'}[state] || '목록';
  const section = page.startsWith('cycle-') ? '작기계획' : page.startsWith('gh-') ? '온실 정보' : (page.startsWith('env-')||page.startsWith('issue-')) ? (current?.textContent||'') : '재배일지작업';
  const prefix = (page.startsWith('gh-')||page.startsWith('env-')||page.startsWith('issue-')) ? ['온실', section, step] : [section, step];
  $('#crumb').textContent = prefix.filter(Boolean).join(' / ');
 }
-const pageFile=target=>target==='standard'?'cropStageStandard.html':target.startsWith('cycle-')?'cultivationPlanList.html':target.startsWith('gh-')?'greenhouseList.html':target.startsWith('env-')?'environmentChangeList.html':target.startsWith('issue-')?'environmentIssueList.html':target==='member'?'mypage.html?tab=pw':target==='profile'?'mypage.html':target==='cert'?'mypage.html?tab=cert':'cultivationDiaryList.html';
+const pageFile=target=>(target==='standard'||target==='standard-create')?'cropStageStandard.html':target.startsWith('cycle-')?'cultivationPlanList.html':target.startsWith('gh-')?'greenhouseList.html':target.startsWith('env-')?'environmentChangeList.html':target.startsWith('issue-')?'environmentIssueList.html':target==='member'?'mypage.html?tab=pw':target==='profile'?'mypage.html':target==='cert'?'mypage.html?tab=cert':'cultivationDiaryList.html';
 function go(target,id){
  const hostPage=document.body?.dataset?.page;
- if(hostPage&&pageFile(target)!==pageFile(hostPage)){
+ if(hostPage&&pageFile(target).split('?')[0]!==pageFile(hostPage).split('?')[0]){
   const url = new URL(pageFile(target), location.href);
   if (target !== hostPage && target !== 'cert') url.searchParams.set('view', target);
   if (id) url.searchParams.set('id', id);
   location.href = url.href;
   return;
+ }
+ if(target==='standard'||target==='standard-create'){
+  const st=window.__stdState||(window.__stdState={cropFilter:'all',editCriteria:false,cropModal:null,cropDetailId:null});
+  st.editCriteria=false;st.cropDetailId=null;
+  st.cropModal=target==='standard-create'?{cropId:'',varietyId:'',cropName:'',varietyName:''}:null;
+  page=target;render();return;
  }
  if(target.startsWith('issue-')&&id)selectedIssueId=id;
  else if(target.startsWith('cycle-')&&id)selectedCycleId=id;
@@ -61,7 +75,7 @@ function render(){updateNavigation();if(page.startsWith('cycle-')){if(page==='cy
  else if(page.startsWith('gh-')){if(page==='gh-list')renderGreenhouseList();else if(page==='gh-detail')renderGreenhouseDetail();else renderGreenhouseEditor(page==='gh-edit')}
  else if(page.startsWith('env-')){if(page==='env-list')renderEnvList();else renderEnvDetail()}
  else if(page.startsWith('issue-'))renderIssues(page==='issue-detail');
- else if(page==='standard')renderStandardPage();
+ else if(page==='standard'||page==='standard-create')renderStandardPage();
  else if(page==='list')renderList();else if(page==='detail')renderDetail();else renderEditor(page==='edit')}
 function renderList(){const rows=diaryRows.filter(d=>{
  const c=getCycle(d.cycleId);return(filterCycle==='all'||d.cycleId===filterCycle)&&(filterGreenhouse==='all'||c.greenhouseId===filterGreenhouse)&&(filterCrop==='all'||c.cropId===filterCrop)&&(filterVariety==='all'||c.varietyId===filterVariety)&&(!filterDate||d.workDate===filterDate)}).sort((a,b)=>b.workDate.localeCompare(a.workDate)||a.cycleId.localeCompare(b.cycleId));
@@ -91,7 +105,9 @@ function renderDetail(){const d=getDiary(selectedId);if(!d){go('list');return}se
 
 const trashSvg='<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M10 4h4M7 7l1 13h8l1-13M10 11v6M14 11v6"/></svg>';
 function freshTask(date){return{taskId:'NEW-'+Date.now()+'-'+Math.random().toString(36).slice(2,6),name:'',type:config.workTypes[0].value,startedAt:makeStarted(date,'09:00'),status:'미완료',content:''}}
-function taskPanel(t){return `<article class="task-card" data-taskid="${escapeHtml(t.taskId)}"><div class="task-summary"><strong class="task-title title-text">${htmlText(t.name||'새 작업')}</strong><span class="summary-time">${timeOf(t)}</span><span class="summary-type">${htmlText(t.type)}</span><span class="summary-status">${htmlText(t.status)}</span><button class="trash" type="button" data-remove="${escapeHtml(t.taskId)}" aria-label="${htmlText(t.name||'새 작업')} 삭제" title="삭제">${trashSvg}</button></div><div class="task-detail"><div class="field wide"><label>작업명 *</label><input class="ctrl compact-input t-name" maxlength="100" value="${escapeHtml(t.name)}" placeholder="작업명"></div><div class="field"><label>작업유형 *</label><select class="ctrl t-type">${options(config.workTypes,t.type)}</select></div><div class="field"><label>작업시간 *</label><input class="ctrl t-time" type="time" value="${timeOf(t)}"></div><div class="field"><label>작업상태 *</label><select class="ctrl t-status">${options(config.taskStatuses,t.status)}</select></div><div class="field wide"><label>작업내용</label><textarea class="ctrl t-content" rows="2" placeholder="작업 내용을 입력하세요">${htmlText(t.content)}</textarea></div></div></article>`}
+const statusBadge=(label,toneMap={})=>`<span class="krds-badge ${toneMap[label]||'bg-light-gray'}">${htmlText(label)}</span>`;
+const taskTone=status=>status==='완료'?'bg-light-success':'bg-light-gray';
+function taskPanel(t){return `<article class="task-card" data-taskid="${escapeHtml(t.taskId)}"><div class="task-summary"><strong class="task-title title-text">${htmlText(t.name||'새 작업')}</strong><span class="summary-time">${timeOf(t)}</span><span class="summary-type">${htmlText(t.type)}</span><span class="krds-badge ${taskTone(t.status)} summary-status">${htmlText(t.status)}</span><button class="trash" type="button" data-remove="${escapeHtml(t.taskId)}" aria-label="${htmlText(t.name||'새 작업')} 삭제" title="삭제">${trashSvg}</button></div><div class="task-detail"><div class="field wide"><label>작업명 *</label><input class="ctrl compact-input t-name" maxlength="100" value="${escapeHtml(t.name)}" placeholder="작업명"></div><div class="field"><label>작업유형 *</label><select class="ctrl t-type">${options(config.workTypes,t.type)}</select></div><div class="field"><label>작업시간 *</label><input class="ctrl t-time" type="time" value="${timeOf(t)}"></div><div class="field"><label>작업상태 *</label><select class="ctrl t-status">${options(config.taskStatuses,t.status)}</select></div><div class="field wide"><label>작업내용</label><textarea class="ctrl t-content" rows="2" placeholder="작업 내용을 입력하세요">${htmlText(t.content)}</textarea></div></div></article>`}
 function gatherTasks(){const current=$$('[data-taskid]',main);if(!current.length)return;
  working=current.map(el=>{const old=working.find(x=>x.taskId===el.dataset.taskid)||freshTask($('#workDate')?.value||today());const time=$('.t-time',el)?.value||timeOf(old);return{...old,name:$('.t-name',el)?.value??old.name,type:$('.t-type',el)?.value??old.type,status:$('.t-status',el)?.value??old.status,content:$('.t-content',el)?.value??old.content,startedAt:makeStarted($('#workDate')?.value||today(),time)}})}
 function paintTasks(){const list=$('#taskList');if(!list)return;working.sort(timeSort);$('#taskTotal').textContent=`${working.length}건`;list.innerHTML=working.map(taskPanel).join('');
@@ -99,7 +115,7 @@ function paintTasks(){const list=$('#taskList');if(!list)return;working.sort(tim
  $$('.task-card',list).forEach(card=>{
   const title=$('.title-text',card),tn=$('.t-name',card),tt=$('.t-time',card),ty=$('.t-type',card),ts=$('.t-status',card);
   tn.addEventListener('input',()=>{title.textContent=tn.value.trim()||'새 작업'});tt.addEventListener('input',()=>{$('.summary-time',card).textContent=tt.value||'--:--'});
-  ty.addEventListener('change',()=>{$('.summary-type',card).textContent=ty.value});ts.addEventListener('change',()=>{$('.summary-status',card).textContent=ts.value});
+  ty.addEventListener('change',()=>{$('.summary-type',card).textContent=ty.value});ts.addEventListener('change',()=>{const badge=$('.summary-status',card);badge.textContent=ts.value;badge.className=`krds-badge ${taskTone(ts.value)} summary-status`});
   tt.addEventListener('change',()=>{const focused=card.dataset.taskid;gatherTasks();paintTasks();const moved=$$('[data-taskid]',list).find(el=>el.dataset.taskid===focused);moved?.scrollIntoView({block:'nearest'})});
  });
 }
@@ -204,8 +220,9 @@ function bindPages(selector,get,set,total,size,draw){$$('[data-modpage]').forEac
 function renderCycleList(){let list=config.cycles.filter(c=>(cycleFilters.status==='all'||c.status===cycleFilters.status)&&(cycleFilters.greenhouse==='all'||c.greenhouseId===cycleFilters.greenhouse)&&(cycleFilters.crop==='all'||c.cropId===cycleFilters.crop)&&(cycleFilters.variety==='all'||c.varietyId===cycleFilters.variety)&&(!cycleFilters.name||c.name.includes(cycleFilters.name))).sort((a,b)=>(b.plannedStartAt||'').localeCompare(a.plannedStartAt||''));
  const usedCropIds=new Set(config.cycles.map(c=>c.cropId)),usedVarIds=new Set(config.cycles.map(c=>c.varietyId));const crops=config.crops.filter(c=>usedCropIds.has(c.cropId)).map(c=>({value:c.cropId,label:c.name})),varieties=config.crops.filter(c=>usedCropIds.has(c.cropId)&&(cycleFilters.crop==='all'||c.cropId===cycleFilters.crop)).flatMap(c=>c.varieties.filter(v=>usedVarIds.has(v.varietyId)).map(v=>({...v,cropId:c.cropId})));
  const size=config.pagination.cyclePageSize||5;cycleListPage=Math.min(Math.max(1,cycleListPage),Math.max(1,Math.ceil(list.length/size)));let from=(cycleListPage-1)*size,rows=list.slice(from,from+size);
+ const cycleTone={'진행':'bg-light-success','미진행':'bg-light-information','종료':'bg-light-gray'};
  main.innerHTML=moduleHeading('작기계획 목록')+`<section class="panel search-section" aria-label="검색 조건"><div class="panel-body"><div class="filterbar module-filter"><div class="field"><label for="cycleFilterGH">온실</label><select class="ctrl" id="cycleFilterGH">${options([{value:'all',label:'전체 온실'},...config.greenhouses.map(g=>({value:g.greenhouseId,label:g.name}))],cycleFilters.greenhouse)}</select></div><div class="field crop-filter"><label for="cycleFilterCrop">품목</label><select class="ctrl" id="cycleFilterCrop">${options([{value:'all',label:'전체 품목'},...crops],cycleFilters.crop)}</select></div><div class="field variety-filter"><label for="cycleFilterVariety">품종</label><select class="ctrl" id="cycleFilterVariety">${options([{value:'all',label:'전체 품종'},...varieties.map(v=>({value:v.varietyId,label:v.name}))],cycleFilters.variety)}</select></div><div class="field"><label for="cycleFilterState">작기 상태</label><select class="ctrl" id="cycleFilterState">${options(['all','미진행','진행','종료'].map(s=>({value:s,label:s==='all'?'전체 상태':s})),cycleFilters.status)}</select></div><div class="field query"><label for="cycleFilterName">작기계획명</label><input class="ctrl" id="cycleFilterName" value="${htmlText(cycleFilters.name)}" placeholder="작기계획명을 입력하세요"></div><button type="button" class="btn filter-submit" id="cycleDoFilter">검색</button></div></div></section>
- <section class="panel list-section" aria-label="작기계획 목록"><div class="panel-head"><div class="panel-head-title"><h2>작기계획 목록</h2><span class="counter">총 ${list.length}건</span></div><button type="button" class="btn main xs" id="cycleCreate">+ 작기계획 등록</button></div><div class="tablewrap"><table class="data-table module-table"><thead><tr><th class="row-index">번호</th><th>작기계획명</th><th>온실</th><th>품목</th><th>품종</th><th>작기 상태</th></tr></thead><tbody>${rows.map((c,i)=>`<tr><td class="row-index">${list.length-from-i}</td><td><button class="linkbtn" data-cycle-detail="${c.cycleId}">${htmlText(c.name)}</button></td><td>${htmlText(gh(c.greenhouseId)?.name||'—')}</td><td>${htmlText(cropOf(c)?.name||'—')}</td><td>${htmlText(varietyOf(c)?.name||'—')}</td><td>${htmlText(cycleStatus(c))}</td></tr>`).join('')||'<tr><td colspan="6" class="empty">조회 결과가 없습니다.</td></tr>'}</tbody></table></div>${pageControls(list.length,cycleListPage,size,'작기계획')}</section>`;
+ <section class="panel list-section" aria-label="작기계획 목록"><div class="panel-head"><div class="panel-head-title"><h2>작기계획 목록</h2><span class="counter">총 ${list.length}건</span></div><button type="button" class="btn main xs" id="cycleCreate">+ 작기계획 등록</button></div><div class="tablewrap"><table class="data-table module-table"><thead><tr><th class="row-index">번호</th><th>작기계획명</th><th>온실</th><th>품목</th><th>품종</th><th>작기 상태</th></tr></thead><tbody>${rows.map((c,i)=>`<tr><td class="row-index">${list.length-from-i}</td><td><button class="linkbtn" data-cycle-detail="${c.cycleId}">${htmlText(c.name)}</button></td><td>${htmlText(gh(c.greenhouseId)?.name||'—')}</td><td>${htmlText(cropOf(c)?.name||'—')}</td><td>${htmlText(varietyOf(c)?.name||'—')}</td><td>${statusBadge(cycleStatus(c),cycleTone)}</td></tr>`).join('')||'<tr><td colspan="6" class="empty">조회 결과가 없습니다.</td></tr>'}</tbody></table></div>${pageControls(list.length,cycleListPage,size,'작기계획')}</section>`;
  $('#cycleFilterCrop').onchange=()=>{const sel=$('#cycleFilterCrop').value;const possible=config.crops.filter(c=>usedCropIds.has(c.cropId)&&(sel==='all'||c.cropId===sel)).flatMap(c=>c.varieties.filter(v=>usedVarIds.has(v.varietyId)).map(v=>({value:v.varietyId,label:v.name})));const vEl=$('#cycleFilterVariety');const old=vEl.value;vEl.innerHTML=options([{value:'all',label:'전체 품종'},...possible],possible.some(v=>v.value===old)?old:'all')};
  $('#cycleDoFilter').onclick=()=>{cycleFilters={status:$('#cycleFilterState').value,greenhouse:$('#cycleFilterGH').value,crop:$('#cycleFilterCrop').value,variety:$('#cycleFilterVariety').value,name:$('#cycleFilterName').value.trim()};cycleListPage=1;renderCycleList()};$('#cycleFilterName').onkeydown=e=>{if(e.key==='Enter')$('#cycleDoFilter').click()};$('#cycleCreate').onclick=()=>go('cycle-create');
  $$('[data-cycle-detail]').forEach(b=>b.onclick=()=>go('cycle-detail',b.dataset.cycleDetail));bindPages('',()=>cycleListPage,v=>cycleListPage=v,list.length,size,renderCycleList);
@@ -214,8 +231,8 @@ const stdMetricCols=[['dayTempC','주간 온도(°C)'],['nightTempC','야간 온
 function stageRows(c){const stages=config.growthStages.map(s=>{const k=getCriteria(c,s.stageId);let expectedStart=new Date(c.plannedStartAt||'2026-01-01T00:00:00');for(const prev of config.growthStages.filter(x=>x.order<s.order)){const n=getCriteria(c,prev.stageId)?.standardDays||0;expectedStart.setDate(expectedStart.getDate()+n)}
  const effective=c.stageHistory.find(h=>h.stageId===s.stageId);const range=k?.thresholds||{};
  return `<tr><td>${s.order}단계 · ${htmlText(s.name)}</td><td>${k?.standardDays??'—'}일</td><td>${dateFrom(expectedStart.toISOString())}</td><td>${effective?effective.effectiveDate:'—'}</td>${stdMetricCols.map(([key])=>`<td class="tnum">${range[key]?.join(' ~ ')||'—'}</td>`).join('')}</tr>`;});return stages.join('')}
-function renderCycleDetail(){const c=getSelectedCycle();if(!c){go('cycle-list');return}const diaries=diaryRows.filter(d=>d.cycleId===c.cycleId),samples=config.environmentChanges.filter(s=>s.cycleId===c.cycleId),lastStage=c.stageHistory.at(-1),curStage=lastStage?getStage(lastStage.stageId).name:'—',hasStd=config.stageEnvironmentalCriteria.some(x=>x.varietyId===c.varietyId),stdLabel=`${varietyOf(c)?.name||'—'} · ${hasStd?'전체 생육단계 기준':'기준 미입력'}`;
- main.innerHTML=moduleHeading('작기계획 상세','')+`<div class="module-scroll"><section class="panel"><div class="panel-head"><h2>작기정보</h2><span class="counter">${htmlText(cycleStatus(c))}</span></div><div class="panel-body"><div class="module-facts">${[
+function renderCycleDetail(){const c=getSelectedCycle();if(!c){go('cycle-list');return}const diaries=diaryRows.filter(d=>d.cycleId===c.cycleId),samples=config.environmentChanges.filter(s=>s.cycleId===c.cycleId),lastStage=c.stageHistory.at(-1),curStage=lastStage?getStage(lastStage.stageId).name:'—',stdMeta=getCriteriaMeta(c.varietyId),stdLabel=`${varietyOf(c)?.name||'—'} · ${stdMeta.hasStd?stdMeta.name:'기준 미입력'}`;
+ main.innerHTML=moduleHeading('작기계획 상세','')+`<div class="module-scroll"><section class="panel"><div class="panel-head"><h2>작기정보</h2>${statusBadge(cycleStatus(c),{'진행':'bg-light-success','미진행':'bg-light-information','종료':'bg-light-gray'})}</div><div class="panel-body"><div class="module-facts">${[
  ['작기계획명',c.name],['온실',gh(c.greenhouseId)?.name||'—'],['품목',cropOf(c)?.name||'—'],['품종',varietyOf(c)?.name||'—'],['작기 상태',cycleStatus(c)],['현재 생육단계',curStage],['단계별 환경 기준',stdLabel],['계획 시작일',dateFrom(c.plannedStartAt)||'—'],['예상 종료일',dateFrom(c.expectedEndAt)||'—'],['실제 시작일',dateFrom(c.actualStartAt)||'—'],['실제 종료일',dateFrom(c.actualEndAt)||'—'],['작기계획 등록일시',formatAt(c.registeredAt)],['종료 사유',c.endReason||'—']].map(([a,b])=>`<div><span>${htmlText(a)}</span><strong>${htmlText(b)}</strong></div>`).join('')}</div></div></section>
  ${cycleTimelineChart(c)}
  <section class="panel"><div class="panel-head"><h2>생육단계별 환경 기준과 일정</h2><button type="button" class="btn xs" id="cycleViewStd">전체 환경기준 보기</button></div><div class="tablewrap"><table class="data-table module-table"><thead><tr><th>생육단계</th><th>기준 기간</th><th>계획상 시작일</th><th>실제 시작일</th>${stdMetricCols.map(([,lbl])=>`<th>${htmlText(lbl)}</th>`).join('')}</tr></thead><tbody>${stageRows(c)}</tbody></table></div></section>
@@ -261,9 +278,9 @@ function renderCycleEditor(edit){if(!config.greenhouses.length){main.innerHTML=m
  const getSetForVariety=vid=>config.standardSets.find(x=>x.varietyId===vid)||config.standardSets[0];
  const paintStandards=()=>{
   const standard=getSetForVariety(curVarietyId);
-  const hasStd=config.stageEnvironmentalCriteria.some(x=>x.varietyId===curVarietyId);
+  const stdMeta=getCriteriaMeta(curVarietyId);
   const vObj=allPairs.find(x=>x.varietyId===curVarietyId);
-  $('#cycleStdSummary').value=vObj?`${vObj.cropName} · ${vObj.varietyName} (${hasStd?'전체 생육단계 기준':'기준 미입력'})`:'—';
+  $('#cycleStdSummary').value=vObj?`${vObj.cropName} · ${vObj.varietyName} (${stdMeta.hasStd?stdMeta.name:'기준 미입력'})`:'—';
   $('#cycleForm tbody').innerHTML=config.growthStages.map(stage=>{
    const criterion=standard?getCriteria({...row,environmentStandardSetId:standard.id},stage.stageId):null;
    const ranges=criterion?.thresholds||{};
@@ -414,6 +431,7 @@ function storeIssueExtras(){try{localStorage.setItem(storageKey('issues'),JSON.s
 function loadIssueExtras(){try{const saved=JSON.parse(localStorage.getItem(storageKey('issues'))||'null');if(Array.isArray(saved?.issues)&&saved.issues.length)config.issueSamples=saved.issues}catch{}}
 function renderIssues(detail){
  const issues=config.issueSamples;
+ const issueBadge=status=>statusBadge(status,{'발생':'bg-light-danger','조치중':'bg-light-warning','조치 완료':'bg-light-success'});
  if(detail){
   const issue=issues.find(item=>item.issueId===selectedIssueId)||issues[0];
   if(!issue){go('issue-list');return}
@@ -422,7 +440,7 @@ function renderIssues(detail){
   const reading=config.environmentChanges.find(item=>item.cycleId===issue.cycleId&&item.measuredAt===issue.occurredAt);
   const facts=[['작기계획',cycle?.name||'—'],['온실',gh(cycle?.greenhouseId)?.name||'—'],['발생일시',formatAt(issue.occurredAt)],['이슈 유형',issue.issueType],['이슈 메시지',issue.message],['발생 측정값',issue.issueValue],['조치 상태',issue.status],['조치 내용',issue.actionContent],['조치 완료일시',formatAt(issue.actionCompletedAt)]];
   main.innerHTML=moduleHeading('온실 환경 이슈 상세','')+
-  `<div class="module-scroll"><section class="panel"><div class="panel-head"><h2>이슈 정보</h2><span class="issue-status" data-status="${htmlText(issue.status)}">${htmlText(issue.status)}</span></div><div class="panel-body"><dl class="profile-facts">${facts.map(([label,value])=>`<dt>${label}</dt><dd>${htmlText(value??'—')}</dd>`).join('')}</dl>${reading?'<div style="margin-top:12px"><button id="issueReading" class="btn">발생 시점 측정 보기</button></div>':''}</div></section>
+  `<div class="module-scroll"><section class="panel"><div class="panel-head"><h2>이슈 정보</h2>${issueBadge(issue.status)}</div><div class="panel-body"><dl class="profile-facts">${facts.map(([label,value])=>`<dt>${label}</dt><dd>${htmlText(value??'—')}</dd>`).join('')}</dl>${reading?'<div style="margin-top:12px"><button id="issueReading" class="btn">발생 시점 측정 보기</button></div>':''}</div></section>
   <section class="panel" style="margin-top:14px"><div class="panel-head"><h2>조치 등록 및 상태 변경</h2></div><div class="panel-body"><form id="issueActionForm"><div class="module-input-grid">
   <div class="field"><label for="issueNextStatus">조치 상태 *</label><select id="issueNextStatus" class="ctrl">${options(['발생','조치중','조치 완료'].map(v=>({value:v,label:v})),issue.status)}</select></div>
   <div class="field wide"><label for="issueActionInput">조치 내용</label><textarea id="issueActionInput" class="ctrl textarea" placeholder="조치 내용을 입력하세요 (조치 완료 시 필수)">${htmlText(issue.actionContent||'')}</textarea></div>
@@ -445,21 +463,21 @@ function renderIssues(detail){
   return;
  }
  const all=label=>({value:'all',label});
- const choose=(id,label,items,selected)=>`<label class="field" for="${id}">${label}<select id="${id}" class="ctrl">${options([all('전체'),...items],selected)}</select></label>`;
+ const choose=(id,label,items,selected)=>`<div class="field"><label for="${id}">${label}</label><select id="${id}" class="ctrl">${options([all('전체'),...items],selected)}</select></div>`;
  const values=items=>[...new Set(items)].map(value=>({value,label:value}));
  const rows=issues.filter(item=>(issueFilters.cycle==='all'||item.cycleId===issueFilters.cycle)&&(issueFilters.type==='all'||item.issueType===issueFilters.type)&&(issueFilters.status==='all'||item.status===issueFilters.status)&&(!issueFilters.from||dateFrom(item.occurredAt)>=issueFilters.from)&&(!issueFilters.to||dateFrom(item.occurredAt)<=issueFilters.to)).sort((a,b)=>b.occurredAt.localeCompare(a.occurredAt));
  const size=Number(config.pagination?.pageSize)||5;issueListPage=Math.min(Math.max(1,issueListPage),Math.max(1,Math.ceil(rows.length/size)));const fromIdx=(issueListPage-1)*size,pagedIssues=rows.slice(fromIdx,fromIdx+size);
  main.innerHTML=moduleHeading('온실 환경 이슈 목록')+`${issueSummaryChart(issues)}
- <section class="panel search-section" aria-label="검색 조건"><div class="panel-body"><form class="filterbar issue-filters" id="issueFilters">
+ <section class="panel search-section" aria-label="검색 조건"><div class="panel-body"><form class="filterbar module-filter" id="issueFilters">
  ${choose('issueCycle','작기계획',config.cycles.map(row=>({value:row.cycleId,label:row.name})),issueFilters.cycle)}
  ${choose('issueType','이슈 유형',values(['온도','습도','이산화탄소','일사량','광도','배지온도','배지수분량','배지 EC','배지 pH',...issues.map(item=>item.issueType)]),issueFilters.type)}
  ${choose('issueStatus','조치 상태',values(['발생','조치중','조치 완료']),issueFilters.status)}
- <label class="field" for="issueFrom">시작일<input id="issueFrom" class="ctrl" type="date" value="${issueFilters.from}"></label>
- <label class="field" for="issueTo">종료일<input id="issueTo" class="ctrl" type="date" value="${issueFilters.to}"></label>
+ <div class="field"><label for="issueFrom">시작일</label><input id="issueFrom" class="ctrl" type="date" value="${issueFilters.from}"></div>
+ <div class="field"><label for="issueTo">종료일</label><input id="issueTo" class="ctrl" type="date" value="${issueFilters.to}"></div>
  <button class="btn filter-submit" type="submit">검색</button></form></div></section>
 
- <section class="panel list-section" aria-label="온실 환경 이슈 목록"><div class="panel-head"><div class="panel-head-title"><h2>온실 환경 이슈 목록</h2><span class="counter">총 ${rows.length}건</span></div></div><div class="tablewrap"><table class="data-table module-table"><thead><tr><th>발생일시</th><th>작기계획</th><th>이슈 유형</th><th>이슈 내용</th><th>조치 상태</th></tr></thead>
- <tbody>${pagedIssues.map(item=>`<tr><td>${formatAt(item.occurredAt)}</td><td>${htmlText(getCycle(item.cycleId)?.name)}</td><td>${htmlText(item.issueType)}</td><td><button class="linkbtn" data-issue="${item.issueId}">${htmlText(item.message)}</button></td><td><span class="issue-status" data-status="${htmlText(item.status)}">${htmlText(item.status)}</span></td></tr>`).join('')||'<tr><td colspan="5" class="empty">조회된 이슈가 없습니다.</td></tr>'}</tbody></table></div>${pageControls(rows.length,issueListPage,size,'온실 환경 이슈')}</section>`;
+ <section class="panel list-section" aria-label="온실 환경 이슈 목록"><div class="panel-head"><h2>온실 환경 이슈 목록</h2><span class="counter">총 ${rows.length}건</span></div><div class="tablewrap"><table class="data-table module-table"><thead><tr><th>발생일시</th><th>작기계획</th><th>이슈 유형</th><th>이슈 내용</th><th>조치 상태</th></tr></thead>
+ <tbody>${pagedIssues.map(item=>`<tr><td>${formatAt(item.occurredAt)}</td><td>${htmlText(getCycle(item.cycleId)?.name)}</td><td>${htmlText(item.issueType)}</td><td><button class="linkbtn" data-issue="${item.issueId}">${htmlText(item.message)}</button></td><td>${issueBadge(item.status)}</td></tr>`).join('')||'<tr><td colspan="5" class="empty">조회된 이슈가 없습니다.</td></tr>'}</tbody></table></div>${pageControls(rows.length,issueListPage,size,'온실 환경 이슈')}</section>`;
  $('#issueCycle').onchange=()=>{issueFilters={cycle:$('#issueCycle').value,type:'all',status:'all',from:'',to:''};issueListPage=1;renderIssues(false)};
  $('#issueFilters').onsubmit=event=>{
   event.preventDefault();
@@ -484,7 +502,7 @@ function renderGreenhouseList(){
  <div class="field"><label for="ghFilterMedium">배지형태</label><select class="ctrl" id="ghFilterMedium">${options([{value:'all',label:'전체'},{value:'수태',label:'수태'},{value:'코코피트',label:'코코피트'}],ghFilters.medium)}</select></div>
  <button type="button" class="btn filter-submit" id="ghDoFilter">검색</button>
  </div></div></section>
- <section class="panel list-section" aria-label="온실 정보"><div class="panel-head"><div class="panel-head-title"><h2>온실 정보</h2><span class="counter">총 ${rows.length}건</span></div><button type="button" class="btn main xs" id="ghCreate">+ 온실 등록</button></div><div class="panel-body">${paged.length?`<div class="gh-card-grid">${paged.map(g=>`<article class="gh-card"><button type="button" class="gh-card-media" data-gh-detail="${g.greenhouseId}" aria-label="${htmlText(g.name)} 상세 보기">${g.imageUrl?`<img src="${escapeHtml(g.imageUrl)}" alt="${htmlText(g.name)} 사진">`:`<div class="gh-card-placeholder"><span>등록된 사진 없음</span></div>`}</button><div class="gh-card-body"><div class="gh-card-head"><button type="button" class="linkbtn gh-card-title" data-gh-detail="${g.greenhouseId}">${htmlText(g.name)}</button>${g.type?`<span class="gh-card-badge">${htmlText(g.type)}</span>`:''}</div><dl class="gh-card-specs"><div><dt>피복형태</dt><dd>${htmlText(g.coverType||'—')}</dd></div><div><dt>동 수</dt><dd>${g.buildingCount!=null?`${g.buildingCount}동`:'—'}</dd></div><div><dt>등록 면적</dt><dd>${g.registeredArea!=null?`${g.registeredArea} ㎡`:'—'}</dd></div><div><dt>배지형태</dt><dd>${htmlText(g.mediumType||'—')}</dd></div></dl></div></article>`).join('')}</div>`:'<p class="empty" style="padding:40px 12px;margin:0">등록된 온실이 없습니다.</p>'}</div>${pageControls(rows.length,ghListPage,size,'온실 정보')}</section>`;
+ <section class="panel list-section" aria-label="온실 정보"><div class="panel-head"><div class="panel-head-title"><h2>온실 정보</h2><span class="counter">총 ${rows.length}건</span></div><button type="button" class="btn main xs" id="ghCreate">+ 온실 등록</button></div><div class="panel-body">${paged.length?`<div class="gh-card-grid">${paged.map(g=>`<article class="gh-card"><button type="button" class="gh-card-media" data-gh-detail="${g.greenhouseId}" aria-label="${htmlText(g.name)} 상세 보기">${g.imageUrl?`<img src="${escapeHtml(g.imageUrl)}" alt="${htmlText(g.name)} 사진">`:`<div class="gh-card-placeholder"><span>등록된 사진 없음</span></div>`}</button><div class="gh-card-body"><div class="gh-card-head"><button type="button" class="linkbtn gh-card-title" data-gh-detail="${g.greenhouseId}">${htmlText(g.name)}</button>${g.type?`<span class="krds-badge bg-light-success">${htmlText(g.type)}</span>`:''}</div><dl class="gh-card-specs"><div><dt>피복형태</dt><dd>${htmlText(g.coverType||'—')}</dd></div><div><dt>동 수</dt><dd>${g.buildingCount!=null?`${g.buildingCount}동`:'—'}</dd></div><div><dt>등록 면적</dt><dd>${g.registeredArea!=null?`${g.registeredArea} ㎡`:'—'}</dd></div><div><dt>배지형태</dt><dd>${htmlText(g.mediumType||'—')}</dd></div></dl></div></article>`).join('')}</div>`:'<p class="empty" style="padding:40px 12px;margin:0">등록된 온실이 없습니다.</p>'}</div>${pageControls(rows.length,ghListPage,size,'온실 정보')}</section>`;
  $('#ghDoFilter').onclick=()=>{ghFilters={name:$('#ghFilterName').value.trim(),type:$('#ghFilterType').value,cover:$('#ghFilterCover').value,medium:$('#ghFilterMedium').value};ghListPage=1;renderGreenhouseList()};
  $('#ghFilterName').onkeydown=e=>{if(e.key==='Enter')$('#ghDoFilter').click()};
  $('#ghCreate').onclick=()=>go('gh-create');
@@ -540,109 +558,155 @@ function renderGreenhouseEditor(edit){
   storeGreenhouseExtras();toast(edit?'온실 정보를 수정했습니다.':'온실을 등록했습니다.');go('gh-detail',payload.greenhouseId);
  };
 }
-function storeStandards(){try{localStorage.setItem(storageKey('standards'),JSON.stringify({crops:config.crops,criteria:config.stageEnvironmentalCriteria}))}catch{}}
-function loadStandards(){try{const saved=JSON.parse(localStorage.getItem(storageKey('standards'))||'null');if(Array.isArray(saved?.crops)&&saved.crops.length)config.crops=saved.crops;if(Array.isArray(saved?.criteria))config.stageEnvironmentalCriteria=saved.criteria}catch{}}
+function storeStandards(){try{localStorage.setItem(storageKey('standards'),JSON.stringify({crops:config.crops,criteria:config.stageEnvironmentalCriteria,standardMeta:config.standardMeta||{}}))}catch{}}
+function loadStandards(){try{const saved=JSON.parse(localStorage.getItem(storageKey('standards'))||'null');if(Array.isArray(saved?.crops)&&saved.crops.length)config.crops=saved.crops;if(Array.isArray(saved?.criteria))config.stageEnvironmentalCriteria=saved.criteria;if(saved?.standardMeta&&typeof saved.standardMeta==='object')config.standardMeta=saved.standardMeta}catch{}}
+function getCriteriaMeta(varietyId){
+ const hasStd=config.stageEnvironmentalCriteria.some(x=>x.varietyId===varietyId&&x.thresholds&&Object.keys(x.thresholds).length);
+ if(!hasStd)return {hasStd:false,source:'none',name:''};
+ const saved=config.standardMeta?.[varietyId];
+ if(saved?.name)return {hasStd:true,source:saved.source||'custom',name:saved.name};
+ return {hasStd:true,source:'default',name:'표준 환경기준표'};
+}
 function renderStandardPage(){
  loadStandards();
  const params=new URLSearchParams(location.search);
  const fromCycleId=params.get('cycleId');
- const state=window.__stdState||(window.__stdState={tab:'criteria',cropFilter:'all',varietyFilter:'all',editCriteria:false,cropModal:null,varietyId:params.get('varietyId')||''});
+ const paramVariety=params.get('varietyId')||'';
+ const isCreateEntry=page==='standard-create';
+ const state=window.__stdState||(window.__stdState={
+  cropFilter:'all',
+  editCriteria:false,
+  cropModal:isCreateEntry?{cropId:'',varietyId:'',cropName:'',varietyName:''}:null,
+  cropDetailId:paramVariety||null
+ });
+ if(isCreateEntry&&!state.cropModal&&!state.cropDetailId)state.cropModal={cropId:'',varietyId:'',cropName:'',varietyName:''};
+ updateNavigation();
  const allVarieties=config.crops.flatMap(cr=>cr.varieties.map(v=>({cropId:cr.cropId,varietyId:v.varietyId,label:`${cr.name} · ${v.name}`,cropName:cr.name,varietyName:v.name})));
- if(!allVarieties.some(v=>v.varietyId===state.varietyId))state.varietyId=allVarieties[0]?.varietyId||'';
  const stages=config.growthStages.slice().sort((a,b)=>a.order-b.order);
  const metrics=[
   ['dayTempC','주간 온도','°C'],['nightTempC','야간 온도','°C'],['humidityPct','온실 내부 습도','%RH'],
   ['co2Ppm','이산화탄소 (CO₂)','ppm'],['solarWm2','일사량','W/m²'],['lightUmolM2S','광도','μmol/m²/s'],
   ['substrateTempC','배지 온도','°C'],['substrateMoisturePct','배지 수분','%'],['substrateEcMsCm','배지 EC','mS/cm'],['substratePh','배지 pH','pH']
  ];
- const hasActiveCycle=varietyId=>config.cycles.some(c=>c.varietyId===varietyId&&c.status==='진행');
+ const hasActiveCycle=varietyId=>config.cycles.some(c=>cycleStatus(c)==='진행'&&(c.varietyId===varietyId||config.standardSets?.some(s=>s.id===c.environmentStandardSetId&&s.varietyId===varietyId)));
  const backBtn=fromCycleId?`<button type="button" class="backlink" id="stdBackCycle">← 작기계획 상세로</button>`:'';
- const tabs=`<div class="tabbar" role="tablist" aria-label="품목 및 환경기준 메뉴">
-  <button type="button" class="tabbtn" role="tab" id="tabStdCriteria" aria-selected="${state.tab==='criteria'}">생육단계별 환경기준</button>
-  <button type="button" class="tabbtn" role="tab" id="tabStdCrops" aria-selected="${state.tab==='crops'}">품목 · 품종 관리</button>
- </div>`;
+ const detailItem=state.cropDetailId?allVarieties.find(v=>v.varietyId===state.cropDetailId):null;
+ const editing=state.cropModal;
 
- if(state.tab==='crops'){
-  const cropOpts=config.crops.map(c=>({value:c.cropId,label:c.name}));
-  const varOpts=config.crops.filter(c=>state.cropFilter==='all'||c.cropId===state.cropFilter).flatMap(c=>c.varieties.map(v=>({value:v.varietyId,label:v.name})));
-  const rows=allVarieties.filter(v=>(state.cropFilter==='all'||v.cropId===state.cropFilter)&&(state.varietyFilter==='all'||v.varietyId===state.varietyFilter));
-  const editing=state.cropModal;
-  main.innerHTML=`<div class="pagehead"><div><h1>품목 및 환경기준</h1></div>${backBtn}</div>${tabs}
-  <section class="panel search-section" aria-label="품목 검색 조건"><div class="panel-body"><div class="filterbar">
-   <div class="field"><label for="stdCropFilter">품목</label><select id="stdCropFilter" class="ctrl">${options([{value:'all',label:'전체 품목'},...cropOpts],state.cropFilter)}</select></div>
-   <div class="field"><label for="stdVarFilter">품종</label><select id="stdVarFilter" class="ctrl">${options([{value:'all',label:'전체 품종'},...varOpts],state.varietyFilter)}</select></div>
-   <button type="button" class="btn filter-submit" id="stdCropSearch">검색</button>
-  </div></div></section>
-  ${editing?`<section class="panel" aria-label="품목 등록 및 수정"><div class="panel-head"><h2>${editing.varietyId?'품목 · 품종 수정':'품목 · 품종 등록'}</h2></div><div class="panel-body"><form id="stdCropForm" class="module-input-grid">
-   <div class="field"><label for="stdCropName">품목명 *</label><input id="stdCropName" class="ctrl" maxlength="50" value="${htmlText(editing.cropName||'')}" placeholder="예: 호접란" required></div>
-   <div class="field"><label for="stdVarietyName">품종명 *</label><input id="stdVarietyName" class="ctrl" maxlength="50" value="${htmlText(editing.varietyName||'')}" placeholder="예: 만천홍" required></div>
-   <div class="field" style="display:flex;align-items:flex-end;gap:8px"><button type="button" class="btn" id="stdCropCancel">취소</button><button type="submit" class="btn main">${editing.varietyId?'수정 저장':'등록'}</button></div>
-  </form></div></section>`:''}
-  <section class="panel list-section" aria-label="품목 목록"><div class="panel-head"><div class="panel-head-title"><h2>품목 · 품종 목록</h2><span class="counter">총 ${rows.length}건</span></div><button type="button" class="btn main xs" id="stdCropAdd">+ 품목 등록</button></div>
-  <div class="tablewrap"><table class="data-table"><thead><tr><th class="row-index">번호</th><th>품목명</th><th>품종명</th><th>진행 중 작기</th><th>관리</th></tr></thead>
-  <tbody>${rows.map((r,i)=>`<tr><td class="row-index">${rows.length-i}</td><td>${htmlText(r.cropName)}</td><td><button type="button" class="linkbtn" data-std-view="${r.varietyId}">${htmlText(r.varietyName)}</button></td><td>${hasActiveCycle(r.varietyId)?'진행중':'없음'}</td><td style="white-space:nowrap;display:flex;gap:6px"><button type="button" class="btn xs" data-std-edit="${r.varietyId}">수정</button><button type="button" class="btn xs danger" data-std-del="${r.varietyId}">삭제</button></td></tr>`).join('')||'<tr><td colspan="5" class="empty">등록된 품목이 없습니다.</td></tr>'}</tbody></table></div></section>`;
-  $('#stdCropSearch').onclick=()=>{state.cropFilter=$('#stdCropFilter').value;state.varietyFilter=$('#stdVarFilter').value;renderStandardPage()};
-  $('#stdCropFilter').onchange=()=>{state.cropFilter=$('#stdCropFilter').value;state.varietyFilter='all';renderStandardPage()};
-  $('#stdCropAdd').onclick=()=>{state.cropModal={cropId:'',varietyId:'',cropName:'',varietyName:''};renderStandardPage()};
-  if($('#stdCropCancel'))$('#stdCropCancel').onclick=()=>{state.cropModal=null;renderStandardPage()};
-  if($('#stdCropForm'))$('#stdCropForm').onsubmit=e=>{
+ if(editing){
+  main.innerHTML=`<div class="pagehead"><div><h1>${editing.varietyId?'품목 · 품종 수정':'품목 · 품종 등록'}</h1></div>${backBtn}</div>
+  <section class="panel" style="flex:none" aria-label="품목 등록 및 수정"><div class="panel-head"><h2>품목 정보</h2><span class="counter">* 필수 입력</span></div><div class="panel-body"><form id="stdCropForm"><div class="module-input-grid">
+   ${editing.varietyId?`<div class="field"><label for="stdCropId">품목ID</label><input id="stdCropId" class="ctrl" value="${htmlText(editing.varietyId)}" readonly></div>`:''}
+   <div class="field"><label for="stdCropName">품목명 <span class="required" aria-hidden="true">*</span></label><input id="stdCropName" class="ctrl" maxlength="50" value="${htmlText(editing.cropName||'')}" placeholder="예: 장미" required></div>
+   <div class="field"><label for="stdVarietyName">품종명 <span class="required" aria-hidden="true">*</span></label><input id="stdVarietyName" class="ctrl" maxlength="50" value="${htmlText(editing.varietyName||'')}" placeholder="예: 덩굴장미" required></div>
+  </div><div class="module-actions"><button type="button" class="btn" id="stdCropCancel">취소</button><button type="submit" class="btn main">${editing.varietyId?'수정 저장':'등록'}</button></div></form></div></section>`;
+  $('#stdCropName')?.focus();
+  $('#stdCropCancel').onclick=()=>{state.cropModal=null;page='standard';renderStandardPage()};
+  $('#stdCropForm').onsubmit=e=>{
    e.preventDefault();
    const cropName=$('#stdCropName').value.trim(),varietyName=$('#stdVarietyName').value.trim();
    if(!cropName||!varietyName){toast('품목명과 품종명을 모두 입력하세요.');return}
+   const duplicated=allVarieties.some(v=>v.varietyId!==editing.varietyId&&v.cropName===cropName&&v.varietyName===varietyName);
+   if(duplicated){toast('이미 등록된 품목 · 품종입니다.');return}
    if(editing.varietyId){
-    const targetCrop=config.crops.find(c=>c.cropId===editing.cropId);
-    const targetVar=targetCrop?.varieties.find(v=>v.varietyId===editing.varietyId);
-    if(targetCrop)targetCrop.name=cropName;
-    if(targetVar)targetVar.name=varietyName;
-    toast('품목 · 품종 정보를 수정했습니다.');
+    const oldCrop=config.crops.find(c=>c.cropId===editing.cropId);
+    const targetVar=oldCrop?.varieties.find(v=>v.varietyId===editing.varietyId);
+    if(oldCrop&&targetVar){
+     if(oldCrop.name===cropName){
+      targetVar.name=varietyName;
+     }else if(oldCrop.varieties.length===1){
+      oldCrop.name=cropName;
+      targetVar.name=varietyName;
+     }else{
+      oldCrop.varieties=oldCrop.varieties.filter(v=>v.varietyId!==editing.varietyId);
+      let destCrop=config.crops.find(c=>c.name===cropName);
+      if(!destCrop){destCrop={cropId:'CR-NEW-'+Date.now(),name:cropName,varieties:[]};config.crops.push(destCrop)}
+      destCrop.varieties.push({varietyId:editing.varietyId,name:varietyName});
+     }
+    }
+    state.cropModal=null;page='standard';storeStandards();toast('품목 · 품종 정보를 수정했습니다.');renderStandardPage();
    }else{
     let crop=config.crops.find(c=>c.name===cropName);
     if(!crop){crop={cropId:'CR-NEW-'+Date.now(),name:cropName,varieties:[]};config.crops.push(crop)}
-    crop.varieties.push({varietyId:'VAR-NEW-'+Date.now(),name:varietyName});
-    toast('품목 · 품종을 등록했습니다.');
+    const newVarId='VAR-NEW-'+Date.now();
+    crop.varieties.push({varietyId:newVarId,name:varietyName});
+    state.cropModal=null;state.cropDetailId=newVarId;state.editCriteria=false;page='standard';storeStandards();
+    toast('품목 · 품종을 등록했습니다. 환경기준을 등록하거나 외부 API 기준표를 불러오세요.');
+    renderStandardPage();
    }
-   state.cropModal=null;storeStandards();renderStandardPage();
   };
-  $$('[data-std-view]').forEach(b=>b.onclick=()=>{state.varietyId=b.dataset.stdView;state.tab='criteria';state.editCriteria=false;renderStandardPage()});
-  $$('[data-std-edit]').forEach(b=>b.onclick=()=>{const v=allVarieties.find(x=>x.varietyId===b.dataset.stdEdit);if(v){state.cropModal={...v};renderStandardPage()}});
-  $$('[data-std-del]').forEach(b=>b.onclick=()=>{
-   const vid=b.dataset.stdDel;
+ }else if(detailItem){
+  const vid=detailItem.varietyId;
+  const criteriaByStage=Object.fromEntries(stages.map(st=>[st.stageId,config.stageEnvironmentalCriteria.find(x=>x.varietyId===vid&&x.stageId===st.stageId)]));
+  const stdMeta=getCriteriaMeta(vid);
+  const fmtRange=(range,unit)=>(range&&range[0]!=null&&range[1]!=null)?`${range[0]} ~ ${range[1]} ${unit}`:'미입력';
+  main.innerHTML=`<div class="pagehead"><div><h1>품목 · 품종 상세</h1></div>${backBtn}</div>
+  <div class="module-scroll">
+   <section class="panel" aria-label="품목 · 품종 기본 정보">
+    <div class="panel-head"><h2>품목 정보</h2></div>
+    <div class="panel-body"><dl class="profile-facts"><dt>품목명</dt><dd>${htmlText(detailItem.cropName)}</dd><dt>품종명</dt><dd>${htmlText(detailItem.varietyName)}</dd><dt>적용 기준표명</dt><dd>${htmlText(stdMeta.hasStd?stdMeta.name:'기준 미입력')}</dd></dl></div>
+    <div class="hidden" id="stdCropDeleteConfirm" style="padding:10px 16px;border-top:1px solid var(--line);display:flex;align-items:center;justify-content:flex-end;gap:8px"><span>선택한 품목 · 품종을 삭제하시겠습니까?</span><button type="button" class="btn" id="stdCropDeleteCancel">취소</button><button type="button" class="btn danger" id="stdCropDeleteOk">삭제 확인</button></div>
+    <div class="panel-body"><div class="module-actions"><button type="button" class="btn" id="stdCropBackToList">목록</button><button type="button" class="btn danger" id="stdCropDetailDel">삭제</button><button type="button" class="btn main" id="stdCropDetailEdit">수정</button></div></div>
+   </section>
+   <section class="panel" style="margin-top:14px" aria-label="생육단계별 환경기준">
+    <div class="panel-head">
+     <div class="panel-head-title"><h2>생육단계별 환경기준</h2><span class="counter">${htmlText(stdMeta.hasStd?stdMeta.name:'기준 미입력')}</span></div>
+     <div class="std-toolbar-actions">
+      <button type="button" class="btn xs" id="stdLoadApiBtn">외부 API 기준표 불러오기</button>
+      <button type="button" class="btn main xs" id="stdToggleEdit">${state.editCriteria?'조회 모드로':(stdMeta.hasStd?'환경기준 수정':'환경기준 등록')}</button>
+      ${stdMeta.hasStd?'<button type="button" class="btn danger xs" id="stdDeleteCriteria">기준 삭제</button>':''}
+     </div>
+    </div>
+    ${state.editCriteria?`<div class="panel-body std-criteria-meta"><div class="field"><label for="stdCriteriaName">기준표명 <span class="required" aria-hidden="true">*</span></label><input id="stdCriteriaName" class="ctrl" maxlength="60" value="${htmlText(stdMeta.name||`${detailItem.varietyName} 맞춤 환경기준표`)}" placeholder="구분할 기준표명을 입력하세요"></div></div>`:''}
+    <div class="panel-body" style="padding-bottom:0"><div class="std-stage-cards">${stages.map(st=>{const c=criteriaByStage[st.stageId],t=c?.thresholds||{};return `<article class="panel std-stage-card"><div class="panel-head"><h2>${st.order}단계 · ${htmlText(st.name)}</h2><span class="counter">${c?.standardDays!=null?`${c.standardDays}일`:'기간 미입력'}</span></div><div class="panel-body"><dl class="std-stage-facts"><div><dt>주간/야간 온도</dt><dd>${t.dayTempC?`${t.dayTempC[0]}~${t.dayTempC[1]}°C`:'—'} / ${t.nightTempC?`${t.nightTempC[0]}~${t.nightTempC[1]}°C`:'—'}</dd></div><div><dt>습도 / CO₂</dt><dd>${t.humidityPct?`${t.humidityPct[0]}~${t.humidityPct[1]}%`:'—'} / ${t.co2Ppm?`${t.co2Ppm[0]}~${t.co2Ppm[1]}ppm`:'—'}</dd></div></dl></div></article>`}).join('')}</div></div>
+    <div class="tablewrap" style="margin-top:14px"><table class="data-table module-table"><thead><tr><th>환경 기준 항목</th><th>단위</th>${stages.map(st=>`<th>${st.order}단계 · ${htmlText(st.name)}</th>`).join('')}</tr></thead>
+    <tbody>
+     <tr><td><strong>기준 기간</strong></td><td>일</td>${stages.map(st=>{const d=criteriaByStage[st.stageId]?.standardDays;return state.editCriteria?`<td><input type="number" class="ctrl compact-input std-days-input" min="1" data-std-days="${st.stageId}" value="${d??''}" placeholder="일수"></td>`:`<td class="tnum">${d!=null?`${d}일`:'미입력'}</td>`}).join('')}</tr>
+     ${metrics.map(([key,label,unit])=>`<tr><td><strong>${htmlText(label)}</strong></td><td>${htmlText(unit)}</td>${stages.map(st=>{const r=criteriaByStage[st.stageId]?.thresholds?.[key];return state.editCriteria?`<td><div class="std-range-inputs"><input type="number" step="0.1" class="ctrl compact-input" data-std-min="${st.stageId}:${key}" value="${r?.[0]??''}" placeholder="최소"><span>~</span><input type="number" step="0.1" class="ctrl compact-input" data-std-max="${st.stageId}:${key}" value="${r?.[1]??''}" placeholder="최대"></div></td>`:`<td class="tnum">${fmtRange(r,unit)}</td>`}).join('')}</tr>`).join('')}
+    </tbody></table></div>
+    <div class="hidden" id="stdCriteriaDeleteConfirm" style="padding:10px 16px;border-top:1px solid var(--line);display:flex;align-items:center;justify-content:flex-end;gap:8px"><span>해당 품목의 생육단계별 환경기준을 삭제하시겠습니까?</span><button type="button" class="btn" id="stdCriteriaDeleteCancel">취소</button><button type="button" class="btn danger" id="stdCriteriaDeleteOk">삭제 확인</button></div>
+    ${state.editCriteria?'<div class="panel-body"><div class="module-actions"><button type="button" class="btn" id="stdEditCancel">취소</button><button type="button" class="btn main" id="stdSaveCriteria">기준 저장</button></div></div>':''}
+   </section>
+  </div>`;
+  $('#stdCropBackToList').onclick=()=>{state.cropDetailId=null;state.editCriteria=false;renderStandardPage()};
+  $('#stdCropDetailEdit').onclick=()=>{state.cropModal={...detailItem};state.editCriteria=false;renderStandardPage()};
+  $('#stdCropDetailDel').onclick=()=>{
+   if(hasActiveCycle(vid)){toast('진행 중인 작기에서 사용 중인 품목은 삭제할 수 없습니다.');return}
+   $('#stdCropDeleteConfirm').classList.remove('hidden');
+  };
+  $('#stdCropDeleteCancel').onclick=()=>$('#stdCropDeleteConfirm').classList.add('hidden');
+  $('#stdCropDeleteOk').onclick=()=>{
    if(hasActiveCycle(vid)){toast('진행 중인 작기에서 사용 중인 품목은 삭제할 수 없습니다.');return}
    config.crops=config.crops.map(c=>({...c,varieties:c.varieties.filter(v=>v.varietyId!==vid)})).filter(c=>c.varieties.length>0);
    config.stageEnvironmentalCriteria=config.stageEnvironmentalCriteria.filter(x=>x.varietyId!==vid);
-   storeStandards();toast('품종을 삭제했습니다.');renderStandardPage();
-  });
- }else{
-  const criteriaByStage=Object.fromEntries(stages.map(st=>[st.stageId,config.stageEnvironmentalCriteria.find(x=>x.varietyId===state.varietyId&&x.stageId===st.stageId)]));
-  const fmtRange=(range,unit)=>(range&&range[0]!=null&&range[1]!=null)?`${range[0]} ~ ${range[1]} ${unit}`:'미입력';
-  const curLabel=allVarieties.find(v=>v.varietyId===state.varietyId)?.label||'';
-  main.innerHTML=`<div class="pagehead"><div><h1>품목 및 환경기준</h1></div>${backBtn}</div>${tabs}
-  <section class="panel search-section" aria-label="품종 선택"><div class="panel-body"><div class="filterbar">
-   <div class="field"><label for="stdVarietySelect">품목 · 품종</label><select id="stdVarietySelect" class="ctrl">${options(allVarieties.map(v=>({value:v.varietyId,label:v.label})),state.varietyId)}</select></div>
-   <button type="button" class="btn" id="stdLoadApiBtn">외부 API 기준표 불러오기</button>
-   <button type="button" class="btn main" id="stdToggleEdit">${state.editCriteria?'조회 모드로':'기준 등록/수정'}</button>
-   <button type="button" class="btn danger" id="stdDeleteCriteria">기준 삭제</button>
-  </div></div></section>
-  <section class="panel list-section" aria-label="생육단계별 10개 환경기준 비교표"><div class="panel-head"><div class="panel-head-title"><h2>전체 환경기준 비교 (3단계 × 10항목)</h2><span class="counter">${htmlText(curLabel)}</span></div>${state.editCriteria?'<button type="button" class="btn main xs" id="stdSaveCriteria">기준 저장</button>':''}</div>
-  <div class="tablewrap"><table class="data-table module-table"><thead><tr><th>환경 기준 항목</th><th>단위</th>${stages.map(st=>`<th>${st.order}단계 · ${htmlText(st.name)}</th>`).join('')}</tr></thead>
-  <tbody>
-  <tr><td><strong>기준 기간</strong></td><td>일</td>${stages.map(st=>{const d=criteriaByStage[st.stageId]?.standardDays;return state.editCriteria?`<td><input type="number" class="ctrl compact-input" style="width:90px" min="1" data-std-days="${st.stageId}" value="${d??''}" placeholder="일수"></td>`:`<td>${d!=null?`${d}일`:'미입력'}</td>`}).join('')}</tr>
-  ${metrics.map(([key,label,unit])=>`<tr><td><strong>${htmlText(label)}</strong></td><td>${htmlText(unit)}</td>${stages.map(st=>{const r=criteriaByStage[st.stageId]?.thresholds?.[key];return state.editCriteria?`<td><div style="display:flex;gap:4px;align-items:center"><input type="number" step="0.1" class="ctrl compact-input" style="width:72px" data-std-min="${st.stageId}:${key}" value="${r?.[0]??''}" placeholder="최소"><span>~</span><input type="number" step="0.1" class="ctrl compact-input" style="width:72px" data-std-max="${st.stageId}:${key}" value="${r?.[1]??''}" placeholder="최대"></div></td>`:`<td class="tnum">${fmtRange(r,unit)}</td>`}).join('')}</tr>`).join('')}
-  </tbody></table></div></section>`;
-  $('#stdVarietySelect').onchange=e=>{state.varietyId=e.target.value;state.editCriteria=false;renderStandardPage()};
+   if(Array.isArray(config.standardSets))config.standardSets=config.standardSets.filter(x=>x.varietyId!==vid);
+   if(config.standardMeta)delete config.standardMeta[vid];
+   state.cropDetailId=null;state.editCriteria=false;storeStandards();toast('품종을 삭제했습니다.');renderStandardPage();
+  };
   $('#stdToggleEdit').onclick=()=>{state.editCriteria=!state.editCriteria;renderStandardPage()};
+  if($('#stdEditCancel'))$('#stdEditCancel').onclick=()=>{state.editCriteria=false;renderStandardPage()};
   $('#stdLoadApiBtn').onclick=()=>{
    const preset={VEG:{days:30,t:{dayTempC:[24,28],nightTempC:[18,22],humidityPct:[65,80],co2Ppm:[600,900],solarWm2:[150,350],lightUmolM2S:[120,250],substrateTempC:[20,24],substrateMoisturePct:[55,70],substrateEcMsCm:[0.8,1.2],substratePh:[5.5,6.2]}},IND:{days:35,t:{dayTempC:[20,24],nightTempC:[15,18],humidityPct:[60,75],co2Ppm:[500,800],solarWm2:[180,380],lightUmolM2S:[150,280],substrateTempC:[18,22],substrateMoisturePct:[50,65],substrateEcMsCm:[1.0,1.4],substratePh:[5.5,6.2]}},BLO:{days:40,t:{dayTempC:[22,26],nightTempC:[16,20],humidityPct:[55,70],co2Ppm:[500,800],solarWm2:[200,420],lightUmolM2S:[180,320],substrateTempC:[19,23],substrateMoisturePct:[50,65],substrateEcMsCm:[1.0,1.5],substratePh:[5.6,6.3]}}};
-   config.stageEnvironmentalCriteria=config.stageEnvironmentalCriteria.filter(x=>x.varietyId!==state.varietyId);
-   for(const st of stages){const p=preset[st.stageId]||preset.VEG;config.stageEnvironmentalCriteria.push({varietyId:state.varietyId,stageId:st.stageId,standardDays:p.days,thresholds:clone(p.t)})}
-   storeStandards();toast('외부 API 표준 환경기준표를 불러와 반영했습니다.');renderStandardPage();
+   config.stageEnvironmentalCriteria=config.stageEnvironmentalCriteria.filter(x=>x.varietyId!==vid);
+   for(const st of stages){const p=preset[st.stageId]||preset.VEG;config.stageEnvironmentalCriteria.push({varietyId:vid,stageId:st.stageId,standardDays:p.days,thresholds:clone(p.t)})}
+   config.standardMeta=config.standardMeta||{};
+   config.standardMeta[vid]={name:`${detailItem.varietyName} 외부 API 표준 기준표`,source:'api'};
+   storeStandards();toast('외부 API 표준 환경기준표를 불러와 저장했습니다.');renderStandardPage();
   };
-  $('#stdDeleteCriteria').onclick=()=>{
-   if(hasActiveCycle(state.varietyId)){toast('진행 중인 작기가 있는 품종의 환경기준은 삭제할 수 없습니다.');return}
-   config.stageEnvironmentalCriteria=config.stageEnvironmentalCriteria.filter(x=>x.varietyId!==state.varietyId);
+  if($('#stdDeleteCriteria'))$('#stdDeleteCriteria').onclick=()=>{
+   if(hasActiveCycle(vid)){toast('진행 중인 작기가 있는 품종의 환경기준은 삭제할 수 없습니다.');return}
+   $('#stdCriteriaDeleteConfirm').classList.remove('hidden');
+  };
+  $('#stdCriteriaDeleteCancel').onclick=()=>$('#stdCriteriaDeleteConfirm').classList.add('hidden');
+  $('#stdCriteriaDeleteOk').onclick=()=>{
+   if(hasActiveCycle(vid)){toast('진행 중인 작기가 있는 품종의 환경기준은 삭제할 수 없습니다.');return}
+   config.stageEnvironmentalCriteria=config.stageEnvironmentalCriteria.filter(x=>x.varietyId!==vid);
+   if(config.standardMeta)delete config.standardMeta[vid];
    storeStandards();state.editCriteria=false;toast('선택 품종의 환경기준을 삭제했습니다.');renderStandardPage();
   };
   if($('#stdSaveCriteria'))$('#stdSaveCriteria').onclick=()=>{
+   const criteriaName=$('#stdCriteriaName').value.trim();
+   if(!criteriaName){toast('구분할 기준표명을 입력하세요.');$('#stdCriteriaName').focus();return}
    for(const st of stages){
     const daysVal=$(`[data-std-days="${st.stageId}"]`).value.trim();
     const thresholds={};
@@ -651,15 +715,30 @@ function renderStandardPage(){
      const mx=$(`[data-std-max="${st.stageId}:${key}"]`).value.trim();
      if(mn!==''&&mx!=='')thresholds[key]=[Number(mn),Number(mx)];
     }
-    const existing=config.stageEnvironmentalCriteria.find(x=>x.varietyId===state.varietyId&&x.stageId===st.stageId);
+    const existing=config.stageEnvironmentalCriteria.find(x=>x.varietyId===vid&&x.stageId===st.stageId);
     if(existing){existing.standardDays=daysVal===''?null:Number(daysVal);existing.thresholds=thresholds}
-    else{config.stageEnvironmentalCriteria.push({varietyId:state.varietyId,stageId:st.stageId,standardDays:daysVal===''?null:Number(daysVal),thresholds})}
+    else{config.stageEnvironmentalCriteria.push({varietyId:vid,stageId:st.stageId,standardDays:daysVal===''?null:Number(daysVal),thresholds})}
    }
-   storeStandards();state.editCriteria=false;toast('생육단계별 환경기준을 저장했습니다.');renderStandardPage();
+   config.standardMeta=config.standardMeta||{};
+   config.standardMeta[vid]={name:criteriaName,source:'custom'};
+   storeStandards();state.editCriteria=false;toast(`'${criteriaName}' 기준표를 저장했습니다.`);renderStandardPage();
   };
+ }else{
+  const cropOpts=config.crops.map(c=>({value:c.cropId,label:c.name}));
+  const rows=allVarieties.filter(v=>state.cropFilter==='all'||v.cropId===state.cropFilter);
+  main.innerHTML=`<div class="pagehead"><div><h1>품목 · 품종 목록</h1></div>${backBtn}</div>
+  <section class="panel search-section" aria-label="품목 검색 조건"><div class="panel-body"><div class="filterbar module-filter">
+   <div class="field"><label for="stdCropFilter">품목</label><select id="stdCropFilter" class="ctrl">${options([{value:'all',label:'전체 품목'},...cropOpts],state.cropFilter)}</select></div>
+   <button type="button" class="btn filter-submit" id="stdCropSearch">검색</button>
+  </div></div></section>
+  <section class="panel list-section" aria-label="품목 목록"><div class="panel-head"><div class="panel-head-title"><h2>품목 · 품종 목록</h2><span class="counter">총 ${rows.length}건</span></div><button type="button" class="btn main xs" id="stdCropAdd">+ 품목 등록</button></div>
+  <div class="tablewrap"><table class="data-table module-table"><thead><tr><th class="row-index">번호</th><th>품목명</th><th>품종명</th></tr></thead>
+  <tbody>${rows.map((r,i)=>`<tr><td class="row-index">${rows.length-i}</td><td>${htmlText(r.cropName)}</td><td><button type="button" class="linkbtn" data-std-crop-detail="${r.varietyId}">${htmlText(r.varietyName)}</button></td></tr>`).join('')||'<tr><td colspan="3" class="empty">등록된 품목이 없습니다.</td></tr>'}</tbody></table></div></section>`;
+  $('#stdCropSearch').onclick=()=>{state.cropFilter=$('#stdCropFilter').value;renderStandardPage()};
+  $('#stdCropFilter').onchange=()=>{state.cropFilter=$('#stdCropFilter').value;renderStandardPage()};
+  $('#stdCropAdd').onclick=()=>{state.cropModal={cropId:'',varietyId:'',cropName:'',varietyName:''};renderStandardPage()};
+  $$('[data-std-crop-detail]').forEach(b=>b.onclick=()=>{state.cropDetailId=b.dataset.stdCropDetail;state.editCriteria=false;renderStandardPage()});
  }
- $('#tabStdCriteria').onclick=()=>{state.tab='criteria';renderStandardPage()};
- $('#tabStdCrops').onclick=()=>{state.tab='crops';renderStandardPage()};
  if($('#stdBackCycle'))$('#stdBackCycle').onclick=()=>{location.href='cultivationPlanList.html?view=cycle-detail&id='+encodeURIComponent(fromCycleId)};
 }
 async function init(){

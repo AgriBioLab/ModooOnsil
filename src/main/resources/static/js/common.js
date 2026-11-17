@@ -14,6 +14,11 @@
       <a class="navbtn nav-sub" href="cultivationPlanList.html" data-go="cycle-list">작기계획목록</a>
       <a class="navbtn nav-sub" href="cultivationPlanList.html?view=cycle-create" data-go="cycle-create">작기계획등록</a>
     </div>
+    <div class="navgroup" role="group" aria-label="재배품목">
+      <div class="navhead nav-group-title">재배품목</div>
+      <a class="navbtn nav-sub" href="cropStageStandard.html" data-go="standard">품목 · 품종 목록</a>
+      <a class="navbtn nav-sub" href="cropStageStandard.html?view=standard-create" data-go="standard-create">품목 · 품종 등록</a>
+    </div>
     <div class="navgroup" role="group" aria-label="온실">
       <div class="navhead nav-group-title">온실</div>
       <a class="navbtn nav-sub" href="environmentChangeList.html" data-go="env-list">온실 환경변화</a>
@@ -148,7 +153,8 @@
 
   function showAccount(member) {
     document.getElementById('userName').textContent = member.displayName;
-    document.getElementById('userCertification').textContent = member.certification ? ' (' + member.certification + ')' : '';
+    const certText = member.certification === '인증' ? '농업경영체 인증회원' : member.certification;
+    document.getElementById('userCertification').textContent = certText ? ' (' + certText + ')' : '';
     const sidebarFoot = document.getElementById('sidebarFoot');
     if (sidebarFoot) sidebarFoot.textContent = member.farmName;
   }

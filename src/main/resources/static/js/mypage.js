@@ -57,6 +57,7 @@
       const values = {
         ...user,
         certification,
+        createdAt: user.createdAt ? String(user.createdAt).slice(0, 10) : '',
         farmAddress: [user.address, user.addressDetail].filter(Boolean).join(' ')
       };
       for (const item of main.querySelectorAll('[data-profile-value]')) {

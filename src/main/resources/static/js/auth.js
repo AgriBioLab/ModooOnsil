@@ -119,6 +119,22 @@
           })}
           ${signupField('signupPhone', '연락처 (선택)', { type: 'tel', attributes: 'maxlength="20" autocomplete="tel"' })}
           ${signupField('signupMainCrop', '주요 재배 품목 (선택)', { attributes: 'maxlength="100"' })}
+          <div class="form-group">
+            <label class="form-label" for="signupAddress">농장 주소 (선택)</label>
+            <div class="auth-input-row">
+              <input id="signupAddress" class="krds-input medium" type="text" maxlength="255" readonly aria-describedby="signupAddress-feedback">
+              <button type="button" class="krds-btn medium secondary" id="signupAddrSearchBtn">주소 검색</button>
+            </div>
+            <p id="signupAddress-feedback" class="auth-feedback" aria-live="polite"></p>
+          </div>
+          ${signupField('signupAddressDetail', '상세 주소 (선택)', { attributes: 'maxlength="255" autocomplete="address-line2"' })}
+          <div class="form-group signup-field-wide">
+            <label class="form-label" for="signupDescription">농장 소개 (선택)</label>
+            <div class="form-conts">
+              <textarea id="signupDescription" class="krds-input medium signup-textarea" maxlength="500" aria-describedby="signupDescription-feedback"></textarea>
+            </div>
+            <p id="signupDescription-feedback" class="auth-feedback" aria-live="polite"></p>
+          </div>
         </div>
         <div class="signup-actions"><button type="submit" class="krds-btn medium primary" id="signupNextBtn">다음</button></div>
       </form>`);
@@ -150,6 +166,21 @@
       };
 
       form.addEventListener('input', ({ target }) => signupFeedback(target, ''));
+      $('#signupAddrSearchBtn', form).onclick = () => {
+        const addrInput = input('signupAddress');
+        if (window.daum?.Postcode) {
+          new window.daum.Postcode({
+            oncomplete: data => {
+              addrInput.value = data.roadAddress || data.jibunAddress || '';
+              input('signupAddressDetail').focus();
+            }
+          }).open();
+          return;
+        }
+        addrInput.readOnly = false;
+        addrInput.focus();
+        toast('주소 검색 서비스를 불러오지 못해 직접 입력으로 전환했습니다.');
+      };
       for (const button of $$('[data-check]', form)) {
         const id = button.dataset.check;
         const field = fieldsToCheck[id];
@@ -177,7 +208,7 @@
           signupEmail: fieldsToCheck.signupEmail.validate() || signupDuplicateMessage(members, 'email', value('signupEmail'))
         };
         if (displayErrors(errors)) return;
-        draft = Object.fromEntries($$('input', form).map(field => [field.id, field.value]));
+        draft = Object.fromEntries($$('input, textarea', form).map(field => [field.id, field.value]));
         renderCertificationForm();
         focusStep();
       };
@@ -243,10 +274,11 @@
           farmName: draft.signupFarmName.trim(),
           email: draft.signupEmail.trim() || null,
           phone: draft.signupPhone.trim() || null,
-          address: null,
-          addressDetail: null,
+          address: draft.signupAddress?.trim() || null,
+          addressDetail: draft.signupAddressDetail?.trim() || null,
           mainCrop: draft.signupMainCrop.trim() || null,
-          description: null
+          description: draft.signupDescription?.trim() || null,
+          createdAt: new Date().toISOString().slice(0, 10)
         };
         const members = allMembers();
         const conflicts = {
