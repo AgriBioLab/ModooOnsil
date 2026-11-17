@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="kr.swdl.modooonsil.member.repository.MemberRepository">
+    <select id="findMemberByMemberId" resultType="kr.swdl.modooonsil.member.domain.Member" parameterType="Long">
+        SELECT member_id, farm_name, representative_name, username, created_at, phone_number, email, farm_address, farm_address_detail, main_crop, farm_description, certified_at, farm_business_number, certification_status, updated_at
+        FROM farm_member
+        WHERE member_id = #{memberId};
+    </select>
+    
+    <select id="existsByUsername" resultType="Boolean" parameterType="String">
+        SELECT EXISTS(SELECT 1 FROM farm_member WHERE username = #{username})
+    </select>
+
+    <select id="existsByEmail" resultType="Boolean" parameterType="String">
+        SELECT EXISTS(SELECT 1 FROM farm_member WHERE email = #{email})
+    </select>
+
+    <insert id="addMember"
+            parameterType="kr.swdl.modooonsil.member.domain.Member"
+            useGeneratedKeys="true"
+            keyProperty="memberId"
+            keyColumn="member_id">
+
+        INSERT INTO farm_member (
+            farm_name,
+            representative_name,
+            username,
+            password,
+            created_at,
+            phone_number,
+            email,
+            farm_address,
+            farm_address_detail,
+            main_crop,
+            farm_description,
+            certified_at,
+            updated_at,
+            farm_business_number,
+            certification_status
+        )
+        VALUES (
+            #{farmName},
+            #{representativeName},
+            #{username},
+            #{password},
+            NOW(),
+            #{phoneNumber},
+            #{email},
+            #{farmAddress},
+            #{farmAddressDetail},
+            #{mainCrop},
+            #{farmDescription},
+            NULL,
+            NULL,
+            #{farmBusinessNumber},
+            #{certificationStatus}
+            )
+    </insert>
+
+    <update id="updateMember" parameterType="kr.swdl.modooonsil.member.domain.Member">
+        UPDATE farm_member
+        SET
+            representative_name = #{representativeName},
+            phone_number = #{phoneNumber},
+            farm_address = #{farmAddress},
+            farm_address_detail = #{farmAddressDetail},
+            main_crop = #{mainCrop},
+            farm_description = #{farmDescription},
+            updated_at = NOW()
+        WHERE
+            member_id = #{memberId}
+    </update>
+    
+</mapper>
