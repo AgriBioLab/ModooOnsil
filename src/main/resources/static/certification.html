@@ -4,22 +4,25 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>모두의온실 | 농업경영체 인증</title>
+  <link rel="stylesheet" href="vendor/krds/css/component/output.css">
   <link rel="stylesheet" href="css/prototype.css">
+  <link rel="stylesheet" href="css/krds-modoo.css">
   <script src="js/prototypeData.js" defer></script>
   <script src="js/layout.js" defer></script>
   <script src="js/prototype.js" defer></script>
 </head>
 <body data-page="cert">
-<div class="app">
+<div class="app profile-app">
   <div id="sidebarSlot"></div>
   <div class="workarea">
     <div id="headerSlot"></div>
-    <main>
+    <main class="profile-page">
       <nav class="crumb" aria-label="현재 위치"><span id="crumb">농업경영체 인증</span></nav>
       <div class="page-content" id="main" tabindex="-1"></div>
     </main>
   </div>
 </div>
-<div class="notice-toast hidden" id="toast" role="status" aria-live="polite"></div>
+<div class="notice-toast profile-notice hidden" id="toast" aria-hidden="true"></div>
+<div class="sr-only" id="toastAnnouncement" role="status" aria-atomic="true"></div>
 </body>
 </html>

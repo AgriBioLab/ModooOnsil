@@ -4,18 +4,29 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>모두의온실 | 회원가입</title>
+  <link rel="stylesheet" href="vendor/krds/css/component/output.css">
   <link rel="stylesheet" href="css/prototype.css">
+  <link rel="stylesheet" href="css/krds-modoo.css">
   <script src="js/prototypeData.js" defer></script>
   <script src="js/prototype.js" defer></script>
 </head>
-<body data-page="signup">
-<main id="signupOverlay" class="signed-out">
-  <section class="signed-out-card signup-card-wide" aria-labelledby="signupTitle">
-    <p class="login-brand">모두의온실</p>
-    <h1 id="signupTitle">회원가입</h1>
-    <div id="signupStepMount"></div>
-  </section>
+<body data-page="signup" class="signup-shell">
+<header class="signup-topbar">
+  <div class="signup-topbar-brand">
+    <span>모두의온실</span>
+    <span class="signup-topbar-sub">생산자 영농관리</span>
+  </div>
+  <a class="signup-topbar-link" href="login.html">로그인</a>
+</header>
+<main id="signupOverlay" class="signup-container">
+  <nav class="crumb" aria-label="현재 위치">처음 화면 &rsaquo; 회원가입</nav>
+  <h1 id="signupTitle">생산자 회원가입</h1>
+  <div id="signupStepMount"></div>
 </main>
+<footer class="signup-footer">
+  <strong>모두의온실</strong>
+  <span>화훼농민의 농장과 재배 기록을 연결합니다.</span>
+</footer>
 <div class="notice-toast hidden" id="toast" role="status" aria-live="polite"></div>
 </body>
 </html>

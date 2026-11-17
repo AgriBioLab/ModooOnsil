@@ -26,7 +26,17 @@ function loadSaved(){let saved;try{saved=JSON.parse(localStorage.getItem(storage
  if(saved?.cycleStageHistories)for(const c of config.cycles){if(Array.isArray(saved.cycleStageHistories[c.cycleId]))c.stageHistory=saved.cycleStageHistories[c.cycleId].map(e=>{const {reasons,...rest}=e;return {...rest,reason:toReason(e.reason||reasons)}})}
  diaryRows.forEach(d=>{delete d.title;d.stageChangeReason=toReason(d.stageChangeReason||d.stageChangeReasons);delete d.stageChangeReasons;d.tasks=(d.tasks||[]).map(t=>({...t,startedAt:t.startedAt||makeStarted(d.workDate,t.time||'09:00'),name:t.name||t.type,content:t.content??''})).sort(timeSort)});
 }
-function toast(s){let el=$('#toast');el.textContent=s;el.classList.remove('hidden');clearTimeout(toastTimer);toastTimer=setTimeout(()=>el.classList.add('hidden'),3400)}
+function toast(message) {
+ const notice = $('#toast'), announcement = $('#toastAnnouncement');
+ notice.textContent = message;
+ notice.classList.remove('hidden');
+ if (announcement) announcement.textContent = message;
+ clearTimeout(toastTimer);
+ toastTimer = setTimeout(() => {
+  notice.classList.add('hidden');
+  if (announcement) announcement.textContent = '';
+ }, 3400);
+}
 function error(s){const el=$('#formError');if(el){el.textContent=s;el.classList.remove('hidden')}toast(s)}
 function updateNavigation() {
  const entry = (page.startsWith('cycle-')||page==='standard') ? 'cycle-list' : page.startsWith('gh-') ? 'gh-list' : page.startsWith('env-') ? 'env-list' : page.startsWith('issue-') ? 'issue-list' : (page==='cert'||(page==='profile'&&profileTab==='cert')) ? 'cert' : page==='profile' ? 'profile' : 'list';
@@ -46,9 +56,17 @@ function updateNavigation() {
 const pageFile=target=>target==='standard'?'crop-standard.html':target.startsWith('cycle-')?'cycle-list.html':target.startsWith('gh-')?'greenhouse-list.html':target.startsWith('env-')?'env-list.html':target.startsWith('issue-')?'issue-list.html':target==='profile'?'mypage.html':target==='cert'?'mypage.html?tab=cert':'diary-list.html';
 function go(target,id){
  const hostPage=document.body?.dataset?.page;
+ if (hostPage === 'profile' && (target === 'profile' || target === 'cert')) {
+  page = 'profile';
+  openProfileTab(target === 'cert' ? 'cert' : 'info');
+  return;
+ }
  if(hostPage&&pageFile(target)!==pageFile(hostPage)){
-  const q=new URLSearchParams();if(target!==hostPage)q.set('view',target);if(id)q.set('id',id);
-  location.href=pageFile(target)+(q.toString()?'?'+q.toString():'');return;
+  const url = new URL(pageFile(target), location.href);
+  if (target !== hostPage && target !== 'cert') url.searchParams.set('view', target);
+  if (id) url.searchParams.set('id', id);
+  location.href = url.href;
+  return;
  }
  if(target.startsWith('issue-')&&id)selectedIssueId=id;
  else if(target.startsWith('cycle-')&&id)selectedCycleId=id;
@@ -73,9 +91,8 @@ function renderList(){const rows=diaryRows.filter(d=>{
  const pageSize=Number(config.pagination?.pageSize)||5,totalPages=Math.max(1,Math.ceil(rows.length/pageSize));listPage=Math.min(Math.max(1,listPage),totalPages);
  const first=(listPage-1)*pageSize,paged=rows.slice(first,first+pageSize),start=rows.length?first+1:0,end=Math.min(first+pageSize,rows.length);
  const pageButtons=pageBtns(listPage,totalPages,'data-list-page');
- main.innerHTML=heading('재배일지작업 목록')+`<section class="panel search-section" aria-label="검색 조건"><div class="panel-body"><div class="filterbar"><div class="field"><label for="filterCycle">작기</label><select id="filterCycle" class="ctrl">${options([{value:'all',label:'전체 작기'},...config.cycles.map(c=>({value:c.cycleId,label:c.name}))],filterCycle)}</select></div><div class="field"><label for="filterGreenhouse">온실</label><select id="filterGreenhouse" class="ctrl">${options([{value:'all',label:'전체 온실'},...config.greenhouses.map(g=>({value:g.greenhouseId,label:g.name}))],filterGreenhouse)}</select></div><div class="field crop-filter"><label for="filterCrop">품목</label><select id="filterCrop" class="ctrl">${options([{value:'all',label:'전체 품목'},...crops],filterCrop)}</select></div><div class="field variety-filter"><label for="filterVariety">품종</label><select id="filterVariety" class="ctrl">${options([{value:'all',label:'전체 품종'},...varieties.map(v=>({value:v.varietyId,label:v.name}))],filterVariety)}</select></div><div class="field query"><label for="workDateFilter">작업일</label><input id="workDateFilter" type="date" class="ctrl" value="${escapeHtml(filterDate)}"></div><button class="btn" type="button" id="filterButton">검색</button><button class="btn main" type="button" id="createButton">+ 재배일지작업 등록</button></div></div></section>
- <section class="panel list-section" aria-label="재배일지작업 목록"><div class="tablewrap"><table class="data-table"><thead><tr><th class="row-index" scope="col">번호</th><th scope="col">실제 작업일</th><th scope="col">온실</th><th scope="col">품목</th><th scope="col">품종</th><th scope="col">작기</th><th scope="col">생육단계</th><th scope="col">작업 건수 (전체/미완료)</th></tr></thead><tbody>${paged.map((d,i)=>{const c=getCycle(d.cycleId),done=d.tasks.filter(t=>t.status==='완료').length;return `<tr><td class="row-index">${rows.length-first-i}</td><td><button class="linkbtn" data-detail="${d.diaryId}">${escapeHtml(d.workDate)}</button></td><td>${htmlText(gh(c.greenhouseId)?.name||'-')}</td><td>${htmlText(cropOf(c)?.name||'-')}</td><td>${htmlText(varietyOf(c)?.name||'-')}</td><td>${htmlText(c.name)}</td><td>${htmlText(getStage(d.stageId).name)}</td><td class="tnum">${d.tasks.length} / ${d.tasks.length-done}</td></tr>`}).join('')||'<tr><td class="empty" colspan="8">조회 결과가 없습니다.</td></tr>'}</tbody></table></div></section>
- <section class="panel pagination-section" aria-label="페이지네이션"><div class="list-foot"><nav class="pagination" aria-label="재배일지작업 페이지 이동"><button class="page-button" type="button" data-page-direction="prev" ${listPage===1?'disabled':''}>이전</button>${pageButtons}<button class="page-button" type="button" data-page-direction="next" ${listPage===totalPages?'disabled':''}>다음</button></nav></div></section>`;
+ main.innerHTML=heading('재배일지작업 목록')+`<section class="panel search-section" aria-label="검색 조건"><div class="panel-body"><div class="filterbar"><div class="field"><label for="filterCycle">작기</label><select id="filterCycle" class="ctrl">${options([{value:'all',label:'전체 작기'},...config.cycles.map(c=>({value:c.cycleId,label:c.name}))],filterCycle)}</select></div><div class="field"><label for="filterGreenhouse">온실</label><select id="filterGreenhouse" class="ctrl">${options([{value:'all',label:'전체 온실'},...config.greenhouses.map(g=>({value:g.greenhouseId,label:g.name}))],filterGreenhouse)}</select></div><div class="field crop-filter"><label for="filterCrop">품목</label><select id="filterCrop" class="ctrl">${options([{value:'all',label:'전체 품목'},...crops],filterCrop)}</select></div><div class="field variety-filter"><label for="filterVariety">품종</label><select id="filterVariety" class="ctrl">${options([{value:'all',label:'전체 품종'},...varieties.map(v=>({value:v.varietyId,label:v.name}))],filterVariety)}</select></div><div class="field query"><label for="workDateFilter">작업일</label><input id="workDateFilter" type="date" class="ctrl" value="${escapeHtml(filterDate)}"></div><button class="btn filter-submit" type="button" id="filterButton">검색</button></div></div></section>
+ <section class="panel list-section" aria-label="재배일지작업 목록"><div class="panel-head"><div class="panel-head-title"><h2>재배일지작업 목록</h2><span class="counter">총 ${rows.length}건</span></div><button class="btn main xs" type="button" id="createButton">+ 재배일지작업 등록</button></div><div class="tablewrap"><table class="data-table"><thead><tr><th class="row-index" scope="col">번호</th><th scope="col">실제 작업일</th><th scope="col">온실</th><th scope="col">품목</th><th scope="col">품종</th><th scope="col">작기</th><th scope="col">생육단계</th><th scope="col">작업 건수 (전체/미완료)</th></tr></thead><tbody>${paged.map((d,i)=>{const c=getCycle(d.cycleId),done=d.tasks.filter(t=>t.status==='완료').length;return `<tr><td class="row-index">${rows.length-first-i}</td><td><button class="linkbtn" data-detail="${d.diaryId}">${escapeHtml(d.workDate)}</button></td><td>${htmlText(gh(c.greenhouseId)?.name||'-')}</td><td>${htmlText(cropOf(c)?.name||'-')}</td><td>${htmlText(varietyOf(c)?.name||'-')}</td><td>${htmlText(c.name)}</td><td>${htmlText(getStage(d.stageId).name)}</td><td class="tnum">${d.tasks.length} / ${d.tasks.length-done}</td></tr>`}).join('')||'<tr><td class="empty" colspan="8">조회 결과가 없습니다.</td></tr>'}</tbody></table></div><div class="list-foot"><nav class="pagination" aria-label="재배일지작업 페이지 이동"><button class="page-button" type="button" data-page-direction="prev" ${listPage===1?'disabled':''}>이전</button>${pageButtons}<button class="page-button" type="button" data-page-direction="next" ${listPage===totalPages?'disabled':''}>다음</button></nav></div></section>`;
  $('#filterCrop').onchange=()=>{const selected=$('#filterCrop').value;const possible=config.crops.filter(c=>selected==='all'||c.cropId===selected).flatMap(c=>c.varieties.map(v=>({value:v.varietyId,label:v.name})));const variety=$('#filterVariety');const old=variety.value;variety.innerHTML=options([{value:'all',label:'전체 품종'},...possible],possible.some(v=>v.value===old)?old:'all')};
  $('#filterButton').onclick=()=>{filterCycle=$('#filterCycle').value;filterGreenhouse=$('#filterGreenhouse').value;filterCrop=$('#filterCrop').value;filterVariety=$('#filterVariety').value;filterDate=$('#workDateFilter').value;listPage=1;renderList()};$('#workDateFilter').addEventListener('keydown',e=>{if(e.key==='Enter')$('#filterButton').click()});$('#createButton').onclick=()=>go('create');$$('[data-detail]').forEach(b=>b.onclick=()=>go('detail',b.dataset.detail));
  $$('[data-list-page]').forEach(b=>b.onclick=()=>{listPage=Number(b.dataset.listPage);renderList()});$$('[data-page-direction]').forEach(b=>b.onclick=()=>{listPage+=b.dataset.pageDirection==='next'?1:-1;renderList()});
@@ -156,101 +173,294 @@ function saveEditor(){const c=getCycle($('#cycleId').value),date=$('#workDate').
  if(!editRow&&stageId!==policy.stageId)c.stageHistory.push({eventId:`EV-NEW-${Date.now()}`,stageId,effectiveDate:date,sourceDiaryId:diaryId,reason});
  persist();selectedId=diaryId;toast(editRow?'재배일지작업을 수정했습니다.':'재배일지작업을 등록했습니다.');go('detail',diaryId);
 }
-function saveProfilePatch(username,patch){
- try{const map=loadCertOverrides();map[username]={...(map[username]||{}),...patch};localStorage.setItem(CERT_KEY,JSON.stringify(map))}catch{}
+function saveProfilePatch(username, patch) {
+ try {
+  const overrides = loadCertOverrides();
+  overrides[username] = { ...overrides[username], ...patch };
+  localStorage.setItem(CERT_KEY, JSON.stringify(overrides));
+  return true;
+ } catch {
+  toast('브라우저에 변경 내용을 저장하지 못했습니다.');
+  return false;
+ }
 }
-let profileEditing=false,profileTab=new URLSearchParams(location.search).get('tab')==='cert'?'cert':'info';
-function renderProfile(){
- const user=config.header.currentUser;
- const cert=user.certification||'미인증';
- const summary=`<section class="profile-summary-card" aria-label="농장 요약"><div><div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap"><h2>${htmlText(user.farmName||'—')}</h2><span class="issue-status" data-status="${htmlText(cert==='인증'?'조치 완료':cert==='인증중'?'조치중':'발생')}">${htmlText(cert)}</span></div><p style="margin-top:4px">${htmlText(user.displayName||'—')} · ${htmlText(user.mainCrop||'품목 미등록')}</p></div></section>`;
- const tabs=`<div class="tabbar" role="tablist" aria-label="내정보 메뉴"><button type="button" class="tabbtn" role="tab" data-ptab="info" aria-selected="${profileTab==='info'}">농장정보</button><button type="button" class="tabbtn" role="tab" data-ptab="cert" aria-selected="${profileTab==='cert'}">농업경영체 인증</button><button type="button" class="tabbtn" role="tab" data-ptab="pw" aria-selected="${profileTab==='pw'}">비밀번호 설정</button></div>`;
- const certBody=cert==='인증'?'<p class="module-hint">농업경영체 인증이 완료된 회원입니다.</p>':cert==='인증중'?'<p class="module-hint">관리자 인증 확인이 진행 중입니다. (승인 완료 시 인증 상태로 전환됩니다.)</p>':`<form id="certRequestForm" class="filterbar"><div class="field"><label for="certBusinessNumber">농업경영체 등록번호 *</label><input id="certBusinessNumber" class="ctrl" maxlength="20" value="${htmlText(user.businessNumber||'')}" placeholder="예: AGRI-2026-0001" required></div><button type="submit" class="btn main">인증 요청</button></form>`;
- const bindTabs=()=>$$('[data-ptab]').forEach(b=>b.onclick=()=>{profileTab=b.dataset.ptab;profileEditing=false;updateNavigation();renderProfile()});
 
- if(profileTab==='cert'){
-  main.innerHTML=heading('내정보')+`${summary}${tabs}<div class="module-scroll"><section class="panel"><div class="panel-head"><h2>현재 인증상태</h2><span class="counter">${htmlText(cert)}</span></div><div class="panel-body"><dl class="profile-facts"><dt>인증 상태</dt><dd>${htmlText(cert)}</dd><dt>농업경영체 등록번호</dt><dd>${htmlText(user.businessNumber||'—')}</dd></dl></div></section><section class="panel" style="margin-top:14px"><div class="panel-head"><h2>등록번호 인증</h2></div><div class="panel-body">${certBody}</div></section></div>`;
-  bindTabs();
-  const certForm=$('#certRequestForm');
-  if(certForm)certForm.onsubmit=e=>{
-   e.preventDefault();
-   const num=$('#certBusinessNumber').value.trim();
-   if(!num){toast('농업경영체 등록번호를 입력하세요.');return}
-   user.businessNumber=num;user.certification='인증중';
-   saveProfilePatch(user.username,{certification:'인증중',businessNumber:num});
-   setupAccount();renderProfile();
-   toast('농업경영체 인증을 요청했습니다. (인증중)');
+const profileTabs = [['info', '농장정보'], ['cert', '농업경영체 인증'], ['pw', '비밀번호 설정']];
+let profileEditing = false;
+let profileTab = new URLSearchParams(location.search).get('tab') === 'cert' ? 'cert' : 'info';
+
+function openProfileTab(tab) {
+ if (page === 'cert') page = 'profile';
+ profileTab = tab;
+ profileEditing = false;
+ updateNavigation();
+ renderProfile('profile-tab-' + tab);
+}
+
+function renderProfile(focusId) {
+ const user = config.header.currentUser;
+ const cert = user.certification || '미인증';
+ const badge = cert === '인증' ? 'bg-light-success' : cert === '인증중' ? 'bg-light-information' : 'bg-light-gray';
+ main.innerHTML = heading(profileEditing ? '내정보 수정' : '내정보') +
+  `<section class="profile-summary-card" aria-label="농장 요약">
+    <div class="profile-summary-title">
+      <h2>${htmlText(user.farmName || '—')}</h2>
+      <span class="krds-badge ${badge}"><span class="sr-only">농업경영체 인증 상태 </span>${htmlText(cert)}</span>
+    </div>
+    <p>${htmlText(user.displayName || '—')} · ${htmlText(user.mainCrop || '품목 미등록')}</p>
+  </section>
+  <div class="tabbar profile-tabbar" role="tablist" aria-label="내정보 메뉴">
+    ${profileTabs.map(([key, label]) => `<button type="button" class="tabbtn" id="profile-tab-${key}" role="tab" aria-selected="${key === profileTab}" aria-controls="profile-panel-${key}">${label}</button>`).join('')}
+  </div>
+  ${profileTabs.map(([key]) => `<div class="profile-tab-panel" id="profile-panel-${key}" role="tabpanel" aria-labelledby="profile-tab-${key}" tabindex="0"${key === profileTab ? '' : ' hidden'}></div>`).join('')}`;
+
+ const tabs = $$('.profile-tabbar .tabbtn', main);
+ tabs.forEach((tab, index) => {
+  const [key] = profileTabs[index];
+  tab.onclick = () => {
+   if (key !== profileTab) openProfileTab(key);
+  };
+  tab.onkeydown = event => {
+   const destinations = {
+    ArrowLeft: (index + tabs.length - 1) % tabs.length,
+    ArrowRight: (index + 1) % tabs.length,
+    Home: 0,
+    End: tabs.length - 1
+   };
+   const destination = destinations[event.key];
+   if (!Number.isInteger(destination)) return;
+   event.preventDefault();
+   tabs[destination].focus();
+  };
+ });
+
+ const panel = $('#profile-panel-' + profileTab);
+ if (profileTab === 'cert') renderProfileCertification(panel, user, cert);
+ else if (profileTab === 'pw') renderProfilePassword(panel, user);
+ else renderFarmProfile(panel, user);
+ if (focusId) document.getElementById(focusId)?.focus();
+}
+
+function profileFacts(facts) {
+ return `<dl class="profile-facts">
+  ${facts.map(([label, value]) => `<dt>${label}</dt><dd>${htmlText(value || '—')}</dd>`).join('')}
+ </dl>`;
+}
+
+function profileField(id, label, { value = '', type = 'text', required = false, attributes = '', hint = '' } = {}) {
+ const descriptions = hint ? `${id}-hint ${id}-error` : `${id}-error`;
+ return `<div class="field">
+   <label for="${id}">${label}${required ? ' <span class="required" aria-hidden="true">*</span>' : ''}</label>
+   <input id="${id}" class="ctrl" type="${type}" value="${htmlText(value)}" aria-describedby="${descriptions}" ${required ? 'required' : ''} ${attributes}>
+   ${hint ? `<p class="profile-hint" id="${id}-hint">${hint}</p>` : ''}
+   <p class="profile-error" id="${id}-error" aria-live="polite"></p>
+ </div>`;
+}
+
+function bindProfileForm(form, getErrors, save) {
+ function showError(id, message) {
+  const input = form.elements.namedItem(id);
+  const error = document.getElementById(id + '-error');
+  if (message) input.setAttribute('aria-invalid', 'true');
+  else input.removeAttribute('aria-invalid');
+  error.textContent = message;
+ }
+
+ form.addEventListener('input', ({ target }) => {
+  if (target.hasAttribute('aria-invalid')) showError(target.id, '');
+ });
+ form.onsubmit = event => {
+  event.preventDefault();
+  const errors = Object.entries(getErrors());
+  for (const [id, message] of errors) showError(id, message);
+  const firstError = errors.find(([, message]) => message);
+  if (firstError) form.elements.namedItem(firstError[0]).focus();
+  else save();
+ };
+}
+
+function renderProfileCertification(panel, user, cert) {
+ let body = '<p class="profile-hint">농업경영체 인증이 완료된 회원입니다.</p>';
+ if (cert === '인증중') {
+  body = '<p class="profile-hint">관리자가 등록번호를 확인하고 있습니다. 승인되면 인증 상태가 바뀝니다.</p>';
+ } else if (cert !== '인증') {
+  body = `<form id="certRequestForm" class="profile-form profile-form-narrow" novalidate>
+    ${profileField('certBusinessNumber', '농업경영체 등록번호', {
+     value: user.businessNumber, required: true, attributes: 'maxlength="20"', hint: '예시 AGRI-2026-0001'
+    })}
+    <div class="module-actions profile-form-actions"><button type="submit" class="btn main">인증 요청</button></div>
+  </form>`;
+ }
+ panel.innerHTML = `<section class="panel">
+   <div class="panel-head"><h2 id="profileCertHeading" tabindex="-1">현재 인증 상태</h2></div>
+   <div class="panel-body">${profileFacts([['인증 상태', cert], ['농업경영체 등록번호', user.businessNumber]])}</div>
+ </section>
+ <section class="panel">
+   <div class="panel-head"><h2>등록번호 인증</h2></div>
+   <div class="panel-body">${body}</div>
+ </section>`;
+
+ const form = $('#certRequestForm', panel);
+ if (!form) return;
+ const input = form.elements.namedItem('certBusinessNumber');
+ bindProfileForm(form, () => ({
+  certBusinessNumber: input.value.trim() ? '' : '농업경영체 등록번호를 입력하세요.'
+ }), () => {
+  const patch = { businessNumber: input.value.trim(), certification: '인증중' };
+  if (!saveProfilePatch(user.username, patch)) return;
+  Object.assign(user, patch);
+  setupAccount();
+  renderProfile('profileCertHeading');
+  toast('농업경영체 인증을 요청했습니다. 현재 인증중입니다.');
+ });
+}
+
+function renderProfilePassword(panel, user) {
+ panel.innerHTML = `<section class="panel">
+   <div class="panel-head"><h2>비밀번호 변경</h2></div>
+   <div class="panel-body">
+     <form id="passwordForm" class="profile-form profile-form-narrow" novalidate>
+       ${profileField('curPw', '현재 비밀번호', { type: 'password', required: true, attributes: 'autocomplete="current-password"' })}
+       ${profileField('newPw', '새 비밀번호', {
+        type: 'password', required: true, attributes: 'minlength="10" maxlength="64" autocomplete="new-password"', hint: '10~64자로 입력하세요.'
+       })}
+       ${profileField('chkPw', '새 비밀번호 확인', {
+        type: 'password', required: true, attributes: 'minlength="10" maxlength="64" autocomplete="new-password"'
+       })}
+       <div class="module-actions profile-form-actions"><button type="submit" class="btn main">비밀번호 변경</button></div>
+     </form>
+   </div>
+ </section>`;
+ const form = $('#passwordForm', panel);
+ const current = form.elements.namedItem('curPw');
+ const next = form.elements.namedItem('newPw');
+ const confirmation = form.elements.namedItem('chkPw');
+ bindProfileForm(form, () => {
+  const expected = user.demoPassword || 'modoodemo01';
+  const matches = [expected, 'modoodemo01', 'demo'].includes(current.value);
+  return {
+   curPw: current.value ? (matches ? '' : '현재 비밀번호가 일치하지 않습니다.') : '현재 비밀번호를 입력하세요.',
+   newPw: next.value.length < 10 || next.value.length > 64 ? '새 비밀번호를 10~64자로 입력하세요.' : '',
+   chkPw: confirmation.value ? (confirmation.value === next.value ? '' : '새 비밀번호와 일치하지 않습니다.') : '새 비밀번호를 한 번 더 입력하세요.'
+  };
+ }, () => {
+  if (!saveProfilePatch(user.username, { demoPassword: next.value })) return;
+  user.demoPassword = next.value;
+  form.reset();
+  toast('비밀번호를 변경했습니다.');
+ });
+}
+
+function renderFarmProfile(panel, user) {
+ if (!profileEditing) {
+  const address = [user.address, user.addressDetail].filter(Boolean).join(' ');
+  const facts = [
+   ['농장명', user.farmName], ['대표자명', user.displayName], ['아이디', user.username], ['이메일', user.email],
+   ['연락처', user.phone], ['농장 주소', address], ['주요 재배 품목', user.mainCrop], ['농장 소개', user.description]
+  ];
+  panel.innerHTML = `<section class="panel">
+    <div class="panel-head"><h2>농장정보</h2><button type="button" class="btn" id="profileEditBtn">수정</button></div>
+    <div class="panel-body">${profileFacts(facts)}</div>
+  </section>`;
+  $('#profileEditBtn', panel).onclick = () => {
+   profileEditing = true;
+   renderProfile('profFarmName');
   };
   return;
  }
 
- if(profileTab==='pw'){
-  main.innerHTML=heading('내정보')+`${summary}${tabs}<div class="module-scroll"><section class="panel"><div class="panel-head"><h2>비밀번호 변경</h2></div><div class="panel-body"><form id="passwordForm" class="login-form"><div class="field"><label for="curPw">현재 비밀번호 *</label><input id="curPw" type="password" class="ctrl" required></div><div class="field"><label for="newPw">새 비밀번호 *</label><input id="newPw" type="password" class="ctrl" minlength="10" maxlength="64" required placeholder="10~64자 입력"></div><div class="field"><label for="chkPw">새 비밀번호 확인 *</label><input id="chkPw" type="password" class="ctrl" minlength="10" maxlength="64" required placeholder="새 비밀번호 재입력"></div><div class="module-actions"><button type="submit" class="btn main">비밀번호 변경</button></div></form></div></section></div>`;
-  bindTabs();
-  $('#passwordForm').onsubmit=e=>{
-   e.preventDefault();
-   const cur=$('#curPw').value,next=$('#newPw').value,chk=$('#chkPw').value;
-   const expected=user.demoPassword||'modoodemo01';
-   if(cur!==expected&&cur!=='modoodemo01'&&cur!=='demo'){toast('현재 비밀번호가 일치하지 않습니다.');return}
-   if(next.length<10||next.length>64){toast('비밀번호는 10~64자로 입력하세요.');return}
-   if(next!==chk){toast('새 비밀번호 확인이 일치하지 않습니다.');return}
-   user.demoPassword=next;saveProfilePatch(user.username,{demoPassword:next});
-   $('#passwordForm').reset();toast('비밀번호를 변경했습니다.');
-  };
-  return;
+ panel.innerHTML = `<section class="panel">
+   <div class="panel-head"><h2>농장정보 수정</h2></div>
+   <div class="panel-body">
+     <form id="profileForm" class="profile-form" novalidate>
+       <div class="module-input-grid profile-form-grid">
+         ${profileField('profFarmName', '농장명', { value: user.farmName, required: true, attributes: 'maxlength="100"' })}
+         ${profileField('profDisplayName', '대표자명', { value: user.displayName, required: true, attributes: 'maxlength="50"' })}
+         ${profileField('profEmail', '이메일', { value: user.email, type: 'email', attributes: 'maxlength="255" autocomplete="email"' })}
+         ${profileField('profPhone', '연락처', { value: user.phone, type: 'tel', attributes: 'maxlength="20" autocomplete="tel"' })}
+         <div class="field">
+           <label for="profAddress">농장 주소</label>
+           <div class="profile-address">
+             <input id="profAddress" class="ctrl" maxlength="255" value="${htmlText(user.address)}" readonly>
+             <button type="button" class="btn" id="addrSearchBtn">주소 검색</button>
+           </div>
+         </div>
+         <div class="field">
+           <label for="profAddressDetail">상세 주소</label>
+           <input id="profAddressDetail" class="ctrl" maxlength="255" value="${htmlText(user.addressDetail)}">
+         </div>
+         <div class="field">
+           <label for="profMainCrop">주요 재배 품목</label>
+           <input id="profMainCrop" class="ctrl" maxlength="100" value="${htmlText(user.mainCrop)}">
+         </div>
+         <div class="field profile-description">
+           <label for="profDesc">농장 소개</label>
+           <textarea id="profDesc" class="ctrl textarea">${htmlText(user.description)}</textarea>
+         </div>
+       </div>
+       <div class="module-actions profile-form-actions">
+         <button type="button" class="btn" id="profileCancelBtn">취소</button>
+         <button type="submit" class="btn main">저장</button>
+       </div>
+     </form>
+   </div>
+ </section>`;
+ const form = $('#profileForm', panel);
+ const value = id => form.elements.namedItem(id).value.trim() || null;
+ function showFarmDetails() {
+  profileEditing = false;
+  renderProfile('profileEditBtn');
  }
-
- if(!profileEditing){
-  const facts=[['농장명',user.farmName],['대표자명',user.displayName],['아이디',user.username],['이메일',user.email],['연락처',user.phone],['농장 주소',[user.address,user.addressDetail].filter(Boolean).join(' ')],['주요 재배 품목',user.mainCrop],['농장 소개',user.description]];
-  main.innerHTML=heading('내정보')+`${summary}${tabs}<div class="module-scroll"><section class="panel"><div class="panel-head"><h2>농장정보</h2><button type="button" class="btn xs" id="profileEditBtn">수정</button></div><div class="panel-body"><dl class="profile-facts">${facts.map(([label,value])=>`<dt>${label}</dt><dd>${htmlText(value||'—')}</dd>`).join('')}</dl></div></section></div>`;
-  bindTabs();
-  $('#profileEditBtn').onclick=()=>{profileEditing=true;renderProfile()};
- }else{
-  main.innerHTML=heading('내정보 수정')+`${summary}${tabs}<div class="module-scroll"><section class="panel"><div class="panel-head"><h2>농장정보 수정</h2></div><div class="panel-body"><form id="profileForm"><div class="module-input-grid">
-  <div class="field"><label for="profFarmName">농장명 *</label><input id="profFarmName" class="ctrl" maxlength="100" value="${htmlText(user.farmName||'')}" required></div>
-  <div class="field"><label for="profDisplayName">대표자명 *</label><input id="profDisplayName" class="ctrl" maxlength="50" value="${htmlText(user.displayName||'')}" required></div>
-  <div class="field"><label for="profEmail">이메일</label><input id="profEmail" type="email" class="ctrl" maxlength="255" value="${htmlText(user.email||'')}"></div>
-  <div class="field"><label for="profPhone">연락처</label><input id="profPhone" class="ctrl" maxlength="20" value="${htmlText(user.phone||'')}"></div>
-  <div class="field"><label for="profAddress">농장 주소</label><div style="display:flex;gap:6px"><input id="profAddress" class="ctrl" maxlength="255" value="${htmlText(user.address||'')}" readonly placeholder="주소 검색을 눌러 입력하세요"><button type="button" class="btn" id="addrSearchBtn" style="flex:none">주소 검색</button></div></div>
-  <div class="field"><label for="profAddressDetail">상세 주소</label><input id="profAddressDetail" class="ctrl" maxlength="255" value="${htmlText(user.addressDetail||'')}"></div>
-  <div class="field wide"><label for="profMainCrop">주요 재배 품목</label><input id="profMainCrop" class="ctrl" maxlength="100" value="${htmlText(user.mainCrop||'')}"></div>
-  <div class="field wide"><label for="profDesc">농장 소개</label><textarea id="profDesc" class="ctrl textarea">${htmlText(user.description||'')}</textarea></div>
-  </div><div class="module-actions"><button type="button" class="btn" id="profileCancelBtn">취소</button><button type="submit" class="btn main">저장</button></div></form></div></section></div>`;
-  bindTabs();
-  $('#profileCancelBtn').onclick=()=>{profileEditing=false;renderProfile()};
-  $('#profileForm').onsubmit=e=>{
-   e.preventDefault();
-   const farmName=$('#profFarmName').value.trim(),displayName=$('#profDisplayName').value.trim();
-   if(!farmName||!displayName){toast('농장명과 대표자명을 입력하세요.');return}
-   const patch={farmName,displayName,email:$('#profEmail').value.trim()||null,phone:$('#profPhone').value.trim()||null,address:$('#profAddress').value.trim()||null,addressDetail:$('#profAddressDetail').value.trim()||null,mainCrop:$('#profMainCrop').value.trim()||null,description:$('#profDesc').value.trim()||null};
-   Object.assign(user,patch);saveProfilePatch(user.username,patch);
-   if($('#sidebarFoot'))$('#sidebarFoot').textContent=user.farmName;
-   profileEditing=false;setupAccount();renderProfile();toast('내정보를 저장했습니다.');
+ $('#profileCancelBtn', form).onclick = showFarmDetails;
+ bindProfileForm(form, () => ({
+  profFarmName: value('profFarmName') ? '' : '농장명을 입력하세요.',
+  profDisplayName: value('profDisplayName') ? '' : '대표자명을 입력하세요.',
+  profEmail: form.elements.namedItem('profEmail').validity.typeMismatch ? '이메일 주소 형식을 확인하세요.' : ''
+ }), () => {
+  const patch = {
+   farmName: value('profFarmName'), displayName: value('profDisplayName'), email: value('profEmail'),
+   phone: value('profPhone'), address: value('profAddress'), addressDetail: value('profAddressDetail'),
+   mainCrop: value('profMainCrop'), description: value('profDesc')
   };
-  $('#addrSearchBtn').onclick=()=>{
-   if(window.daum&&window.daum.Postcode){
-    new window.daum.Postcode({oncomplete:data=>{
-     const addr=data.roadAddress||data.jibunAddress||'';
-     $('#profAddress').value=addr;
-     $('#profAddressDetail').focus();
-    }}).open();
-    return;
-   }
-   $('#profAddress').readOnly=false;
-   $('#profAddress').focus();
-   toast('카카오 주소 API를 불러올 수 없어 직접 입력으로 전환했습니다.');
-  };
- }
+  if (!saveProfilePatch(user.username, patch)) return;
+  Object.assign(user, patch);
+  const sidebarFoot = $('#sidebarFoot');
+  if (sidebarFoot) sidebarFoot.textContent = user.farmName;
+  setupAccount();
+  showFarmDetails();
+  toast('내정보를 저장했습니다.');
+ });
+ $('#addrSearchBtn', form).onclick = () => {
+  const address = form.elements.namedItem('profAddress');
+  if (window.daum?.Postcode) {
+   new window.daum.Postcode({ oncomplete: data => {
+    if (!form.isConnected) return;
+    address.value = data.roadAddress || data.jibunAddress || '';
+    form.elements.namedItem('profAddressDetail').focus();
+   } }).open();
+   return;
+  }
+  address.readOnly = false;
+  address.focus();
+  toast('카카오 주소 API를 불러올 수 없어 직접 입력으로 전환했습니다.');
+ };
 }
+
 const AUTH_KEY=`modoo-auth:${prototypeData.meta.version}`;
 const SIGNUP_KEY=`modoo-signup-members:${prototypeData.meta.version}`;
 const CERT_KEY=`modoo-cert-overrides:${prototypeData.meta.version}`;
 function loadCertOverrides(){try{return JSON.parse(localStorage.getItem(CERT_KEY)||'{}')||{}}catch{return {}}}
 function saveMemberCertification(username,certification,businessNumber){try{const map=loadCertOverrides();map[username]={certification,businessNumber};localStorage.setItem(CERT_KEY,JSON.stringify(map))}catch{}}
-function allMembers(){
- let extra=[];try{extra=JSON.parse(localStorage.getItem(SIGNUP_KEY)||'[]')}catch{}
+function loadSignupMembers() {
+ const members = JSON.parse(localStorage.getItem(SIGNUP_KEY) || '[]');
+ return Array.isArray(members) ? members : [];
+}
+function allMembers(registeredMembers) {
+ if (!registeredMembers) {
+  try { registeredMembers = loadSignupMembers(); } catch { registeredMembers = []; }
+ }
  const overrides=loadCertOverrides();
- return [...prototypeData.members,...(Array.isArray(extra)?extra:[])].map(m=>overrides[m.username]?{...m,...overrides[m.username]}:m);
+ return [...prototypeData.members, ...registeredMembers].map(m=>overrides[m.username]?{...m,...overrides[m.username]}:m);
 }
 function saveAuthUser(username){
  try{sessionStorage.setItem(AUTH_KEY,username);localStorage.setItem(AUTH_KEY,username)}catch{}
@@ -309,13 +519,13 @@ function moduleHeading(title,caption='',backLabel='',onback=''){
 }
 function bindModuleBack(){const b=$('#moduleBack');if(b)b.onclick=()=>go(b.dataset.goto)}
 function pageControls(count,pageNum,size,kind){let pages=Math.max(1,Math.ceil(count/size)),start=count?(pageNum-1)*size+1:0,end=Math.min(pageNum*size,count);
- return `<section class="panel pagination-section" aria-label="페이지네이션"><div class="list-foot"><nav class="pagination" aria-label="${htmlText(kind)} 페이지 이동"><button class="page-button" data-modpage="prev" ${pageNum===1?'disabled':''}>이전</button>${pageBtns(pageNum,pages,'data-modpage')}<button class="page-button" data-modpage="next" ${pageNum===pages?'disabled':''}>다음</button></nav></div></section>`;
+ return `<div class="list-foot"><nav class="pagination" aria-label="${htmlText(kind)} 페이지 이동"><button class="page-button" data-modpage="prev" ${pageNum===1?'disabled':''}>이전</button>${pageBtns(pageNum,pages,'data-modpage')}<button class="page-button" data-modpage="next" ${pageNum===pages?'disabled':''}>다음</button></nav></div>`;
 }
 function bindPages(selector,get,set,total,size,draw){$$('[data-modpage]').forEach(b=>b.onclick=()=>{const v=b.dataset.modpage;set(v==='prev'?Math.max(1,get()-1):v==='next'?Math.min(Math.ceil(total/size),get()+1):Number(v));draw()})}
 function renderCycleList(){let list=config.cycles.filter(c=>(cycleFilters.status==='all'||c.status===cycleFilters.status)&&(cycleFilters.greenhouse==='all'||c.greenhouseId===cycleFilters.greenhouse)&&(!cycleFilters.name||c.name.includes(cycleFilters.name))).sort((a,b)=>(b.plannedStartAt||'').localeCompare(a.plannedStartAt||''));
  const size=config.pagination.cyclePageSize||5;cycleListPage=Math.min(Math.max(1,cycleListPage),Math.max(1,Math.ceil(list.length/size)));let from=(cycleListPage-1)*size,rows=list.slice(from,from+size);
- main.innerHTML=moduleHeading('작기계획 목록')+`<section class="panel search-section" aria-label="검색 조건"><div class="panel-body"><div class="filterbar module-filter"><div class="field"><label for="cycleFilterGH">온실</label><select class="ctrl" id="cycleFilterGH">${options([{value:'all',label:'전체 온실'},...config.greenhouses.map(g=>({value:g.greenhouseId,label:g.name}))],cycleFilters.greenhouse)}</select></div><div class="field"><label for="cycleFilterState">작기 상태</label><select class="ctrl" id="cycleFilterState">${options(['all','미진행','진행','종료'].map(s=>({value:s,label:s==='all'?'전체 상태':s})),cycleFilters.status)}</select></div><div class="field query"><label for="cycleFilterName">작기계획명</label><input class="ctrl" id="cycleFilterName" value="${htmlText(cycleFilters.name)}" placeholder="작기계획명을 입력하세요"></div><button type="button" class="btn" id="cycleDoFilter">검색</button><button type="button" class="btn main" id="cycleCreate">+ 작기계획 등록</button></div></div></section>
- <section class="panel list-section" aria-label="작기계획 목록"><div class="tablewrap"><table class="data-table module-table"><thead><tr><th class="row-index">번호</th><th>작기계획명</th><th>온실</th><th>품목</th><th>품종</th><th>작기 상태</th><th>계획 시작일</th><th>실제 시작일</th><th>예상 종료일</th></tr></thead><tbody>${rows.map((c,i)=>`<tr><td class="row-index">${list.length-from-i}</td><td><button class="linkbtn" data-cycle-detail="${c.cycleId}">${htmlText(c.name)}</button></td><td>${htmlText(gh(c.greenhouseId)?.name||'—')}</td><td>${htmlText(cropOf(c)?.name||'—')}</td><td>${htmlText(varietyOf(c)?.name||'—')}</td><td>${htmlText(cycleStatus(c))}</td><td class="tnum">${dateFrom(c.plannedStartAt)||'—'}</td><td class="tnum">${dateFrom(c.actualStartAt)||'—'}</td><td class="tnum">${dateFrom(c.expectedEndAt)||'—'}</td></tr>`).join('')||'<tr><td colspan="9" class="empty">조회 결과가 없습니다.</td></tr>'}</tbody></table></div></section>${pageControls(list.length,cycleListPage,size,'작기계획')}`;
+ main.innerHTML=moduleHeading('작기계획 목록')+`<section class="panel search-section" aria-label="검색 조건"><div class="panel-body"><div class="filterbar module-filter"><div class="field"><label for="cycleFilterGH">온실</label><select class="ctrl" id="cycleFilterGH">${options([{value:'all',label:'전체 온실'},...config.greenhouses.map(g=>({value:g.greenhouseId,label:g.name}))],cycleFilters.greenhouse)}</select></div><div class="field"><label for="cycleFilterState">작기 상태</label><select class="ctrl" id="cycleFilterState">${options(['all','미진행','진행','종료'].map(s=>({value:s,label:s==='all'?'전체 상태':s})),cycleFilters.status)}</select></div><div class="field query"><label for="cycleFilterName">작기계획명</label><input class="ctrl" id="cycleFilterName" value="${htmlText(cycleFilters.name)}" placeholder="작기계획명을 입력하세요"></div><button type="button" class="btn filter-submit" id="cycleDoFilter">검색</button></div></div></section>
+ <section class="panel list-section" aria-label="작기계획 목록"><div class="panel-head"><div class="panel-head-title"><h2>작기계획 목록</h2><span class="counter">총 ${list.length}건</span></div><button type="button" class="btn main xs" id="cycleCreate">+ 작기계획 등록</button></div><div class="tablewrap"><table class="data-table module-table"><thead><tr><th class="row-index">번호</th><th>작기계획명</th><th>온실</th><th>품목</th><th>품종</th><th>작기 상태</th><th>계획 시작일</th><th>실제 시작일</th><th>예상 종료일</th></tr></thead><tbody>${rows.map((c,i)=>`<tr><td class="row-index">${list.length-from-i}</td><td><button class="linkbtn" data-cycle-detail="${c.cycleId}">${htmlText(c.name)}</button></td><td>${htmlText(gh(c.greenhouseId)?.name||'—')}</td><td>${htmlText(cropOf(c)?.name||'—')}</td><td>${htmlText(varietyOf(c)?.name||'—')}</td><td>${htmlText(cycleStatus(c))}</td><td class="tnum">${dateFrom(c.plannedStartAt)||'—'}</td><td class="tnum">${dateFrom(c.actualStartAt)||'—'}</td><td class="tnum">${dateFrom(c.expectedEndAt)||'—'}</td></tr>`).join('')||'<tr><td colspan="9" class="empty">조회 결과가 없습니다.</td></tr>'}</tbody></table></div>${pageControls(list.length,cycleListPage,size,'작기계획')}</section>`;
  $('#cycleDoFilter').onclick=()=>{cycleFilters={status:$('#cycleFilterState').value,greenhouse:$('#cycleFilterGH').value,name:$('#cycleFilterName').value.trim()};cycleListPage=1;renderCycleList()};$('#cycleFilterName').onkeydown=e=>{if(e.key==='Enter')$('#cycleDoFilter').click()};$('#cycleCreate').onclick=()=>go('cycle-create');
  $$('[data-cycle-detail]').forEach(b=>b.onclick=()=>go('cycle-detail',b.dataset.cycleDetail));bindPages('',()=>cycleListPage,v=>cycleListPage=v,list.length,size,renderCycleList);
 }
@@ -487,11 +697,10 @@ function renderEnvList(){
  <div class="field" style="flex:1 1 280px"><label for="envCycle">작기계획 (온실별 1:1)</label><select class="ctrl" id="envCycle">${options(config.cycles.map(c=>({value:c.cycleId,label:`${c.name} · ${gh(c.greenhouseId)?.name||'—'} (${cycleStatus(c)})`})),selectedCycle.cycleId)}</select></div>
  <div class="field"><label for="envFrom">측정 시작일</label><input type="date" class="ctrl" id="envFrom" value="${envFilters.from}"></div>
  <div class="field"><label for="envTo">측정 종료일</label><input type="date" class="ctrl" id="envTo" value="${envFilters.to}"></div>
- <button class="btn" id="envDoFilter">검색</button></div></div></section>
+ <button class="btn filter-submit" id="envDoFilter">검색</button></div></div></section>
  ${envLineChart(rows, selectedCycle)}
  <section class="panel list-section" aria-label="1시간 단위 환경측정 목록"><div class="panel-head"><h2>1시간 단위 환경측정 목록</h2><span class="counter">${htmlText(ghName)} · ${htmlText(cropOf(selectedCycle)?.name||'—')} (${htmlText(varietyOf(selectedCycle)?.name||'—')}) · 총 ${rows.length}건</span></div><div class="tablewrap"><table class="data-table module-table env-table"><thead><tr><th class="row-index">번호</th><th>측정일시</th><th>온도(°C)</th><th>습도(%RH)</th><th>CO₂(ppm)</th><th>일사량(W/m²)</th><th>광도</th><th>배지수분(%)</th><th>미측정</th></tr></thead>
- <tbody>${shown.map((r,i)=>`<tr><td class="row-index">${rows.length-from-i}</td><td><button class="linkbtn" data-env-detail="${r.environmentChangeId}">${formatAt(r.measuredAt)}</button></td><td class="tnum">${fmtVal(r.insideTempC)}</td><td class="tnum">${fmtVal(r.humidityPct)}</td><td class="tnum">${fmtVal(r.co2Ppm)}</td><td class="tnum">${fmtVal(r.solarWm2)}</td><td class="tnum">${fmtVal(r.lightUmolM2S)}</td><td class="tnum">${fmtVal(r.substrateMoisturePct)}</td><td>${countMissing(r)}개</td></tr>`).join('')||'<tr><td colspan="9" class="empty">해당 작기의 측정 기록이 없습니다.</td></tr>'}</tbody></table></div></section>
- ${pageControls(rows.length,environmentListPage,size,'온실 환경변화')}`;
+ <tbody>${shown.map((r,i)=>`<tr><td class="row-index">${rows.length-from-i}</td><td><button class="linkbtn" data-env-detail="${r.environmentChangeId}">${formatAt(r.measuredAt)}</button></td><td class="tnum">${fmtVal(r.insideTempC)}</td><td class="tnum">${fmtVal(r.humidityPct)}</td><td class="tnum">${fmtVal(r.co2Ppm)}</td><td class="tnum">${fmtVal(r.solarWm2)}</td><td class="tnum">${fmtVal(r.lightUmolM2S)}</td><td class="tnum">${fmtVal(r.substrateMoisturePct)}</td><td>${countMissing(r)}개</td></tr>`).join('')||'<tr><td colspan="9" class="empty">해당 작기의 측정 기록이 없습니다.</td></tr>'}</tbody></table></div>${pageControls(rows.length,environmentListPage,size,'온실 환경변화')}</section>`;
  $('#envCycle').onchange=()=>{envFilters.cycle=$('#envCycle').value;environmentListPage=1;renderEnvList()};
  $('#envDoFilter').onclick=()=>{
    const next={cycle:$('#envCycle').value,from:$('#envFrom').value,to:$('#envTo').value,comparison:'all'};
@@ -564,11 +773,10 @@ function renderIssues(detail){
  ${choose('issueStatus','조치 상태',values(['발생','조치중','조치 완료']),issueFilters.status)}
  <label class="field" for="issueFrom">시작일<input id="issueFrom" class="ctrl" type="date" value="${issueFilters.from}"></label>
  <label class="field" for="issueTo">종료일<input id="issueTo" class="ctrl" type="date" value="${issueFilters.to}"></label>
- <button class="btn" type="submit">검색</button></form></div></section>
+ <button class="btn filter-submit" type="submit">검색</button></form></div></section>
 
- <section class="panel list-section" aria-label="온실 환경 이슈 목록"><div class="tablewrap"><table class="data-table module-table"><thead><tr><th>발생일시</th><th>작기계획</th><th>이슈 유형</th><th>이슈 내용</th><th>조치 상태</th></tr></thead>
- <tbody>${pagedIssues.map(item=>`<tr><td>${formatAt(item.occurredAt)}</td><td>${htmlText(getCycle(item.cycleId)?.name)}</td><td>${htmlText(item.issueType)}</td><td><button class="linkbtn" data-issue="${item.issueId}">${htmlText(item.message)}</button></td><td><span class="issue-status" data-status="${htmlText(item.status)}">${htmlText(item.status)}</span></td></tr>`).join('')||'<tr><td colspan="5" class="empty">조회된 이슈가 없습니다.</td></tr>'}</tbody></table></div></section>
- ${pageControls(rows.length,issueListPage,size,'온실 환경 이슈')}`;
+ <section class="panel list-section" aria-label="온실 환경 이슈 목록"><div class="panel-head"><div class="panel-head-title"><h2>온실 환경 이슈 목록</h2><span class="counter">총 ${rows.length}건</span></div></div><div class="tablewrap"><table class="data-table module-table"><thead><tr><th>발생일시</th><th>작기계획</th><th>이슈 유형</th><th>이슈 내용</th><th>조치 상태</th></tr></thead>
+ <tbody>${pagedIssues.map(item=>`<tr><td>${formatAt(item.occurredAt)}</td><td>${htmlText(getCycle(item.cycleId)?.name)}</td><td>${htmlText(item.issueType)}</td><td><button class="linkbtn" data-issue="${item.issueId}">${htmlText(item.message)}</button></td><td><span class="issue-status" data-status="${htmlText(item.status)}">${htmlText(item.status)}</span></td></tr>`).join('')||'<tr><td colspan="5" class="empty">조회된 이슈가 없습니다.</td></tr>'}</tbody></table></div>${pageControls(rows.length,issueListPage,size,'온실 환경 이슈')}</section>`;
  $('#issueFilters').onsubmit=event=>{
   event.preventDefault();
   const from=$('#issueFrom').value,to=$('#issueTo').value;
@@ -590,11 +798,10 @@ function renderGreenhouseList(){
  <div class="field"><label for="ghFilterType">온실 형태</label><select class="ctrl" id="ghFilterType">${options([{value:'all',label:'전체'},{value:'단동',label:'단동'},{value:'연동',label:'연동'}],ghFilters.type)}</select></div>
  <div class="field"><label for="ghFilterCover">피복 자재</label><select class="ctrl" id="ghFilterCover">${options([{value:'all',label:'전체'},{value:'유리',label:'유리'},{value:'비닐',label:'비닐'}],ghFilters.cover)}</select></div>
  <div class="field"><label for="ghFilterMedium">배지 종류</label><select class="ctrl" id="ghFilterMedium">${options([{value:'all',label:'전체'},{value:'수태',label:'수태'},{value:'코코피트',label:'코코피트'}],ghFilters.medium)}</select></div>
- <button type="button" class="btn" id="ghDoFilter">검색</button><button type="button" class="btn main" id="ghCreate">+ 온실 등록</button>
+ <button type="button" class="btn filter-submit" id="ghDoFilter">검색</button>
  </div></div></section>
- <section class="panel list-section" aria-label="온실 목록"><div class="tablewrap"><table class="data-table module-table"><thead><tr><th class="row-index">번호</th><th>온실명</th><th>온실 형태</th><th>피복 자재</th><th>동 수</th><th>등록 면적(㎡)</th><th>배지 종류</th></tr></thead>
- <tbody>${paged.map((g,i)=>`<tr><td class="row-index">${rows.length-from-i}</td><td><button class="linkbtn" data-gh-detail="${g.greenhouseId}">${htmlText(g.name)}</button></td><td>${htmlText(g.type||'—')}</td><td>${htmlText(g.coverType||'—')}</td><td>${g.buildingCount??'—'}</td><td>${g.registeredArea??'—'}</td><td>${htmlText(g.mediumType||'—')}</td></tr>`).join('')||'<tr><td colspan="7" class="empty">등록된 온실이 없습니다.</td></tr>'}</tbody></table></div></section>
- ${pageControls(rows.length,ghListPage,size,'온실 목록')}`;
+ <section class="panel list-section" aria-label="온실 목록"><div class="panel-head"><div class="panel-head-title"><h2>온실 목록</h2><span class="counter">총 ${rows.length}건</span></div><button type="button" class="btn main xs" id="ghCreate">+ 온실 등록</button></div><div class="tablewrap"><table class="data-table module-table"><thead><tr><th class="row-index">번호</th><th>온실명</th><th>온실 형태</th><th>피복 자재</th><th>동 수</th><th>등록 면적(㎡)</th><th>배지 종류</th></tr></thead>
+ <tbody>${paged.map((g,i)=>`<tr><td class="row-index">${rows.length-from-i}</td><td><button class="linkbtn" data-gh-detail="${g.greenhouseId}">${htmlText(g.name)}</button></td><td>${htmlText(g.type||'—')}</td><td>${htmlText(g.coverType||'—')}</td><td>${g.buildingCount??'—'}</td><td>${g.registeredArea??'—'}</td><td>${htmlText(g.mediumType||'—')}</td></tr>`).join('')||'<tr><td colspan="7" class="empty">등록된 온실이 없습니다.</td></tr>'}</tbody></table></div>${pageControls(rows.length,ghListPage,size,'온실 목록')}</section>`;
  $('#ghDoFilter').onclick=()=>{ghFilters={name:$('#ghFilterName').value.trim(),type:$('#ghFilterType').value,cover:$('#ghFilterCover').value,medium:$('#ghFilterMedium').value};ghListPage=1;renderGreenhouseList()};
  $('#ghFilterName').onkeydown=e=>{if(e.key==='Enter')$('#ghDoFilter').click()};
  $('#ghCreate').onclick=()=>go('gh-create');
@@ -699,6 +906,287 @@ function renderCertification(){
   toast('농업경영체 인증을 요청했습니다. (인증중)');
  };
 }
+function setupLogin() {
+ const form = $('#loginForm');
+ const username = $('#loginUsername');
+ const password = $('#loginPassword');
+ const toggle = $('#loginPasswordToggle');
+ const feedback = $('#loginError');
+ username.value = loadAuthUser() || 'seedmum02';
+ toggle.onclick = () => {
+  const reveal = password.type === 'password';
+  password.type = reveal ? 'text' : 'password';
+  toggle.textContent = reveal ? '비밀번호 숨기기' : '비밀번호 보기';
+ };
+ form.addEventListener('input', () => { feedback.textContent = ''; });
+ form.onsubmit = event => {
+  event.preventDefault();
+  const member = allMembers().find(row => row.username === username.value.trim());
+  const pw = password.value;
+  if (member && (pw === 'modoodemo01' || pw === 'demo' || pw === member.demoPassword)) {
+   saveAuthUser(member.username);
+   location.href = 'diary-list.html';
+   return;
+  }
+  feedback.textContent = '아이디와 비밀번호를 확인하세요.';
+  feedback.focus();
+ };
+}
+
+const signupStages = ['회원정보 입력', '농업경영체 인증', '완료'];
+const signupUsernamePattern = /^[a-z][a-z0-9]{5,19}$/;
+
+function signupProgress(step) {
+ return `<ol class="krds-step-wrap" aria-label="회원가입 단계">
+  ${signupStages.map((label, index) => {
+   const number = index + 1;
+   const state = number === step ? 'class="active" aria-current="step"' : number < step ? 'class="done"' : '';
+   return `<li ${state}><span><span class="step">${number}단계</span><span class="step-tit">${label}</span></span></li>`;
+  }).join('')}
+ </ol>`;
+}
+
+function signupField(id, label, { type = 'text', required = false, attributes = '', hint = '', checkLabel = '' } = {}) {
+ return `<div class="form-group">
+  <label class="form-label" for="${id}">${label}${required ? ' <span class="required" aria-hidden="true">*</span>' : ''}</label>
+  <div class="${checkLabel ? 'auth-input-row' : 'form-conts'}">
+   <input id="${id}" class="krds-input medium" type="${type}" aria-describedby="${hint ? id + '-hint ' : ''}${id}-feedback" ${required ? 'required' : ''} ${attributes}>
+   ${checkLabel ? `<button type="button" class="krds-btn medium secondary" data-check="${id}" aria-label="${checkLabel} 중복 확인">중복 확인</button>` : ''}
+  </div>
+  ${hint ? `<p id="${id}-hint" class="auth-hint">${hint}</p>` : ''}
+  <p id="${id}-feedback" class="auth-feedback" aria-live="polite"></p>
+ </div>`;
+}
+
+function signupFeedback(input, message, state = 'error') {
+ const feedback = document.getElementById(input.id + '-feedback');
+ const invalid = Boolean(message) && state === 'error';
+ input.closest('.form-group').classList.toggle('is-error', invalid);
+ if (invalid) input.setAttribute('aria-invalid', 'true');
+ else input.removeAttribute('aria-invalid');
+ feedback.dataset.state = state;
+ feedback.textContent = message;
+}
+
+function signupDuplicateMessage(members, key, value) {
+ const normalized = value.trim().toLowerCase();
+ if (!normalized || !members.some(member => member[key]?.trim().toLowerCase() === normalized)) return '';
+ return key === 'username' ? '이미 사용 중인 아이디입니다.' : '이미 사용 중인 이메일입니다.';
+}
+
+function setupSignup() {
+ const mount = $('#signupStepMount');
+ let step = 1;
+ let draft = {};
+ let businessNumber = '';
+ let certStatus = '미인증';
+ let savedMember;
+
+ function showStep(content, title = signupStages[step - 1]) {
+  mount.innerHTML = signupProgress(step) + `<section class="panel signup-panel" aria-labelledby="signupStepTitle">
+   <div class="panel-head"><h2 id="signupStepTitle" tabindex="-1">${title}</h2></div>
+   <div class="panel-body">${content}</div>
+  </section>`;
+ }
+
+ function focusStep() {
+  $('#signupStepTitle', mount).focus();
+ }
+
+ function renderMemberForm(conflicts = {}) {
+  step = 1;
+  showStep(`<form id="signupForm" class="login-form" novalidate>
+   ${signupField('signupFarmName', '농장명', { required: true, attributes: 'maxlength="100" autocomplete="organization"' })}
+   ${signupField('signupRepresentativeName', '대표자명', { required: true, attributes: 'maxlength="50" autocomplete="name"' })}
+   ${signupField('signupUsername', '아이디', {
+    required: true, attributes: 'minlength="6" maxlength="20" autocomplete="username" autocapitalize="none" spellcheck="false"',
+    hint: '영문 소문자로 시작하는 영문 소문자·숫자 6~20자', checkLabel: '아이디'
+   })}
+   ${signupField('signupPassword', '비밀번호', {
+    type: 'password', required: true, attributes: 'minlength="10" maxlength="64" autocomplete="new-password"', hint: '10~64자로 입력하세요.'
+   })}
+   ${signupField('signupPasswordConfirm', '비밀번호 확인', {
+    type: 'password', required: true, attributes: 'minlength="10" maxlength="64" autocomplete="new-password"'
+   })}
+   ${signupField('signupEmail', '이메일 (선택)', { type: 'email', attributes: 'maxlength="255" autocomplete="email"', checkLabel: '이메일' })}
+   ${signupField('signupPhone', '연락처 (선택)', { type: 'tel', attributes: 'maxlength="20" autocomplete="tel"' })}
+   ${signupField('signupMainCrop', '주요 재배 품목 (선택)', { attributes: 'maxlength="100"' })}
+   <div class="signup-actions"><button type="submit" class="krds-btn medium primary" id="signupNextBtn">다음</button></div>
+  </form>`);
+
+  const form = $('#signupForm', mount);
+  const input = id => form.elements.namedItem(id);
+  const value = id => input(id).value.trim();
+  for (const [id, text] of Object.entries(draft)) input(id).value = text;
+
+  const fieldsToCheck = {
+   signupUsername: {
+    key: 'username', label: '아이디', empty: '아이디를 입력하세요.',
+    validate: () => signupUsernamePattern.test(value('signupUsername')) ? '' : '아이디 형식을 확인하세요.'
+   },
+   signupEmail: {
+    key: 'email', label: '이메일', empty: '이메일을 입력하세요.',
+    validate: () => input('signupEmail').validity.typeMismatch ? '이메일 주소 형식을 확인하세요.' : ''
+   }
+  };
+
+  const displayErrors = errors => {
+   const entries = Object.entries(errors);
+   for (const [id, message] of entries) signupFeedback(input(id), message);
+   const firstError = entries.find(([, message]) => message);
+   if (firstError) input(firstError[0]).focus();
+   return Boolean(firstError);
+  };
+
+  form.addEventListener('input', ({ target }) => signupFeedback(target, ''));
+  for (const button of $$('[data-check]', form)) {
+   const id = button.dataset.check;
+   const field = fieldsToCheck[id];
+   button.onclick = () => {
+    const current = value(id);
+    const message = !current ? field.empty :
+     field.validate() || signupDuplicateMessage(allMembers(), field.key, current);
+    signupFeedback(input(id), message || '사용할 수 있는 ' + field.label + '입니다.', message ? 'error' : 'success');
+    if (message) input(id).focus();
+   };
+  }
+  form.onsubmit = event => {
+   event.preventDefault();
+   const members = allMembers();
+   const password = input('signupPassword').value;
+   const confirmation = input('signupPasswordConfirm').value;
+   const errors = {
+    signupFarmName: value('signupFarmName') ? '' : '농장명을 입력하세요.',
+    signupRepresentativeName: value('signupRepresentativeName') ? '' : '대표자명을 입력하세요.',
+    signupUsername: !value('signupUsername') ? '아이디를 입력하세요.' : fieldsToCheck.signupUsername.validate() ||
+     signupDuplicateMessage(members, 'username', value('signupUsername')),
+    signupPassword: password.length >= 10 && password.length <= 64 ? '' : '비밀번호를 10~64자로 입력하세요.',
+    signupPasswordConfirm: confirmation && confirmation === password ? '' : '비밀번호와 같은 값을 입력하세요.',
+    signupEmail: fieldsToCheck.signupEmail.validate() || signupDuplicateMessage(members, 'email', value('signupEmail'))
+   };
+   if (displayErrors(errors)) return;
+   draft = Object.fromEntries($$('input', form).map(field => [field.id, field.value]));
+   renderCertificationForm();
+   focusStep();
+  };
+  displayErrors(conflicts);
+ }
+
+ function renderCertificationForm() {
+  step = 2;
+  showStep(`<form id="signupCertificationForm" class="login-form">
+   <p class="signup-cert-status" role="status">인증 상태
+    <span id="signupCertStatus" class="krds-badge bg-light-gray">${certStatus}</span>
+   </p>
+   ${signupField('signupBusinessNumber', '농업경영체 등록번호 (선택)', { attributes: 'maxlength="20"' })}
+   <div class="signup-actions">
+    <button type="button" class="krds-btn medium tertiary" id="signupPrevBtn">이전</button>
+    <button type="button" class="krds-btn medium secondary" id="signupCertBtn">인증 요청</button>
+    <button type="submit" class="krds-btn medium primary">가입하기</button>
+   </div>
+   <p class="auth-feedback" id="signupSaveError" role="alert" data-state="error"></p>
+  </form>`);
+
+  const form = $('#signupCertificationForm', mount);
+  const input = $('#signupBusinessNumber', form);
+  const status = $('#signupCertStatus', form);
+  const submit = $('button[type="submit"]', form);
+  input.value = businessNumber;
+  status.classList.toggle('bg-light-information', certStatus === '인증중');
+  status.classList.toggle('bg-light-gray', certStatus !== '인증중');
+
+  function updateCertification() {
+   certStatus = businessNumber ? '인증중' : '미인증';
+   status.textContent = certStatus;
+   status.classList.toggle('bg-light-information', Boolean(businessNumber));
+   status.classList.toggle('bg-light-gray', !businessNumber);
+  }
+
+  input.oninput = () => {
+   signupFeedback(input, '');
+   businessNumber = '';
+   updateCertification();
+  };
+  $('#signupCertBtn', form).onclick = () => {
+   businessNumber = input.value.trim();
+   if (!businessNumber) {
+    signupFeedback(input, '농업경영체 등록번호를 입력하세요.');
+    input.focus();
+    return;
+   }
+   signupFeedback(input, '');
+   updateCertification();
+  };
+  $('#signupPrevBtn', form).onclick = () => {
+   businessNumber = input.value.trim();
+   updateCertification();
+   renderMemberForm();
+   focusStep();
+  };
+  form.onsubmit = async event => {
+   event.preventDefault();
+   if (submit.disabled) return;
+   businessNumber = input.value.trim();
+   updateCertification();
+   const newMember = {
+    id: 'MEM-' + Date.now(),
+    displayName: draft.signupRepresentativeName.trim(),
+    role: '화훼농민',
+    certification: certStatus,
+    businessNumber: businessNumber || null,
+    username: draft.signupUsername.trim(),
+    demoPassword: draft.signupPassword,
+    farmName: draft.signupFarmName.trim(),
+    email: draft.signupEmail.trim() || null,
+    phone: draft.signupPhone.trim() || null,
+    address: null,
+    addressDetail: null,
+    mainCrop: draft.signupMainCrop.trim() || null,
+    description: null
+   };
+   const register = () => {
+    if (!form.isConnected) return;
+    const registered = loadSignupMembers();
+    const members = allMembers(registered);
+    const conflicts = {
+     signupUsername: signupDuplicateMessage(members, 'username', newMember.username),
+     signupEmail: signupDuplicateMessage(members, 'email', newMember.email || '')
+    };
+    if (Object.values(conflicts).some(Boolean)) {
+     renderMemberForm(conflicts);
+     return;
+    }
+    localStorage.setItem(SIGNUP_KEY, JSON.stringify([...registered, newMember]));
+    saveAuthUser(newMember.username);
+    savedMember = newMember;
+    draft = {};
+    renderCompletion();
+    focusStep();
+   };
+   submit.disabled = true;
+   $('#signupSaveError', form).textContent = '';
+   try {
+    if (navigator.locks) await navigator.locks.request(SIGNUP_KEY, register);
+    else register();
+   } catch {
+    $('#signupSaveError', form).textContent = '회원정보를 저장하지 못했습니다. 다시 시도해 주세요.';
+   } finally {
+    submit.disabled = false;
+   }
+  };
+ }
+
+ function renderCompletion() {
+  step = 3;
+  showStep(`<div class="login-form">
+   ${profileFacts([['농장명', savedMember.farmName], ['아이디', savedMember.username], ['인증 상태', savedMember.certification]])}
+   <div class="signup-actions"><a class="krds-btn medium primary" href="login.html">로그인으로 이동</a></div>
+  </div>`, '회원가입 완료');
+ }
+
+ renderMemberForm();
+}
+
 async function init(){
  const hostPage=document.body?.dataset?.page||'entry';
  if(hostPage==='entry'){
@@ -706,88 +1194,12 @@ async function init(){
   const member=allMembers().find(row=>row.username===saved);
   location.replace(member?'diary-list.html':'login.html');return;
  }
- if(hostPage==='login'){
-  const members=allMembers();
-  $('#loginUsername').value=loadAuthUser()||'seedmum02';
-  $('#loginForm').onsubmit=event=>{
-   event.preventDefault();
-   const username=$('#loginUsername').value.trim();
-   const member=allMembers().find(row=>row.username===username);
-   const pw=$('#loginPassword').value;
-   if(member&&(pw==='modoodemo01'||pw==='demo'||(member.demoPassword&&pw===member.demoPassword))){
-    saveAuthUser(member.username);location.href='diary-list.html';return;
-   }
-   $('#loginError').textContent='아이디와 비밀번호를 확인하세요.';$('#loginError').hidden=false;
-  };
+ if (hostPage === 'login') {
+  setupLogin();
   return;
  }
- if(hostPage==='signup'){
-  const mount=$('#signupStepMount');
-  let step=1,certStatus='미인증',businessNumber='',savedSummary=null;
-  const stepper=cur=>`<div class="stepper" aria-label="회원가입 단계"><div class="step-item" ${cur===1?'aria-current="step"':''}>1. 농업경영체 인증</div><div class="step-item" ${cur===2?'aria-current="step"':''}>2. 회원정보 입력</div><div class="step-item" ${cur===3?'aria-current="step"':''}>3. 완료</div></div>`;
-  const renderSignup=()=>{
-   if(step===1){
-    mount.innerHTML=`${stepper(1)}<div class="login-form">
-     <div style="padding:10px 12px;border:1px solid var(--line);background:#fafafa;font-size:12px">상태: <strong>${htmlText(certStatus)}</strong></div>
-     <label class="field" for="signupBusinessNumber">농업경영체 등록번호 (선택)<input id="signupBusinessNumber" class="ctrl" maxlength="20" value="${htmlText(businessNumber)}" placeholder="등록번호 입력"></label>
-     <div style="display:flex;justify-content:space-between;gap:8px">
-      <button type="button" class="btn" id="signupCertBtn">인증 요청</button>
-      <button type="button" class="btn main" id="signupNextBtn">다음 →</button>
-     </div>
-     <div class="auth-links"><span>이미 계정이 있으신가요?</span><a href="login.html">로그인으로 돌아가기</a></div>
-    </div>`;
-    $('#signupCertBtn').onclick=()=>{
-     const num=$('#signupBusinessNumber').value.trim();
-     if(!num){toast('농업경영체 등록번호를 입력하세요.');return}
-     businessNumber=num;certStatus='인증중';renderSignup();toast('인증 요청 상태로 등록되었습니다.');
-    };
-    $('#signupNextBtn').onclick=()=>{
-     const num=$('#signupBusinessNumber').value.trim();
-     if(num){businessNumber=num;if(certStatus==='미인증')certStatus='인증중';}
-     step=2;renderSignup();
-    };
-    return;
-   }
-   if(step===2){
-    mount.innerHTML=`${stepper(2)}<form id="signupForm" class="login-form">
-     <label class="field" for="signupFarmName">농장명 *<input id="signupFarmName" class="ctrl" type="text" maxlength="100" required placeholder="예: 푸른 화훼농장"></label>
-     <label class="field" for="signupRepresentativeName">대표자명 *<input id="signupRepresentativeName" class="ctrl" type="text" maxlength="50" required placeholder="예: 홍길동"></label>
-     <label class="field" for="signupUsername">아이디 *<input id="signupUsername" class="ctrl" type="text" minlength="6" maxlength="20" pattern="[a-z][a-z0-9]{5,19}" required placeholder="영문 소문자 시작, 소문자·숫자 6~20자"></label>
-     <label class="field" for="signupPassword">비밀번호 *<input id="signupPassword" class="ctrl" type="password" minlength="10" maxlength="64" autocomplete="new-password" required placeholder="10~64자 입력"></label>
-     <label class="field" for="signupPasswordConfirm">비밀번호 확인 *<input id="signupPasswordConfirm" class="ctrl" type="password" minlength="10" maxlength="64" autocomplete="new-password" required placeholder="비밀번호 재입력"></label>
-     <label class="field" for="signupEmail">이메일<input id="signupEmail" class="ctrl" type="email" maxlength="255" placeholder="example@farm.kr"></label>
-     <label class="field" for="signupPhone">연락처<input id="signupPhone" class="ctrl" type="tel" maxlength="20" placeholder="010-1234-5678"></label>
-     <label class="field" for="signupMainCrop">주요 재배 품목<input id="signupMainCrop" class="ctrl" type="text" maxlength="100" placeholder="예: 호접란"></label>
-     <p id="signupError" class="errorbox" role="alert" hidden></p>
-     <div style="display:flex;justify-content:space-between;gap:8px">
-      <button type="button" class="btn" id="signupPrevBtn">← 이전</button>
-      <button type="submit" class="btn main">가입하기</button>
-     </div>
-    </form>`;
-    $('#signupPrevBtn').onclick=()=>{step=1;renderSignup()};
-    $('#signupForm').onsubmit=event=>{
-     event.preventDefault();
-     const farmName=$('#signupFarmName').value.trim(),representativeName=$('#signupRepresentativeName').value.trim();
-     const username=$('#signupUsername').value.trim(),password=$('#signupPassword').value,passwordConfirm=$('#signupPasswordConfirm').value;
-     const err=$('#signupError');
-     if(!farmName||!representativeName||!username||!password){err.textContent='필수 항목을 입력하세요.';err.hidden=false;return}
-     if(!/^[a-z][a-z0-9]{5,19}$/.test(username)){err.textContent='아이디는 영문 소문자로 시작하는 6~20자 영문 소문자·숫자여야 합니다.';err.hidden=false;return}
-     if(password.length<10||password.length>64){err.textContent='비밀번호는 10~64자로 입력하세요.';err.hidden=false;return}
-     if(password!==passwordConfirm){err.textContent='비밀번호 확인이 일치하지 않습니다.';err.hidden=false;return}
-     if(allMembers().some(m=>m.username===username)){err.textContent='이미 사용 중인 아이디입니다.';err.hidden=false;return}
-     const newMember={id:'MEM-'+Date.now(),displayName:representativeName,role:'화훼농민',certification:certStatus,businessNumber:businessNumber||null,username,demoPassword:password,farmName,email:$('#signupEmail').value.trim()||null,phone:$('#signupPhone').value.trim()||null,address:null,addressDetail:null,mainCrop:$('#signupMainCrop').value.trim()||null,description:null};
-     try{const prev=JSON.parse(localStorage.getItem(SIGNUP_KEY)||'[]');localStorage.setItem(SIGNUP_KEY,JSON.stringify([...(Array.isArray(prev)?prev:[]),newMember]))}catch{}
-     saveAuthUser(username);savedSummary=newMember;step=3;renderSignup();
-    };
-    return;
-   }
-   mount.innerHTML=`${stepper(3)}<div class="login-form">
-    <p>회원가입이 완료되었습니다.</p>
-    <dl class="profile-facts"><dt>농장명</dt><dd>${htmlText(savedSummary?.farmName||'—')}</dd><dt>아이디</dt><dd>${htmlText(savedSummary?.username||'—')}</dd><dt>인증 상태</dt><dd>${htmlText(savedSummary?.certification||'미인증')}</dd></dl>
-    <a class="btn main" href="login.html">로그인으로 이동</a>
-   </div>`;
-  };
-  renderSignup();
+ if (hostPage === 'signup') {
+  setupSignup();
   return;
  }
  if(window.ModooLayoutReady)await window.ModooLayoutReady;
