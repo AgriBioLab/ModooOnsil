@@ -7,5 +7,12 @@ import java.util.List;
 
 @Mapper
 public interface GreenhouseRepository {
-    List<Greenhouse> findAll(long memberId);
+    List<Greenhouse> findAll(Long memberId, String greenhouseName, String greenhouseType, String coverType, String mediumType);
+
+    Greenhouse findById(Long memberId, Long greenhouseId);
+
+    void addGreenhouse(Greenhouse greenhouse);
+
+    void updateGreenhouse(Greenhouse greenhouse);
+
 }
