@@ -5,12 +5,12 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>모두의온실 | 로그인</title>
   <link rel="stylesheet" href="vendor/krds/css/component/output.css">
-  <link rel="stylesheet" href="css/prototype.css">
-  <link rel="stylesheet" href="css/krds-modoo.css">
+  <link rel="stylesheet" href="css/common.css">
   <script src="js/prototypeData.js" defer></script>
+  <script src="js/common.js" defer></script>
   <script src="js/prototype.js" defer></script>
 </head>
-<body data-page="login">
+<body data-page="login" class="signed-out-page">
 <main id="signedOutOverlay" class="signed-out">
   <section class="signed-out-card" aria-labelledby="loginTitle">
     <p class="login-brand">모두의온실</p>
@@ -37,6 +37,7 @@
     </form>
   </section>
 </main>
+<div id="footerSlot"></div>
 <div class="notice-toast hidden" id="toast" role="status" aria-live="polite"></div>
 </body>
 </html>

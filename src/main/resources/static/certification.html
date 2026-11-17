@@ -3,13 +3,11 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta http-equiv="refresh" content="0; url=mypage.html?tab=cert">
   <title>모두의온실 | 농업경영체 인증</title>
   <link rel="stylesheet" href="vendor/krds/css/component/output.css">
-  <link rel="stylesheet" href="css/prototype.css">
-  <link rel="stylesheet" href="css/krds-modoo.css">
-  <script src="js/prototypeData.js" defer></script>
-  <script src="js/layout.js" defer></script>
-  <script src="js/prototype.js" defer></script>
+  <link rel="stylesheet" href="css/common.css">
+  <script src="js/common.js" defer></script>
 </head>
 <body data-page="cert">
 <div class="app profile-app">
@@ -18,11 +16,13 @@
     <div id="headerSlot"></div>
     <main class="profile-page">
       <nav class="crumb" aria-label="현재 위치"><span id="crumb">농업경영체 인증</span></nav>
-      <div class="page-content" id="main" tabindex="-1"></div>
+      <div class="page-content" id="main">
+        <div class="pagehead"><h1>농업경영체 인증</h1></div>
+        <p><a href="mypage.html?tab=cert">농업경영체 인증 화면으로 이동</a></p>
+      </div>
     </main>
+    <div id="footerSlot"></div>
   </div>
 </div>
-<div class="notice-toast profile-notice hidden" id="toast" aria-hidden="true"></div>
-<div class="sr-only" id="toastAnnouncement" role="status" aria-atomic="true"></div>
 </body>
 </html>

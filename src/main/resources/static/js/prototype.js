@@ -1,11 +1,12 @@
 (()=>{'use strict';
+const { ready, notify: toast, allMembers, loadSignupMembers, signupKey, saveAuthUser, loadAuthUser, showAccount, bindAccount, setCurrentMenu } = window.ModooCommon;
 const $=(s,base=document)=>base.querySelector(s), $$=(s,base=document)=>[...base.querySelectorAll(s)];
 const escapeHtml=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const htmlText=escapeHtml, clone=x=>JSON.parse(JSON.stringify(x));
 const pageNums=(cur,total)=>{if(total<=7)return Array.from({length:total},(_,i)=>i+1);let s=Math.max(2,cur-2),e=Math.min(total-1,cur+2);if(cur<=3)e=5;if(cur>=total-2)s=total-4;const list=[1];if(s>2)list.push('...');for(let i=s;i<=e;i++)list.push(i);if(e<total-1)list.push('...');list.push(total);return list};
 const pageBtns=(cur,total,attr)=>pageNums(cur,total).map(p=>p==='...'?'<span class="page-ellipsis" aria-hidden="true">…</span>':`<button type="button" class="page-button" ${attr}="${p}" ${p===cur?'aria-current="page"':''} aria-label="${p}페이지">${p}</button>`).join('');
 const storageKey=kind=>`modoo-sprint2:${prototypeData.meta.version}:${config.header.currentUser.id}:${kind}`;
-let config=clone(prototypeData), diaryRows=[], page='list',selectedId=null,working=[],editRow=null,selectedStage='VEG',filterCycle='all',filterGreenhouse='all',filterCrop='all',filterVariety='all',filterDate='',listPage=1,toastTimer;
+let config=clone(prototypeData), diaryRows=[], page='list',selectedId=null,working=[],editRow=null,selectedStage='VEG',filterCycle='all',filterGreenhouse='all',filterCrop='all',filterVariety='all',filterDate='',listPage=1;
 const main=$('#main'), today=()=>config.meta.today;
 const options=(values,sel)=>values.map(x=>`<option value="${escapeHtml(x.value)}" ${String(x.value)===String(sel)?'selected':''}>${escapeHtml(x.label)}</option>`).join('');
 const getCycle=id=>config.cycles.find(c=>c.cycleId===id)||config.cycles[0];
@@ -26,27 +27,10 @@ function loadSaved(){let saved;try{saved=JSON.parse(localStorage.getItem(storage
  if(saved?.cycleStageHistories)for(const c of config.cycles){if(Array.isArray(saved.cycleStageHistories[c.cycleId]))c.stageHistory=saved.cycleStageHistories[c.cycleId].map(e=>{const {reasons,...rest}=e;return {...rest,reason:toReason(e.reason||reasons)}})}
  diaryRows.forEach(d=>{delete d.title;d.stageChangeReason=toReason(d.stageChangeReason||d.stageChangeReasons);delete d.stageChangeReasons;d.tasks=(d.tasks||[]).map(t=>({...t,startedAt:t.startedAt||makeStarted(d.workDate,t.time||'09:00'),name:t.name||t.type,content:t.content??''})).sort(timeSort)});
 }
-function toast(message) {
- const notice = $('#toast'), announcement = $('#toastAnnouncement');
- notice.textContent = message;
- notice.classList.remove('hidden');
- if (announcement) announcement.textContent = message;
- clearTimeout(toastTimer);
- toastTimer = setTimeout(() => {
-  notice.classList.add('hidden');
-  if (announcement) announcement.textContent = '';
- }, 3400);
-}
 function error(s){const el=$('#formError');if(el){el.textContent=s;el.classList.remove('hidden')}toast(s)}
 function updateNavigation() {
- const entry = (page.startsWith('cycle-')||page==='standard') ? 'cycle-list' : page.startsWith('gh-') ? 'gh-list' : page.startsWith('env-') ? 'env-list' : page.startsWith('issue-') ? 'issue-list' : (page==='cert'||(page==='profile'&&profileTab==='cert')) ? 'cert' : page==='profile' ? 'profile' : 'list';
- const current = $(`#navigation [data-go="${entry}"]`);
- for (const button of $$('#navigation [data-go]')) {
-  if (button === current) button.setAttribute('aria-current', 'location');
-  else button.removeAttribute('aria-current');
- }
- if (page==='profile') { $('#crumb').textContent=profileTab==='cert'?'내정보 / 농업경영체 인증':'내정보'; return; }
- if (page==='cert') { profileTab='cert'; $('#crumb').textContent='내정보 / 농업경영체 인증'; return; }
+ const entry = (page.startsWith('cycle-')||page==='standard') ? 'cycle-list' : page.startsWith('gh-') ? 'gh-list' : page.startsWith('env-') ? 'env-list' : page.startsWith('issue-') ? 'issue-list' : 'list';
+ const current = setCurrentMenu(entry);
  if (page==='standard') { $('#crumb').textContent='작기계획 / 생육단계별 환경기준'; return; }
  const state = page.replace(/^(cycle-|gh-|env-|issue-)/, '');
  const step = {list:'목록',create:'등록',detail:'상세',edit:'수정'}[state] || '목록';
@@ -56,11 +40,6 @@ function updateNavigation() {
 const pageFile=target=>target==='standard'?'crop-standard.html':target.startsWith('cycle-')?'cycle-list.html':target.startsWith('gh-')?'greenhouse-list.html':target.startsWith('env-')?'env-list.html':target.startsWith('issue-')?'issue-list.html':target==='profile'?'mypage.html':target==='cert'?'mypage.html?tab=cert':'diary-list.html';
 function go(target,id){
  const hostPage=document.body?.dataset?.page;
- if (hostPage === 'profile' && (target === 'profile' || target === 'cert')) {
-  page = 'profile';
-  openProfileTab(target === 'cert' ? 'cert' : 'info');
-  return;
- }
  if(hostPage&&pageFile(target)!==pageFile(hostPage)){
   const url = new URL(pageFile(target), location.href);
   if (target !== hostPage && target !== 'cert') url.searchParams.set('view', target);
@@ -81,8 +60,6 @@ function render(){updateNavigation();if(page.startsWith('cycle-')){if(page==='cy
  else if(page.startsWith('gh-')){if(page==='gh-list')renderGreenhouseList();else if(page==='gh-detail')renderGreenhouseDetail();else renderGreenhouseEditor(page==='gh-edit')}
  else if(page.startsWith('env-')){if(page==='env-list')renderEnvList();else renderEnvDetail()}
  else if(page.startsWith('issue-'))renderIssues(page==='issue-detail');
- else if(page==='profile')renderProfile();
- else if(page==='cert'){profileTab='cert';renderProfile();}
  else if(page==='standard')renderStandardPage();
  else if(page==='list')renderList();else if(page==='detail')renderDetail();else renderEditor(page==='edit')}
 function renderList(){const rows=diaryRows.filter(d=>{
@@ -102,7 +79,7 @@ function getContextHTML(c){return `<div class="cycle-meta"><div><span class="met
 function toReason(v){if(typeof v==='string')return v.trim();if(v&&typeof v==='object')return Object.values(v).filter(Boolean).map(x=>String(x).trim()).join(' / ');return ''}
 function getReasons(reason){const text=toReason(reason);return text?`<p class="reason-text">${htmlText(text)}</p>`:''}
 function renderDetail(){const d=getDiary(selectedId);if(!d){go('list');return}selectedId=d.diaryId;const c=getCycle(d.cycleId),done=d.tasks.filter(t=>t.status==='완료').length;
- main.innerHTML=heading('재배일지작업 조회','',true)+`<div class="editor-shell"><section class="panel editor-summary detail-info" aria-label="재배일지정보"><div class="panel-head"><h2>재배일지정보</h2></div><div class="summary-detail" id="detailFacts"><dl class="details-kv"><dt>작기</dt><dd>${htmlText(c.name)}</dd><dt>품목 · 품종</dt><dd>${htmlText(cropOf(c)?.name||'-')} · ${htmlText(varietyOf(c)?.name||'-')}</dd><dt>온실</dt><dd>${htmlText(gh(c.greenhouseId)?.name||'-')}</dd><dt>실제 작업일</dt><dd>${htmlText(d.workDate)}</dd><dt>생육단계</dt><dd>${htmlText(getStage(d.stageId).name)}</dd><dt>재배일지작업 첫 등록일시</dt><dd>${htmlText(d.createdAt?d.createdAt.replace('T',' '):'—')}</dd>${d.updatedAt?`<dt>재배일지작업내용 수정일시</dt><dd>${htmlText(d.updatedAt.replace('T',' '))}</dd>`:''}</dl>${toReason(d.stageChangeReason||d.stageChangeReasons)?`<div class="reason-box"><strong>생육단계 변경 사유</strong>${getReasons(d.stageChangeReason||d.stageChangeReasons)}</div>`:''}</div></section>
+ main.innerHTML=heading('재배일지작업 조회','')+`<div class="editor-shell"><section class="panel editor-summary detail-info" aria-label="재배일지정보"><div class="panel-head"><h2>재배일지정보</h2></div><div class="summary-detail" id="detailFacts"><dl class="details-kv"><dt>작기</dt><dd>${htmlText(c.name)}</dd><dt>품목 · 품종</dt><dd>${htmlText(cropOf(c)?.name||'-')} · ${htmlText(varietyOf(c)?.name||'-')}</dd><dt>온실</dt><dd>${htmlText(gh(c.greenhouseId)?.name||'-')}</dd><dt>실제 작업일</dt><dd>${htmlText(d.workDate)}</dd><dt>생육단계</dt><dd>${htmlText(getStage(d.stageId).name)}</dd><dt>재배일지작업 첫 등록일시</dt><dd>${htmlText(d.createdAt?d.createdAt.replace('T',' '):'—')}</dd>${d.updatedAt?`<dt>재배일지작업내용 수정일시</dt><dd>${htmlText(d.updatedAt.replace('T',' '))}</dd>`:''}</dl>${toReason(d.stageChangeReason||d.stageChangeReasons)?`<div class="reason-box"><strong>생육단계 변경 사유</strong>${getReasons(d.stageChangeReason||d.stageChangeReasons)}</div>`:''}</div></section>
  <section class="panel editor-workpanel"><div class="panel-head"><h2>작업내용</h2><span class="counter">${d.tasks.length}건 · 완료 ${done} / 미완료 ${d.tasks.length-done}</span></div><div class="task-body"><div class="task-list-header detail-task-header"><span>작업명</span><span>작업시간</span><span>작업유형</span><span>상태</span></div><div class="task-scroll detail-list">${[...d.tasks].sort(timeSort).map(t=>`<article class="detail-task"><div class="t-row"><strong>${htmlText(t.name)}</strong><span>${timeOf(t)}</span><span>${htmlText(t.type)}</span><span>${htmlText(t.status)}</span></div><div class="details-content">${htmlText(t.content||'—')}</div></article>`).join('')||'<p class="empty" style="padding:24px">등록된 작업내용이 없습니다.</p>'}</div><div class="hidden" id="detailDeleteConfirm" style="padding:10px 12px;border-top:1px solid var(--line);display:flex;align-items:center;justify-content:flex-end;gap:8px"><span>이 재배일지작업을 삭제하시겠습니까?</span><button type="button" class="btn" id="detailDeleteCancel">취소</button><button type="button" class="btn main" id="detailDeleteOk">삭제 확인</button></div><div class="form-actions"><button class="btn" id="detailBack">목록</button><button class="btn" id="detailDelete">삭제</button><button class="btn main" id="detailEdit">수정</button></div></div></section></div>`;
  bindBack();$('#detailBack').onclick=()=>go('list');$('#detailEdit').onclick=()=>go('edit',d.diaryId);
  $('#detailDelete').onclick=()=>$('#detailDeleteConfirm').classList.remove('hidden');
@@ -127,7 +104,7 @@ function paintTasks(){const list=$('#taskList');if(!list)return;working.sort(tim
 function reasonInputHtml(value=''){return `<div class="reason-box hidden" id="reasonBox"><label for="stageChangeReason" class="label">생육단계 변경 사유 *</label><textarea class="ctrl textarea" id="stageChangeReason" rows="4" maxlength="500" placeholder="실제 생육단계를 변경한 근거와 관찰 내용을 입력하세요">${htmlText(toReason(value))}</textarea></div>`}
 function gatherReason(){return ($('#stageChangeReason')?.value||'').trim()}
 function stagePolicy(c,date,d){const last=lastEvent(c),pastStage=stageByDate(c,date),laterHistory=c.stageHistory.some(e=>e.effectiveDate>date),laterDiary=diaryRows.some(x=>x.cycleId===c.cycleId&&x.workDate>date&&x.diaryId!==d?.diaryId),isEdit=!!d;
- const canChange=!isEdit&&!laterHistory&&!laterDiary&&date>=last.effectiveDate&&date>=c.actualStartDate&&date<=today();
+ const canChange=!isEdit&&!laterHistory&&!laterDiary&&date>=(last?.effectiveDate||c.actualStartDate||'')&&date>=c.actualStartDate&&date<=today();
  return {stageId:isEdit?d.stageId:pastStage,canChange,laterDiary,laterHistory}}
 function updateCycleData(){const sel=$('#cycleId');if(!sel)return;const c=getCycle(sel.value);const date=$('#workDate');date.min=c.actualStartDate;date.max=today();if(!date.value||date.value<c.actualStartDate)date.value=c.actualStartDate;updateStageOptions()}
 function updateStageOptions(){const c=getCycle($('#cycleId').value),date=$('#workDate').value||today(),policy=stagePolicy(c,date,editRow),select=$('#stageId');
@@ -141,12 +118,12 @@ function summaryHTML(c,date,stage){return `<div class="summary-strip"><div class
 function refreshSummary(){const cycle=$('#cycleId'),date=$('#workDate'),stage=$('#stageId');if(!cycle||!date||!stage)return;const c=getCycle(cycle.value);const values={summaryCycle:c.name,summaryCrop:`${cropOf(c)?.name||'-'} · ${varietyOf(c)?.name||'-'}`,summaryHouse:gh(c.greenhouseId)?.name||'-',summaryDate:date.value||'미선택',summaryStage:getStage(stage.value).name};for(const [id,val] of Object.entries(values)){const el=$('#'+id);if(el){el.textContent=val;el.title=val}}}
 function renderEditor(isEdit){const d=isEdit?getDiary(selectedId):null;if(isEdit&&!d){go('list');return}editRow=d;
  const active=config.cycles.filter(c=>c.status==='진행'&&c.actualStartDate);
- if(!d&&!active.length){main.innerHTML=heading('재배일지작업 등록','진행 중인 작기가 없습니다.',true);bindBack();return}
+ if(!d&&!active.length){main.innerHTML=heading('재배일지작업 등록','진행 중인 작기가 없습니다.');bindBack();return}
  const c=getCycle(d?.cycleId||active[0].cycleId),date=d?.workDate||today();selectedStage=d?.stageId||stageByDate(c,date);working=d?clone(d.tasks): (config.formDefaults?.newDiaryTasks||[]).map((t,i)=>({...freshTask(date),taskId:`SAMPLE-${i+1}`,name:t.name,type:t.type,startedAt:makeStarted(date,t.time),status:t.status,content:t.content}));
- main.innerHTML=heading(isEdit?'재배일지작업 수정':'재배일지작업 등록','',true)+`<form class="editor-shell" id="diaryForm" novalidate><section class="panel editor-summary" aria-label="재배일지작업 기본정보">${summaryHTML(c,date,selectedStage)}<div class="summary-detail" id="baseFields"><div class="field"><label for="cycleId">작기 <span class="required">*</span></label><select class="ctrl" id="cycleId" ${isEdit?'disabled':''}>${options((isEdit?[c]:active).map(c=>({value:c.cycleId,label:c.name})),c.cycleId)}</select></div>
+ main.innerHTML=heading(isEdit?'재배일지작업 수정':'재배일지작업 등록','')+`<form class="editor-shell" id="diaryForm" novalidate><section class="panel editor-summary" aria-label="재배일지작업 기본정보">${summaryHTML(c,date,selectedStage)}<div class="summary-detail" id="baseFields"><div class="field"><label for="cycleId">작기 <span class="required">*</span></label><select class="ctrl" id="cycleId" ${isEdit?'disabled':''}>${options((isEdit?[c]:active).map(c=>({value:c.cycleId,label:c.name})),c.cycleId)}</select></div>
  <div class="field"><label for="workDate">실제 작업일 <span class="required">*</span></label><input class="ctrl" type="date" id="workDate" min="${c.actualStartDate}" max="${today()}" value="${date}" ${isEdit?'readonly':''}></div>
- <div class="stage-group" aria-label="실제 생육단계 및 변경 사유"><div class="field"><label for="stageId">해당 날짜의 실제 생육단계 <span class="required">*</span></label><select class="ctrl" id="stageId"></select><div id="stageHelp" class="stage-meta"></div></div>
- ${isEdit&&toReason(d.stageChangeReason||d.stageChangeReasons)?`<div class="reason-box"><strong>확정된 변경 사유</strong>${getReasons(d.stageChangeReason||d.stageChangeReasons)}</div>`:''}${!isEdit?reasonInputHtml():''}</div>
+ <div class="stage-group" aria-label="실제 생육단계"><div class="field"><label for="stageId">해당 날짜의 실제 생육단계 <span class="required">*</span></label><select class="ctrl" id="stageId"></select><div id="stageHelp" class="stage-meta"></div></div></div>
+ ${isEdit&&toReason(d.stageChangeReason||d.stageChangeReasons)?`<div class="reason-box"><strong>확정된 변경 사유</strong>${getReasons(d.stageChangeReason||d.stageChangeReasons)}</div>`:''}${!isEdit?reasonInputHtml():''}
  <div id="duplicateNotice" class="errorbox hidden" role="status"></div><div id="formError" class="errorbox hidden" role="alert"></div>
  </div></section><section class="panel editor-workpanel"><div class="panel-head"><h2>작업내용</h2><span class="counter" id="taskTotal">0건</span></div><div class="task-body"><div class="task-tools"><span class="muted small">작업시간 오름차순</span></div><div class="task-scroll" id="tasksScroll"><div class="task-list-header"><span>작업명</span><span>작업시간</span><span>작업유형</span><span>작업상태</span><span></span></div><div id="taskList"></div></div><button class="add-btn" id="addTask" type="button">+ 작업내용 추가</button><div class="form-actions"><button class="btn" type="button" id="cancel">취소</button><button class="btn main" type="submit">${isEdit?'수정 저장':'등록'}</button></div></div></section></form>`;
  bindBack();paintTasks();$('#cycleId').onchange=()=>{updateCycleData();refreshSummary()};$('#workDate').onchange=()=>{gatherTasks();working.forEach(t=>t.startedAt=makeStarted($('#workDate').value,timeOf(t)));updateStageOptions();refreshSummary()};$('#stageId').onchange=()=>{updateReasonVisibility();refreshSummary()};
@@ -173,311 +150,12 @@ function saveEditor(){const c=getCycle($('#cycleId').value),date=$('#workDate').
  if(!editRow&&stageId!==policy.stageId)c.stageHistory.push({eventId:`EV-NEW-${Date.now()}`,stageId,effectiveDate:date,sourceDiaryId:diaryId,reason});
  persist();selectedId=diaryId;toast(editRow?'재배일지작업을 수정했습니다.':'재배일지작업을 등록했습니다.');go('detail',diaryId);
 }
-function saveProfilePatch(username, patch) {
- try {
-  const overrides = loadCertOverrides();
-  overrides[username] = { ...overrides[username], ...patch };
-  localStorage.setItem(CERT_KEY, JSON.stringify(overrides));
-  return true;
- } catch {
-  toast('브라우저에 변경 내용을 저장하지 못했습니다.');
-  return false;
- }
-}
-
-const profileTabs = [['info', '농장정보'], ['cert', '농업경영체 인증'], ['pw', '비밀번호 설정']];
-let profileEditing = false;
-let profileTab = new URLSearchParams(location.search).get('tab') === 'cert' ? 'cert' : 'info';
-
-function openProfileTab(tab) {
- if (page === 'cert') page = 'profile';
- profileTab = tab;
- profileEditing = false;
- updateNavigation();
- renderProfile('profile-tab-' + tab);
-}
-
-function renderProfile(focusId) {
- const user = config.header.currentUser;
- const cert = user.certification || '미인증';
- const badge = cert === '인증' ? 'bg-light-success' : cert === '인증중' ? 'bg-light-information' : 'bg-light-gray';
- main.innerHTML = heading(profileEditing ? '내정보 수정' : '내정보') +
-  `<section class="profile-summary-card" aria-label="농장 요약">
-    <div class="profile-summary-title">
-      <h2>${htmlText(user.farmName || '—')}</h2>
-      <span class="krds-badge ${badge}"><span class="sr-only">농업경영체 인증 상태 </span>${htmlText(cert)}</span>
-    </div>
-    <p>${htmlText(user.displayName || '—')} · ${htmlText(user.mainCrop || '품목 미등록')}</p>
-  </section>
-  <div class="tabbar profile-tabbar" role="tablist" aria-label="내정보 메뉴">
-    ${profileTabs.map(([key, label]) => `<button type="button" class="tabbtn" id="profile-tab-${key}" role="tab" aria-selected="${key === profileTab}" aria-controls="profile-panel-${key}">${label}</button>`).join('')}
-  </div>
-  ${profileTabs.map(([key]) => `<div class="profile-tab-panel" id="profile-panel-${key}" role="tabpanel" aria-labelledby="profile-tab-${key}" tabindex="0"${key === profileTab ? '' : ' hidden'}></div>`).join('')}`;
-
- const tabs = $$('.profile-tabbar .tabbtn', main);
- tabs.forEach((tab, index) => {
-  const [key] = profileTabs[index];
-  tab.onclick = () => {
-   if (key !== profileTab) openProfileTab(key);
-  };
-  tab.onkeydown = event => {
-   const destinations = {
-    ArrowLeft: (index + tabs.length - 1) % tabs.length,
-    ArrowRight: (index + 1) % tabs.length,
-    Home: 0,
-    End: tabs.length - 1
-   };
-   const destination = destinations[event.key];
-   if (!Number.isInteger(destination)) return;
-   event.preventDefault();
-   tabs[destination].focus();
-  };
- });
-
- const panel = $('#profile-panel-' + profileTab);
- if (profileTab === 'cert') renderProfileCertification(panel, user, cert);
- else if (profileTab === 'pw') renderProfilePassword(panel, user);
- else renderFarmProfile(panel, user);
- if (focusId) document.getElementById(focusId)?.focus();
-}
-
 function profileFacts(facts) {
  return `<dl class="profile-facts">
   ${facts.map(([label, value]) => `<dt>${label}</dt><dd>${htmlText(value || '—')}</dd>`).join('')}
  </dl>`;
 }
 
-function profileField(id, label, { value = '', type = 'text', required = false, attributes = '', hint = '' } = {}) {
- const descriptions = hint ? `${id}-hint ${id}-error` : `${id}-error`;
- return `<div class="field">
-   <label for="${id}">${label}${required ? ' <span class="required" aria-hidden="true">*</span>' : ''}</label>
-   <input id="${id}" class="ctrl" type="${type}" value="${htmlText(value)}" aria-describedby="${descriptions}" ${required ? 'required' : ''} ${attributes}>
-   ${hint ? `<p class="profile-hint" id="${id}-hint">${hint}</p>` : ''}
-   <p class="profile-error" id="${id}-error" aria-live="polite"></p>
- </div>`;
-}
-
-function bindProfileForm(form, getErrors, save) {
- function showError(id, message) {
-  const input = form.elements.namedItem(id);
-  const error = document.getElementById(id + '-error');
-  if (message) input.setAttribute('aria-invalid', 'true');
-  else input.removeAttribute('aria-invalid');
-  error.textContent = message;
- }
-
- form.addEventListener('input', ({ target }) => {
-  if (target.hasAttribute('aria-invalid')) showError(target.id, '');
- });
- form.onsubmit = event => {
-  event.preventDefault();
-  const errors = Object.entries(getErrors());
-  for (const [id, message] of errors) showError(id, message);
-  const firstError = errors.find(([, message]) => message);
-  if (firstError) form.elements.namedItem(firstError[0]).focus();
-  else save();
- };
-}
-
-function renderProfileCertification(panel, user, cert) {
- let body = '<p class="profile-hint">농업경영체 인증이 완료된 회원입니다.</p>';
- if (cert === '인증중') {
-  body = '<p class="profile-hint">관리자가 등록번호를 확인하고 있습니다. 승인되면 인증 상태가 바뀝니다.</p>';
- } else if (cert !== '인증') {
-  body = `<form id="certRequestForm" class="profile-form profile-form-narrow" novalidate>
-    ${profileField('certBusinessNumber', '농업경영체 등록번호', {
-     value: user.businessNumber, required: true, attributes: 'maxlength="20"', hint: '예시 AGRI-2026-0001'
-    })}
-    <div class="module-actions profile-form-actions"><button type="submit" class="btn main">인증 요청</button></div>
-  </form>`;
- }
- panel.innerHTML = `<section class="panel">
-   <div class="panel-head"><h2 id="profileCertHeading" tabindex="-1">현재 인증 상태</h2></div>
-   <div class="panel-body">${profileFacts([['인증 상태', cert], ['농업경영체 등록번호', user.businessNumber]])}</div>
- </section>
- <section class="panel">
-   <div class="panel-head"><h2>등록번호 인증</h2></div>
-   <div class="panel-body">${body}</div>
- </section>`;
-
- const form = $('#certRequestForm', panel);
- if (!form) return;
- const input = form.elements.namedItem('certBusinessNumber');
- bindProfileForm(form, () => ({
-  certBusinessNumber: input.value.trim() ? '' : '농업경영체 등록번호를 입력하세요.'
- }), () => {
-  const patch = { businessNumber: input.value.trim(), certification: '인증중' };
-  if (!saveProfilePatch(user.username, patch)) return;
-  Object.assign(user, patch);
-  setupAccount();
-  renderProfile('profileCertHeading');
-  toast('농업경영체 인증을 요청했습니다. 현재 인증중입니다.');
- });
-}
-
-function renderProfilePassword(panel, user) {
- panel.innerHTML = `<section class="panel">
-   <div class="panel-head"><h2>비밀번호 변경</h2></div>
-   <div class="panel-body">
-     <form id="passwordForm" class="profile-form profile-form-narrow" novalidate>
-       ${profileField('curPw', '현재 비밀번호', { type: 'password', required: true, attributes: 'autocomplete="current-password"' })}
-       ${profileField('newPw', '새 비밀번호', {
-        type: 'password', required: true, attributes: 'minlength="10" maxlength="64" autocomplete="new-password"', hint: '10~64자로 입력하세요.'
-       })}
-       ${profileField('chkPw', '새 비밀번호 확인', {
-        type: 'password', required: true, attributes: 'minlength="10" maxlength="64" autocomplete="new-password"'
-       })}
-       <div class="module-actions profile-form-actions"><button type="submit" class="btn main">비밀번호 변경</button></div>
-     </form>
-   </div>
- </section>`;
- const form = $('#passwordForm', panel);
- const current = form.elements.namedItem('curPw');
- const next = form.elements.namedItem('newPw');
- const confirmation = form.elements.namedItem('chkPw');
- bindProfileForm(form, () => {
-  const expected = user.demoPassword || 'modoodemo01';
-  const matches = [expected, 'modoodemo01', 'demo'].includes(current.value);
-  return {
-   curPw: current.value ? (matches ? '' : '현재 비밀번호가 일치하지 않습니다.') : '현재 비밀번호를 입력하세요.',
-   newPw: next.value.length < 10 || next.value.length > 64 ? '새 비밀번호를 10~64자로 입력하세요.' : '',
-   chkPw: confirmation.value ? (confirmation.value === next.value ? '' : '새 비밀번호와 일치하지 않습니다.') : '새 비밀번호를 한 번 더 입력하세요.'
-  };
- }, () => {
-  if (!saveProfilePatch(user.username, { demoPassword: next.value })) return;
-  user.demoPassword = next.value;
-  form.reset();
-  toast('비밀번호를 변경했습니다.');
- });
-}
-
-function renderFarmProfile(panel, user) {
- if (!profileEditing) {
-  const address = [user.address, user.addressDetail].filter(Boolean).join(' ');
-  const facts = [
-   ['농장명', user.farmName], ['대표자명', user.displayName], ['아이디', user.username], ['이메일', user.email],
-   ['연락처', user.phone], ['농장 주소', address], ['주요 재배 품목', user.mainCrop], ['농장 소개', user.description]
-  ];
-  panel.innerHTML = `<section class="panel">
-    <div class="panel-head"><h2>농장정보</h2><button type="button" class="btn" id="profileEditBtn">수정</button></div>
-    <div class="panel-body">${profileFacts(facts)}</div>
-  </section>`;
-  $('#profileEditBtn', panel).onclick = () => {
-   profileEditing = true;
-   renderProfile('profFarmName');
-  };
-  return;
- }
-
- panel.innerHTML = `<section class="panel">
-   <div class="panel-head"><h2>농장정보 수정</h2></div>
-   <div class="panel-body">
-     <form id="profileForm" class="profile-form" novalidate>
-       <div class="module-input-grid profile-form-grid">
-         ${profileField('profFarmName', '농장명', { value: user.farmName, required: true, attributes: 'maxlength="100"' })}
-         ${profileField('profDisplayName', '대표자명', { value: user.displayName, required: true, attributes: 'maxlength="50"' })}
-         ${profileField('profEmail', '이메일', { value: user.email, type: 'email', attributes: 'maxlength="255" autocomplete="email"' })}
-         ${profileField('profPhone', '연락처', { value: user.phone, type: 'tel', attributes: 'maxlength="20" autocomplete="tel"' })}
-         <div class="field">
-           <label for="profAddress">농장 주소</label>
-           <div class="profile-address">
-             <input id="profAddress" class="ctrl" maxlength="255" value="${htmlText(user.address)}" readonly>
-             <button type="button" class="btn" id="addrSearchBtn">주소 검색</button>
-           </div>
-         </div>
-         <div class="field">
-           <label for="profAddressDetail">상세 주소</label>
-           <input id="profAddressDetail" class="ctrl" maxlength="255" value="${htmlText(user.addressDetail)}">
-         </div>
-         <div class="field">
-           <label for="profMainCrop">주요 재배 품목</label>
-           <input id="profMainCrop" class="ctrl" maxlength="100" value="${htmlText(user.mainCrop)}">
-         </div>
-         <div class="field profile-description">
-           <label for="profDesc">농장 소개</label>
-           <textarea id="profDesc" class="ctrl textarea">${htmlText(user.description)}</textarea>
-         </div>
-       </div>
-       <div class="module-actions profile-form-actions">
-         <button type="button" class="btn" id="profileCancelBtn">취소</button>
-         <button type="submit" class="btn main">저장</button>
-       </div>
-     </form>
-   </div>
- </section>`;
- const form = $('#profileForm', panel);
- const value = id => form.elements.namedItem(id).value.trim() || null;
- function showFarmDetails() {
-  profileEditing = false;
-  renderProfile('profileEditBtn');
- }
- $('#profileCancelBtn', form).onclick = showFarmDetails;
- bindProfileForm(form, () => ({
-  profFarmName: value('profFarmName') ? '' : '농장명을 입력하세요.',
-  profDisplayName: value('profDisplayName') ? '' : '대표자명을 입력하세요.',
-  profEmail: form.elements.namedItem('profEmail').validity.typeMismatch ? '이메일 주소 형식을 확인하세요.' : ''
- }), () => {
-  const patch = {
-   farmName: value('profFarmName'), displayName: value('profDisplayName'), email: value('profEmail'),
-   phone: value('profPhone'), address: value('profAddress'), addressDetail: value('profAddressDetail'),
-   mainCrop: value('profMainCrop'), description: value('profDesc')
-  };
-  if (!saveProfilePatch(user.username, patch)) return;
-  Object.assign(user, patch);
-  const sidebarFoot = $('#sidebarFoot');
-  if (sidebarFoot) sidebarFoot.textContent = user.farmName;
-  setupAccount();
-  showFarmDetails();
-  toast('내정보를 저장했습니다.');
- });
- $('#addrSearchBtn', form).onclick = () => {
-  const address = form.elements.namedItem('profAddress');
-  if (window.daum?.Postcode) {
-   new window.daum.Postcode({ oncomplete: data => {
-    if (!form.isConnected) return;
-    address.value = data.roadAddress || data.jibunAddress || '';
-    form.elements.namedItem('profAddressDetail').focus();
-   } }).open();
-   return;
-  }
-  address.readOnly = false;
-  address.focus();
-  toast('카카오 주소 API를 불러올 수 없어 직접 입력으로 전환했습니다.');
- };
-}
-
-const AUTH_KEY=`modoo-auth:${prototypeData.meta.version}`;
-const SIGNUP_KEY=`modoo-signup-members:${prototypeData.meta.version}`;
-const CERT_KEY=`modoo-cert-overrides:${prototypeData.meta.version}`;
-function loadCertOverrides(){try{return JSON.parse(localStorage.getItem(CERT_KEY)||'{}')||{}}catch{return {}}}
-function saveMemberCertification(username,certification,businessNumber){try{const map=loadCertOverrides();map[username]={certification,businessNumber};localStorage.setItem(CERT_KEY,JSON.stringify(map))}catch{}}
-function loadSignupMembers() {
- const members = JSON.parse(localStorage.getItem(SIGNUP_KEY) || '[]');
- return Array.isArray(members) ? members : [];
-}
-function allMembers(registeredMembers) {
- if (!registeredMembers) {
-  try { registeredMembers = loadSignupMembers(); } catch { registeredMembers = []; }
- }
- const overrides=loadCertOverrides();
- return [...prototypeData.members, ...registeredMembers].map(m=>overrides[m.username]?{...m,...overrides[m.username]}:m);
-}
-function saveAuthUser(username){
- try{sessionStorage.setItem(AUTH_KEY,username);localStorage.setItem(AUTH_KEY,username)}catch{}
-}
-function loadAuthUser(){
- try{return sessionStorage.getItem(AUTH_KEY)||localStorage.getItem(AUTH_KEY)||''}catch{return ''}
-}
-function clearAuthUser(){
- try{sessionStorage.removeItem(AUTH_KEY);localStorage.removeItem(AUTH_KEY)}catch{}
-}
-function setupAccount(){
- const user=config.header.currentUser;
- $('#userName').textContent=user.displayName;
- $('#userCertification').textContent=user.certification?` (${user.certification})`:'';
- if($('#myInfoButton'))$('#myInfoButton').onclick=e=>{e.preventDefault();go('profile')};
- if($('#logoutButton'))$('#logoutButton').onclick=()=>{clearAuthUser();location.href='login.html'};
-}
 function signIn(member, initialPage='list', initialId=null){
  config=clone(prototypeData);config.header.currentUser=member;
  config.greenhouses=config.greenhouses.filter(row=>row.memberId===member.id);
@@ -493,8 +171,7 @@ function signIn(member, initialPage='list', initialId=null){
  filterCycle=filterGreenhouse=filterCrop=filterVariety='all';filterDate='';listPage=cycleListPage=ghListPage=environmentListPage=issueListPage=1;
  cycleFilters={status:'all',greenhouse:'all',name:''};ghFilters={name:'',type:'all',cover:'all',medium:'all'};envFilters={cycle:'all',from:'',to:'',comparison:'all'};
  issueFilters={cycle:'all',type:'all',status:'all',from:'',to:''};
- if($('#sidebarFoot'))$('#sidebarFoot').textContent=member.farmName;
- setupAccount();loadGreenhouseExtras();loadCycleExtras();loadIssueExtras();loadSaved();render();
+ showAccount(member);loadGreenhouseExtras();loadCycleExtras();loadIssueExtras();loadSaved();render();
  if(main)main.focus();
 }
 // Additional modules: cycle plans and measured greenhouse environment.
@@ -642,10 +319,10 @@ function envLineChart(rows, selectedCycle){
   const yAt=v=>padT+ph-((v-min)/(max-min))*ph;
   const poly=pts.map((r,i)=>`${xAt(i).toFixed(1)},${yAt(Number(r[field.key])).toFixed(1)}`).join(' ');
   const mid=((min+max)/2).toFixed(1);
-  const grid=[min,(min+max)/2,max].map((v,idx)=>`<line x1="${padL}" y1="${yAt(v).toFixed(1)}" x2="${w-padR}" y2="${yAt(v).toFixed(1)}" stroke="#e6ece8"/><text x="${padL-6}" y="${(yAt(v)+4).toFixed(1)}" text-anchor="end" font-size="11" fill="#666">${idx===1?mid:v.toFixed(1)}</text>`).join('');
-  const dots=pts.map((r,i)=>`<circle cx="${xAt(i).toFixed(1)}" cy="${yAt(Number(r[field.key])).toFixed(1)}" r="3.5" fill="#2f6b45"><title>${formatAt(r.measuredAt)} : ${r[field.key]} ${htmlText(field.unit)}</title></circle>`).join('');
+  const grid=[min,(min+max)/2,max].map((v,idx)=>`<line x1="${padL}" y1="${yAt(v).toFixed(1)}" x2="${w-padR}" y2="${yAt(v).toFixed(1)}" stroke="#e5e9f0"/><text x="${padL-6}" y="${(yAt(v)+4).toFixed(1)}" text-anchor="end" font-size="11" fill="#666">${idx===1?mid:v.toFixed(1)}</text>`).join('');
+  const dots=pts.map((r,i)=>`<circle cx="${xAt(i).toFixed(1)}" cy="${yAt(Number(r[field.key])).toFixed(1)}" r="3.5" fill="#267337"><title>${formatAt(r.measuredAt)} : ${r[field.key]} ${htmlText(field.unit)}</title></circle>`).join('');
   const xLabels=[0,Math.floor((pts.length-1)/2),pts.length-1].filter((v,i,a)=>a.indexOf(v)===i).map(i=>`<text x="${xAt(i).toFixed(1)}" y="${h-8}" text-anchor="${i===0?'start':i===pts.length-1?'end':'middle'}" font-size="11" fill="#666">${formatAt(pts[i].measuredAt).slice(5)}</text>`).join('');
-  body=`<svg class="chart-svg" viewBox="0 0 ${w} ${h}" role="img" aria-label="${htmlText(field.label)} 추이 그래프">${grid}<polyline fill="none" stroke="#2f6b45" stroke-width="2" points="${poly}"/>${dots}${xLabels}</svg>`;
+  body=`<svg class="chart-svg" viewBox="0 0 ${w} ${h}" role="img" aria-label="${htmlText(field.label)} 추이 그래프">${grid}<polyline fill="none" stroke="#267337" stroke-width="2" points="${poly}"/>${dots}${xLabels}</svg>`;
  }
  const ghName=selectedCycle?(gh(selectedCycle.greenhouseId)?.name||'—'):'—';
  const title=selectedCycle?`${selectedCycle.name} · ${ghName} (1시간 단위 평균)`:'환경변화 추이 그래프';
@@ -889,22 +566,6 @@ function renderStandardPage(){
  </tbody></table></div></section>`;
  $('#stdVarietySelect').onchange=e=>{window.__stdVarietyId=e.target.value;renderStandardPage()};
  if($('#stdBackCycle'))$('#stdBackCycle').onclick=()=>{location.href='cycle-list.html?view=cycle-detail&id='+encodeURIComponent(fromCycleId)};
-}
-function renderCertification(){
- const user=config.header.currentUser;
- const cert=user.certification||'미인증';
- const body=cert==='인증'?'<p class="module-hint">농업경영체 인증이 완료된 회원입니다.</p>':cert==='인증중'?'<p class="module-hint">관리자 인증 확인이 진행 중입니다. (승인 완료 시 인증 상태로 전환됩니다.)</p>':`<form id="certPageForm" class="filterbar"><div class="field"><label for="certPageNumber">농업경영체 등록번호 *</label><input id="certPageNumber" class="ctrl" maxlength="20" value="${htmlText(user.businessNumber||'')}" placeholder="예: AGRI-2026-0001" required></div><button type="submit" class="btn main">인증 요청</button></form>`;
- main.innerHTML=heading('농업경영체 인증')+`<div class="module-scroll"><section class="panel"><div class="panel-head"><h2>인증 상태</h2><span class="counter">${htmlText(cert)}</span></div><div class="panel-body"><dl class="profile-facts"><dt>농장명</dt><dd>${htmlText(user.farmName||'—')}</dd><dt>대표자명</dt><dd>${htmlText(user.displayName||'—')}</dd><dt>인증 상태</dt><dd>${htmlText(cert)}</dd><dt>농업경영체 등록번호</dt><dd>${htmlText(user.businessNumber||'—')}</dd></dl></div></section><section class="panel" style="margin-top:14px"><div class="panel-head"><h2>농업경영체 인증 요청</h2></div><div class="panel-body">${body}</div></section></div>`;
- const form=$('#certPageForm');
- if(form)form.onsubmit=e=>{
-  e.preventDefault();
-  const num=$('#certPageNumber').value.trim();
-  if(!num){toast('농업경영체 등록번호를 입력하세요.');return}
-  user.businessNumber=num;user.certification='인증중';
-  saveProfilePatch(user.username,{certification:'인증중',businessNumber:num});
-  setupAccount();renderCertification();
-  toast('농업경영체 인증을 요청했습니다. (인증중)');
- };
 }
 function setupLogin() {
  const form = $('#loginForm');
@@ -1156,7 +817,7 @@ function setupSignup() {
      renderMemberForm(conflicts);
      return;
     }
-    localStorage.setItem(SIGNUP_KEY, JSON.stringify([...registered, newMember]));
+    localStorage.setItem(signupKey(), JSON.stringify([...registered, newMember]));
     saveAuthUser(newMember.username);
     savedMember = newMember;
     draft = {};
@@ -1166,7 +827,7 @@ function setupSignup() {
    submit.disabled = true;
    $('#signupSaveError', form).textContent = '';
    try {
-    if (navigator.locks) await navigator.locks.request(SIGNUP_KEY, register);
+    if (navigator.locks) await navigator.locks.request(signupKey(), register);
     else register();
    } catch {
     $('#signupSaveError', form).textContent = '회원정보를 저장하지 못했습니다. 다시 시도해 주세요.';
@@ -1202,17 +863,21 @@ async function init(){
   setupSignup();
   return;
  }
- if(window.ModooLayoutReady)await window.ModooLayoutReady;
+ await ready;
  const savedUser=loadAuthUser();
  const member=allMembers().find(row=>row.username===savedUser);
  if(!member){location.replace('login.html');return}
- if($('#brand'))$('#brand').innerHTML=`${htmlText(prototypeData.meta.project)}<small>화훼 재배 관리</small>`;
+ bindAccount(() => go('profile'));
  for(const button of $$('#navigation [data-go]'))button.addEventListener('click',e=>{e.preventDefault();go(button.dataset.go)});
  for(const button of $$('[data-close-dialog]'))button.addEventListener('click',()=>document.getElementById(button.dataset.closeDialog).close());
  if($('#cycleStartConfirm'))$('#cycleStartConfirm').onclick=commitCycleStart;
  if($('#cycleEndConfirm'))$('#cycleEndConfirm').onclick=commitCycleEnd;
  const params=new URLSearchParams(location.search);
  const initialView=params.get('view')||hostPage;
+ if (initialView === 'profile' || initialView === 'cert') {
+  location.replace(pageFile(initialView));
+  return;
+ }
  const initialId=params.get('id');
  signIn(member,initialView,initialId);
 }
