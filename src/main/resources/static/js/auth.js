@@ -30,7 +30,7 @@
       const pw = password.value;
       if (member && (pw === 'modoodemo01' || pw === 'demo' || pw === member.demoPassword)) {
         saveAuthUser(member.username);
-        location.href = 'diary-list.html';
+        location.href = 'cultivationDiaryList.html';
         return;
       }
       feedback.textContent = '아이디와 비밀번호를 확인하세요.';
