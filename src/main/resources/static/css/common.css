@@ -617,10 +617,11 @@ main {
   transition: border-color 0.15s ease, box-shadow 0.15s ease;
 }
 
-.ctrl:focus {
+.ctrl:focus,
+.ctrl:focus-visible {
   outline: none;
   border-color: var(--primary);
-  box-shadow: 0 0 0 2px rgba(38, 115, 55, 0.18);
+  box-shadow: 0 0 0 3px rgba(38, 115, 55, 0.14);
 }
 
 .ctrl:disabled,
@@ -1433,4 +1434,96 @@ select.ctrl:disabled {
   .editor-summary .details-kv {
     grid-template-columns: 120px minmax(0, 1fr);
   }
+}
+
+.detail-summary-card .summary-strip:last-child {
+  border-bottom: 0;
+  border-radius: 12px;
+}
+
+.detail-meta-bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px 16px;
+  padding: 10px 20px;
+  background: var(--paper);
+  font-size: 13px;
+  color: var(--muted);
+}
+
+.detail-reason {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 8px;
+  color: var(--ink);
+}
+
+.detail-reason strong {
+  color: var(--muted);
+  font-weight: 700;
+}
+
+.detail-dates {
+  margin-left: auto;
+  font-variant-numeric: tabular-nums;
+  color: var(--muted);
+}
+
+.summary-link {
+  text-align: left;
+  font-size: 14.5px;
+  font-weight: 700;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 100%;
+  justify-self: start;
+}
+
+/* 온실 사진 썸네일 · 상세 미리보기 · 업로드 안내 */
+.gh-thumb {
+  width: 68px;
+  height: 42px;
+  object-fit: cover;
+  border-radius: 6px;
+  border: 1px solid var(--line);
+  display: block;
+}
+
+.gh-thumb-empty {
+  display: inline-block;
+  padding: 3px 8px;
+  border-radius: 6px;
+  background: var(--soft);
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.gh-photo-box {
+  margin-bottom: 16px;
+}
+
+.gh-detail-photo {
+  max-width: 360px;
+  width: 100%;
+  height: 190px;
+  object-fit: cover;
+  border-radius: 8px;
+  border: 1px solid var(--line);
+  display: block;
+}
+
+.gh-upload-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.gh-upload-hint {
+  margin: 6px 0 10px;
+  font-size: 12.5px;
+  color: var(--muted);
 }

@@ -66,10 +66,16 @@
   display: none;
 }
 
-.profile-tab-panel:focus-visible,
-.profile-form .ctrl:focus-visible {
+.profile-tab-panel:focus-visible {
   outline: 2px solid var(--primary);
   outline-offset: 2px;
+}
+
+.profile-form .ctrl:focus,
+.profile-form .ctrl:focus-visible {
+  outline: none;
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(38, 115, 55, 0.14);
 }
 
 .profile-tab-panel .profile-facts {
