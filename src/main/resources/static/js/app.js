@@ -29,15 +29,16 @@ function loadSaved(){let saved;try{saved=JSON.parse(localStorage.getItem(storage
 }
 function error(s){const el=$('#formError');if(el){el.textContent=s;el.classList.remove('hidden')}toast(s)}
 function updateNavigation() {
- const entry = (page.startsWith('cycle-')||page==='standard') ? 'cycle-list' : page.startsWith('gh-') ? 'gh-list' : page.startsWith('env-') ? 'env-list' : page.startsWith('issue-') ? 'issue-list' : 'list';
+ const entry = page==='cycle-create' ? 'cycle-create' : (page.startsWith('cycle-')||page==='standard') ? 'cycle-list' : page==='gh-create' ? 'gh-create' : page.startsWith('gh-') ? 'gh-list' : page.startsWith('env-') ? 'env-list' : page.startsWith('issue-') ? 'issue-list' : page==='create' ? 'create' : 'list';
  const current = setCurrentMenu(entry);
  if (page==='standard') { $('#crumb').textContent='작기계획 / 생육단계별 환경기준'; return; }
  const state = page.replace(/^(cycle-|gh-|env-|issue-)/, '');
  const step = {list:'목록',create:'등록',detail:'상세',edit:'수정'}[state] || '목록';
- const prefix = (page.startsWith('gh-')||page.startsWith('env-')||page.startsWith('issue-')) ? ['온실', current?.textContent||'', step] : [current?.textContent||'', step];
+ const section = page.startsWith('cycle-') ? '작기계획' : page.startsWith('gh-') ? '온실 정보' : (page.startsWith('env-')||page.startsWith('issue-')) ? (current?.textContent||'') : '재배일지작업';
+ const prefix = (page.startsWith('gh-')||page.startsWith('env-')||page.startsWith('issue-')) ? ['온실', section, step] : [section, step];
  $('#crumb').textContent = prefix.filter(Boolean).join(' / ');
 }
-const pageFile=target=>target==='standard'?'cropStageStandard.html':target.startsWith('cycle-')?'cultivationPlanList.html':target.startsWith('gh-')?'greenhouseList.html':target.startsWith('env-')?'environmentChangeList.html':target.startsWith('issue-')?'environmentIssueList.html':target==='profile'?'mypage.html':target==='cert'?'mypage.html?tab=cert':'cultivationDiaryList.html';
+const pageFile=target=>target==='standard'?'cropStageStandard.html':target.startsWith('cycle-')?'cultivationPlanList.html':target.startsWith('gh-')?'greenhouseList.html':target.startsWith('env-')?'environmentChangeList.html':target.startsWith('issue-')?'environmentIssueList.html':target==='member'?'mypage.html?tab=pw':target==='profile'?'mypage.html':target==='cert'?'mypage.html?tab=cert':'cultivationDiaryList.html';
 function go(target,id){
  const hostPage=document.body?.dataset?.page;
  if(hostPage&&pageFile(target)!==pageFile(hostPage)){
@@ -245,11 +246,12 @@ function renderCycleEditor(edit){if(!config.greenhouses.length){main.innerHTML=m
  main.innerHTML=moduleHeading(edit?'작기계획 수정':'작기계획 등록','')+`<form class="module-form panel" id="cycleForm" novalidate><div class="panel-head"><h2>작기정보</h2><span class="counter">* 필수 입력</span></div><div class="module-form-scroll"><div class="module-input-grid">
  <div class="field wide"><label for="cycleName">작기계획명 *</label><input class="ctrl" id="cycleName" maxlength="80" value="${htmlText(row.name)}" placeholder="예: 2026년 가을 4차 작기"></div>
  <div class="field"><label for="cycleGreenhouse">온실 *</label><select class="ctrl" id="cycleGreenhouse" ${hasData?'disabled':''}>${options(config.greenhouses.map(x=>({value:x.greenhouseId,label:x.name})),row.greenhouseId)}</select></div>
- <div class="field"><label for="cycleCrop">재배 품목 *</label><select class="ctrl" id="cycleCrop" ${hasData?'disabled':''}></select></div>
- <div class="field"><label for="cycleVariety">재배 품종 *</label><select class="ctrl" id="cycleVariety" ${hasData?'disabled':''}></select></div>
  <div class="field"><label for="cyclePlanStart">계획 시작일 *</label><input type="date" class="ctrl" id="cyclePlanStart" value="${dateFrom(row.plannedStartAt)}"></div>
  <div class="field"><label for="cycleExpectedEnd">예상 종료일 *</label><input type="date" class="ctrl" id="cycleExpectedEnd" value="${dateFrom(row.expectedEndAt)}"></div>
- <div class="field wide"><label>적용 환경기준</label><input class="ctrl" id="cycleStdSummary" readonly></div>
+ <div class="field"><label for="cycleStdSummary">적용 환경기준</label><input class="ctrl" id="cycleStdSummary" readonly></div>
+ <div class="field"><label for="cycleCrop">재배 품목 *</label><select class="ctrl" id="cycleCrop" ${hasData?'disabled':''}></select></div>
+ <div class="field"><label for="cycleVariety">재배 품종 *</label><select class="ctrl" id="cycleVariety" ${hasData?'disabled':''}></select></div>
+ <div class="field" style="display:flex;align-items:flex-end"><button type="button" class="btn" id="cycleLoadStdBtn">환경기준 불러오기</button></div>
  </div><div class="subsection"><h3>생육단계별 환경 기준</h3><div class="tablewrap"><table class="data-table module-table"><thead><tr><th>생육단계</th><th>기준 기간</th>${stdMetricCols.map(([,lbl])=>`<th>${htmlText(lbl)}</th>`).join('')}</tr></thead><tbody></tbody></table></div></div>
  ${edit?`<div class="module-readonly"><span>작기 상태</span><strong>${htmlText(c.status)}</strong><span>실제 시작일</span><strong>${dateFrom(c.actualStartAt)||'—'}</strong><span>실제 종료일</span><strong>${dateFrom(c.actualEndAt)||'—'}</strong></div>`:''}
  <div class="errorbox hidden" id="cycleFormError" role="alert"></div></div><div class="module-actions inside"><button type="button" class="btn" id="cycleCancel">취소</button><button type="submit" class="btn main">${edit?'수정 저장':'작기계획 등록'}</button></div></form>`;
@@ -279,6 +281,7 @@ function renderCycleEditor(edit){if(!config.greenhouses.length){main.innerHTML=m
  };
  $('#cycleCrop').onchange=()=>{curCropId=$('#cycleCrop').value;curVarietyId='';syncSelectors()};
  $('#cycleVariety').onchange=()=>{curVarietyId=$('#cycleVariety').value;paintStandards()};
+ $('#cycleLoadStdBtn').onclick=()=>{paintStandards();toast('선택한 품목·품종의 생육단계별 환경기준을 불러왔습니다.')};
  syncSelectors();
  bindModuleBack();$('#cycleCancel').onclick=()=>go(edit?'cycle-detail':'cycle-list');$('#cycleForm').onsubmit=e=>{e.preventDefault();const name=$('#cycleName').value.trim(),ghId=$('#cycleGreenhouse').value,start=$('#cyclePlanStart').value,end=$('#cycleExpectedEnd').value;
  const standard=getSetForVariety(curVarietyId);

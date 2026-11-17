@@ -7,14 +7,19 @@
     const details = get('profileDetails');
     const editor = get('profileEditor');
     const farmForm = get('profileForm');
+    const memberDetails = get('memberDetails');
+    const memberEditor = get('memberEditor');
+    const memberForm = get('memberForm');
     const certForm = get('certRequestForm');
     const passwordForm = get('passwordForm');
     const certNumber = get('certBusinessNumber');
     const address = get('profAddress');
     const farmFields = {
-      farmName: 'profFarmName', displayName: 'profDisplayName', email: 'profEmail',
-      phone: 'profPhone', address: 'profAddress', addressDetail: 'profAddressDetail',
+      farmName: 'profFarmName', address: 'profAddress', addressDetail: 'profAddressDetail',
       mainCrop: 'profMainCrop', description: 'profDesc'
+    };
+    const memberFields = {
+      displayName: 'profDisplayName', email: 'profEmail', phone: 'profPhone'
     };
     let user;
     let editorVersion = 0;
@@ -84,9 +89,22 @@
       }
     }
 
+    function setMemberEditing(editing) {
+      memberDetails.hidden = editing;
+      memberEditor.hidden = !editing;
+      clearErrors(memberForm);
+      if (editing) {
+        get('profUsername').value = user.username || '';
+        for (const [key, id] of Object.entries(memberFields)) {
+          get(id).value = user[key] || '';
+        }
+      }
+    }
+
     function show(member, selectedTab, focusId) {
       user = member;
       setEditing(false);
+      setMemberEditing(false);
       passwordForm.reset();
       clearErrors(passwordForm);
       clearErrors(certForm);
@@ -160,9 +178,7 @@
 
     const value = id => get(id).value.trim() || null;
     bindForm(farmForm, () => ({
-      profFarmName: value('profFarmName') ? '' : '농장명을 입력하세요.',
-      profDisplayName: value('profDisplayName') ? '' : '대표자명을 입력하세요.',
-      profEmail: get('profEmail').validity.typeMismatch ? '이메일 주소 형식을 확인하세요.' : ''
+      profFarmName: value('profFarmName') ? '' : '농장명을 입력하세요.'
     }), () => {
       const patch = Object.fromEntries(Object.entries(farmFields).map(([key, id]) => [key, value(id)]));
       if (!actions.save(user.username, patch)) return;
@@ -170,7 +186,31 @@
       actions.updateAccount();
       updateProfileValues();
       showFarmDetails();
-      actions.notify('내정보를 저장했습니다.');
+      actions.notify('농장정보를 저장했습니다.');
+    });
+
+    function showMemberDetails() {
+      setMemberEditing(false);
+      get('memberEditBtn').focus();
+    }
+
+    get('memberEditBtn').addEventListener('click', () => {
+      setMemberEditing(true);
+      get('profDisplayName').focus();
+    });
+    get('memberCancelBtn').addEventListener('click', showMemberDetails);
+
+    bindForm(memberForm, () => ({
+      profDisplayName: value('profDisplayName') ? '' : '대표자명을 입력하세요.',
+      profEmail: get('profEmail').validity.typeMismatch ? '이메일 주소 형식을 확인하세요.' : ''
+    }), () => {
+      const patch = Object.fromEntries(Object.entries(memberFields).map(([key, id]) => [key, value(id)]));
+      if (!actions.save(user.username, patch)) return;
+      Object.assign(user, patch);
+      actions.updateAccount();
+      updateProfileValues();
+      showMemberDetails();
+      actions.notify('농민 회원정보를 저장했습니다.');
     });
 
     get('addrSearchBtn').addEventListener('click', () => {
@@ -211,18 +251,18 @@
     });
 
     function showTab(tab, focusId) {
-      const certification = tab === 'cert';
-      common.setCurrentMenu(certification ? 'cert' : 'profile');
-      crumb.textContent = certification ? '내정보 / 농업경영체 인증' : '내정보';
+      const menuKey = tab === 'cert' ? 'cert' : tab === 'pw' ? 'member' : 'profile';
+      common.setCurrentMenu(menuKey);
+      crumb.textContent = tab === 'cert' ? '내정보 / 농업경영체 인증' : tab === 'pw' ? '내정보 / 농민 회원정보' : '내정보 / 농장정보';
       profile.show(member, tab, focusId);
     }
 
     common.showAccount(member);
     common.bindAccount(() => openTab('info'));
-    for (const link of document.querySelectorAll('#navigation [data-go="profile"], #navigation [data-go="cert"]')) {
+    for (const link of document.querySelectorAll('#navigation [data-go="profile"], #navigation [data-go="cert"], #navigation [data-go="member"]')) {
       link.addEventListener('click', event => {
         event.preventDefault();
-        openTab(link.dataset.go === 'cert' ? 'cert' : 'info');
+        openTab(link.dataset.go === 'cert' ? 'cert' : link.dataset.go === 'member' ? 'pw' : 'info');
       });
     }
 
@@ -231,7 +271,8 @@
     }
 
     const params = new URLSearchParams(location.search);
-    showTab(params.get('view') === 'cert' || params.get('tab') === 'cert' ? 'cert' : 'info');
+    const paramTab = params.get('tab') || params.get('view');
+    showTab(paramTab === 'cert' ? 'cert' : paramTab === 'pw' ? 'pw' : 'info');
     main.inert = false;
     main.focus();
   }

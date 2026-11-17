@@ -79,14 +79,30 @@
 }
 
 .profile-tab-panel .profile-facts {
-  grid-template-columns: minmax(0, 168px) minmax(0, 1fr);
+  grid-template-columns: minmax(0, 175px) minmax(0, 1fr) minmax(0, 175px) minmax(0, 1fr);
 }
 
 .profile-tab-panel .profile-facts dt,
 .profile-tab-panel .profile-facts dd {
-  padding: 12px 16px;
+  padding: 13px 16px;
   font-size: 14px;
   overflow-wrap: anywhere;
+}
+
+.profile-tab-panel .profile-facts dd:nth-of-type(odd) {
+  border-right: 1px solid var(--line);
+}
+
+.profile-tab-panel .profile-facts dd:last-of-type:nth-of-type(odd) {
+  grid-column: 2 / -1;
+  border-right: 0;
+}
+
+.profile-tab-panel .profile-facts dt:nth-of-type(odd):nth-last-of-type(2),
+.profile-tab-panel .profile-facts dd:nth-of-type(odd):nth-last-of-type(2),
+.profile-tab-panel .profile-facts dt:last-of-type,
+.profile-tab-panel .profile-facts dd:last-of-type {
+  border-bottom: 0;
 }
 
 .profile-tab-panel .profile-facts dd {
@@ -100,7 +116,37 @@
 }
 
 .profile-form-narrow {
-  max-width: 36rem;
+  max-width: none;
+  width: 100%;
+}
+
+#certRequestForm.profile-form-narrow {
+  max-width: none;
+  width: 100%;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: start;
+  gap: 12px;
+}
+
+#certRequestForm .profile-form-actions {
+  border-top: 0;
+  padding-top: 25px;
+}
+
+#passwordForm.profile-form-narrow {
+  max-width: none;
+  width: 100%;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 16px 20px;
+}
+
+#passwordForm .field:first-child {
+  grid-column: auto;
+  max-width: 100%;
+}
+
+#passwordForm .profile-form-actions {
+  grid-column: 1 / -1;
 }
 
 .profile-form .field {
@@ -159,8 +205,26 @@
 }
 
 @media (max-width: 840px) {
+  .profile-tab-panel .profile-facts {
+    grid-template-columns: minmax(0, 140px) minmax(0, 1fr);
+  }
+  .profile-tab-panel .profile-facts dd:nth-of-type(odd) {
+    border-right: 0;
+  }
+  .profile-tab-panel .profile-facts dt:nth-last-of-type(2),
+  .profile-tab-panel .profile-facts dd:nth-last-of-type(2) {
+    border-bottom: 1px solid var(--line);
+  }
+  #certRequestForm.profile-form-narrow,
+  #passwordForm.profile-form-narrow,
   .profile-form .profile-form-grid {
     grid-template-columns: minmax(0, 1fr);
+  }
+  #passwordForm .field:first-child {
+    max-width: 100%;
+  }
+  #certRequestForm .profile-form-actions {
+    padding-top: 0;
   }
 }
 
@@ -203,6 +267,15 @@
 
   .profile-tab-panel .profile-facts {
     grid-template-columns: minmax(0, 108px) minmax(0, 1fr);
+  }
+
+  .profile-tab-panel .profile-facts dd:nth-of-type(odd) {
+    border-right: 0;
+  }
+
+  .profile-tab-panel .profile-facts dt:nth-of-type(odd):nth-last-of-type(2),
+  .profile-tab-panel .profile-facts dd:nth-of-type(odd):nth-last-of-type(2) {
+    border-bottom: 1px solid var(--line);
   }
 
   .profile-tab-panel .profile-facts dt,

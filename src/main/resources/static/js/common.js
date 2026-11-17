@@ -4,16 +4,29 @@
   const SIDEBAR_HTML = `<aside class="sidebar" aria-label="서비스 탐색">
   <div class="brand" id="brand">모두의온실<small>재배 관리</small></div>
   <nav class="nav" id="navigation" aria-label="주 메뉴">
-    <a class="navbtn" href="cultivationDiaryList.html" data-go="list">재배일지작업</a>
-    <a class="navbtn" href="cultivationPlanList.html" data-go="cycle-list">작기계획</a>
+    <div class="navgroup" role="group" aria-label="재배일지작업">
+      <div class="navhead nav-group-title">재배일지작업</div>
+      <a class="navbtn nav-sub" href="cultivationDiaryList.html" data-go="list">재배일지작업목록</a>
+      <a class="navbtn nav-sub" href="cultivationDiaryList.html?view=create" data-go="create">재배일지작업등록</a>
+    </div>
+    <div class="navgroup" role="group" aria-label="작기계획">
+      <div class="navhead nav-group-title">작기계획</div>
+      <a class="navbtn nav-sub" href="cultivationPlanList.html" data-go="cycle-list">작기계획목록</a>
+      <a class="navbtn nav-sub" href="cultivationPlanList.html?view=cycle-create" data-go="cycle-create">작기계획등록</a>
+    </div>
     <div class="navgroup" role="group" aria-label="온실">
       <div class="navhead nav-group-title">온실</div>
       <a class="navbtn nav-sub" href="environmentChangeList.html" data-go="env-list">온실 환경변화</a>
       <a class="navbtn nav-sub" href="environmentIssueList.html" data-go="issue-list">온실 환경 이슈</a>
-      <a class="navbtn nav-sub" href="greenhouseList.html" data-go="gh-list">온실 정보</a>
+      <a class="navbtn nav-sub" href="greenhouseList.html" data-go="gh-list">온실목록</a>
+      <a class="navbtn nav-sub" href="greenhouseList.html?view=gh-create" data-go="gh-create">온실등록</a>
     </div>
-    <a class="navbtn" href="mypage.html" data-go="profile">내정보</a>
-    <a class="navbtn" href="mypage.html?tab=cert" data-go="cert">농업경영체 인증</a>
+    <div class="navgroup" role="group" aria-label="내정보">
+      <div class="navhead nav-group-title">내정보</div>
+      <a class="navbtn nav-sub" href="mypage.html" data-go="profile">농장정보</a>
+      <a class="navbtn nav-sub" href="mypage.html?tab=cert" data-go="cert">농업경영체 인증</a>
+      <a class="navbtn nav-sub" href="mypage.html?tab=pw" data-go="member">농민 회원정보</a>
+    </div>
   </nav>
   <div class="sidebar-foot" id="sidebarFoot"></div>
 </aside>`;

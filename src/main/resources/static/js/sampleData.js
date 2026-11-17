@@ -1,5 +1,3 @@
-// MariaDB 'modooonsil-reduced-dummy' 스냅샷(2026-11-16T11:24:07)에서 생성한 정적 UI 데이터.
-// 직접 수정하지 말고 DB 내보내기 후 생성 스크립트를 다시 실행한다.
 const sampleData = {
   "meta": {
     "project": "모두의온실",
@@ -3613,6 +3611,159 @@ const sampleData = {
           6.8
         ]
       }
+    },
+    {
+      "criterionId": "940004",
+      "setId": "940004",
+      "cropId": "940002",
+      "varietyId": "940004",
+      "stageId": "VEG",
+      "stageOrder": 1,
+      "standardDays": 21,
+      "thresholds": {
+        "dayTempC": [
+          18,
+          28
+        ],
+        "nightTempC": [
+          14,
+          20
+        ],
+        "humidityPct": [
+          50,
+          80
+        ],
+        "co2Ppm": [
+          400,
+          1000
+        ],
+        "solarWm2": [
+          200,
+          800
+        ],
+        "lightUmolM2S": [
+          150,
+          550
+        ],
+        "substrateTempC": [
+          16,
+          25
+        ],
+        "substrateMoisturePct": [
+          40,
+          70
+        ],
+        "substrateEcMsCm": [
+          1.2,
+          2.4
+        ],
+        "substratePh": [
+          5.5,
+          6.5
+        ]
+      }
+    },
+    {
+      "criterionId": "940005",
+      "setId": "940005",
+      "cropId": "940002",
+      "varietyId": "940004",
+      "stageId": "IND",
+      "stageOrder": 2,
+      "standardDays": 14,
+      "thresholds": {
+        "dayTempC": [
+          19,
+          29
+        ],
+        "nightTempC": [
+          15,
+          21
+        ],
+        "humidityPct": [
+          50,
+          80
+        ],
+        "co2Ppm": [
+          400,
+          1000
+        ],
+        "solarWm2": [
+          200,
+          800
+        ],
+        "lightUmolM2S": [
+          150,
+          550
+        ],
+        "substrateTempC": [
+          16,
+          25
+        ],
+        "substrateMoisturePct": [
+          40,
+          70
+        ],
+        "substrateEcMsCm": [
+          1.2,
+          2.4
+        ],
+        "substratePh": [
+          5.5,
+          6.5
+        ]
+      }
+    },
+    {
+      "criterionId": "940006",
+      "setId": "940006",
+      "cropId": "940002",
+      "varietyId": "940004",
+      "stageId": "REP",
+      "stageOrder": 3,
+      "standardDays": 28,
+      "thresholds": {
+        "dayTempC": [
+          20,
+          30
+        ],
+        "nightTempC": [
+          16,
+          22
+        ],
+        "humidityPct": [
+          50,
+          80
+        ],
+        "co2Ppm": [
+          400,
+          1000
+        ],
+        "solarWm2": [
+          200,
+          800
+        ],
+        "lightUmolM2S": [
+          150,
+          550
+        ],
+        "substrateTempC": [
+          16,
+          25
+        ],
+        "substrateMoisturePct": [
+          40,
+          70
+        ],
+        "substrateEcMsCm": [
+          1.2,
+          2.4
+        ],
+        "substratePh": [
+          5.5,
+          6.5
+        ]
+      }
     }
   ],
   "cyclePolicies": {
@@ -4312,14 +4463,16 @@ const sampleData = {
       "address": "경기도 고양시",
       "addressDetail": "테스트 농장 1",
       "mainCrop": "장미",
-      "description": "장미 재배 및 온실 환경 관리 농장"
+      "description": "장미 재배 및 온실 환경 관리 농장",
+      "createdAt": "2026-06-15 10:00",
+      "certifiedAt": "2026-06-18 11:30"
     },
     {
       "id": "940002",
       "displayName": "이서연",
       "role": "화훼농민",
-      "certification": "미인증",
-      "businessNumber": null,
+      "certification": "인증",
+      "businessNumber": "123-45-67890",
       "username": "seedmum02",
       "farmName": "해솔 호접란농장",
       "email": "haesol.orchid@example.com",
@@ -4327,7 +4480,9 @@ const sampleData = {
       "address": "경기도 고양시 일산동구 호수로 595",
       "addressDetail": "가동 102호",
       "mainCrop": "호접란",
-      "description": "호접란 전용 온실 재배 및 생육 환경 관리 농장"
+      "description": "호접란 전용 온실 재배 및 생육 환경 관리 농장",
+      "createdAt": "2026-07-01 09:00",
+      "certifiedAt": "2026-07-03 14:20"
     },
     {
       "id": "940003",
@@ -4342,7 +4497,9 @@ const sampleData = {
       "address": null,
       "addressDetail": null,
       "mainCrop": null,
-      "description": null
+      "description": null,
+      "createdAt": "2026-10-01 09:00",
+      "certifiedAt": null
     }
   ]
 };
