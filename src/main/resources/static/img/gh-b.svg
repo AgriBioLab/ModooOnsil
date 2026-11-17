@@ -1,7 +1,0 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 180">
-  <rect width="320" height="180" fill="#eef4fb"/>
-  <rect y="132" width="320" height="48" fill="#cfe2d3"/>
-  <path d="M35 132 V84 L80 54 L125 84 V132 M125 84 L170 54 L215 84 V132 M215 84 L260 54 L285 72 V132" fill="#ffffff" stroke="#267337" stroke-width="3" stroke-linejoin="round"/>
-  <path d="M35 104 H285 M80 54 V132 M170 54 V132 M260 54 V132" stroke="#9ec5d6" stroke-width="2"/>
-  <text x="160" y="162" text-anchor="middle" font-family="sans-serif" font-size="13" font-weight="700" fill="#1f4727">B온실 · 연동 유리온실</text>
-</svg>

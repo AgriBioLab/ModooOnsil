@@ -156,7 +156,7 @@ const prototypeData = {
       "length": 40,
       "registeredArea": 320,
       "mediumType": "수태",
-      "imageUrl": "img/gh-a.svg"
+      "imageUrl": "img/gh-a.jpg"
     },
     {
       "greenhouseId": "940002",
@@ -170,7 +170,7 @@ const prototypeData = {
       "length": 40,
       "registeredArea": 320,
       "mediumType": "코코피트",
-      "imageUrl": "img/gh-b.svg"
+      "imageUrl": "img/gh-b.jpg"
     },
     {
       "greenhouseId": "940004",
@@ -184,7 +184,7 @@ const prototypeData = {
       "length": 40,
       "registeredArea": 320,
       "mediumType": "코코피트",
-      "imageUrl": "img/gh-a.svg"
+      "imageUrl": "img/gh-a.jpg"
     },
     {
       "greenhouseId": "940005",
@@ -198,7 +198,7 @@ const prototypeData = {
       "length": 40,
       "registeredArea": 960,
       "mediumType": "수태",
-      "imageUrl": "img/gh-b.svg"
+      "imageUrl": "img/gh-b.jpg"
     },
     {
       "greenhouseId": "940009",
@@ -212,7 +212,7 @@ const prototypeData = {
       "length": 35,
       "registeredArea": 350,
       "mediumType": "수태",
-      "imageUrl": "img/gh-c.svg"
+      "imageUrl": "img/gh-c.jpg"
     },
     {
       "greenhouseId": "941018",
@@ -225,7 +225,8 @@ const prototypeData = {
       "width": 11,
       "length": 35,
       "registeredArea": 385,
-      "mediumType": "수태"
+      "mediumType": "수태",
+      "imageUrl": "img/gh-d.jpg"
     }
   ],
   "growthStages": [

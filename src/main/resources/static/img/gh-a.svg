@@ -1,9 +1,0 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 180">
-  <rect width="320" height="180" fill="#eaf6ec"/>
-  <rect y="132" width="320" height="48" fill="#c7e4cd"/>
-  <path d="M55 132 V82 Q160 30 265 82 V132 Z" fill="#ffffff" stroke="#267337" stroke-width="3"/>
-  <path d="M95 132 V68 M160 132 V56 M225 132 V68" stroke="#8ec99a" stroke-width="2"/>
-  <path d="M55 96 H265" stroke="#8ec99a" stroke-width="2"/>
-  <rect x="142" y="96" width="36" height="36" fill="#d8eedd" stroke="#267337" stroke-width="2"/>
-  <text x="160" y="162" text-anchor="middle" font-family="sans-serif" font-size="13" font-weight="700" fill="#1f4727">A온실 · 단동 비닐온실</text>
-</svg>

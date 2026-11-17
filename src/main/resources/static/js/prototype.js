@@ -469,20 +469,19 @@ function renderIssues(detail){
 }
 let selectedGhId=null,ghListPage=1,ghFilters={name:'',type:'all',cover:'all',medium:'all'};
 function storeGreenhouseExtras(){try{localStorage.setItem(storageKey('greenhouses'),JSON.stringify({greenhouses:config.greenhouses}))}catch{}}
-function loadGreenhouseExtras(){try{const saved=JSON.parse(localStorage.getItem(storageKey('greenhouses'))||'null');if(Array.isArray(saved?.greenhouses)&&saved.greenhouses.length)config.greenhouses=saved.greenhouses.map(g=>g.imageUrl!==undefined?g:{...g,imageUrl:prototypeData.greenhouses.find(x=>x.greenhouseId===g.greenhouseId)?.imageUrl??null})}catch{}}
+function loadGreenhouseExtras(){try{const saved=JSON.parse(localStorage.getItem(storageKey('greenhouses'))||'null');if(Array.isArray(saved?.greenhouses)&&saved.greenhouses.length)config.greenhouses=saved.greenhouses.map(g=>(g.imageUrl!==undefined&&!String(g.imageUrl||'').endsWith('.svg'))?g:{...g,imageUrl:prototypeData.greenhouses.find(x=>x.greenhouseId===g.greenhouseId)?.imageUrl??null})}catch{}}
 function renderGreenhouseList(){
  const rows=config.greenhouses.filter(g=>(!ghFilters.name||g.name.includes(ghFilters.name))&&(ghFilters.type==='all'||g.type===ghFilters.type)&&(ghFilters.cover==='all'||g.coverType===ghFilters.cover)&&(ghFilters.medium==='all'||g.mediumType===ghFilters.medium));
  const size=Number(config.pagination?.pageSize)||5;ghListPage=Math.min(Math.max(1,ghListPage),Math.max(1,Math.ceil(rows.length/size)));const from=(ghListPage-1)*size,paged=rows.slice(from,from+size);
- main.innerHTML=moduleHeading('온실 목록')+
+ main.innerHTML=moduleHeading('온실 정보')+
  `<section class="panel search-section" aria-label="검색 조건"><div class="panel-body"><div class="filterbar module-filter">
  <div class="field query"><label for="ghFilterName">온실명</label><input class="ctrl" id="ghFilterName" value="${htmlText(ghFilters.name)}" placeholder="온실명을 입력하세요"></div>
- <div class="field"><label for="ghFilterType">온실 형태</label><select class="ctrl" id="ghFilterType">${options([{value:'all',label:'전체'},{value:'단동',label:'단동'},{value:'연동',label:'연동'}],ghFilters.type)}</select></div>
- <div class="field"><label for="ghFilterCover">피복 자재</label><select class="ctrl" id="ghFilterCover">${options([{value:'all',label:'전체'},{value:'유리',label:'유리'},{value:'비닐',label:'비닐'}],ghFilters.cover)}</select></div>
- <div class="field"><label for="ghFilterMedium">배지 종류</label><select class="ctrl" id="ghFilterMedium">${options([{value:'all',label:'전체'},{value:'수태',label:'수태'},{value:'코코피트',label:'코코피트'}],ghFilters.medium)}</select></div>
+ <div class="field"><label for="ghFilterType">유형</label><select class="ctrl" id="ghFilterType">${options([{value:'all',label:'전체'},{value:'단동',label:'단동'},{value:'연동',label:'연동'}],ghFilters.type)}</select></div>
+ <div class="field"><label for="ghFilterCover">피복형태</label><select class="ctrl" id="ghFilterCover">${options([{value:'all',label:'전체'},{value:'유리',label:'유리'},{value:'비닐',label:'비닐'}],ghFilters.cover)}</select></div>
+ <div class="field"><label for="ghFilterMedium">배지형태</label><select class="ctrl" id="ghFilterMedium">${options([{value:'all',label:'전체'},{value:'수태',label:'수태'},{value:'코코피트',label:'코코피트'}],ghFilters.medium)}</select></div>
  <button type="button" class="btn filter-submit" id="ghDoFilter">검색</button>
  </div></div></section>
- <section class="panel list-section" aria-label="온실 목록"><div class="panel-head"><div class="panel-head-title"><h2>온실 목록</h2><span class="counter">총 ${rows.length}건</span></div><button type="button" class="btn main xs" id="ghCreate">+ 온실 등록</button></div><div class="tablewrap"><table class="data-table module-table"><thead><tr><th class="row-index">번호</th><th>온실명</th><th>온실 형태</th><th>피복 자재</th><th>동 수</th><th>등록 면적(㎡)</th><th>배지 종류</th><th>온실 사진</th></tr></thead>
- <tbody>${paged.map((g,i)=>`<tr><td class="row-index">${rows.length-from-i}</td><td><button class="linkbtn" data-gh-detail="${g.greenhouseId}">${htmlText(g.name)}</button></td><td>${htmlText(g.type||'—')}</td><td>${htmlText(g.coverType||'—')}</td><td>${g.buildingCount??'—'}</td><td>${g.registeredArea??'—'}</td><td>${htmlText(g.mediumType||'—')}</td><td>${g.imageUrl?`<img class="gh-thumb" src="${escapeHtml(g.imageUrl)}" alt="${htmlText(g.name)} 사진">`:'<span class="gh-thumb-empty">미등록</span>'}</td></tr>`).join('')||'<tr><td colspan="8" class="empty">등록된 온실이 없습니다.</td></tr>'}</tbody></table></div>${pageControls(rows.length,ghListPage,size,'온실 목록')}</section>`;
+ <section class="panel list-section" aria-label="온실 정보"><div class="panel-head"><div class="panel-head-title"><h2>온실 정보</h2><span class="counter">총 ${rows.length}건</span></div><button type="button" class="btn main xs" id="ghCreate">+ 온실 등록</button></div><div class="panel-body">${paged.length?`<div class="gh-card-grid">${paged.map(g=>`<article class="gh-card"><button type="button" class="gh-card-media" data-gh-detail="${g.greenhouseId}" aria-label="${htmlText(g.name)} 상세 보기">${g.imageUrl?`<img src="${escapeHtml(g.imageUrl)}" alt="${htmlText(g.name)} 사진">`:`<div class="gh-card-placeholder"><span>등록된 사진 없음</span></div>`}</button><div class="gh-card-body"><div class="gh-card-head"><button type="button" class="linkbtn gh-card-title" data-gh-detail="${g.greenhouseId}">${htmlText(g.name)}</button>${g.type?`<span class="gh-card-badge">${htmlText(g.type)}</span>`:''}</div><dl class="gh-card-specs"><div><dt>피복형태</dt><dd>${htmlText(g.coverType||'—')}</dd></div><div><dt>동 수</dt><dd>${g.buildingCount!=null?`${g.buildingCount}동`:'—'}</dd></div><div><dt>등록 면적</dt><dd>${g.registeredArea!=null?`${g.registeredArea} ㎡`:'—'}</dd></div><div><dt>배지형태</dt><dd>${htmlText(g.mediumType||'—')}</dd></div></dl></div></article>`).join('')}</div>`:'<p class="empty" style="padding:40px 12px;margin:0">등록된 온실이 없습니다.</p>'}</div>${pageControls(rows.length,ghListPage,size,'온실 정보')}</section>`;
  $('#ghDoFilter').onclick=()=>{ghFilters={name:$('#ghFilterName').value.trim(),type:$('#ghFilterType').value,cover:$('#ghFilterCover').value,medium:$('#ghFilterMedium').value};ghListPage=1;renderGreenhouseList()};
  $('#ghFilterName').onkeydown=e=>{if(e.key==='Enter')$('#ghDoFilter').click()};
  $('#ghCreate').onclick=()=>go('gh-create');
@@ -494,8 +493,8 @@ function renderGreenhouseDetail(){
  if(!g){go('gh-list');return}
  selectedGhId=g.greenhouseId;
  const linked=config.cycles.filter(c=>c.greenhouseId===g.greenhouseId);
- const facts=[['온실명',g.name],['온실 형태',g.type||'—'],['피복 자재',g.coverType||'—'],['연동 수(동)',g.buildingCount??'—'],['측고(m)',g.sideHeight??'—'],['폭(m)',g.width??'—'],['길이(m)',g.length??'—'],['등록 면적(㎡)',g.registeredArea??'—'],['배지 종류',g.mediumType||'—'],['온실 사진 URL',g.imageUrl||'—'],['연결된 작기 수',`${linked.length}건`]];
- main.innerHTML=moduleHeading('온실 상세','')+
+ const facts=[['온실명',g.name],['유형',g.type||'—'],['피복형태',g.coverType||'—'],['동 수',g.buildingCount??'—'],['측고(m)',g.sideHeight??'—'],['폭(m)',g.width??'—'],['길이(m)',g.length??'—'],['등록 면적(㎡)',g.registeredArea??'—'],['배지형태',g.mediumType||'—'],['온실 사진 URL',g.imageUrl||'—'],['연결된 작기 수',`${linked.length}건`]];
+ main.innerHTML=moduleHeading('온실 정보 상세','')+
  `<div class="module-scroll"><section class="panel"><div class="panel-head"><h2>온실 정보</h2></div><div class="panel-body">${g.imageUrl?`<div class="gh-photo-box"><img class="gh-detail-photo" src="${escapeHtml(g.imageUrl)}" alt="${htmlText(g.name)} 사진"></div>`:''}<div class="module-facts">${facts.map(([a,b])=>`<div><span>${htmlText(a)}</span><strong>${htmlText(String(b))}</strong></div>`).join('')}</div></div></section>
  <div class="hidden" id="ghDeleteConfirm" style="padding:10px 12px;border:1px solid var(--line);background:#fff;display:flex;align-items:center;justify-content:flex-end;gap:8px"><span>이 온실을 삭제하시겠습니까?</span><button type="button" class="btn" id="ghDeleteCancel">취소</button><button type="button" class="btn main" id="ghDeleteOk">삭제 확인</button></div>
  <div class="module-actions"><button class="btn" id="ghToList">목록</button><button class="btn" id="ghDelete">삭제</button><button class="btn main" id="ghToEdit">수정</button></div></div>`;
@@ -511,13 +510,13 @@ function renderGreenhouseEditor(edit){
  const g=edit?(config.greenhouses.find(x=>x.greenhouseId===selectedGhId)||config.greenhouses[0]):null;
  if(edit&&!g){go('gh-list');return}
  const row=g||{greenhouseId:'',name:'',type:'단동',coverType:'비닐',buildingCount:1,sideHeight:'',width:'',length:'',registeredArea:'',mediumType:'수태',imageUrl:''};
- main.innerHTML=moduleHeading(edit?'온실 수정':'온실 등록','')+
+ main.innerHTML=moduleHeading(edit?'온실 정보 수정':'온실 정보 등록','')+
  `<form class="module-form panel" id="ghForm" novalidate><div class="panel-head"><h2>온실 정보</h2><span class="counter">* 필수 입력</span></div><div class="module-form-scroll"><div class="module-input-grid">
  <div class="field wide"><label for="ghName">온실명 *</label><input class="ctrl" id="ghName" maxlength="100" value="${htmlText(row.name)}" placeholder="예: E온실" required></div>
- <div class="field"><label for="ghType">온실 형태</label><select class="ctrl" id="ghType">${options([{value:'',label:'미선택'},{value:'단동',label:'단동'},{value:'연동',label:'연동'}],row.type||'')}</select></div>
- <div class="field"><label for="ghCover">피복 자재</label><select class="ctrl" id="ghCover">${options([{value:'',label:'미선택'},{value:'유리',label:'유리'},{value:'비닐',label:'비닐'}],row.coverType||'')}</select></div>
+ <div class="field"><label for="ghType">유형</label><select class="ctrl" id="ghType">${options([{value:'',label:'미선택'},{value:'단동',label:'단동'},{value:'연동',label:'연동'}],row.type||'')}</select></div>
+ <div class="field"><label for="ghCover">피복형태</label><select class="ctrl" id="ghCover">${options([{value:'',label:'미선택'},{value:'유리',label:'유리'},{value:'비닐',label:'비닐'}],row.coverType||'')}</select></div>
  <div class="field"><label for="ghCount">동 수</label><input class="ctrl" id="ghCount" type="number" min="1" value="${row.buildingCount??''}"></div>
- <div class="field"><label for="ghMedium">배지 종류</label><select class="ctrl" id="ghMedium">${options([{value:'',label:'미선택'},{value:'수태',label:'수태'},{value:'코코피트',label:'코코피트'}],row.mediumType||'')}</select></div>
+ <div class="field"><label for="ghMedium">배지형태</label><select class="ctrl" id="ghMedium">${options([{value:'',label:'미선택'},{value:'수태',label:'수태'},{value:'코코피트',label:'코코피트'}],row.mediumType||'')}</select></div>
  <div class="field"><label for="ghSide">측고 (m)</label><input class="ctrl" id="ghSide" type="number" step="0.01" min="0" value="${row.sideHeight??''}"></div>
  <div class="field"><label for="ghWidth">폭 (m)</label><input class="ctrl" id="ghWidth" type="number" step="0.01" min="0" value="${row.width??''}"></div>
  <div class="field"><label for="ghLength">길이 (m)</label><input class="ctrl" id="ghLength" type="number" step="0.01" min="0" value="${row.length??''}"></div>
