@@ -292,7 +292,7 @@ window.ModooApp = {
   toReason, getReasons, getContextHTML,
   persist, loadSaved, storeCycleExtras, loadCycleExtras, storeIssueExtras, loadIssueExtras,
   storeGreenhouseExtras, loadGreenhouseExtras, storeStandards, loadStandards,
-  error, go, render, heading, bindBack, moduleHeading, bindModuleBack, cycleStatus,
+  error, go, render, updateNavigation, heading, bindBack, moduleHeading, bindModuleBack, cycleStatus,
   unifiedListPanel, listFilterField, dateRangeControl, mountDateRangePicker
 };
 document.addEventListener('DOMContentLoaded', init);

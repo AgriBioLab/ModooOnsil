@@ -1,7 +1,7 @@
 (() => {
 'use strict';
 const app = window.ModooApp;
-const { state, config, diaryRows, pages, $, $$, escapeHtml, htmlText, clone, toast, today, options, storageKey, pageNums, pageBtns, pageControls, bindPages, getCycle, gh, cropOf, varietyOf, getStage, stageOrder, stageByDate, lastEvent, getDiary, timeOf, timeSort, makeStarted, statusBadge, taskTone, trashSvg, formatAt, dateFrom, getSelectedCycle, getReading, stdSet, getCriteria, fmtVal, stdMetricCols, toReason, getReasons, getContextHTML, persist, loadSaved, storeCycleExtras, loadCycleExtras, storeIssueExtras, loadIssueExtras, storeGreenhouseExtras, loadGreenhouseExtras, storeStandards, loadStandards, error, go, render, heading, bindBack, moduleHeading, bindModuleBack, cycleStatus, unifiedListPanel, listFilterField, dateRangeControl, mountDateRangePicker } = app;
+const { state, config, diaryRows, pages, $, $$, escapeHtml, htmlText, clone, toast, today, options, storageKey, pageNums, pageBtns, pageControls, bindPages, getCycle, gh, cropOf, varietyOf, getStage, stageOrder, stageByDate, lastEvent, getDiary, timeOf, timeSort, makeStarted, statusBadge, taskTone, trashSvg, formatAt, dateFrom, getSelectedCycle, getReading, stdSet, getCriteria, fmtVal, stdMetricCols, toReason, getReasons, getContextHTML, persist, loadSaved, storeCycleExtras, loadCycleExtras, storeIssueExtras, loadIssueExtras, storeGreenhouseExtras, loadGreenhouseExtras, storeStandards, loadStandards, error, go, render, updateNavigation, heading, bindBack, moduleHeading, bindModuleBack, cycleStatus, unifiedListPanel, listFilterField, dateRangeControl, mountDateRangePicker } = app;
 function getCriteriaMeta(varietyId){
  const hasStd=config.stageEnvironmentalCriteria.some(x=>x.varietyId===varietyId&&x.thresholds&&Object.keys(x.thresholds).length);
  if(!hasStd)return {hasStd:false,source:'none',name:''};
@@ -14,7 +14,7 @@ function renderStandardPage(){
  const params=new URLSearchParams(location.search);
  const fromCycleId=params.get('cycleId');
  const paramVariety=params.get('varietyId')||'';
- const isCreateEntry=page==='standard-create';
+ const isCreateEntry=state.page==='standard-create';
  const state=window.__stdState||(window.__stdState={
   cropFilter:'all',
   editCriteria:false,
@@ -43,7 +43,7 @@ function renderStandardPage(){
    <div class="field"><label for="stdVarietyName">품종명 <span class="required" aria-hidden="true">*</span></label><input id="stdVarietyName" class="ctrl" maxlength="50" value="${htmlText(editing.varietyName||'')}" placeholder="예: 덩굴장미" required></div>
   </div><div class="module-actions"><button type="button" class="btn" id="stdCropCancel">취소</button><button type="submit" class="btn main">${editing.varietyId?'수정 저장':'등록'}</button></div></form></div></section>`;
   $('#stdCropName')?.focus();
-  $('#stdCropCancel').onclick=()=>{state.cropModal=null;page='standard';renderStandardPage()};
+  $('#stdCropCancel').onclick=()=>{state.cropModal=null;state.page='standard';renderStandardPage()};
   $('#stdCropForm').onsubmit=e=>{
    e.preventDefault();
    const cropName=$('#stdCropName').value.trim(),varietyName=$('#stdVarietyName').value.trim();
@@ -66,13 +66,13 @@ function renderStandardPage(){
       destCrop.varieties.push({varietyId:editing.varietyId,name:varietyName});
      }
     }
-    state.cropModal=null;page='standard';storeStandards();toast('품목 · 품종 정보를 수정했습니다.');renderStandardPage();
+    state.cropModal=null;state.page='standard';storeStandards();toast('품목 · 품종 정보를 수정했습니다.');renderStandardPage();
    }else{
     let crop=config.crops.find(c=>c.name===cropName);
     if(!crop){crop={cropId:'CR-NEW-'+Date.now(),name:cropName,varieties:[]};config.crops.push(crop)}
     const newVarId='VAR-NEW-'+Date.now();
     crop.varieties.push({varietyId:newVarId,name:varietyName});
-    state.cropModal=null;state.cropDetailId=newVarId;state.editCriteria=false;page='standard';storeStandards();
+    state.cropModal=null;state.cropDetailId=newVarId;state.editCriteria=false;state.page='standard';storeStandards();
     toast('품목 · 품종을 등록했습니다. 환경기준을 등록하거나 외부 API 기준표를 불러오세요.');
     renderStandardPage();
    }

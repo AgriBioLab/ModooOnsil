@@ -1,7 +1,7 @@
 (() => {
 'use strict';
 const app = window.ModooApp;
-const { state, config, diaryRows, pages, $, $$, escapeHtml, htmlText, clone, toast, today, options, storageKey, pageNums, pageBtns, pageControls, bindPages, getCycle, gh, cropOf, varietyOf, getStage, stageOrder, stageByDate, lastEvent, getDiary, timeOf, timeSort, makeStarted, statusBadge, taskTone, trashSvg, formatAt, dateFrom, getSelectedCycle, getReading, stdSet, getCriteria, fmtVal, stdMetricCols, toReason, getReasons, getContextHTML, persist, loadSaved, storeCycleExtras, loadCycleExtras, storeIssueExtras, loadIssueExtras, storeGreenhouseExtras, loadGreenhouseExtras, storeStandards, loadStandards, error, go, render, heading, bindBack, moduleHeading, bindModuleBack, cycleStatus, unifiedListPanel, listFilterField, dateRangeControl, mountDateRangePicker } = app;
+const { state, config, diaryRows, pages, $, $$, escapeHtml, htmlText, clone, toast, today, options, storageKey, pageNums, pageBtns, pageControls, bindPages, getCycle, gh, cropOf, varietyOf, getStage, stageOrder, stageByDate, lastEvent, getDiary, timeOf, timeSort, makeStarted, statusBadge, taskTone, trashSvg, formatAt, dateFrom, getSelectedCycle, getReading, stdSet, getCriteria, fmtVal, stdMetricCols, toReason, getReasons, getContextHTML, persist, loadSaved, storeCycleExtras, loadCycleExtras, storeIssueExtras, loadIssueExtras, storeGreenhouseExtras, loadGreenhouseExtras, storeStandards, loadStandards, error, go, render, updateNavigation, heading, bindBack, moduleHeading, bindModuleBack, cycleStatus, unifiedListPanel, listFilterField, dateRangeControl, mountDateRangePicker } = app;
 let environmentListPage=1,envFilters={cycle:'all',from:'',to:'',comparison:'all'},envChartKey='insideTempC',envViewTab='chart',issueListPage=1,issueFilters={cycle:'all',type:'all',status:'all',from:'',to:''};
 function readingStage(r){
  const cycle=config.cycles.find(c=>c.cycleId===r.cycleId);
@@ -183,7 +183,7 @@ function renderEnvList(){
  bindPages('',()=>environmentListPage,v=>environmentListPage=v,rows.length,size,renderEnvList);
 }
 function renderEnvDetail(){
- page='env-list';updateNavigation();renderEnvList();
+ state.page='env-list';updateNavigation();renderEnvList();
 }
 
 function renderIssues(detail){
