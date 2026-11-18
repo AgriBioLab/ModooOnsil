@@ -1,0 +1,276 @@
+/* 재배일지작업 화면 전용 스타일 */
+
+/* ② 재배일지 상세 · 등록/수정 KRDS 정리 */
+.editor-shell {
+  gap: 16px;
+}
+
+.summary-strip {
+  background: var(--primary-soft);
+  border-bottom: 1px solid var(--line);
+  border-radius: 12px 12px 0 0;
+  padding: 14px 20px;
+}
+
+.summary-fact > span {
+  font-size: 12px;
+  color: var(--muted);
+  font-weight: 600;
+}
+
+.summary-fact > strong {
+  font-size: 14.5px;
+  color: var(--krds-light-color-text-bolder, #131416);
+}
+
+.summary-detail {
+  background: var(--paper);
+  padding: 18px 20px;
+  gap: 16px 20px;
+}
+
+.editor-summary .details-kv {
+  max-width: 100%;
+  grid-template-columns: 190px minmax(0, 1fr);
+  gap: 0;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  overflow: hidden;
+  font-size: 14px;
+}
+
+.editor-summary .details-kv dt {
+  padding: 11px 16px;
+  background: var(--soft);
+  color: var(--muted);
+  font-weight: 700;
+  border-bottom: 1px solid var(--line);
+  border-right: 1px solid var(--line);
+  display: flex;
+  align-items: center;
+}
+
+.editor-summary .details-kv dd {
+  padding: 11px 16px;
+  background: var(--paper);
+  color: var(--ink);
+  font-weight: 500;
+  border-bottom: 1px solid var(--line);
+  display: flex;
+  align-items: center;
+}
+
+.editor-summary .details-kv dt:last-of-type,
+.editor-summary .details-kv dd:last-of-type {
+  border-bottom: 0;
+}
+
+.summary-detail .stage-group {
+  grid-column: auto;
+  grid-row: auto;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  padding: 0;
+}
+
+.summary-detail .reason-box {
+  grid-column: 1 / -1;
+  margin: 2px 0 0;
+  padding: 14px 16px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--soft);
+}
+
+.reason-box {
+  border-top: 1px solid var(--line);
+  margin-top: 14px;
+  padding-top: 14px;
+}
+
+.reason-text {
+  padding: 10px 14px;
+  border-radius: 8px;
+  background: var(--soft);
+  border: 1px solid var(--line);
+  font-size: 14px;
+}
+
+.task-body {
+  padding: 16px 18px;
+  gap: 12px;
+}
+
+.task-scroll {
+  border: 1px solid var(--line);
+  border-radius: 8px;
+}
+
+.task-list-header {
+  padding: 11px 14px;
+  background: var(--krds-light-color-surface-gray-subtle, #eef0f3);
+  color: var(--krds-light-color-text-bolder, #131416);
+  font-size: 13px;
+  font-weight: 700;
+  border-bottom: 1px solid var(--line);
+}
+
+.task-summary {
+  padding: 8px 14px;
+  min-height: 46px;
+  background: var(--paper);
+}
+
+.task-title {
+  font-size: 14.5px;
+  font-weight: 700;
+}
+
+.summary-time,
+.summary-type {
+  font-size: 13.5px;
+}
+
+.summary-status {
+  border-radius: 6px;
+  padding: 3px 8px;
+  min-width: 54px;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.task-detail {
+  background: var(--soft);
+  border-top: 1px solid var(--line);
+  padding: 14px 16px;
+  gap: 12px 14px;
+}
+
+.task-detail .field label {
+  font-size: 12.5px;
+  margin-bottom: 5px;
+}
+
+.task-detail .ctrl {
+  height: 38px;
+}
+
+.trash {
+  width: 32px;
+  height: 32px;
+  border-radius: 6px;
+  color: var(--muted);
+}
+
+.trash:hover {
+  background: var(--krds-light-color-surface-danger-subtler, #fdefec);
+  color: var(--krds-light-color-text-danger, #bd2c0f);
+}
+
+.detail-task .t-row {
+  padding: 12px 14px;
+  font-size: 14px;
+}
+
+.detail-task .details-content {
+  margin: 0 14px 14px;
+  padding: 10px 14px;
+  border-radius: 8px;
+  background: var(--soft);
+  color: var(--ink);
+  font-size: 13.5px;
+  line-height: 1.6;
+}
+
+.form-actions {
+  border-top: 1px solid var(--line);
+  padding-top: 14px;
+  gap: 10px;
+}
+
+@media (max-width: 600px) {
+  .editor-summary .details-kv {
+    grid-template-columns: 120px minmax(0, 1fr);
+  }
+}
+
+.detail-summary-card .summary-strip:last-child {
+  border-bottom: 0;
+  border-radius: 12px;
+}
+
+.detail-meta-bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px 16px;
+  padding: 10px 20px;
+  background: var(--paper);
+  font-size: 13px;
+  color: var(--muted);
+}
+
+.detail-reason {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 8px;
+  color: var(--ink);
+}
+
+.detail-reason strong {
+  color: var(--muted);
+  font-weight: 700;
+}
+
+.detail-dates {
+  margin-left: auto;
+  font-variant-numeric: tabular-nums;
+  color: var(--muted);
+}
+
+.summary-link {
+  text-align: left;
+  font-size: 14.5px;
+  font-weight: 700;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 100%;
+  justify-self: start;
+}
+
+.diary-table th:nth-child(2),
+.diary-table td:nth-child(2) {
+  width: 118px;
+  white-space: nowrap;
+}
+
+.diary-table th:nth-child(3),
+.diary-table td:nth-child(3),
+.diary-table th:nth-child(4),
+.diary-table td:nth-child(4) {
+  width: 92px;
+  white-space: nowrap;
+}
+
+.diary-table th:nth-child(5),
+.diary-table td:nth-child(5) {
+  width: 104px;
+  white-space: nowrap;
+}
+
+.diary-table th:nth-child(7),
+.diary-table td:nth-child(7) {
+  width: 112px;
+  white-space: nowrap;
+}
+
+.diary-table th.tnum,
+.diary-table td.tnum {
+  width: 160px;
+  text-align: right;
+  white-space: nowrap;
+}

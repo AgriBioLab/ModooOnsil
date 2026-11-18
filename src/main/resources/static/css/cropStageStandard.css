@@ -1,0 +1,128 @@
+/* 재배품목 · 환경기준 화면 전용 스타일 */
+
+/* 재배품목 · 환경기준 UI */
+.tabbar.std-tabbar {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.std-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 12px 16px;
+}
+
+.std-toolbar-select {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: 10px 12px;
+  flex: 1 1 280px;
+}
+
+.std-toolbar-select .field {
+  margin: 0;
+  flex: 1 1 240px;
+  max-width: 360px;
+}
+
+.std-toolbar-select .krds-badge {
+  margin-bottom: 7px;
+}
+
+.std-toolbar-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}
+
+.std-stage-cards {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.std-stage-card .panel-head h2 {
+  font-size: 14px;
+}
+
+.std-stage-facts {
+  margin: 0;
+  display: grid;
+  gap: 8px;
+}
+
+.std-stage-facts > div {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 10px;
+  font-size: 13px;
+}
+
+.std-stage-facts dt {
+  color: var(--muted);
+  font-weight: 600;
+}
+
+.std-stage-facts dd {
+  margin: 0;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+.std-days-input {
+  width: 96px;
+}
+
+.std-range-inputs {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.std-range-inputs .ctrl {
+  width: 76px;
+}
+
+.table-actions {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  white-space: nowrap;
+}
+
+@media (max-width: 900px) {
+  .std-stage-cards {
+    grid-template-columns: 1fr;
+  }
+}
+
+.std-criteria-meta {
+  border-bottom: 1px solid var(--line);
+}
+
+.std-criteria-meta .field {
+  margin: 0;
+  max-width: 420px;
+}
+
+.std-crop-table th:nth-child(2),
+.std-crop-table td:nth-child(2) {
+  width: 200px;
+  white-space: nowrap;
+}
+
+.std-criteria-table th,
+.std-criteria-table td {
+  padding: 10px 8px;
+  font-size: 12.5px;
+}
+
+.std-criteria-table th {
+  white-space: normal;
+  word-break: keep-all;
+  line-height: 1.35;
+}
