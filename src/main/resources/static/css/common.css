@@ -2812,33 +2812,19 @@ select.ctrl {
   font-size: 13px;
 }
 
-.cycle-period-head {
+.cycle-period-inline {
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  gap: 10px;
+  gap: 8px;
 }
 
-.cycle-period-radios {
-  display: inline-flex;
-  align-items: center;
-  gap: 12px;
+.cycle-period-inline .ctrl {
+  flex: 1 1 0;
+  min-width: 0;
 }
 
-.cycle-radio {
-  display: inline-flex;
-  align-items: center;
-  gap: 5px;
-  font-size: 12.5px;
-  font-weight: 500;
-  color: var(--ink);
-  cursor: pointer;
-}
-
-.cycle-radio input[type="radio"] {
-  accent-color: var(--primary);
-  margin: 0;
-  cursor: pointer;
+.cycle-period-inline .cycle-period-select {
+  flex: 0 0 140px;
 }
 
 .cycle-period-cell {
@@ -2949,6 +2935,12 @@ select.ctrl {
   .list-ctrl-field.is-span-2,
   .list-ctrl-field.is-span-3 {
     grid-column: 1 / -1;
+  }
+  .cycle-period-inline {
+    flex-wrap: wrap;
+  }
+  .cycle-period-inline .cycle-period-select {
+    flex: 1 1 100%;
   }
   .list-search-btn {
     grid-column: 2;
