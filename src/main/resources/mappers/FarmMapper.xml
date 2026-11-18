@@ -46,6 +46,7 @@
 
     <select id="greenhouses" resultType="map">
         SELECT greenhouse_id AS greenhouseId, member_id AS memberId, greenhouse_name AS greenhouseName, greenhouse_type AS greenhouseType, cover_type AS coverType, building_count AS buildingCount, side_height AS sideHeight, width, length, registered_area AS registeredArea, medium_type AS mediumType, greenhouse_image_url AS greenhouseImageUrl, created_at AS createdAt, updated_at AS updatedAt FROM greenhouse WHERE member_id = #{memberId}
+        <if test="greenhouseId != null">AND greenhouse_id = #{greenhouseId}</if>
         <if test="name != null">AND LOCATE(#{name}, greenhouse_name) &gt; 0</if>
         <if test="type != null">AND greenhouse_type = #{type}</if>
         <if test="cover != null">AND cover_type = #{cover}</if>
