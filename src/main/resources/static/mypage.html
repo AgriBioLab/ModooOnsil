@@ -63,27 +63,27 @@
                 <div class="module-input-grid profile-form-grid">
                   <div class="field">
                     <label for="profFarmName">농장명 <span class="required" aria-hidden="true">*</span></label>
-                    <input id="profFarmName" class="ctrl" type="text" maxlength="100" required aria-describedby="profFarmName-error">
+                    <input id="profFarmName" name="farmName" class="ctrl" type="text" maxlength="100" required aria-describedby="profFarmName-error">
                     <p class="profile-error" id="profFarmName-error" aria-live="polite"></p>
                   </div>
                   <div class="field">
                     <label for="profMainCrop">주요 재배 품목</label>
-                    <input id="profMainCrop" class="ctrl" maxlength="100">
+                    <input id="profMainCrop" name="mainCrop" class="ctrl" maxlength="100">
                   </div>
                   <div class="field">
                     <label for="profAddress">농장 주소</label>
                     <div class="profile-address">
-                      <input id="profAddress" class="ctrl" maxlength="255" readonly>
+                      <input id="profAddress" name="address" class="ctrl" maxlength="255" readonly>
                       <button type="button" class="btn" id="addrSearchBtn">주소 검색</button>
                     </div>
                   </div>
                   <div class="field">
                     <label for="profAddressDetail">상세 주소</label>
-                    <input id="profAddressDetail" class="ctrl" maxlength="255">
+                    <input id="profAddressDetail" name="addressDetail" class="ctrl" maxlength="255">
                   </div>
                   <div class="field profile-description">
                     <label for="profDesc">농장 소개</label>
-                    <textarea id="profDesc" class="ctrl textarea"></textarea>
+                    <textarea id="profDesc" name="description" class="ctrl textarea"></textarea>
                   </div>
                 </div>
                 <div class="module-actions profile-form-actions">
@@ -117,7 +117,7 @@
               <form id="certRequestForm" class="profile-form profile-form-narrow" novalidate>
                 <div class="field">
                   <label for="certBusinessNumber">농업경영체 등록번호 <span class="required" aria-hidden="true">*</span></label>
-                  <input id="certBusinessNumber" class="ctrl" type="text" maxlength="20" required aria-describedby="certBusinessNumber-hint certBusinessNumber-error">
+                  <input id="certBusinessNumber" name="businessNumber" class="ctrl" type="text" maxlength="20" required aria-describedby="certBusinessNumber-hint certBusinessNumber-error">
                   <p class="profile-hint" id="certBusinessNumber-hint">예시 AGRI-2026-0001</p>
                   <p class="profile-error" id="certBusinessNumber-error" aria-live="polite"></p>
                 </div>
@@ -157,21 +157,21 @@
                 <div class="module-input-grid profile-form-grid">
                   <div class="field">
                     <label for="profUsername">아이디</label>
-                    <input id="profUsername" class="ctrl" type="text" readonly>
+                    <input id="profUsername" name="username" class="ctrl" type="text" readonly>
                   </div>
                   <div class="field">
                     <label for="profDisplayName">대표자명 <span class="required" aria-hidden="true">*</span></label>
-                    <input id="profDisplayName" class="ctrl" type="text" maxlength="50" required aria-describedby="profDisplayName-error">
+                    <input id="profDisplayName" name="displayName" class="ctrl" type="text" maxlength="50" required aria-describedby="profDisplayName-error">
                     <p class="profile-error" id="profDisplayName-error" aria-live="polite"></p>
                   </div>
                   <div class="field">
                     <label for="profEmail">이메일</label>
-                    <input id="profEmail" class="ctrl" type="email" maxlength="255" autocomplete="email" aria-describedby="profEmail-error">
+                    <input id="profEmail" name="email" class="ctrl" type="email" maxlength="255" autocomplete="email" aria-describedby="profEmail-error">
                     <p class="profile-error" id="profEmail-error" aria-live="polite"></p>
                   </div>
                   <div class="field">
                     <label for="profPhone">연락처</label>
-                    <input id="profPhone" class="ctrl" type="tel" maxlength="20" autocomplete="tel" aria-describedby="profPhone-error">
+                    <input id="profPhone" name="phone" class="ctrl" type="tel" maxlength="20" autocomplete="tel" aria-describedby="profPhone-error">
                     <p class="profile-error" id="profPhone-error" aria-live="polite"></p>
                   </div>
                 </div>
@@ -188,18 +188,18 @@
               <form id="passwordForm" class="profile-form profile-form-narrow" novalidate>
                 <div class="field">
                   <label for="curPw">현재 비밀번호 <span class="required" aria-hidden="true">*</span></label>
-                  <input id="curPw" class="ctrl" type="password" autocomplete="current-password" required aria-describedby="curPw-error">
+                  <input id="curPw" name="currentPassword" class="ctrl" type="password" autocomplete="current-password" required aria-describedby="curPw-error">
                   <p class="profile-error" id="curPw-error" aria-live="polite"></p>
                 </div>
                 <div class="field">
                   <label for="newPw">새 비밀번호 <span class="required" aria-hidden="true">*</span></label>
-                  <input id="newPw" class="ctrl" type="password" minlength="8" maxlength="20" autocomplete="new-password" required aria-describedby="newPw-hint newPw-error">
+                  <input id="newPw" name="newPassword" class="ctrl" type="password" minlength="8" maxlength="20" autocomplete="new-password" required aria-describedby="newPw-hint newPw-error">
                   <p class="profile-hint" id="newPw-hint">8~20자로 입력하세요.</p>
                   <p class="profile-error" id="newPw-error" aria-live="polite"></p>
                 </div>
                 <div class="field">
                   <label for="chkPw">새 비밀번호 확인 <span class="required" aria-hidden="true">*</span></label>
-                  <input id="chkPw" class="ctrl" type="password" minlength="8" maxlength="20" autocomplete="new-password" required aria-describedby="chkPw-error">
+                  <input id="chkPw" name="confirmPassword" class="ctrl" type="password" minlength="8" maxlength="20" autocomplete="new-password" required aria-describedby="chkPw-error">
                   <p class="profile-error" id="chkPw-error" aria-live="polite"></p>
                 </div>
                 <div class="module-actions profile-form-actions">
