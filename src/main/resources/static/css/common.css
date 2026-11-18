@@ -357,24 +357,32 @@ textarea:focus-visible {
 }
 
 /* 공통 레이아웃: 사이드바 · 헤더 */
+.app {
+  background: #fbfcfc;
+}
+
 .sidebar {
-  background: var(--paper);
-  border-right: 1px solid var(--line);
-  color: var(--ink);
+  background: linear-gradient(180deg, var(--primary) 0%, var(--primary-hover) 100%);
+  border-right: 0;
+  border-top-right-radius: 22px;
+  border-bottom-right-radius: 22px;
+  box-shadow: 4px 0 18px rgba(24, 58, 36, 0.1);
+  overflow: hidden;
+  color: #f2f8f4;
 }
 
 .brand {
   font-weight: 700;
   font-size: 19px;
   letter-spacing: -0.02em;
-  color: var(--krds-light-color-text-bolder, #131416);
+  color: #ffffff;
   padding: 20px 20px 12px;
 }
 
 .brand small {
   margin-top: 4px;
   font-size: 12px;
-  color: var(--muted);
+  color: rgba(255, 255, 255, 0.9);
   font-weight: 400;
 }
 
@@ -391,52 +399,83 @@ textarea:focus-visible {
   border-radius: 8px;
   font-size: 14px;
   font-weight: 500;
-  color: var(--ink);
+  color: #ffffff;
   transition: background-color 0.15s ease, color 0.15s ease;
 }
 
 .navbtn:hover {
-  background: var(--soft);
-  color: var(--primary-text);
+  background: rgba(255, 255, 255, 0.14);
+  color: #ffffff;
 }
 
 .navbtn[aria-current="location"] {
-  background: var(--primary-soft);
+  background: #ffffff;
   border-color: transparent;
-  color: var(--krds-color-light-success-80, #1f4727);
+  color: var(--primary-pressed);
   font-weight: 700;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.14);
 }
 
 .navgroup {
   margin-top: 6px;
   padding-top: 10px;
-  border-top: 1px solid var(--line);
+  border-top: 1px solid rgba(255, 255, 255, 0.18);
 }
 
 .navhead.nav-group-title {
+  display: flex;
+  align-items: center;
+  gap: 7px;
   padding: 4px 12px 6px;
   font-size: 12px;
-  color: var(--muted);
+  color: rgba(255, 255, 255, 0.88);
   font-weight: 700;
 }
 
+.nav-ico {
+  width: 14px;
+  height: 14px;
+  flex: none;
+  opacity: 0.92;
+}
+
 .navbtn.nav-sub {
-  padding-left: 22px;
+  padding-left: 33px;
   font-size: 13.5px;
 }
 
 .sidebar-foot {
   padding: 14px 20px;
   font-size: 12px;
-  color: var(--muted);
+  color: rgba(255, 255, 255, 0.92);
+  background: rgba(0, 0, 0, 0.14);
+  border-top: 1px solid rgba(255, 255, 255, 0.16);
+}
+
+.sidebar :focus-visible {
+  outline: 2px solid #ffffff;
+  outline-offset: 2px;
+}
+
+.workarea {
+  background: #fbfcfc;
 }
 
 .topbar {
   height: var(--top);
-  background: var(--paper);
+  background: #ffffff;
   border-bottom: 1px solid var(--line);
-  padding: 0 24px;
+  color: var(--ink);
+  justify-content: space-between;
+  padding: 0 26px;
   font-size: 13px;
+}
+
+.topbar-title {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--krds-light-color-text-bolder, #131416);
+  letter-spacing: -0.01em;
 }
 
 .header-account {
@@ -457,10 +496,21 @@ textarea:focus-visible {
   align-items: center;
   padding: 3px 9px;
   border-radius: 999px;
-  background: var(--krds-light-color-surface-gray-subtle, #eef0f3);
-  color: var(--muted);
+  background: var(--primary-soft);
+  color: var(--primary-pressed);
   font-size: 12px;
   font-weight: 600;
+}
+
+.topbar .btn {
+  background: #ffffff;
+  border-color: var(--line);
+  color: var(--ink);
+}
+
+.topbar .btn:hover {
+  background: var(--soft);
+  border-color: var(--line-dark);
 }
 
 main {
@@ -1174,6 +1224,10 @@ select.ctrl:disabled {
 @media (max-width: 840px) {
   :root {
     --sidebar: 180px;
+  }
+  .sidebar {
+    border-radius: 0;
+    box-shadow: none;
   }
   main {
     padding: 14px 16px 18px;
@@ -2469,10 +2523,41 @@ select.ctrl:disabled {
   max-width: 280px;
 }
 
-.issue-kpi-strip {
-  display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: 10px;
+.issue-status-tabs {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.issue-status-tab {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 11px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: #ffffff;
+  font: inherit;
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--muted);
+  cursor: pointer;
+  transition: border-color 0.15s ease, background-color 0.15s ease, color 0.15s ease;
+}
+
+.issue-status-tab strong {
+  font-variant-numeric: tabular-nums;
+}
+
+.issue-status-tab.is-danger strong { color: #b91c1c; }
+.issue-status-tab.is-warning strong { color: #b45309; }
+.issue-status-tab.is-success strong { color: #15803d; }
+
+.issue-status-tab.is-active {
+  border-color: var(--primary);
+  background: var(--primary-soft);
+  color: var(--primary-pressed);
 }
 
 .issue-kpi-card {
@@ -2541,42 +2626,58 @@ select.ctrl:disabled {
 
 .list-filter-strip {
   display: flex;
-  align-items: center;
-  gap: 10px 16px;
+  align-items: flex-end;
+  gap: 12px 16px;
   flex-wrap: wrap;
-  padding: 14px 18px;
+  padding: 16px 20px;
   background: var(--paper, #ffffff);
   border: 1px solid var(--line);
-  border-radius: 10px;
-  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.03);
+  border-radius: 12px;
+  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.04);
   margin-bottom: 18px;
 }
 
 .list-ctrl-field {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  font-size: 13px;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 6px;
+  flex: 1 1 150px;
+  min-width: 130px;
+  font-size: 12.5px;
   color: var(--krds-light-color-text-subtle, #464c53);
-  font-weight: 600;
+  font-weight: 700;
 }
 
 .list-ctrl-field .ctrl {
-  width: auto;
-  min-width: 120px;
-  min-height: 36px;
-  padding: 6px 10px;
-  border-radius: 6px;
+  width: 100%;
+  min-height: 38px;
+  padding: 6px 12px;
+  border-radius: 8px;
   font-size: 13.5px;
-  background: #ffffff;
+  background-color: #ffffff;
+}
+
+select.ctrl {
+  appearance: none;
+  -webkit-appearance: none;
+  padding-right: 34px;
+  background-color: #ffffff;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%2333363d' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 10px center;
+  background-size: 15px 15px;
+  cursor: pointer;
 }
 
 .list-search-btn {
   margin-left: auto;
-  min-height: 36px;
-  padding: 6px 16px;
-  border-radius: 6px;
+  flex: none;
+  min-height: 38px;
+  padding: 0 20px;
+  border-radius: 8px;
   font-size: 13.5px;
+  font-weight: 600;
 }
 
 .list-summary-bar {
