@@ -2720,7 +2720,7 @@ select.ctrl {
 }
 
 .env-history-panel > .tablewrap {
-  padding: 0 20px 6px;
+  padding: 14px 20px 8px;
 }
 
 .list-section > .panel-body {
@@ -3001,13 +3001,46 @@ select.ctrl {
 }
 
 .env-period-filter .drp-wrap {
-  width: 225px;
+  width: 230px;
 }
 
 .env-period-filter .drp-trigger {
-  min-height: 30px;
-  padding: 3px 10px;
+  min-height: 34px;
+  padding: 4px 10px;
   font-size: 12.5px;
+}
+
+.env-period-filter .env-search-btn {
+  min-height: 34px;
+  padding: 4px 14px;
+}
+
+.env-table {
+  min-width: 0;
+}
+
+.env-table th,
+.env-table td {
+  padding: 10px 8px;
+  font-size: 12.5px;
+}
+
+.env-table th {
+  white-space: normal;
+  word-break: keep-all;
+  line-height: 1.35;
+}
+
+.env-table th:nth-child(2),
+.env-table td:nth-child(2) {
+  width: 132px;
+  white-space: nowrap;
+}
+
+.env-table th.tnum,
+.env-table td.tnum {
+  text-align: right;
+  white-space: nowrap;
 }
 
 .env-period-filter .drp-popover {

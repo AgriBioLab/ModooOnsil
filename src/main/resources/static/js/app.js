@@ -585,7 +585,7 @@ function renderEnvList(){
  const from=(environmentListPage-1)*size,shown=rows.slice(from,from+size);
  const fields=config.measurementFields||[];
  const metricOptions=fields.map(f=>({value:f.key,label:f.unit==='pH'?envShortLabel(f.label):`${envShortLabel(f.label)} (${f.unit})`}));
- const tableCols=fields.map(f=>`<th>${htmlText(f.unit==='pH'?envShortLabel(f.label):`${envShortLabel(f.label)}(${f.unit})`)}</th>`).join('');
+ const tableCols=fields.map(f=>`<th class="tnum">${htmlText(f.unit==='pH'?envShortLabel(f.label):`${envShortLabel(f.label)}(${f.unit})`)}</th>`).join('');
  const historyHead=`<div class="panel-head env-history-head">
   <div class="env-inline-tabs" role="tablist" aria-label="환경변화 보기 방식">
    <button type="button" class="env-inline-tab" role="tab" id="envTabChart" aria-selected="${envViewTab==='chart'}">그래프로 보기</button>
