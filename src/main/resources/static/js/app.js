@@ -345,28 +345,52 @@ function countExceeded(r){return readingTests(r).filter(s=>s.status==='기준 �
 function countMissing(r){return readingTests(r).filter(s=>s.status==='미측정').length}
 function getCycleForReading(r){return config.cycles.find(c=>c.cycleId===r.cycleId)}
 let envChartKey='insideTempC';
+function envLatestSummary(cycleRows){
+ const latest=cycleRows.slice().sort((a,b)=>b.measuredAt.localeCompare(a.measuredAt))[0];
+ if(!latest)return '';
+ const fields=config.measurementFields||[];
+ const shortLabel=l=>l.replace('온실 내부 ','').replace(' 측정값','');
+ const airKeys=['insideTempC','humidityPct','co2Ppm','solarWm2','lightUmolM2S'];
+ const subKeys=['substrateTempC','substrateMoisturePct','substrateEcMsCm','substratePh'];
+ const card=f=>{
+  if(!f)return '';
+  const v=latest[f.key];
+  const empty=v===null||v===undefined;
+  return `<div class="env-kpi-card"><span class="env-kpi-label">${htmlText(shortLabel(f.label))}</span><strong class="env-kpi-value${empty?' is-empty':''}">${empty?'미측정':`${htmlText(String(v))}<small>${htmlText(f.unit)}</small>`}</strong></div>`;
+ };
+ const airCards=airKeys.map(k=>card(fields.find(f=>f.key===k))).join('');
+ const subCards=subKeys.map(k=>card(fields.find(f=>f.key===k))).join('');
+ return `<section class="panel env-latest-panel" aria-label="최근 측정 현황"><div class="panel-head"><h2>최근 측정 현황</h2><span class="counter">기준 시각 ${htmlText(formatAt(latest.measuredAt))}</span></div><div class="panel-body env-kpi-groups"><div class="env-kpi-group"><span class="env-kpi-group-title">공기 · 광 환경</span><div class="env-kpi-grid cols-5">${airCards}</div></div><div class="env-kpi-group"><span class="env-kpi-group-title">배지 환경</span><div class="env-kpi-grid cols-4">${subCards}</div></div></div></section>`;
+}
 function envLineChart(rows, selectedCycle){
  const fields=config.measurementFields||[];
  const field=fields.find(f=>f.key===envChartKey)||fields[0]||{key:'insideTempC',label:'온실 내부 온도 측정값',unit:'°C'};
- const pts=rows.slice().sort((a,b)=>a.measuredAt.localeCompare(b.measuredAt)).filter(r=>r[field.key]!==null&&r[field.key]!==undefined);
+ const hasRange=Boolean(envFilters.from||envFilters.to);
+ const sortedAll=rows.slice().sort((a,b)=>a.measuredAt.localeCompare(b.measuredAt));
+ const targetDate=!hasRange?(sortedAll.some(r=>dateFrom(r.measuredAt)===today())?today():dateFrom(sortedAll.at(-1)?.measuredAt||'')):'';
+ const scoped=targetDate?sortedAll.filter(r=>dateFrom(r.measuredAt)===targetDate):sortedAll;
+ const pts=scoped.filter(r=>r[field.key]!==null&&r[field.key]!==undefined);
  let body='<p class="empty" style="padding:20px">그래프에 표시할 측정값이 없습니다.</p>';
  if(pts.length){
   const vals=pts.map(r=>Number(r[field.key]));
   let min=Math.min(...vals),max=Math.max(...vals);
   if(min===max){min-=1;max+=1}
-  const padL=48,padR=18,padT=16,padB=28,w=760,h=210,pw=w-padL-padR,ph=h-padT-padB;
+  const padL=48,padR=18,padT=14,padB=26,w=760,h=185,pw=w-padL-padR,ph=h-padT-padB;
   const xAt=i=>pts.length===1?padL+pw/2:padL+(i/(pts.length-1))*pw;
   const yAt=v=>padT+ph-((v-min)/(max-min))*ph;
   const poly=pts.map((r,i)=>`${xAt(i).toFixed(1)},${yAt(Number(r[field.key])).toFixed(1)}`).join(' ');
   const mid=((min+max)/2).toFixed(1);
   const grid=[min,(min+max)/2,max].map((v,idx)=>`<line x1="${padL}" y1="${yAt(v).toFixed(1)}" x2="${w-padR}" y2="${yAt(v).toFixed(1)}" stroke="#e5e9f0"/><text x="${padL-6}" y="${(yAt(v)+4).toFixed(1)}" text-anchor="end" font-size="11" fill="#666">${idx===1?mid:v.toFixed(1)}</text>`).join('');
-  const dots=pts.map((r,i)=>`<circle cx="${xAt(i).toFixed(1)}" cy="${yAt(Number(r[field.key])).toFixed(1)}" r="4.5" fill="#267337" data-env-detail="${r.environmentChangeId}" style="cursor:pointer"><title>${formatAt(r.measuredAt)} : ${r[field.key]} ${htmlText(field.unit)}</title></circle>`).join('');
-  const xLabels=[0,Math.floor((pts.length-1)/2),pts.length-1].filter((v,i,a)=>a.indexOf(v)===i).map(i=>`<text x="${xAt(i).toFixed(1)}" y="${h-8}" text-anchor="${i===0?'start':i===pts.length-1?'end':'middle'}" font-size="11" fill="#666">${formatAt(pts[i].measuredAt).slice(5)}</text>`).join('');
+  const dots=pts.map((r,i)=>`<circle cx="${xAt(i).toFixed(1)}" cy="${yAt(Number(r[field.key])).toFixed(1)}" r="4.5" fill="#267337"><title>${formatAt(r.measuredAt)} : ${r[field.key]} ${htmlText(field.unit)}</title></circle>`).join('');
+  const singleDay=Boolean(targetDate)||(pts.length>0&&dateFrom(pts[0].measuredAt)===dateFrom(pts.at(-1).measuredAt));
+  const xLabels=[0,Math.floor((pts.length-1)/2),pts.length-1].filter((v,i,a)=>a.indexOf(v)===i).map(i=>`<text x="${xAt(i).toFixed(1)}" y="${h-8}" text-anchor="${i===0?'start':i===pts.length-1?'end':'middle'}" font-size="11" fill="#666">${singleDay?formatAt(pts[i].measuredAt).slice(11,16):formatAt(pts[i].measuredAt).slice(5)}</text>`).join('');
   body=`<svg class="chart-svg" viewBox="0 0 ${w} ${h}" role="img" aria-label="${htmlText(field.label)} 추이 그래프">${grid}<polyline fill="none" stroke="#267337" stroke-width="2" points="${poly}"/>${dots}${xLabels}</svg>`;
  }
  const ghName=selectedCycle?(gh(selectedCycle.greenhouseId)?.name||'—'):'—';
- const title=selectedCycle?`${selectedCycle.name} · ${ghName} (1시간 단위 평균)`:'환경변화 추이 그래프';
- return `<section class="panel chart-section" aria-label="온실 환경변화 추이"><div class="panel-head"><h2>${htmlText(title)}</h2><label style="display:flex;align-items:center;gap:6px;font-size:12px"><span>항목</span><select id="envChartMetric" class="ctrl" style="width:auto;min-height:28px;padding:2px 8px">${options(fields.map(f=>({value:f.key,label:`${f.label} (${f.unit})`})),field.key)}</select></label></div><div class="panel-body">${body}</div></section>`;
+ const scopeLabel=targetDate?`${targetDate===today()?`오늘 ${targetDate}`:targetDate} · 1시간 단위`:`${envFilters.from||'시작'} ~ ${envFilters.to||'종료'} · 1시간 단위`;
+ const title=selectedCycle?`${ghName} · ${selectedCycle.name} (${scopeLabel})`:'환경변화 추이 · 측정 목록';
+ const periodBar=`<div class="env-period-bar"><div class="filterbar module-filter"><div class="field"><label for="envFrom">측정 시작일</label><input type="date" class="ctrl" id="envFrom" value="${envFilters.from}"></div><div class="field"><label for="envTo">측정 종료일</label><input type="date" class="ctrl" id="envTo" value="${envFilters.to}"></div><button class="btn filter-submit" id="envDoFilter">검색</button></div></div>`;
+ return `<div class="panel-head"><div class="panel-head-title"><h2>${htmlText(title)}</h2><span class="counter">총 ${rows.length}건</span></div><label style="display:flex;align-items:center;gap:6px;font-size:12px"><span>항목</span><select id="envChartMetric" class="ctrl" style="width:auto;min-height:28px;padding:2px 8px">${options(fields.map(f=>({value:f.key,label:`${f.label} (${f.unit})`})),field.key)}</select></label></div>${periodBar}<div class="panel-body">${body}</div>`;
 }
 function issueSummaryChart(rows){
  const total=Math.max(1,rows.length);
@@ -391,33 +415,34 @@ function cycleTimelineChart(c){
  const sumDays=stages.reduce((a,x)=>a+x.days,0)||1;
  return `<section class="panel chart-section"><div class="panel-head"><h2>작기 일정 · 생육단계 진행</h2><span class="counter">계획 기간 대비 작기 진행률 ${pct}%</span></div><div class="panel-body"><div class="timeline-meta"><span>계획 시작: ${dateFrom(c.plannedStartAt)||'—'}</span><span>예상 종료: ${dateFrom(c.expectedEndAt)||'—'}</span></div><div class="bar-track" style="height:10px;margin:6px 0 12px"><div class="bar-fill" style="width:${pct}%"></div></div><div class="timeline-bar">${stages.map(x=>`<div class="timeline-seg ${x.cls}" style="width:${((x.days/sumDays)*100).toFixed(1)}%" title="${htmlText(x.name)} (${x.days}일)">${htmlText(x.name)}</div>`).join('')}</div><div class="timeline-meta">${stages.map(x=>`<span>${htmlText(x.name)} 시작일: ${htmlText(x.date)}</span>`).join('')}</div></div></section>`;
 }
+function cycleContextBar(selectId,cycles,selected){
+ const ghName=gh(selected.greenhouseId)?.name||'—';
+ const st=cycleStatus(selected);
+ const tone={'진행':'bg-light-success','미진행':'bg-light-information','종료':'bg-light-gray'};
+ const sorted=[...cycles].sort((a,b)=>(cycleStatus(a)==='진행'?0:cycleStatus(a)==='종료'?1:2)-(cycleStatus(b)==='진행'?0:cycleStatus(b)==='종료'?1:2)||(b.actualStartAt||'').localeCompare(a.actualStartAt||''));
+ return `<section class="panel context-bar-panel" aria-label="조회 대상 온실 · 작기 선택"><div class="panel-body context-bar"><div class="context-bar-select"><label for="${selectId}">조회 온실 · 작기</label><select id="${selectId}" class="ctrl">${options(sorted.map(c=>({value:c.cycleId,label:`${gh(c.greenhouseId)?.name||'—'} · ${c.name} (${cycleStatus(c)})`})),selected.cycleId)}</select></div><div class="context-bar-meta">${statusBadge(st,tone)}<span>${htmlText(ghName)} · ${htmlText(cropOf(selected)?.name||'—')} (${htmlText(varietyOf(selected)?.name||'—')})</span></div></div></section>`;
+}
 function renderEnvList(){
- let selectedCycle=config.cycles.find(c=>c.cycleId===envFilters.cycle);
+ const envCycles=config.cycles.filter(c=>['진행','종료'].includes(cycleStatus(c)));
+ let selectedCycle=envCycles.find(c=>c.cycleId===envFilters.cycle);
  if(!selectedCycle){
-  selectedCycle=config.cycles.find(c=>config.environmentChanges.some(e=>e.cycleId===c.cycleId))||config.cycles[0];
+  selectedCycle=envCycles.find(c=>config.environmentChanges.some(e=>e.cycleId===c.cycleId))||envCycles[0]||config.cycles[0];
   envFilters.cycle=selectedCycle?.cycleId||'';
  }
  if(!selectedCycle){
   main.innerHTML=moduleHeading('온실 환경변화 목록')+'<section class="panel list-section"><div class="panel-body"><p class="empty">조회할 작기계획이 없습니다.</p></div></section>';
   return;
  }
- const rows=config.environmentChanges.filter(s=>{
-   const matchesCycle=s.cycleId===selectedCycle.cycleId;
-   const matchesDate=(!envFilters.from||dateFrom(s.measuredAt)>=envFilters.from)&&(!envFilters.to||dateFrom(s.measuredAt)<=envFilters.to);
-   return matchesCycle&&matchesDate;
- }).sort((a,b)=>b.measuredAt.localeCompare(a.measuredAt));
+ const cycleAllRows=config.environmentChanges.filter(s=>s.cycleId===selectedCycle.cycleId);
+ const rows=cycleAllRows.filter(s=>(!envFilters.from||dateFrom(s.measuredAt)>=envFilters.from)&&(!envFilters.to||dateFrom(s.measuredAt)<=envFilters.to)).sort((a,b)=>b.measuredAt.localeCompare(a.measuredAt));
  const size=config.pagination.environmentPageSize||7;
  environmentListPage=Math.min(Math.max(1,environmentListPage),Math.max(1,Math.ceil(rows.length/size)));
  const from=(environmentListPage-1)*size,shown=rows.slice(from,from+size);
- const ghName=gh(selectedCycle.greenhouseId)?.name||'—';
  main.innerHTML=moduleHeading('온실 환경변화 목록')+
- `<section class="panel search-section" aria-label="작기계획 및 기간 선택"><div class="panel-body"><div class="filterbar module-filter env-filters">
- <div class="field" style="flex:1 1 280px"><label for="envCycle">작기계획 (온실별 1:1)</label><select class="ctrl" id="envCycle">${options(config.cycles.map(c=>({value:c.cycleId,label:`${c.name} · ${gh(c.greenhouseId)?.name||'—'} (${cycleStatus(c)})`})),selectedCycle.cycleId)}</select></div>
- <div class="field"><label for="envFrom">측정 시작일</label><input type="date" class="ctrl" id="envFrom" value="${envFilters.from}"></div>
- <div class="field"><label for="envTo">측정 종료일</label><input type="date" class="ctrl" id="envTo" value="${envFilters.to}"></div>
- <button class="btn filter-submit" id="envDoFilter">검색</button></div></div></section>
- <section class="panel list-section" aria-label="1시간 단위 환경측정 목록"><div class="panel-head"><h2>1시간 단위 환경측정 목록</h2><span class="counter">${htmlText(ghName)} · ${htmlText(cropOf(selectedCycle)?.name||'—')} (${htmlText(varietyOf(selectedCycle)?.name||'—')}) · 총 ${rows.length}건</span></div><div class="tablewrap"><table class="data-table module-table env-table"><thead><tr><th class="row-index">번호</th><th>측정일시</th><th>온도(°C)</th><th>습도(%RH)</th><th>CO₂(ppm)</th><th>일사량(W/m²)</th><th>광도</th><th>배지수분(%)</th><th>미측정</th></tr></thead>
- <tbody>${shown.map((r,i)=>`<tr><td class="row-index">${rows.length-from-i}</td><td><button class="linkbtn" data-env-detail="${r.environmentChangeId}">${formatAt(r.measuredAt)}</button></td><td class="tnum">${fmtVal(r.insideTempC)}</td><td class="tnum">${fmtVal(r.humidityPct)}</td><td class="tnum">${fmtVal(r.co2Ppm)}</td><td class="tnum">${fmtVal(r.solarWm2)}</td><td class="tnum">${fmtVal(r.lightUmolM2S)}</td><td class="tnum">${fmtVal(r.substrateMoisturePct)}</td><td>${countMissing(r)}개</td></tr>`).join('')||'<tr><td colspan="9" class="empty">해당 작기의 측정 기록이 없습니다.</td></tr>'}</tbody></table></div>${pageControls(rows.length,environmentListPage,size,'온실 환경변화')}</section>`;
+ cycleContextBar('envCycle',envCycles.length?envCycles:config.cycles,selectedCycle)+
+ envLatestSummary(cycleAllRows)+
+ `<section class="panel list-section" aria-label="온실 환경변화 추이 및 측정 목록">${envLineChart(rows,selectedCycle)}<div class="tablewrap" style="border-top:1px solid var(--line)"><table class="data-table module-table env-table"><thead><tr><th class="row-index">번호</th><th>측정일시</th><th>온도(°C)</th><th>습도(%RH)</th><th>CO₂(ppm)</th><th>일사량(W/m²)</th><th>광도</th><th>배지 온도(°C)</th><th>배지 수분(%)</th><th>배지 EC(mS/cm)</th><th>배지 pH</th></tr></thead>
+ <tbody>${shown.map((r,i)=>`<tr><td class="row-index">${rows.length-from-i}</td><td>${formatAt(r.measuredAt)}</td><td class="tnum">${fmtVal(r.insideTempC)}</td><td class="tnum">${fmtVal(r.humidityPct)}</td><td class="tnum">${fmtVal(r.co2Ppm)}</td><td class="tnum">${fmtVal(r.solarWm2)}</td><td class="tnum">${fmtVal(r.lightUmolM2S)}</td><td class="tnum">${fmtVal(r.substrateTempC)}</td><td class="tnum">${fmtVal(r.substrateMoisturePct)}</td><td class="tnum">${fmtVal(r.substrateEcMsCm)}</td><td class="tnum">${fmtVal(r.substratePh)}</td></tr>`).join('')||'<tr><td colspan="11" class="empty">해당 작기의 측정 기록이 없습니다.</td></tr>'}</tbody></table></div>${pageControls(rows.length,environmentListPage,size,'온실 환경변화')}</section>`;
  $('#envCycle').onchange=()=>{envFilters.cycle=$('#envCycle').value;environmentListPage=1;renderEnvList()};
  $('#envDoFilter').onclick=()=>{
    const next={cycle:$('#envCycle').value,from:$('#envFrom').value,to:$('#envTo').value,comparison:'all'};
@@ -431,15 +456,19 @@ function renderEnvList(){
 function renderEnvDetail(){
  const r=getReading(selectedMeasurementId);if(!r){go('env-list');return}
  selectedMeasurementId=r.environmentChangeId;
- const c=getCycleForReading(r),tested=readingTests(r),missing=countMissing(r);
+ const c=getCycleForReading(r),tested=readingTests(r);
+ const baseFacts=[
+  ['작기계획',c?.name||'—'],
+  ['온실',gh(c?.greenhouseId)?.name||'—'],
+  ['품목 · 품종',c?`${cropOf(c)?.name||'—'} · ${varietyOf(c)?.name||'—'}`:'—'],
+  ['측정일시',formatAt(r.measuredAt)]
+ ];
  main.innerHTML=moduleHeading('온실 환경변화 상세','')+
- `<div class="module-scroll"><section class="panel"><div class="panel-head"><h2>환경변화 측정 기본정보</h2><span class="counter">미측정 ${missing}개</span></div><div class="panel-body"><div class="module-facts compact">
- ${[['작기계획명',c?.name||'—'],['온실명',gh(c?.greenhouseId)?.name||'—'],['측정일시',formatAt(r.measuredAt)]].map(([a,b])=>`<div><span>${htmlText(a)}</span><strong>${htmlText(b)}</strong></div>`).join('')}
- </div></div></section>
- <section class="panel"><div class="panel-head"><h2>온실 환경변화 측정값</h2><span class="counter">환경측정 항목 9개</span></div><div class="tablewrap"><table class="data-table module-table metric-table"><thead><tr><th>환경측정 항목명</th><th>실제 측정값</th></tr></thead><tbody>
- ${tested.map(x=>`<tr><td>${htmlText(x.label)}</td><td>${x.value===null||x.value===undefined?'미측정':`${x.value} ${htmlText(x.unit)}`}</td></tr>`).join('')}
- </tbody></table></div></section></div>
- <div class="module-actions"><button class="btn" id="envBack">목록</button><button class="btn" id="envCycleDetail">해당 작기계획 상세</button></div>`;
+ `<div class="module-scroll">
+  <section class="panel"><div class="panel-head"><div class="panel-head-title"><h2>${htmlText(c?.name||'측정 기본정보')}</h2>${c?statusBadge(cycleStatus(c),{'진행':'bg-light-success','미진행':'bg-light-information','종료':'bg-light-gray'}):''}</div><span class="counter">${htmlText(formatAt(r.measuredAt))}</span></div><div class="panel-body"><dl class="profile-facts facts-2col">${baseFacts.map(([a,b])=>`<dt>${htmlText(a)}</dt><dd>${htmlText(b)}</dd>`).join('')}</dl></div></section>
+  <section class="panel" style="margin-top:14px"><div class="panel-head"><h2>온실 환경변화 측정값</h2><span class="counter">총 ${tested.length}항목</span></div><div class="panel-body"><dl class="profile-facts facts-2col">${tested.map(x=>`<dt>${htmlText(x.label.replace(' 측정값',''))}</dt><dd>${x.value===null||x.value===undefined?'미측정':`${x.value} ${htmlText(x.unit)}`}</dd>`).join('')}</dl></div></section>
+ </div>
+ <div class="module-actions"><div class="module-actions-left"><button class="btn" id="envBack">목록</button></div><button class="btn" id="envCycleDetail">해당 작기계획 상세</button></div>`;
  bindModuleBack();$('#envBack').onclick=()=>go('env-list');$('#envCycleDetail').onclick=()=>go('cycle-detail',c.cycleId);
 }
 
@@ -455,13 +484,13 @@ function renderIssues(detail){
   selectedIssueId=issue.issueId;
   const cycle=getCycle(issue.cycleId);
   const reading=config.environmentChanges.find(item=>item.cycleId===issue.cycleId&&item.measuredAt===issue.occurredAt);
-  const facts=[['작기계획',cycle?.name||'—'],['온실',gh(cycle?.greenhouseId)?.name||'—'],['발생일시',formatAt(issue.occurredAt)],['이슈 유형',issue.issueType],['이슈 메시지',issue.message],['발생 측정값',issue.issueValue],['조치 상태',issue.status],['조치 내용',issue.actionContent],['조치 완료일시',formatAt(issue.actionCompletedAt)]];
+  const facts=[['작기계획',cycle?.name||'—'],['온실',gh(cycle?.greenhouseId)?.name||'—'],['발생일시',formatAt(issue.occurredAt)],['이슈 유형',issue.issueType],['이슈 메시지',issue.message],['발생 측정값',issue.issueValue??'—'],['조치 내용',issue.actionContent||'—'],['조치 완료일시',formatAt(issue.actionCompletedAt)]];
   main.innerHTML=moduleHeading('온실 환경 이슈 상세','')+
-  `<div class="module-scroll"><section class="panel"><div class="panel-head"><h2>이슈 정보</h2>${issueBadge(issue.status)}</div><div class="panel-body"><dl class="profile-facts">${facts.map(([label,value])=>`<dt>${label}</dt><dd>${htmlText(value??'—')}</dd>`).join('')}</dl>${reading?'<div style="margin-top:12px"><button id="issueReading" class="btn">발생 시점 측정 보기</button></div>':''}</div></section>
-  <section class="panel" style="margin-top:14px"><div class="panel-head"><h2>조치 등록 및 상태 변경</h2></div><div class="panel-body"><form id="issueActionForm"><div class="module-input-grid">
-  <div class="field"><label for="issueNextStatus">조치 상태 *</label><select id="issueNextStatus" class="ctrl">${options(['발생','조치중','조치 완료'].map(v=>({value:v,label:v})),issue.status)}</select></div>
-  <div class="field wide"><label for="issueActionInput">조치 내용</label><textarea id="issueActionInput" class="ctrl textarea" placeholder="조치 내용을 입력하세요 (조치 완료 시 필수)">${htmlText(issue.actionContent||'')}</textarea></div>
-  </div><div class="module-actions"><button type="button" class="btn" id="issueToList">목록</button><button type="submit" class="btn main">조치 저장</button></div></form></div></section></div>`;
+  `<div class="module-scroll"><section class="panel"><div class="panel-head"><div class="panel-head-title"><h2>이슈 정보</h2>${issueBadge(issue.status)}</div></div><div class="panel-body"><dl class="profile-facts facts-2col">${facts.map(([label,value])=>`<dt>${label}</dt><dd>${htmlText(value??'—')}</dd>`).join('')}</dl></div></section>
+  <section class="panel" style="margin-top:14px"><div class="panel-head"><h2>조치 등록 및 상태 변경</h2></div><div class="panel-body"><form id="issueActionForm" style="display:grid;gap:14px">
+  <div class="field" style="max-width:280px;margin:0"><label for="issueNextStatus">조치 상태 *</label><select id="issueNextStatus" class="ctrl">${options(['발생','조치중','조치 완료'].map(v=>({value:v,label:v})),issue.status)}</select></div>
+  <div class="field" style="margin:0"><label for="issueActionInput">조치 내용</label><textarea id="issueActionInput" class="ctrl textarea" placeholder="조치 내용을 입력하세요 (조치 완료 시 필수)">${htmlText(issue.actionContent||'')}</textarea></div>
+  <div class="module-actions"><div class="module-actions-left"><button type="button" class="btn" id="issueToList">목록</button>${reading?'<button type="button" id="issueReading" class="btn">발생 시점 측정 보기</button>':''}</div><button type="submit" class="btn main">조치 저장</button></div></form></div></section></div>`;
   bindModuleBack();
   if(reading)$('#issueReading').onclick=()=>go('env-detail',reading.environmentChangeId);
   $('#issueToList').onclick=()=>go('issue-list');
@@ -482,25 +511,37 @@ function renderIssues(detail){
  const all=label=>({value:'all',label});
  const choose=(id,label,items,selected)=>`<div class="field"><label for="${id}">${label}</label><select id="${id}" class="ctrl">${options([all('전체'),...items],selected)}</select></div>`;
  const values=items=>[...new Set(items)].map(value=>({value,label:value}));
- const rows=issues.filter(item=>(issueFilters.cycle==='all'||item.cycleId===issueFilters.cycle)&&(issueFilters.type==='all'||item.issueType===issueFilters.type)&&(issueFilters.status==='all'||item.status===issueFilters.status)&&(!issueFilters.from||dateFrom(item.occurredAt)>=issueFilters.from)&&(!issueFilters.to||dateFrom(item.occurredAt)<=issueFilters.to)).sort((a,b)=>b.occurredAt.localeCompare(a.occurredAt));
+ const selectableCycles=config.cycles.filter(row=>['진행','종료'].includes(cycleStatus(row)));
+ let selectedIssueCycle=selectableCycles.find(c=>c.cycleId===issueFilters.cycle);
+ if(!selectedIssueCycle){
+  selectedIssueCycle=selectableCycles.find(c=>issues.some(i=>i.cycleId===c.cycleId))||selectableCycles[0];
+  issueFilters.cycle=selectedIssueCycle?.cycleId||'';
+ }
+ if(!selectedIssueCycle){
+  main.innerHTML=moduleHeading('온실 환경 이슈 목록')+'<section class="panel list-section"><div class="panel-body"><p class="empty">조회할 작기계획이 없습니다.</p></div></section>';
+  return;
+ }
+ const cycleIssues=issues.filter(item=>item.cycleId===selectedIssueCycle.cycleId);
+ const rows=cycleIssues.filter(item=>(issueFilters.type==='all'||item.issueType===issueFilters.type)&&(issueFilters.status==='all'||item.status===issueFilters.status)&&(!issueFilters.from||dateFrom(item.occurredAt)>=issueFilters.from)&&(!issueFilters.to||dateFrom(item.occurredAt)<=issueFilters.to)).sort((a,b)=>b.occurredAt.localeCompare(a.occurredAt));
  const size=Number(config.pagination?.pageSize)||5;issueListPage=Math.min(Math.max(1,issueListPage),Math.max(1,Math.ceil(rows.length/size)));const fromIdx=(issueListPage-1)*size,pagedIssues=rows.slice(fromIdx,fromIdx+size);
- main.innerHTML=moduleHeading('온실 환경 이슈 목록')+`${issueSummaryChart(issues)}
+ main.innerHTML=moduleHeading('온실 환경 이슈 목록')+
+ cycleContextBar('issueCycle',selectableCycles,selectedIssueCycle)+
+ `${issueSummaryChart(cycleIssues)}
  <section class="panel search-section" aria-label="검색 조건"><div class="panel-body"><form class="filterbar module-filter" id="issueFilters">
- ${choose('issueCycle','작기계획',config.cycles.map(row=>({value:row.cycleId,label:row.name})),issueFilters.cycle)}
- ${choose('issueType','이슈 유형',values(['온도','습도','이산화탄소','일사량','광도','배지온도','배지수분량','배지 EC','배지 pH',...issues.map(item=>item.issueType)]),issueFilters.type)}
+ ${choose('issueType','이슈 유형',values(['온도','습도','이산화탄소','일사량','광도','배지온도','배지수분량','배지 EC','배지 pH',...cycleIssues.map(item=>item.issueType)]),issueFilters.type)}
  ${choose('issueStatus','조치 상태',values(['발생','조치중','조치 완료']),issueFilters.status)}
  <div class="field"><label for="issueFrom">시작일</label><input id="issueFrom" class="ctrl" type="date" value="${issueFilters.from}"></div>
  <div class="field"><label for="issueTo">종료일</label><input id="issueTo" class="ctrl" type="date" value="${issueFilters.to}"></div>
  <button class="btn filter-submit" type="submit">검색</button></form></div></section>
 
- <section class="panel list-section" aria-label="온실 환경 이슈 목록"><div class="panel-head"><h2>온실 환경 이슈 목록</h2><span class="counter">총 ${rows.length}건</span></div><div class="tablewrap"><table class="data-table module-table"><thead><tr><th>발생일시</th><th>작기계획</th><th>이슈 유형</th><th>이슈 내용</th><th>조치 상태</th></tr></thead>
- <tbody>${pagedIssues.map(item=>`<tr><td>${formatAt(item.occurredAt)}</td><td>${htmlText(getCycle(item.cycleId)?.name)}</td><td>${htmlText(item.issueType)}</td><td><button class="linkbtn" data-issue="${item.issueId}">${htmlText(item.message)}</button></td><td>${issueBadge(item.status)}</td></tr>`).join('')||'<tr><td colspan="5" class="empty">조회된 이슈가 없습니다.</td></tr>'}</tbody></table></div>${pageControls(rows.length,issueListPage,size,'온실 환경 이슈')}</section>`;
+ <section class="panel list-section" aria-label="온실 환경 이슈 목록"><div class="panel-head"><h2>온실 환경 이슈 목록</h2><span class="counter">총 ${rows.length}건</span></div><div class="tablewrap"><table class="data-table module-table"><thead><tr><th>발생일시</th><th>이슈 유형</th><th>이슈 내용</th><th>조치 상태</th></tr></thead>
+ <tbody>${pagedIssues.map(item=>`<tr><td>${formatAt(item.occurredAt)}</td><td>${htmlText(item.issueType)}</td><td><button class="linkbtn" data-issue="${item.issueId}">${htmlText(item.message)}</button></td><td>${issueBadge(item.status)}</td></tr>`).join('')||'<tr><td colspan="4" class="empty">조회된 이슈가 없습니다.</td></tr>'}</tbody></table></div>${pageControls(rows.length,issueListPage,size,'온실 환경 이슈')}</section>`;
  $('#issueCycle').onchange=()=>{issueFilters={cycle:$('#issueCycle').value,type:'all',status:'all',from:'',to:''};issueListPage=1;renderIssues(false)};
  $('#issueFilters').onsubmit=event=>{
   event.preventDefault();
   const from=$('#issueFrom').value,to=$('#issueTo').value;
   if(from&&to&&from>to){toast('시작일과 종료일을 확인하세요.');return}
-  issueFilters={cycle:$('#issueCycle').value,type:$('#issueType').value,status:$('#issueStatus').value,from,to};issueListPage=1;renderIssues(false);
+  issueFilters={cycle:selectedIssueCycle.cycleId,type:$('#issueType').value,status:$('#issueStatus').value,from,to};issueListPage=1;renderIssues(false);
  };
  $$('[data-issue]').forEach(button=>button.onclick=()=>go('issue-detail',button.dataset.issue));
  bindPages('',()=>issueListPage,v=>issueListPage=v,rows.length,size,()=>renderIssues(false));

@@ -2096,3 +2096,138 @@ select.ctrl:disabled {
     grid-template-columns: 1fr;
   }
 }
+
+/* 온실 · 작기 1차 컨텍스트 선택 바 */
+.context-bar-panel {
+  flex: none;
+  border-color: #cfe0d4;
+  background: #f8fbf9;
+}
+
+.context-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px 18px;
+  flex-wrap: wrap;
+  padding: 12px 16px;
+}
+
+.context-bar-select {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex: 1 1 320px;
+  min-width: 0;
+}
+
+.context-bar-select label {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--ink);
+  white-space: nowrap;
+}
+
+.context-bar-select .ctrl {
+  max-width: 420px;
+}
+
+.context-bar-meta {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 13.5px;
+  font-weight: 600;
+  color: var(--muted);
+}
+
+/* 온실 환경변화 최근 측정 현황 9항목 KPI 카드 */
+.env-latest-panel {
+  flex: none;
+}
+
+.env-kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(145px, 1fr));
+  gap: 10px;
+}
+
+.env-kpi-card {
+  padding: 11px 13px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--soft);
+  display: grid;
+  gap: 4px;
+}
+
+.env-kpi-label {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--muted);
+}
+
+.env-kpi-value {
+  font-size: 17px;
+  font-weight: 700;
+  color: var(--ink);
+  font-variant-numeric: tabular-nums;
+}
+
+.env-kpi-value small {
+  margin-left: 3px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--muted);
+}
+
+.env-kpi-value.is-empty {
+  font-size: 13.5px;
+  color: var(--muted);
+}
+
+.env-kpi-groups {
+  display: grid;
+  gap: 12px;
+  padding: 14px 16px;
+}
+
+.env-kpi-group {
+  display: grid;
+  gap: 6px;
+}
+
+.env-kpi-group-title {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--muted);
+}
+
+.env-kpi-grid.cols-5 {
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+}
+
+.env-kpi-grid.cols-4 {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+.env-kpi-card {
+  padding: 9px 12px;
+}
+
+.env-period-bar {
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--line);
+  background: var(--soft);
+}
+
+.chart-svg {
+  height: 185px;
+}
+
+@media (max-width: 900px) {
+  .env-kpi-grid.cols-5,
+  .env-kpi-grid.cols-4 {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
