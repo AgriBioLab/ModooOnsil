@@ -2812,13 +2812,34 @@ select.ctrl {
   gap: 12px 16px;
 }
 
-.cycle-filter-grid > .list-ctrl-field:nth-child(6) {
-  grid-column: span 2;
+.cycle-filter-grid > .list-ctrl-field:nth-child(5) {
+  grid-column: 1 / span 3;
 }
 
 .cycle-filter-grid > .list-search-btn {
   grid-column: 4;
   justify-self: end;
+}
+
+.cycle-period-group {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 4px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: #f7f9f8;
+}
+
+.cycle-period-group .ctrl {
+  flex: 1 1 0;
+  min-width: 0;
+  min-height: 34px;
+}
+
+.cycle-period-group .cycle-period-select {
+  flex: 0 0 130px;
+  font-weight: 600;
 }
 
 .cycle-period-cell {
@@ -2881,8 +2902,14 @@ select.ctrl {
   .cycle-filter-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
-  .cycle-filter-grid > .list-ctrl-field:nth-child(6) {
+  .cycle-filter-grid > .list-ctrl-field:nth-child(5) {
     grid-column: 1 / -1;
+  }
+  .cycle-period-group {
+    flex-wrap: wrap;
+  }
+  .cycle-period-group .cycle-period-select {
+    flex: 1 1 100%;
   }
   .cycle-filter-grid > .list-search-btn {
     grid-column: 2;
