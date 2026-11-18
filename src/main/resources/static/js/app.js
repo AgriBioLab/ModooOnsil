@@ -522,7 +522,8 @@ function envLineChart(rows){
   body=`<svg class="chart-svg" viewBox="0 0 ${w} ${h}" role="img" aria-label="${htmlText(envShortLabel(field.label))} 추이 그래프"><defs><linearGradient id="envAreaGrad" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#1f7a4c" stop-opacity="0.22"/><stop offset="100%" stop-color="#1f7a4c" stop-opacity="0.01"/></linearGradient></defs>${grid}<polygon fill="url(#envAreaGrad)" points="${areaPoly}"/><polyline fill="none" stroke="#1f7a4c" stroke-width="2.25" stroke-linejoin="round" stroke-linecap="round" points="${poly}"/>${dots}${xLabels}</svg>`;
  }
  const scopeLabel=targetDate?`${targetDate===today()?`오늘 ${targetDate}`:targetDate} · 1시간 단위`:`${envFilters.from||'시작'} ~ ${envFilters.to||'종료'} · 1시간 단위`;
- return `<div class="env-chart-toolbar"><div class="env-chart-meta"><span class="env-chart-badge">${htmlText(envShortLabel(field.label))} (${htmlText(field.unit)})</span><span class="counter">${htmlText(scopeLabel)} · 총 ${pts.length}건</span></div></div><div class="panel-body env-chart-body">${body}</div>`;
+ const badgeLabel=field.unit==='pH'?envShortLabel(field.label):`${envShortLabel(field.label)} (${field.unit})`;
+ return `<div class="env-chart-toolbar"><div class="env-chart-meta"><span class="env-chart-badge">${htmlText(badgeLabel)}</span><span class="counter">${htmlText(scopeLabel)} · 총 ${pts.length}건</span></div></div><div class="panel-body env-chart-body">${body}</div>`;
 }
 function issueSummaryStrip(rows,activeStatus){
  const items=[
