@@ -2846,29 +2846,34 @@ select.ctrl {
   white-space: nowrap;
 }
 
+.cycle-table th:nth-child(2),
+.cycle-table td:nth-child(2) {
+  width: 24%;
+}
+
 .cycle-table th:nth-child(3),
 .cycle-table td:nth-child(3),
 .cycle-table th:nth-child(4),
 .cycle-table td:nth-child(4) {
-  width: 96px;
+  width: 11%;
   white-space: nowrap;
 }
 
 .cycle-table th:nth-child(5),
 .cycle-table td:nth-child(5) {
-  width: 108px;
+  width: 12%;
   white-space: nowrap;
 }
 
 .cycle-table th:nth-child(6),
 .cycle-table td:nth-child(6) {
-  width: 245px;
+  width: 24%;
   white-space: nowrap;
 }
 
 .cycle-table th:nth-child(7),
 .cycle-table td:nth-child(7) {
-  width: 96px;
+  width: 100px;
   text-align: center;
   white-space: nowrap;
 }
