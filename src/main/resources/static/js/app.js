@@ -85,6 +85,74 @@ function unifiedListPanel({title,count,actionHtml='',filterHtml='',filterTag='di
  return `<section class="panel list-section" aria-label="${htmlText(ariaLabel||title)}">${filterBar}${summaryBar}${bodyHtml}${footHtml}</section>`;
 }
 function listFilterField(id,label,ctrlHtml,extraClass=''){const cls=extraClass?`list-ctrl-field ${extraClass}`:'list-ctrl-field';return `<label class="${cls}"${id?` for="${id}"`:''}><span>${htmlText(label)}</span>${ctrlHtml}</label>`}
+function dateRangeControl(idPrefix,fromVal,toVal){
+ const hasVal=Boolean(fromVal||toVal);
+ const label=hasVal?`${fromVal||'시작일'} ~ ${toVal||'종료일'}`:'연도-월-일 ~ 연도-월-일';
+ return `<div class="drp-wrap" id="${idPrefix}Wrap"><input type="hidden" id="${idPrefix}From" value="${htmlText(fromVal)}"><input type="hidden" id="${idPrefix}To" value="${htmlText(toVal)}"><button type="button" class="ctrl drp-trigger${hasVal?'':' is-placeholder'}" id="${idPrefix}Trigger" aria-expanded="false"><span>${htmlText(label)}</span><svg class="drp-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg></button><div class="drp-popover hidden" id="${idPrefix}Pop" role="dialog" aria-label="기간 선택 달력"></div></div>`;
+}
+function mountDateRangePicker(idPrefix){
+ const wrap=$(`#${idPrefix}Wrap`),trig=$(`#${idPrefix}Trigger`),pop=$(`#${idPrefix}Pop`);
+ const fromEl=$(`#${idPrefix}From`),toEl=$(`#${idPrefix}To`);
+ if(!wrap||!trig||!pop||!fromEl||!toEl)return;
+ let draftFrom=fromEl.value,draftTo=toEl.value;
+ const baseStart=draftFrom?new Date(draftFrom+'T00:00:00'):new Date(today()+'T00:00:00');
+ let startYM=[baseStart.getFullYear(),baseStart.getMonth()];
+ let endYM=draftTo?[new Date(draftTo+'T00:00:00').getFullYear(),new Date(draftTo+'T00:00:00').getMonth()]:(startYM[1]===11?[startYM[0]+1,0]:[startYM[0],startYM[1]+1]);
+ const pad2=n=>String(n).padStart(2,'0');
+ const ymStr=(y,m)=>`${y}-${pad2(m+1)}`;
+ const shiftYM=([y,m],d)=>{const dt=new Date(y,m+d,1);return [dt.getFullYear(),dt.getMonth()]};
+ const buildCal=(title,ym,which)=>{
+  const [y,m]=ym,firstDow=new Date(y,m,1).getDay(),daysInMonth=new Date(y,m+1,0).getDate();
+  const prevDays=new Date(y,m,0).getDate();
+  let cells='';
+  for(let i=firstDow-1;i>=0;i--)cells+=`<span class="drp-day is-out">${prevDays-i}</span>`;
+  for(let d=1;d<=daysInMonth;d++){
+   const iso=`${ymStr(y,m)}-${pad2(d)}`;
+   const isSel=(which==='from'&&iso===draftFrom)||(which==='to'&&iso===draftTo);
+   const inRange=draftFrom&&draftTo&&iso>draftFrom&&iso<draftTo;
+   const isEdge=(iso===draftFrom||iso===draftTo);
+   cells+=`<button type="button" class="drp-day${isSel||isEdge?' is-selected':''}${inRange?' is-in-range':''}" data-drp-pick="${which}" data-drp-date="${iso}">${d}</button>`;
+  }
+  const rem=(firstDow+daysInMonth)%7;
+  if(rem)for(let d=1;d<=7-rem;d++)cells+=`<span class="drp-day is-out">${d}</span>`;
+  return `<div class="drp-pane"><div class="drp-pane-title">${title}</div><div class="drp-nav"><button type="button" class="drp-nav-btn" data-drp-nav="${which}:-1" aria-label="이전 달">‹</button><strong>${y}년 ${m+1}월</strong><button type="button" class="drp-nav-btn" data-drp-nav="${which}:1" aria-label="다음 달">›</button></div><div class="drp-weekdays"><span>일</span><span>월</span><span>화</span><span>수</span><span>목</span><span>금</span><span>토</span></div><div class="drp-days">${cells}</div><div class="drp-pane-foot"><button type="button" class="btn xs" data-drp-today="${which}">오늘</button></div></div>`;
+ };
+ const drawPop=()=>{
+  pop.innerHTML=`<div class="drp-grid">${buildCal('시작일',startYM,'from')}${buildCal('종료일',endYM,'to')}</div><div class="drp-foot"><button type="button" class="btn xs" data-drp-action="clear">초기화</button><div class="drp-foot-right"><button type="button" class="btn xs" data-drp-action="close">닫기</button><button type="button" class="btn main xs" data-drp-action="apply">선택완료</button></div></div>`;
+  pop.querySelectorAll('[data-drp-nav]').forEach(b=>b.onclick=()=>{const [w,d]=b.dataset.drpNav.split(':');if(w==='from')startYM=shiftYM(startYM,Number(d));else endYM=shiftYM(endYM,Number(d));drawPop()});
+  pop.querySelectorAll('[data-drp-pick]').forEach(b=>b.onclick=()=>{
+   const w=b.dataset.drpPick,dt=b.dataset.drpDate;
+   if(w==='from'){draftFrom=dt;if(draftTo&&draftFrom>draftTo)draftTo=draftFrom}
+   else{draftTo=dt;if(draftFrom&&draftTo<draftFrom)draftFrom=draftTo}
+   drawPop();
+  });
+  pop.querySelectorAll('[data-drp-today]').forEach(b=>b.onclick=()=>{
+   const w=b.dataset.drpToday,t=today();
+   if(w==='from'){draftFrom=t;startYM=[Number(t.slice(0,4)),Number(t.slice(5,7))-1];if(draftTo&&draftFrom>draftTo)draftTo=draftFrom}
+   else{draftTo=t;endYM=[Number(t.slice(0,4)),Number(t.slice(5,7))-1];if(draftFrom&&draftTo<draftFrom)draftFrom=draftTo}
+   drawPop();
+  });
+  pop.querySelector('[data-drp-action="clear"]').onclick=()=>{draftFrom='';draftTo='';fromEl.value='';toEl.value='';trig.classList.add('is-placeholder');trig.querySelector('span').textContent='연도-월-일 ~ 연도-월-일';closePop()};
+  pop.querySelector('[data-drp-action="close"]').onclick=()=>closePop();
+  pop.querySelector('[data-drp-action="apply"]').onclick=()=>{
+   fromEl.value=draftFrom;toEl.value=draftTo;
+   const has=Boolean(draftFrom||draftTo);
+   trig.classList.toggle('is-placeholder',!has);
+   trig.querySelector('span').textContent=has?`${draftFrom||'시작일'} ~ ${draftTo||'종료일'}`:'연도-월-일 ~ 연도-월-일';
+   closePop();
+  };
+ };
+ const closePop=()=>{pop.classList.add('hidden');trig.setAttribute('aria-expanded','false')};
+ trig.onclick=()=>{
+  const open=pop.classList.contains('hidden');
+  document.querySelectorAll('.drp-popover').forEach(p=>p.classList.add('hidden'));
+  if(open){draftFrom=fromEl.value;draftTo=toEl.value;drawPop();pop.classList.remove('hidden');trig.setAttribute('aria-expanded','true')}
+  else closePop();
+ };
+ if(window.__drpDocClick)document.removeEventListener('click',window.__drpDocClick);
+ window.__drpDocClick=e=>{if(!e.target.closest('.drp-wrap'))document.querySelectorAll('.drp-popover').forEach(p=>p.classList.add('hidden'))};
+ document.addEventListener('click',window.__drpDocClick);
+}
 
 function renderList(){const rows=diaryRows.filter(d=>{
  const c=getCycle(d.cycleId);return(filterCycle==='all'||d.cycleId===filterCycle)&&(filterGreenhouse==='all'||c.greenhouseId===filterGreenhouse)&&(filterCrop==='all'||c.cropId===filterCrop)&&(filterVariety==='all'||c.varietyId===filterVariety)&&(!filterDate||d.workDate===filterDate)}).sort((a,b)=>b.workDate.localeCompare(a.workDate)||a.cycleId.localeCompare(b.cycleId));
@@ -261,10 +329,11 @@ function renderCycleList(){let list=config.cycles.filter(c=>{
   title:'작기계획 목록',
   count:list.length,
   actionHtml:'<button type="button" class="btn main xs" id="cycleCreate">+ 작기계획 등록</button>',
-  filterHtml:`${listFilterField('cycleFilterGH','온실',`<select class="ctrl" id="cycleFilterGH">${options([{value:'all',label:'전체 온실'},...config.greenhouses.map(g=>({value:g.greenhouseId,label:g.name}))],cycleFilters.greenhouse)}</select>`)}${listFilterField('cycleFilterState','작기 상태',`<select class="ctrl" id="cycleFilterState">${options(['all','미진행','진행','종료'].map(s=>({value:s,label:s==='all'?'전체 상태':s})),cycleFilters.status)}</select>`)}${listFilterField('cycleFilterCrop','품목',`<select class="ctrl" id="cycleFilterCrop">${options([{value:'all',label:'전체 품목'},...crops],cycleFilters.crop)}</select>`)}${listFilterField('cycleFilterVariety','품종',`<select class="ctrl" id="cycleFilterVariety">${options([{value:'all',label:'전체 품종'},...varieties.map(v=>({value:v.varietyId,label:v.name}))],cycleFilters.variety)}</select>`)}${listFilterField('cycleFilterPeriodType','조회 기간',`<div class="cycle-period-inline"><select class="ctrl cycle-period-select" id="cycleFilterPeriodType" aria-label="기간 기준">${options([{value:'planned',label:'계획 기간'},{value:'actual',label:'실제 기간'}],cycleFilters.periodType)}</select><input type="date" class="ctrl" id="cycleFilterFrom" value="${cycleFilters.from}" aria-label="조회 시작일"><span class="env-date-tilde" aria-hidden="true">~</span><input type="date" class="ctrl" id="cycleFilterTo" value="${cycleFilters.to}" aria-label="조회 종료일"></div>`,'is-span-3')}<button type="button" class="btn main list-search-btn" id="cycleDoFilter">검색</button>`,
+  filterHtml:`${listFilterField('cycleFilterGH','온실',`<select class="ctrl" id="cycleFilterGH">${options([{value:'all',label:'전체 온실'},...config.greenhouses.map(g=>({value:g.greenhouseId,label:g.name}))],cycleFilters.greenhouse)}</select>`)}${listFilterField('cycleFilterState','작기 상태',`<select class="ctrl" id="cycleFilterState">${options(['all','미진행','진행','종료'].map(s=>({value:s,label:s==='all'?'전체 상태':s})),cycleFilters.status)}</select>`)}${listFilterField('cycleFilterCrop','품목',`<select class="ctrl" id="cycleFilterCrop">${options([{value:'all',label:'전체 품목'},...crops],cycleFilters.crop)}</select>`)}${listFilterField('cycleFilterVariety','품종',`<select class="ctrl" id="cycleFilterVariety">${options([{value:'all',label:'전체 품종'},...varieties.map(v=>({value:v.varietyId,label:v.name}))],cycleFilters.variety)}</select>`)}${listFilterField('cycleFilterPeriodType','조회 기간',`<div class="cycle-period-inline"><select class="ctrl cycle-period-select" id="cycleFilterPeriodType" aria-label="기간 기준">${options([{value:'planned',label:'계획 기간'},{value:'actual',label:'실제 기간'}],cycleFilters.periodType)}</select>${dateRangeControl('cycleFilter',cycleFilters.from,cycleFilters.to)}</div>`,'is-span-3')}<button type="button" class="btn main list-search-btn" id="cycleDoFilter">검색</button>`,
   bodyHtml:`<div class="tablewrap"><table class="data-table module-table cycle-table"><thead><tr><th class="row-index">번호</th><th>작기계획명</th><th>온실</th><th>품목</th><th>품종</th><th>계획 기간</th><th>실제 기간</th><th>작기 상태</th></tr></thead><tbody>${rows.map((c,i)=>{const planText=`${dateFrom(c.plannedStartAt)||'—'} ~ ${dateFrom(c.expectedEndAt)||'—'}`;const actualText=c.actualStartAt?`${dateFrom(c.actualStartAt)} ~ ${dateFrom(c.actualEndAt)||'진행 중'}`:'미시작';return `<tr><td class="row-index">${list.length-from-i}</td><td><button class="linkbtn" data-cycle-detail="${c.cycleId}">${htmlText(c.name)}</button></td><td>${htmlText(gh(c.greenhouseId)?.name||'—')}</td><td>${htmlText(cropOf(c)?.name||'—')}</td><td>${htmlText(varietyOf(c)?.name||'—')}</td><td class="col-date">${htmlText(planText)}</td><td class="col-date">${htmlText(actualText)}</td><td>${statusBadge(cycleStatus(c),cycleTone)}</td></tr>`}).join('')||'<tr><td colspan="8" class="empty">조회 결과가 없습니다.</td></tr>'}</tbody></table></div>`,
   footHtml:pageControls(list.length,cycleListPage,size,'작기계획')
  });
+ mountDateRangePicker('cycleFilter');
  $('#cycleFilterCrop').onchange=()=>{const sel=$('#cycleFilterCrop').value;const possible=config.crops.filter(c=>usedCropIds.has(c.cropId)&&(sel==='all'||c.cropId===sel)).flatMap(c=>c.varieties.filter(v=>usedVarIds.has(v.varietyId)).map(v=>({value:v.varietyId,label:v.name})));const vEl=$('#cycleFilterVariety');const old=vEl.value;vEl.innerHTML=options([{value:'all',label:'전체 품종'},...possible],possible.some(v=>v.value===old)?old:'all')};
  $('#cycleDoFilter').onclick=()=>{const from=$('#cycleFilterFrom').value,to=$('#cycleFilterTo').value;if(from&&to&&from>to){toast('조회 시작일과 종료일을 확인하세요.');return}cycleFilters={status:$('#cycleFilterState').value,greenhouse:$('#cycleFilterGH').value,crop:$('#cycleFilterCrop').value,variety:$('#cycleFilterVariety').value,periodType:$('#cycleFilterPeriodType').value,from,to};cycleListPage=1;renderCycleList()};$('#cycleCreate').onclick=()=>go('cycle-create');
  $$('[data-cycle-detail]').forEach(b=>b.onclick=()=>go('cycle-detail',b.dataset.cycleDetail));bindPages('',()=>cycleListPage,v=>cycleListPage=v,list.length,size,renderCycleList);
@@ -620,10 +689,11 @@ function renderIssues(detail){
   count:rows.length,
   filterTag:'form',
   filterId:'issueFilters',
-  filterHtml:`${listFilterField('issueGh','온실',`<select id="issueGh" class="ctrl">${options(ghList,selectedIssueCycle.greenhouseId)}</select>`)}${listFilterField('issueCycle','작기계획',`<select id="issueCycle" class="ctrl">${options(ghCycles.map(c=>({value:c.cycleId,label:`${c.name} (${cycleStatus(c)})`})),selectedIssueCycle.cycleId)}</select>`)}${choose('issueType','이슈 유형',values(['온도','습도','이산화탄소','일사량','광도','배지온도','배지수분량','배지 EC','배지 pH',...cycleIssues.map(item=>item.issueType)]),issueFilters.type)}${choose('issueStatus','조치 상태',values(['발생','조치중','조치 완료']),issueFilters.status)}${listFilterField('issueFrom','조회 기간',`<div class="cycle-date-range"><input id="issueFrom" class="ctrl" type="date" value="${issueFilters.from}" aria-label="시작일"><span class="env-date-tilde" aria-hidden="true">~</span><input id="issueTo" class="ctrl" type="date" value="${issueFilters.to}" aria-label="종료일"></div>`,'is-span-2')}<button class="btn main list-search-btn" type="submit">검색</button>`,
+  filterHtml:`${listFilterField('issueGh','온실',`<select id="issueGh" class="ctrl">${options(ghList,selectedIssueCycle.greenhouseId)}</select>`)}${listFilterField('issueCycle','작기계획',`<select id="issueCycle" class="ctrl">${options(ghCycles.map(c=>({value:c.cycleId,label:`${c.name} (${cycleStatus(c)})`})),selectedIssueCycle.cycleId)}</select>`)}${choose('issueType','이슈 유형',values(['온도','습도','이산화탄소','일사량','광도','배지온도','배지수분량','배지 EC','배지 pH',...cycleIssues.map(item=>item.issueType)]),issueFilters.type)}${choose('issueStatus','조치 상태',values(['발생','조치중','조치 완료']),issueFilters.status)}${listFilterField('issueTrigger','조회 기간',dateRangeControl('issue',issueFilters.from,issueFilters.to),'is-span-2')}<button class="btn main list-search-btn" type="submit">검색</button>`,
   bodyHtml:`<div class="tablewrap"><table class="data-table module-table issue-table"><thead><tr><th class="row-index">번호</th><th class="col-type">이슈 유형</th><th>이슈 내용</th><th class="tnum col-val">발생 측정값</th><th class="col-date">발생일시</th><th class="col-status">조치 상태</th></tr></thead><tbody>${pagedIssues.map((item,i)=>`<tr><td class="row-index">${rows.length-fromIdx-i}</td><td class="col-type">${htmlText(item.issueType)}</td><td><button class="linkbtn" data-issue="${item.issueId}">${htmlText(item.message)}</button></td><td class="tnum col-val">${htmlText(String(item.issueValue??'—'))}</td><td class="col-date">${formatAt(item.occurredAt)}</td><td class="col-status">${issueBadge(item.status)}</td></tr>`).join('')||'<tr><td colspan="6" class="empty">조회된 이슈가 없습니다.</td></tr>'}</tbody></table></div>`,
   footHtml:pageControls(rows.length,issueListPage,size,'온실 환경 이슈')
  });
+ mountDateRangePicker('issue');
  bindCycleContextBar('issueGh','issueCycle',selectableCycles,nextId=>{issueFilters={cycle:nextId,type:'all',status:'all',from:'',to:''};issueListPage=1;renderIssues(false)});
  $('#issueFilters').onsubmit=event=>{
   event.preventDefault();
