@@ -1,4 +1,4 @@
-package kr.swdl.modooonsil.repository;
+package kr.swdl.modooonsil.greenhouse;
 
 import kr.swdl.modooonsil.greenhouse.domain.Greenhouse;
 import kr.swdl.modooonsil.greenhouse.repository.GreenhouseRepository;
