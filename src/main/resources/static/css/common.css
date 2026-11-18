@@ -893,44 +893,46 @@ select.ctrl:disabled {
 }
 
 .tabbar {
-  display: inline-flex;
+  display: flex;
   align-items: center;
   flex-wrap: wrap;
-  width: fit-content;
-  max-width: 100%;
-  gap: 4px;
-  padding: 4px;
+  width: 100%;
+  gap: 8px;
+  padding: 0;
   margin-bottom: 0;
-  background: var(--soft);
-  border: 1px solid var(--line);
-  border-radius: 10px;
+  background: transparent;
+  border: 0;
+  border-bottom: 1px solid var(--line);
+  border-radius: 0;
 }
 
 .tabbtn {
   border: 0;
-  border-radius: 7px;
+  border-bottom: 2px solid transparent;
+  border-radius: 0;
   background: transparent;
   color: var(--muted);
-  padding: 8px 18px;
-  margin-bottom: 0;
+  padding: 10px 16px;
+  margin-bottom: -1px;
   text-align: center;
-  font-size: 13.5px;
+  font-size: 14px;
   font-weight: 600;
-  transition: background-color 0.15s ease, color 0.15s ease, box-shadow 0.15s ease;
+  transition: color 0.15s ease, border-color 0.15s ease;
 }
 
 .tabbtn:hover {
   color: var(--ink);
-  background: rgba(255, 255, 255, 0.55);
+  background: transparent;
 }
 
 .tabbtn[aria-selected="true"] {
-  background: #ffffff;
+  background: transparent;
   color: var(--primary-text);
   border: 0;
-  margin-bottom: 0;
+  border-bottom: 2px solid var(--primary);
+  margin-bottom: -1px;
   font-weight: 700;
-  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.08);
+  box-shadow: none;
 }
 
 .profile-summary-card {
