@@ -77,9 +77,10 @@ function render(){updateNavigation();if(page.startsWith('cycle-')){if(page==='cy
  else if(page.startsWith('issue-'))renderIssues(page==='issue-detail');
  else if(page==='standard'||page==='standard-create')renderStandardPage();
  else if(page==='list')renderList();else if(page==='detail')renderDetail();else renderEditor(page==='edit')}
-function unifiedListPanel({title,count,actionHtml='',filterHtml='',filterTag='div',filterId='',bodyHtml='',footHtml='',ariaLabel}){
+function unifiedListPanel({title,count,actionHtml='',filterHtml='',filterTag='div',filterId='',filterClass='',bodyHtml='',footHtml='',ariaLabel}){
  const fAttr=filterId?` id="${filterId}"`:'';
- const filterBar=filterHtml?`<${filterTag} class="list-filter-strip"${fAttr}>${filterHtml}</${filterTag}>`:'';
+ const fCls=filterClass?`list-filter-strip ${filterClass}`:'list-filter-strip';
+ const filterBar=filterHtml?`<${filterTag} class="${fCls}"${fAttr}>${filterHtml}</${filterTag}>`:'';
  const summaryBar=`<div class="list-summary-bar"><span class="list-total-count">총 <strong>${count}</strong>건</span>${actionHtml?`<div class="list-summary-actions">${actionHtml}</div>`:''}</div>`;
  return `<section class="panel list-section" aria-label="${htmlText(ariaLabel||title)}">${filterBar}${summaryBar}${bodyHtml}${footHtml}</section>`;
 }
@@ -201,14 +202,14 @@ function signIn(member, initialPage='list', initialId=null){
  else if(page.startsWith('env-')&&initialId)selectedMeasurementId=initialId;
  else if(initialId)selectedId=initialId;
  filterCycle=filterGreenhouse=filterCrop=filterVariety='all';filterDate='';listPage=cycleListPage=ghListPage=environmentListPage=issueListPage=1;
- cycleFilters={status:'all',greenhouse:'all',crop:'all',variety:'all'};ghFilters={name:'',type:'all',cover:'all',medium:'all'};envFilters={cycle:'all',from:'',to:'',comparison:'all'};
+ cycleFilters={status:'all',greenhouse:'all',crop:'all',variety:'all',periodType:'planned',from:'',to:''};ghFilters={name:'',type:'all',cover:'all',medium:'all'};envFilters={cycle:'all',from:'',to:'',comparison:'all'};
  issueFilters={cycle:'all',type:'all',status:'all',from:'',to:''};
  showAccount(member);loadStandards();loadGreenhouseExtras();loadCycleExtras();loadIssueExtras();loadSaved();render();
  if(main)main.focus();
 }
 // Additional modules: cycle plans and measured greenhouse environment.
 let selectedCycleId=null,selectedMeasurementId=null,cycleListPage=1,environmentListPage=1;
-let cycleFilters={status:'all',greenhouse:'all',crop:'all',variety:'all'},envFilters={cycle:'all',from:'',to:'',comparison:'all'};
+let cycleFilters={status:'all',greenhouse:'all',crop:'all',variety:'all',periodType:'planned',from:'',to:''},envFilters={cycle:'all',from:'',to:'',comparison:'all'};
 const formatAt=x=>x?String(x).replace('T',' ').slice(0,16):'—';
 const dateFrom=x=>String(x||'').slice(0,10);
 const getSelectedCycle=()=>config.cycles.find(c=>c.cycleId===selectedCycleId)||config.cycles[0];
@@ -239,20 +240,34 @@ function pageControls(count,pageNum,size,kind){let pages=Math.max(1,Math.ceil(co
  return `<div class="list-foot"><nav class="pagination" aria-label="${htmlText(kind)} 페이지 이동"><button class="page-button" data-modpage="prev" ${pageNum===1?'disabled':''}>이전</button>${pageBtns(pageNum,pages,'data-modpage')}<button class="page-button" data-modpage="next" ${pageNum===pages?'disabled':''}>다음</button></nav></div>`;
 }
 function bindPages(selector,get,set,total,size,draw){$$('[data-modpage]').forEach(b=>b.onclick=()=>{const v=b.dataset.modpage;set(v==='prev'?Math.max(1,get()-1):v==='next'?Math.min(Math.ceil(total/size),get()+1):Number(v));draw()})}
-function renderCycleList(){let list=config.cycles.filter(c=>(cycleFilters.status==='all'||c.status===cycleFilters.status)&&(cycleFilters.greenhouse==='all'||c.greenhouseId===cycleFilters.greenhouse)&&(cycleFilters.crop==='all'||c.cropId===cycleFilters.crop)&&(cycleFilters.variety==='all'||c.varietyId===cycleFilters.variety)).sort((a,b)=>(b.plannedStartAt||'').localeCompare(a.plannedStartAt||''));
+function renderCycleList(){let list=config.cycles.filter(c=>{
+  if(!(cycleFilters.status==='all'||c.status===cycleFilters.status))return false;
+  if(!(cycleFilters.greenhouse==='all'||c.greenhouseId===cycleFilters.greenhouse))return false;
+  if(!(cycleFilters.crop==='all'||c.cropId===cycleFilters.crop))return false;
+  if(!(cycleFilters.variety==='all'||c.varietyId===cycleFilters.variety))return false;
+  if(cycleFilters.from||cycleFilters.to){
+   const s=cycleFilters.periodType==='actual'?dateFrom(c.actualStartAt):dateFrom(c.plannedStartAt);
+   const e=cycleFilters.periodType==='actual'?(dateFrom(c.actualEndAt)||(s?today():'')):dateFrom(c.expectedEndAt);
+   if(!s)return false;
+   if(cycleFilters.from&&(e||s)<cycleFilters.from)return false;
+   if(cycleFilters.to&&s>cycleFilters.to)return false;
+  }
+  return true;
+ }).sort((a,b)=>(b.plannedStartAt||'').localeCompare(a.plannedStartAt||''));
  const usedCropIds=new Set(config.cycles.map(c=>c.cropId)),usedVarIds=new Set(config.cycles.map(c=>c.varietyId));const crops=config.crops.filter(c=>usedCropIds.has(c.cropId)).map(c=>({value:c.cropId,label:c.name})),varieties=config.crops.filter(c=>usedCropIds.has(c.cropId)&&(cycleFilters.crop==='all'||c.cropId===cycleFilters.crop)).flatMap(c=>c.varieties.filter(v=>usedVarIds.has(v.varietyId)).map(v=>({...v,cropId:c.cropId})));
  const size=config.pagination.cyclePageSize||5;cycleListPage=Math.min(Math.max(1,cycleListPage),Math.max(1,Math.ceil(list.length/size)));let from=(cycleListPage-1)*size,rows=list.slice(from,from+size);
  const cycleTone={'진행':'bg-light-success','미진행':'bg-light-information','종료':'bg-light-gray'};
  main.innerHTML=moduleHeading('작기계획 목록')+unifiedListPanel({
   title:'작기계획 목록',
   count:list.length,
+  filterClass:'cycle-filter-grid',
   actionHtml:'<button type="button" class="btn main xs" id="cycleCreate">+ 작기계획 등록</button>',
-  filterHtml:`${listFilterField('cycleFilterGH','온실',`<select class="ctrl" id="cycleFilterGH">${options([{value:'all',label:'전체 온실'},...config.greenhouses.map(g=>({value:g.greenhouseId,label:g.name}))],cycleFilters.greenhouse)}</select>`)}${listFilterField('cycleFilterCrop','품목',`<select class="ctrl" id="cycleFilterCrop">${options([{value:'all',label:'전체 품목'},...crops],cycleFilters.crop)}</select>`)}${listFilterField('cycleFilterVariety','품종',`<select class="ctrl" id="cycleFilterVariety">${options([{value:'all',label:'전체 품종'},...varieties.map(v=>({value:v.varietyId,label:v.name}))],cycleFilters.variety)}</select>`)}${listFilterField('cycleFilterState','작기 상태',`<select class="ctrl" id="cycleFilterState">${options(['all','미진행','진행','종료'].map(s=>({value:s,label:s==='all'?'전체 상태':s})),cycleFilters.status)}</select>`)}<button type="button" class="btn main list-search-btn" id="cycleDoFilter">검색</button>`,
-  bodyHtml:`<div class="tablewrap"><table class="data-table module-table"><thead><tr><th class="row-index">번호</th><th>작기계획명</th><th>온실</th><th>품목</th><th>품종</th><th>계획 기간</th><th>작기 상태</th></tr></thead><tbody>${rows.map((c,i)=>`<tr><td class="row-index">${list.length-from-i}</td><td><button class="linkbtn" data-cycle-detail="${c.cycleId}">${htmlText(c.name)}</button></td><td>${htmlText(gh(c.greenhouseId)?.name||'—')}</td><td>${htmlText(cropOf(c)?.name||'—')}</td><td>${htmlText(varietyOf(c)?.name||'—')}</td><td class="col-date">${htmlText(`${dateFrom(c.plannedStartAt)||'—'} ~ ${dateFrom(c.expectedEndAt)||'—'}`)}</td><td>${statusBadge(cycleStatus(c),cycleTone)}</td></tr>`).join('')||'<tr><td colspan="7" class="empty">조회 결과가 없습니다.</td></tr>'}</tbody></table></div>`,
+  filterHtml:`${listFilterField('cycleFilterGH','온실',`<select class="ctrl" id="cycleFilterGH">${options([{value:'all',label:'전체 온실'},...config.greenhouses.map(g=>({value:g.greenhouseId,label:g.name}))],cycleFilters.greenhouse)}</select>`)}${listFilterField('cycleFilterState','작기 상태',`<select class="ctrl" id="cycleFilterState">${options(['all','미진행','진행','종료'].map(s=>({value:s,label:s==='all'?'전체 상태':s})),cycleFilters.status)}</select>`)}${listFilterField('cycleFilterCrop','품목',`<select class="ctrl" id="cycleFilterCrop">${options([{value:'all',label:'전체 품목'},...crops],cycleFilters.crop)}</select>`)}${listFilterField('cycleFilterVariety','품종',`<select class="ctrl" id="cycleFilterVariety">${options([{value:'all',label:'전체 품종'},...varieties.map(v=>({value:v.varietyId,label:v.name}))],cycleFilters.variety)}</select>`)}${listFilterField('cycleFilterPeriodType','기간 기준',`<select class="ctrl" id="cycleFilterPeriodType">${options([{value:'planned',label:'계획 기간'},{value:'actual',label:'실제 기간'}],cycleFilters.periodType)}</select>`)}${listFilterField('cycleFilterFrom','조회 기간',`<div class="cycle-date-range"><input type="date" class="ctrl" id="cycleFilterFrom" value="${cycleFilters.from}" aria-label="조회 시작일"><span class="env-date-tilde" aria-hidden="true">~</span><input type="date" class="ctrl" id="cycleFilterTo" value="${cycleFilters.to}" aria-label="조회 종료일"></div>`)}<button type="button" class="btn main list-search-btn" id="cycleDoFilter">검색</button>`,
+  bodyHtml:`<div class="tablewrap"><table class="data-table module-table"><thead><tr><th class="row-index">번호</th><th>작기계획명</th><th>온실</th><th>품목</th><th>품종</th><th>기간 (계획 / 실제)</th><th>작기 상태</th></tr></thead><tbody>${rows.map((c,i)=>{const planText=`${dateFrom(c.plannedStartAt)||'—'} ~ ${dateFrom(c.expectedEndAt)||'—'}`;const actualText=c.actualStartAt?`${dateFrom(c.actualStartAt)} ~ ${dateFrom(c.actualEndAt)||'진행 중'}`:'미시작';return `<tr><td class="row-index">${list.length-from-i}</td><td><button class="linkbtn" data-cycle-detail="${c.cycleId}">${htmlText(c.name)}</button></td><td>${htmlText(gh(c.greenhouseId)?.name||'—')}</td><td>${htmlText(cropOf(c)?.name||'—')}</td><td>${htmlText(varietyOf(c)?.name||'—')}</td><td class="cycle-period-cell"><span class="cycle-period-plan">계획 ${htmlText(planText)}</span><span class="cycle-period-actual">실제 ${htmlText(actualText)}</span></td><td>${statusBadge(cycleStatus(c),cycleTone)}</td></tr>`}).join('')||'<tr><td colspan="7" class="empty">조회 결과가 없습니다.</td></tr>'}</tbody></table></div>`,
   footHtml:pageControls(list.length,cycleListPage,size,'작기계획')
  });
  $('#cycleFilterCrop').onchange=()=>{const sel=$('#cycleFilterCrop').value;const possible=config.crops.filter(c=>usedCropIds.has(c.cropId)&&(sel==='all'||c.cropId===sel)).flatMap(c=>c.varieties.filter(v=>usedVarIds.has(v.varietyId)).map(v=>({value:v.varietyId,label:v.name})));const vEl=$('#cycleFilterVariety');const old=vEl.value;vEl.innerHTML=options([{value:'all',label:'전체 품종'},...possible],possible.some(v=>v.value===old)?old:'all')};
- $('#cycleDoFilter').onclick=()=>{cycleFilters={status:$('#cycleFilterState').value,greenhouse:$('#cycleFilterGH').value,crop:$('#cycleFilterCrop').value,variety:$('#cycleFilterVariety').value};cycleListPage=1;renderCycleList()};$('#cycleCreate').onclick=()=>go('cycle-create');
+ $('#cycleDoFilter').onclick=()=>{const from=$('#cycleFilterFrom').value,to=$('#cycleFilterTo').value;if(from&&to&&from>to){toast('조회 시작일과 종료일을 확인하세요.');return}cycleFilters={status:$('#cycleFilterState').value,greenhouse:$('#cycleFilterGH').value,crop:$('#cycleFilterCrop').value,variety:$('#cycleFilterVariety').value,periodType:$('#cycleFilterPeriodType').value,from,to};cycleListPage=1;renderCycleList()};$('#cycleCreate').onclick=()=>go('cycle-create');
  $$('[data-cycle-detail]').forEach(b=>b.onclick=()=>go('cycle-detail',b.dataset.cycleDetail));bindPages('',()=>cycleListPage,v=>cycleListPage=v,list.length,size,renderCycleList);
 }
 const stdMetricCols=[['dayTempC','주간 온도(°C)'],['nightTempC','야간 온도(°C)'],['humidityPct','습도(%RH)'],['co2Ppm','CO₂(ppm)'],['solarWm2','일사량(W/m²)'],['lightUmolM2S','광도(μmol/m²/s)'],['substrateTempC','배지 온도(°C)'],['substrateMoisturePct','배지 수분(%)'],['substrateEcMsCm','배지 EC(mS/cm)'],['substratePh','배지 pH']];
