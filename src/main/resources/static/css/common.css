@@ -3101,6 +3101,18 @@ select.ctrl {
   white-space: nowrap;
 }
 
+.std-criteria-table th,
+.std-criteria-table td {
+  padding: 10px 8px;
+  font-size: 12.5px;
+}
+
+.std-criteria-table th {
+  white-space: normal;
+  word-break: keep-all;
+  line-height: 1.35;
+}
+
 .cycle-period-plan {
   display: block;
   font-size: 12px;
