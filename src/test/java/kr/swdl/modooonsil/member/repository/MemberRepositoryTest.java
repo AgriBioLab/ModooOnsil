@@ -1,6 +1,7 @@
 package kr.swdl.modooonsil.member.repository;
 
 import kr.swdl.modooonsil.member.domain.Member;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -10,84 +11,88 @@ import org.springframework.transaction.annotation.Transactional;
 import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
+@Transactional
 class MemberRepositoryTest {
 
     @Autowired
     MemberRepository memberRepository;
 
+    private Member testMember;
+
+    @BeforeEach
+    void setUp() {
+        testMember = Member.builder()
+                .farmName("테스트 농장")
+                .representativeName("테스트 대표자")
+                .username("test1")
+                .password("test1234")
+                .phoneNumber("010-1111-2222")
+                .email("test1@test.com")
+                .farmAddress("테스트 주소")
+                .farmAddressDetail("테스트 상세 주소")
+                .mainCrop("테스트품목")
+                .farmDescription("테스트용 농장입니다.")
+                .farmBusinessNumber("111-11-1111")
+                .certificationStatus("미인증")
+                .build();
+
+        memberRepository.addMember(testMember);
+    }
+
     @Test
     void 내정보_조회_완료() {
-        Long testMemberId = 940001L;
-
-        Member member = memberRepository.findMemberByMemberId(testMemberId);
+        Member member = memberRepository.findMemberByMemberId(testMember.getMemberId());
 
         assertNotNull(member);
-        assertEquals(940001L, member.getMemberId());
-        assertEquals("모두의 장미농장", member.getFarmName());
-        assertEquals("김시연", member.getRepresentativeName());
+        assertEquals(testMember.getMemberId(), member.getMemberId());
+        assertEquals(testMember.getFarmName(), member.getFarmName());
+        assertEquals(testMember.getRepresentativeName(), member.getRepresentativeName());
     }
 
     @Test
     void 내정보_조회_회원없는경우() {
-        Long testUsername = -1L;
-
-        Member member = memberRepository.findMemberByMemberId(testUsername);
-
+        Member member = memberRepository.findMemberByMemberId(99999L);
         assertNull(member);
     }
 
     @Test
     void 회원가입_아이디_중복() {
-        String testUsername = "seed_workflow_rose";
-
-        boolean result = memberRepository.existsByUsername(testUsername);
-
+        boolean result = memberRepository.existsByUsername(testMember.getUsername());
         assertTrue(result);
     }
 
     @Test
     void 회원가입_아이디_중복아님() {
-        String testUsername = "newTestUsername";
-
-        boolean result = memberRepository.existsByUsername(testUsername);
-
+        boolean result = memberRepository.existsByUsername("newTestUsername");
         assertFalse(result);
     }
 
     @Test
     void 회원가입_이메일_중복() {
-        String testEmail = "seed-workflow-rose@example.test";
-
-        boolean result = memberRepository.existsByEmail(testEmail);
-
+        boolean result = memberRepository.existsByEmail(testMember.getEmail());
         assertTrue(result);
     }
 
     @Test
     void 회원가입_이메일_중복아님() {
-        String testEmail = "newTestEmail@email.com";
-
-        boolean result = memberRepository.existsByEmail(testEmail);
-
+        boolean result = memberRepository.existsByEmail("newTestEmail");
         assertFalse(result);
     }
 
-    @Transactional
-    @Rollback
     @Test
     void 회원가입_성공() {
         Member newMember = Member.builder()
-                .farmName("행복한 농장")
-                .representativeName("홍길동")
-                .username("farmuser1")
-                .password("encoded_password")
-                .phoneNumber("010-1234-5678")
-                .email("farmuser@example.com")
-                .farmAddress("서울특별시 중구 세종대로 110")
-                .farmAddressDetail("101호")
-                .mainCrop("장미")
-                .farmDescription("장미를 재배하는 농장입니다.")
-                .farmBusinessNumber("123-45-67890")
+                .farmName("테스트 농장")
+                .representativeName("테스트")
+                .username("test1")
+                .password("test1")
+                .phoneNumber("010-9999-9999")
+                .email("test1@test.com")
+                .farmAddress("테스트 주소")
+                .farmAddressDetail("테스트호")
+                .mainCrop("테스트 품목")
+                .farmDescription("테스트를 재배하는 농장입니다.")
+                .farmBusinessNumber("999-99-9999")
                 .certificationStatus("미인증")
                 .build();
 
@@ -99,26 +104,27 @@ class MemberRepositoryTest {
         assertEquals(newMember.getEmail(), getMember.getEmail());
     }
 
-    @Transactional
-    @Rollback
     @Test
     void 회원정보_수정() {
         Member updateMember = Member.builder()
-                .memberId(940001L)
+                .memberId(testMember.getMemberId())
                 .representativeName("홍길동")
                 .phoneNumber("010-2727-7356")
-                .farmAddress("인천 광역시")
+                .farmAddress("인천광역시")
                 .farmAddressDetail("서구")
                 .mainCrop("사과")
-                .farmDescription("변경된 농장소개1")
+                .farmDescription("변경된 농장소개")
                 .build();
 
         memberRepository.updateMember(updateMember);
 
-        Member getMember = memberRepository.findMemberByMemberId(updateMember.getMemberId());
+        Member getMember = memberRepository.findMemberByMemberId(
+                testMember.getMemberId()
+        );
+
         assertNotNull(getMember);
-        assertEquals(updateMember.getRepresentativeName(), getMember.getRepresentativeName());
-        assertEquals(updateMember.getPhoneNumber(), getMember.getPhoneNumber());
-        assertEquals(updateMember.getMainCrop(), getMember.getMainCrop());
+        assertEquals("홍길동", getMember.getRepresentativeName());
+        assertEquals("010-2727-7356", getMember.getPhoneNumber());
+        assertEquals("사과", getMember.getMainCrop());
     }
 }

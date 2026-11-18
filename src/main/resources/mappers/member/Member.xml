@@ -35,7 +35,6 @@
             main_crop,
             farm_description,
             certified_at,
-            updated_at,
             farm_business_number,
             certification_status
         )
@@ -51,8 +50,7 @@
             #{farmAddressDetail},
             #{mainCrop},
             #{farmDescription},
-            NULL,
-            NULL,
+            #{certifiedAt},
             #{farmBusinessNumber},
             #{certificationStatus}
             )

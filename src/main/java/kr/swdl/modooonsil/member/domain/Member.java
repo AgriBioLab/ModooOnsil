@@ -27,5 +27,5 @@ public class Member {
     private LocalDateTime updatedAt;
     private String farmBusinessNumber;
     private String certificationStatus;
-
+    private LocalDateTime deletedAt;
 }
