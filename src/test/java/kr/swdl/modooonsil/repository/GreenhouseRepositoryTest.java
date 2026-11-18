@@ -34,11 +34,11 @@ public class GreenhouseRepositoryTest {
 
     @Test
     void 온실_목록_조회_성공() {
-        assertThat(repository.findAll(greenhouse.memberId, null, null, null, null)).isNotEmpty();
-        assertThat(repository.findAll(greenhouse.memberId, greenhouse.greenhouseName, null, null, null)).isNotEmpty();
-        assertThat(repository.findAll(greenhouse.memberId, null, greenhouse.greenhouseType, null, null)).isNotEmpty();
-        assertThat(repository.findAll(greenhouse.memberId, null, null, greenhouse.coverType, null)).isNotEmpty();
-        assertThat(repository.findAll(greenhouse.memberId, null, null, null, greenhouse.mediumType)).isNotEmpty();
+        assertThat(repository.findAll(greenhouse.getMemberId(), null, null, null, null)).isNotEmpty();
+        assertThat(repository.findAll(greenhouse.getMemberId(), greenhouse.getGreenhouseName(), null, null, null)).isNotEmpty();
+        assertThat(repository.findAll(greenhouse.getMemberId(), null, greenhouse.getGreenhouseType(), null, null)).isNotEmpty();
+        assertThat(repository.findAll(greenhouse.getMemberId(), null, null, greenhouse.getCoverType(), null)).isNotEmpty();
+        assertThat(repository.findAll(greenhouse.getMemberId(), null, null, null, greenhouse.getMediumType())).isNotEmpty();
     }
 
     @Test
@@ -49,7 +49,7 @@ public class GreenhouseRepositoryTest {
 
     @Test
     void 온실_상세_조회_성공() {
-        assertThat(repository.findById(greenhouse.memberId, greenhouse.greenhouseId)).isNotNull();
+        assertThat(repository.findById(greenhouse.getMemberId(), greenhouse.getGreenhouseId())).isNotNull();
     }
 
     @Test
@@ -74,11 +74,11 @@ public class GreenhouseRepositoryTest {
                 .build();
 
         repository.addGreenhouse(newGreenhouse);
-        Long generatedId = newGreenhouse.greenhouseId;
-        Greenhouse saved = repository.findById(newGreenhouse.memberId, generatedId);
+        Long generatedId = newGreenhouse.getGreenhouseId();
+        Greenhouse saved = repository.findById(newGreenhouse.getMemberId(), generatedId);
 
         assertThat(saved).isNotNull();
-        assertThat(saved.greenhouseId).isEqualTo(generatedId);
+        assertThat(saved.getGreenhouseId()).isEqualTo(generatedId);
     }
 
     @Test
@@ -108,45 +108,63 @@ public class GreenhouseRepositoryTest {
     @Test
     @Transactional
     void 온실_정보_수정() {
-        greenhouse.greenhouseName = "수정 후 온실";
-        greenhouse.coverType = "유리";
+        greenhouse.setGreenhouseName("수정 후 온실");
+        greenhouse.setCoverType("유리");
 
         repository.updateGreenhouse(greenhouse);
 
         Greenhouse saved = repository.findById(
-                greenhouse.memberId,
-                greenhouse.greenhouseId
+                greenhouse.getMemberId(),
+                greenhouse.getGreenhouseId()
         );
 
         assertThat(saved).isNotNull();
-        assertThat(saved.greenhouseName).isEqualTo("수정 후 온실");
-        assertThat(saved.coverType).isEqualTo("유리");
+        assertThat(saved.getGreenhouseName()).isEqualTo("수정 후 온실");
+        assertThat(saved.getCoverType()).isEqualTo("유리");
     }
 
     @Test
     @Transactional
     void 다른_회원의_온실은_수정할_수_없다() {
-        Long ownerId = greenhouse.memberId;
-        Long greenhouseId = greenhouse.greenhouseId;
-        Long otherMemberId = 940002L; // 소유자가 아닌 테스트 회원 ID
+        Long ownerId = greenhouse.getMemberId();
+        Long greenhouseId = greenhouse.getGreenhouseId();
+        Long otherMemberId = 940002L;
 
-        assertThat(otherMemberId).isNotEqualTo(ownerId);
+        Greenhouse updateRequest = repository.findById(ownerId, greenhouseId);
 
-        Greenhouse before = repository.findById(ownerId, greenhouseId);
-        assertThat(before).isNotNull();
+        String originalName = updateRequest.getGreenhouseName();
+        String originalCoverType = updateRequest.getCoverType();
 
-        String originalName = before.greenhouseName;
-        String attemptedName = "다른 회원이 수정한 온실";
-        assertThat(originalName).isNotEqualTo(attemptedName);
+        updateRequest.setMemberId(otherMemberId);
+        updateRequest.setGreenhouseName(originalName + " 수정 시도");
+        updateRequest.setCoverType("유리".equals(originalCoverType) ? "비닐" : "유리");
 
-        before.memberId = otherMemberId;
-        before.greenhouseName = attemptedName;
-
-        repository.updateGreenhouse(before);
+        repository.updateGreenhouse(updateRequest);
 
         Greenhouse saved = repository.findById(ownerId, greenhouseId);
-        assertThat(saved).isNotNull();
-        assertThat(saved.greenhouseName).isEqualTo(originalName);
+        assertThat(saved.getGreenhouseName()).isEqualTo(originalName);
+        assertThat(saved.getCoverType()).isEqualTo(originalCoverType);
     }
 
+    @Test
+    @Transactional
+    void 온실_논리_삭제() {
+        repository.deleteGreenhouseById(greenhouse.getMemberId(), greenhouse.getGreenhouseId());
+
+        Greenhouse deleted = repository.findById(greenhouse.getMemberId(), greenhouse.getGreenhouseId());
+        assertThat(deleted.getDeletedAt()).isNotNull();
+    }
+
+    @Test
+    @Transactional
+    void 다른_회원은_온실을_논리_삭제할_수_없다() {
+        Long ownerId = greenhouse.getMemberId();
+        Long greenhouseId = greenhouse.getGreenhouseId();
+        Long otherMemberId = 940002L;
+
+        repository.deleteGreenhouseById(otherMemberId, greenhouseId);
+
+        Greenhouse after = repository.findById(ownerId, greenhouseId);
+        assertThat(after.getDeletedAt()).isNull();
+    }
 }

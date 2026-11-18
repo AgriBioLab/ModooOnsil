@@ -39,7 +39,8 @@
         length,
         registered_area,
         medium_type,
-        greenhouse_image_url
+        greenhouse_image_url,
+        deleted_at
         FROM greenhouse
         WHERE member_id = #{memberId}
         AND greenhouse_id = #{greenhouseId}
@@ -94,4 +95,11 @@
         AND greenhouse_id = #{greenhouseId}
     </update>
 
+    <update id="deleteGreenhouseById">
+        UPDATE greenhouse
+        SET deleted_at = CURRENT_TIMESTAMP
+        WHERE greenhouse_id = #{greenhouseId}
+        AND member_id = #{memberId}
+        AND deleted_at IS NULL
+    </update>
 </mapper>

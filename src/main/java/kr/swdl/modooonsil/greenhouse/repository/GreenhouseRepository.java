@@ -2,6 +2,7 @@ package kr.swdl.modooonsil.greenhouse.repository;
 
 import kr.swdl.modooonsil.greenhouse.domain.Greenhouse;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 
@@ -15,4 +16,5 @@ public interface GreenhouseRepository {
 
     void updateGreenhouse(Greenhouse greenhouse);
 
+    void deleteGreenhouseById(Long memberId, Long greenhouseId);
 }
