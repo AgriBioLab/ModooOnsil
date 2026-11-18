@@ -12,6 +12,9 @@
             JOIN crop_stage_standard AS s ON s.standard_id = p.standard_id
             JOIN crop AS c ON c.crop_id = s.crop_id
         WHERE p.member_id = #{memberId}
+        <if test="planName != null">
+            AND p.plan_name LIKE CONCAT('%', TRIM(#{planName}),'%')
+        </if>
         <if test="greenhouseName != null">
             AND g.greenhouse_name LIKE CONCAT('%', #{greenhouseName},'%')
         </if>

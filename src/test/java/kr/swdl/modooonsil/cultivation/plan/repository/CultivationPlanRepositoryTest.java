@@ -49,6 +49,22 @@ class CultivationPlanRepositoryTest {
     }
 
     @Test
+    void 작기계획_목록_작기명_조회() {
+        Long memberId = 940001L;
+        String searchPlanName = "장미";
+
+        FindAllCultivationPlanVO vo = FindAllCultivationPlanVO.builder()
+                .memberId(memberId)
+                .planName(searchPlanName)
+                .build();
+
+        List<FindAllCultivationPlanVO> list = cultivationPlanRepository.findAll(vo);
+        assertFalse(list.isEmpty());
+        for (FindAllCultivationPlanVO plan : list)
+            assertTrue(plan.getPlanName().contains(searchPlanName));
+    }
+
+    @Test
     void 작기계획_목록_온실명_조회() {
         Long memberId = 940001L;
 
