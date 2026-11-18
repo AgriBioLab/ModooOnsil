@@ -190,7 +190,7 @@ function renderIssues(detail){
  const issues=config.issueSamples;
  const issueBadge=status=>statusBadge(status,{'발생':'bg-light-danger','조치중':'bg-light-warning','조치 완료':'bg-light-success'});
  if(detail){
-  const issue=issues.find(item=>item.issueId===selectedIssueId)||issues[0];
+  const issue=issues.find(item=>item.issueId===state.selectedIssueId)||issues[0];
   if(!issue){go('issue-list');return}
   state.selectedIssueId=issue.issueId;
   const cycle=getCycle(issue.cycleId);

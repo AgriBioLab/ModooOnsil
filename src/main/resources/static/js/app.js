@@ -54,10 +54,10 @@ function loadSaved(){let saved;try{saved=JSON.parse(localStorage.getItem(storage
 }
 function error(s){const el=$('#formError');if(el){el.textContent=s;el.classList.remove('hidden')}toast(s)}
 function updateNavigation() {
- const isStd = state.page==='standard'||state.state.page==='standard-create';
+ const isStd = state.page==='standard'||state.page==='standard-create';
  const stdModal = window.__stdState?.cropModal;
  const stdDetail = window.__stdState?.cropDetailId;
- const isStdCreate = page==='standard-create' || (stdModal && !stdModal.varietyId);
+ const isStdCreate = state.page==='standard-create' || (stdModal && !stdModal.varietyId);
  const entry = isStd ? (isStdCreate?'standard-create':'standard') : state.page==='cycle-create' ? 'cycle-create' : state.page.startsWith('cycle-') ? 'cycle-list' : state.page==='gh-create' ? 'gh-create' : state.page.startsWith('gh-') ? 'gh-list' : state.page.startsWith('env-') ? 'env-list' : state.page.startsWith('issue-') ? 'issue-list' : state.page==='create' ? 'create' : 'list';
  const current = setCurrentMenu(entry);
  if (isStd) {
@@ -66,8 +66,8 @@ function updateNavigation() {
  }
  const viewState = state.page.replace(/^(cycle-|gh-|env-|issue-)/, '');
  const step = {list:'목록',create:'등록',detail:'상세',edit:'수정'}[viewState] || '목록';
- const section = page.startsWith('cycle-') ? '작기계획' : page.startsWith('gh-') ? '온실 정보' : (page.startsWith('env-')||page.startsWith('issue-')) ? (current?.textContent||'') : '재배일지작업';
- const prefix = (page.startsWith('gh-')||page.startsWith('env-')||page.startsWith('issue-')) ? ['온실', section, step] : [section, step];
+ const section = state.page.startsWith('cycle-') ? '작기계획' : state.page.startsWith('gh-') ? '온실 정보' : (state.page.startsWith('env-')||state.page.startsWith('issue-')) ? (current?.textContent||'') : '재배일지작업';
+ const prefix = (state.page.startsWith('gh-')||state.page.startsWith('env-')||state.page.startsWith('issue-')) ? ['온실', section, step] : [section, step];
  $('#crumb').textContent = prefix.filter(Boolean).join(' / ');
 }
 const pageFile=target=>(target==='standard'||target==='standard-create')?'cropStageStandard.html':target.startsWith('cycle-')?'cultivationPlanList.html':target.startsWith('gh-')?'greenhouseList.html':target.startsWith('env-')?'environmentChangeList.html':target.startsWith('issue-')?'environmentIssueList.html':target==='member'?'mypage.html?tab=pw':target==='profile'?'mypage.html':target==='cert'?'mypage.html?tab=cert':'cultivationDiaryList.html';
@@ -92,7 +92,7 @@ function go(target,id){
  else if(target.startsWith('env-')&&id)state.selectedMeasurementId=id;
  else if(id)state.selectedId=id;
  if((target==='detail'||target==='edit')&&!diaryRows.length){toast('등록된 재배일지작업이 없습니다.');return}
- page=target;render();}
+ state.page=target;render();}
 function heading(title,description='',back=false){return `<div class="pagehead"><div><h1>${title}</h1>${description?`<p>${htmlText(description)}</p>`:''}</div>${back?'<button type="button" class="backlink" id="returnList">← 재배일지작업 목록으로</button>':''}</div>`}
 function bindBack(){const el=$('#returnList');if(el)el.addEventListener('click',()=>go('list'))}
 function render(){

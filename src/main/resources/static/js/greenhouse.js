@@ -21,7 +21,7 @@ function renderGreenhouseList(){
  bindPages('',()=>ghListPage,v=>ghListPage=v,rows.length,size,renderGreenhouseList);
 }
 function renderGreenhouseDetail(){
- const g=config.greenhouses.find(x=>x.greenhouseId===selectedGhId)||config.greenhouses[0];
+ const g=config.greenhouses.find(x=>x.greenhouseId===state.selectedGhId)||config.greenhouses[0];
  if(!g){go('gh-list');return}
  state.selectedGhId=g.greenhouseId;
  const linked=config.cycles.filter(c=>c.greenhouseId===g.greenhouseId);
@@ -48,7 +48,7 @@ function renderGreenhouseDetail(){
  $('#ghDeleteOk').onclick=()=>{config.greenhouses=config.greenhouses.filter(x=>x.greenhouseId!==g.greenhouseId);storeGreenhouseExtras();toast('온실을 삭제했습니다.');go('gh-list')};
 }
 function renderGreenhouseEditor(edit){
- const g=edit?(config.greenhouses.find(x=>x.greenhouseId===selectedGhId)||config.greenhouses[0]):null;
+ const g=edit?(config.greenhouses.find(x=>x.greenhouseId===state.selectedGhId)||config.greenhouses[0]):null;
  if(edit&&!g){go('gh-list');return}
  const row=g||{greenhouseId:'',name:'',type:'단동',coverType:'비닐',buildingCount:1,sideHeight:'',width:'',length:'',registeredArea:'',mediumType:'수태',imageUrl:''};
  main.innerHTML=moduleHeading(edit?'온실 정보 수정':'온실 정보 등록','')+
