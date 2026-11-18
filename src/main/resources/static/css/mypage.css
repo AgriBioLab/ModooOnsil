@@ -45,7 +45,7 @@
 }
 
 .profile-tabbar .tabbtn {
-  min-height: 44px;
+  min-height: 36px;
   word-break: keep-all;
   overflow-wrap: anywhere;
 }
