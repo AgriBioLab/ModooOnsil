@@ -22,7 +22,7 @@ class CultivationPlanRepositoryTest {
     CultivationPlanRepository cultivationPlanRepository;
 
     @Test
-    void 작기계획_목록_조건없는_조회() {
+    void 작기계획_조건_없는_목록_조회_성공() {
         Long memberId = 940001L;
 
         FindAllCultivationPlanVO vo = FindAllCultivationPlanVO.builder()
@@ -34,7 +34,7 @@ class CultivationPlanRepositoryTest {
     }
 
     @Test
-    void 작기계획_목록_조건없는_없음() {
+    void 작기계획_조건_없는_목록_조회_데이터_없음() {
         Long memberId = -1L;
 
         FindAllCultivationPlanVO vo = FindAllCultivationPlanVO.builder()
