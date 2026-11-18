@@ -2440,7 +2440,7 @@ select.ctrl:disabled {
 .env-history-controls {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 16px;
   flex-wrap: wrap;
 }
 
@@ -3001,10 +3001,11 @@ select.ctrl {
 }
 
 .env-period-filter .drp-wrap {
-  width: 230px;
+  width: 196px;
 }
 
 .env-period-filter .drp-trigger {
+  width: 100%;
   min-height: 34px;
   padding: 4px 10px;
   font-size: 12.5px;
