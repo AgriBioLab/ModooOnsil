@@ -950,9 +950,9 @@ select.ctrl:disabled {
   gap: 0;
   margin: 0;
   padding: 0;
-  border: 1px solid var(--line);
-  border-radius: 8px;
-  overflow: hidden;
+  border: 0;
+  border-top: 1px solid #d5dbe3;
+  border-radius: 0;
 }
 
 .profile-facts dt {
@@ -961,8 +961,8 @@ select.ctrl:disabled {
   color: var(--muted);
   font-size: 13.5px;
   font-weight: 600;
-  border-bottom: 1px solid var(--line);
-  border-right: 1px solid #eef1f4;
+  border-bottom: 1px solid #e6e9ed;
+  border-right: 0;
   display: flex;
   align-items: center;
 }
@@ -974,7 +974,7 @@ select.ctrl:disabled {
   color: var(--ink);
   font-size: 14.5px;
   font-weight: 500;
-  border-bottom: 1px solid var(--line);
+  border-bottom: 1px solid #e6e9ed;
   display: flex;
   align-items: center;
   word-break: keep-all;

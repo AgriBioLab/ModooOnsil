@@ -90,7 +90,7 @@
 }
 
 .profile-tab-panel .profile-facts dd:nth-of-type(odd) {
-  border-right: 1px solid var(--line);
+  border-right: 0;
 }
 
 .profile-tab-panel .profile-facts dd:last-of-type:nth-of-type(odd) {
