@@ -2329,9 +2329,7 @@ select.ctrl:disabled {
   background: transparent;
 }
 
-.context-bar-panel,
-.env-latest-panel,
-.env-history-panel {
+.workarea main > * {
   width: 100%;
   max-width: 1200px;
 }
