@@ -590,9 +590,8 @@ function renderEnvList(){
   <div class="env-history-controls">
    ${envViewTab==='chart'?`<label class="env-ctrl-field"><span>항목</span><select id="envChartMetric" class="ctrl">${options(metricOptions,envChartKey)}</select></label>`:''}
    <div class="env-period-filter">
-    <label class="env-ctrl-field"><span>측정 기간</span><input type="date" class="ctrl" id="envFrom" value="${envFilters.from}" aria-label="측정 시작일"></label>
-    <span class="env-date-tilde" aria-hidden="true">~</span>
-    <input type="date" class="ctrl" id="envTo" value="${envFilters.to}" aria-label="측정 종료일">
+    <label class="env-ctrl-field" for="envTrigger"><span>측정 기간</span></label>
+    ${dateRangeControl('env',envFilters.from,envFilters.to)}
     <button type="button" class="btn main env-search-btn" id="envDoFilter">검색</button>
    </div>
   </div>
@@ -604,6 +603,7 @@ function renderEnvList(){
  cycleContextBar('envGh','envCycle',listCycles,selectedCycle)+
  envLatestSummary(cycleAllRows)+
  `<section class="panel env-history-panel" aria-label="온실 환경변화 이력 조회">${historyHead}${historyBody}</section>`;
+ mountDateRangePicker('env');
  bindCycleContextBar('envGh','envCycle',listCycles,nextId=>{envFilters.cycle=nextId;environmentListPage=1;renderEnvList()});
  $('#envDoFilter').onclick=()=>{
    const next={cycle:selectedCycle.cycleId,from:$('#envFrom').value,to:$('#envTo').value,comparison:'all'};

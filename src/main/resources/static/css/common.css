@@ -2988,6 +2988,21 @@ select.ctrl {
   gap: 6px;
 }
 
+.env-period-filter .drp-wrap {
+  width: 225px;
+}
+
+.env-period-filter .drp-trigger {
+  min-height: 30px;
+  padding: 3px 10px;
+  font-size: 12.5px;
+}
+
+.env-period-filter .drp-popover {
+  left: auto;
+  right: 0;
+}
+
 @media (max-width: 640px) {
   .drp-grid {
     grid-template-columns: 1fr;
