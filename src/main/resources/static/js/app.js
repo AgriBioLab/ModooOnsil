@@ -388,7 +388,7 @@ function envLineChart(rows){
   const vals=pts.map(r=>Number(r[field.key]));
   let min=Math.min(...vals),max=Math.max(...vals);
   if(min===max){min-=1;max+=1}
-  const padL=48,padR=20,padT=14,padB=26,w=1120,h=175,pw=w-padL-padR,ph=h-padT-padB;
+  const padL=48,padR=20,padT=16,padB=28,w=1080,h=230,pw=w-padL-padR,ph=h-padT-padB;
   const xAt=i=>pts.length===1?padL+pw/2:padL+(i/(pts.length-1))*pw;
   const yAt=v=>padT+ph-((v-min)/(max-min))*ph;
   const coords=pts.map((r,i)=>({x:xAt(i),y:yAt(Number(r[field.key])),r}));
