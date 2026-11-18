@@ -1,4 +1,7 @@
 package kr.swdl.modooonsil.cultivation.diary.task.repository;
 
-public class CultivationDiaryTaskRepository {
+import org.apache.ibatis.annotations.Mapper;
+
+@Mapper
+public interface CultivationDiaryTaskRepository {
 }

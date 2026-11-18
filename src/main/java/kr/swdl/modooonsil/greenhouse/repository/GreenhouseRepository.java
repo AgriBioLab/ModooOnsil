@@ -1,4 +1,7 @@
 package kr.swdl.modooonsil.greenhouse.repository;
 
-public class GreenhouseRepository {
+import org.apache.ibatis.annotations.Mapper;
+
+@Mapper
+public interface GreenhouseRepository {
 }
