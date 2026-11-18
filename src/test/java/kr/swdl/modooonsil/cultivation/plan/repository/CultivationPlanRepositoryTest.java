@@ -15,6 +15,7 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
+@Transactional
 class CultivationPlanRepositoryTest {
 
     @Autowired
@@ -100,8 +101,6 @@ class CultivationPlanRepositoryTest {
         assertEquals("장미 가을 작기 · 환경 및 이슈 시연", vo.getPlanName());
     }
 
-    @Transactional
-    @Rollback
     @Test
     void 작기계획_등록() {
         CultivationPlan newCultivationPlan = CultivationPlan.builder()
@@ -121,8 +120,6 @@ class CultivationPlanRepositoryTest {
         assertEquals(newCultivationPlan.getPlannedStartDate(), getCultivationPlan.getPlannedStartDate());
     }
 
-    @Transactional
-    @Rollback
     @Test
     void 작기계획_수정() {
         CultivationPlan updateCultivationPlan = CultivationPlan.builder()
@@ -141,9 +138,6 @@ class CultivationPlanRepositoryTest {
         assertEquals(updateCultivationPlan.getPlannedStartDate(), getCultivationPlan.getPlannedStartDate());
     }
 
-
-    @Transactional
-    @Rollback
     @Test
     void 작기계획_시작상태_변경() {
         Long memberId = 940001L;
@@ -156,8 +150,6 @@ class CultivationPlanRepositoryTest {
         assertNotNull(getCultivationPlan.getActualStartDate());
     }
 
-    @Transactional
-    @Rollback
     @Test
     void 작기계획_종료상태_변경() {
         Long testMemberId = 940001L;
@@ -177,5 +169,18 @@ class CultivationPlanRepositoryTest {
         assertEquals("종료", getCultivationPlan.getPlanStatus());
         assertEquals(testEndReason, getCultivationPlan.getEndReason());
         assertNotNull(getCultivationPlan.getActualStartDate());
+    }
+
+    @Test
+    void 미진행_작기계획_삭제() {
+        Long testMemberId = 940001L;
+        Long testPlanId = 940003L;
+
+        cultivationPlanRepository.deleteCultivationPlan(testMemberId, testPlanId);
+        FindCultivationPlanDetailVO getCultivationPlan = cultivationPlanRepository.findByMemberIdAndPlanId(testMemberId, testPlanId);
+        System.out.println(getCultivationPlan);
+        assertEquals(testPlanId, getCultivationPlan.getPlanId());
+        assertEquals("미진행", getCultivationPlan.getPlanStatus());
+        assertNotNull(getCultivationPlan.getDeletedAt());
     }
 }

@@ -10,16 +10,16 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 public class CultivationPlan {
-    Long planId;
-    Long greenhouseId;
-    Long memberId;
-    Long standardId;
-    String planName;
-    String planStatus;
-    LocalDateTime plannedStartDate;
-    LocalDateTime plannedEndDate;
-    LocalDateTime createdAt;
-    LocalDateTime actualStartDate;
-    LocalDateTime actualEndDate;
-    String endReason;
+    private Long planId;
+    private Long greenhouseId;
+    private Long memberId;
+    private Long standardId;
+    private String planName;
+    private String planStatus;
+    private LocalDateTime plannedStartDate;
+    private LocalDateTime plannedEndDate;
+    private LocalDateTime createdAt;
+    private LocalDateTime actualStartDate;
+    private LocalDateTime actualEndDate;
+    private String endReason;
 }

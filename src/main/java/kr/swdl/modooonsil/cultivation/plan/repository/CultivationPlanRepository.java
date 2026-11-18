@@ -15,4 +15,5 @@ public interface CultivationPlanRepository {
     void updateCultivationPlan(CultivationPlan updateCultivationPlan);
     void updateCultivationPlanStart(Long memberId, Long planId);
     void updateCultivationPlanEnd(CultivationPlan endCultivationPlan);
+    void deleteCultivationPlan(Long memberId, Long planId);
 }

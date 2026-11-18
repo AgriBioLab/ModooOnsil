@@ -5,7 +5,7 @@
 
     <select id="findAll"
             resultType="kr.swdl.modooonsil.cultivation.plan.domain.FindAllCultivationPlanVO"
-            parameterType="kr.swdl.modooonsil.cultivation.diary.domain.CultivationDiary">
+            parameterType="kr.swdl.modooonsil.cultivation.plan.domain.FindAllCultivationPlanVO">
         SELECT p.plan_id, p.plan_name, g.greenhouse_name, c.crop_name, c.variety_name, p.plan_status, p.planned_start_date, p.planned_end_date
         FROM cultivation_plan AS p
             JOIN greenhouse AS g ON g.greenhouse_id = p.greenhouse_id
@@ -39,7 +39,10 @@
             cp.actual_start_date,
             cp.actual_end_date,
             cp.plan_status,
-            cp.end_reason
+            cp.end_reason,
+            cp.created_at,
+            cp.updated_at,
+            cp.deleted_at
         FROM cultivation_plan AS cp
                  JOIN greenhouse AS g ON g.greenhouse_id = cp.greenhouse_id
                  JOIN crop_stage_standard AS css ON css.standard_id = cp.standard_id
@@ -81,7 +84,8 @@
         SET
             plan_name = #{planName},
             planned_start_date = #{plannedStartDate},
-            planned_end_date = #{plannedEndDate}
+            planned_end_date = #{plannedEndDate},
+            updated_at = NOW()
         WHERE
             member_id = #{memberId} AND plan_id = #{planId}
     </update>
@@ -90,7 +94,8 @@
         UPDATE cultivation_plan
         SET
             actual_start_date = NOW(),
-            plan_status = '진행'
+            plan_status = '진행',
+            updated_at = NOW()
         WHERE
             member_id = #{memberId} AND plan_id = #{planId}
     </update>
@@ -100,8 +105,17 @@
         SET
             actual_end_date = NOW(),
             plan_status = '종료',
-            end_reason = #{endReason}
+            end_reason = #{endReason},
+            updated_at = NOW()
         WHERE
             member_id = #{memberId} AND plan_id = #{planId}
+    </update>
+
+    <update id="deleteCultivationPlan" parameterType="Long">
+        UPDATE cultivation_plan
+        SET
+            deleted_at = NOW()
+        WHERE
+            member_id = #{memberId} AND plan_id = #{planId} AND plan_status = '미진행'
     </update>
 </mapper>

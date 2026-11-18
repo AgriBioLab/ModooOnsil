@@ -10,13 +10,13 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 public class FindAllCultivationPlanVO {
-    Long memberId;
-    Long planId;
-    String planName;
-    String greenhouseName ;
-    String cropName ;
-    String varietyName ;
-    String planStatus ;
-    LocalDateTime plannedStartDate ;
-    LocalDateTime plannedEndDate;
+    private Long memberId;
+    private Long planId;
+    private String planName;
+    private String greenhouseName ;
+    private String cropName ;
+    private String varietyName ;
+    private String planStatus ;
+    private LocalDateTime plannedStartDate ;
+    private LocalDateTime plannedEndDate;
 }

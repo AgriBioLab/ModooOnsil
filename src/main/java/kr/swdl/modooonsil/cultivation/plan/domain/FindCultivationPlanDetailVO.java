@@ -10,15 +10,18 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 public class FindCultivationPlanDetailVO {
-    Long planId;
-    String planName;
-    String greenhouseName;
-    String cropName;
-    String varietyName;
-    LocalDateTime plannedStartDate;
-    LocalDateTime plannedEndDate;
-    LocalDateTime actualStartDate;
-    LocalDateTime actualEndDate;
-    String planStatus;
-    String endReason;
+    private Long planId;
+    private String planName;
+    private String greenhouseName;
+    private String cropName;
+    private String varietyName;
+    private LocalDateTime plannedStartDate;
+    private LocalDateTime plannedEndDate;
+    private LocalDateTime actualStartDate;
+    private LocalDateTime actualEndDate;
+    private String planStatus;
+    private String endReason;
+    private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
+    private LocalDateTime deletedAt;
 }
