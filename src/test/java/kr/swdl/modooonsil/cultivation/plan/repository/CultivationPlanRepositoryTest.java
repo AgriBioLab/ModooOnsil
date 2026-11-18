@@ -3,6 +3,7 @@ package kr.swdl.modooonsil.cultivation.plan.repository;
 import kr.swdl.modooonsil.cultivation.plan.domain.CultivationPlan;
 import kr.swdl.modooonsil.cultivation.plan.domain.FindAllCultivationPlanVO;
 import kr.swdl.modooonsil.cultivation.plan.domain.FindCultivationPlanDetailVO;
+import kr.swdl.modooonsil.cultivation.plan.domain.UpdateCultivationPlan;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -31,6 +32,8 @@ class CultivationPlanRepositoryTest {
 
         List<FindAllCultivationPlanVO> list = cultivationPlanRepository.findAll(vo);
         assertFalse(list.isEmpty());
+        for (FindAllCultivationPlanVO plan : list)
+            assertEquals(memberId, plan.getMemberId());
     }
 
     @Test
@@ -91,6 +94,48 @@ class CultivationPlanRepositoryTest {
     }
 
     @Test
+    void 작기계획_목록_계획기간_조회() {
+        Long memberId = 940001L;
+        LocalDateTime testStartDate = LocalDateTime.of(2026, 10, 1, 0, 0);
+        LocalDateTime testEndDate = LocalDateTime.of(2027, 10, 1, 0, 0);
+
+        FindAllCultivationPlanVO vo = FindAllCultivationPlanVO.builder()
+                .memberId(memberId)
+                .plannedStartDate(testStartDate)
+                .plannedEndDate(testEndDate)
+                .build();
+
+        List<FindAllCultivationPlanVO> list = cultivationPlanRepository.findAll(vo);
+        assertFalse(list.isEmpty());
+        for (FindAllCultivationPlanVO plan : list) {
+            assertEquals(memberId, plan.getMemberId());
+            assertFalse(plan.getPlannedEndDate().isBefore(testStartDate));
+            assertFalse(plan.getPlannedStartDate().isAfter(testEndDate));
+        }
+    }
+
+    @Test
+    void 작기계획_목록_실제기간_조회() {
+        Long memberId = 940001L;
+        LocalDateTime testStartDate = LocalDateTime.of(2026, 10, 1, 0, 0);
+        LocalDateTime testEndDate = LocalDateTime.of(2027, 10, 1, 0, 0);
+
+        FindAllCultivationPlanVO vo = FindAllCultivationPlanVO.builder()
+                .memberId(memberId)
+                .actualStartDate(testStartDate)
+                .actualEndDate(testEndDate)
+                .build();
+
+        List<FindAllCultivationPlanVO> list = cultivationPlanRepository.findAll(vo);
+        for (FindAllCultivationPlanVO plan : list) {
+            assertEquals(memberId, plan.getMemberId());
+            assertFalse(plan.getActualStartDate().isAfter(testEndDate));
+            if (plan.getActualEndDate() != null)
+                assertFalse(plan.getActualEndDate().isBefore(testStartDate));
+        }
+    }
+
+    @Test
     void 작기계획_상세조회() {
         Long memberId = 940001L;
         Long planId = 940001L;
@@ -122,9 +167,11 @@ class CultivationPlanRepositoryTest {
 
     @Test
     void 작기계획_수정() {
-        CultivationPlan updateCultivationPlan = CultivationPlan.builder()
-                .planId(940001L)
+        UpdateCultivationPlan updateCultivationPlan = UpdateCultivationPlan.builder()
+                .planId(940003L)
                 .memberId(940001L)
+                .greenhouseId(940001L)
+                .standardId(940001L)
                 .planName("테스트 작기계획")
                 .plannedStartDate(LocalDateTime.of(2026, 11, 17, 0, 0, 0))
                 .plannedEndDate(LocalDateTime.of(2027, 11, 17, 0, 0, 0))
@@ -177,8 +224,7 @@ class CultivationPlanRepositoryTest {
         Long testPlanId = 940003L;
 
         cultivationPlanRepository.deleteCultivationPlan(testMemberId, testPlanId);
-        FindCultivationPlanDetailVO getCultivationPlan = cultivationPlanRepository.findByMemberIdAndPlanId(testMemberId, testPlanId);
-        System.out.println(getCultivationPlan);
+        FindCultivationPlanDetailVO getCultivationPlan = cultivationPlanRepository.findDeletedByMemberIdAndPlanId(testMemberId, testPlanId);
         assertEquals(testPlanId, getCultivationPlan.getPlanId());
         assertEquals("미진행", getCultivationPlan.getPlanStatus());
         assertNotNull(getCultivationPlan.getDeletedAt());
