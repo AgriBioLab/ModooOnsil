@@ -474,8 +474,8 @@ function renderEnvList(){
  const tableCols=fields.map(f=>`<th>${htmlText(f.unit==='pH'?envShortLabel(f.label):`${envShortLabel(f.label)}(${f.unit})`)}</th>`).join('');
  const historyHead=`<div class="panel-head env-history-head">
   <div class="env-inline-tabs" role="tablist" aria-label="환경변화 보기 방식">
-   <button type="button" class="env-inline-tab" role="tab" id="envTabChart" aria-selected="${envViewTab==='chart'}">추이 그래프</button>
-   <button type="button" class="env-inline-tab" role="tab" id="envTabTable" aria-selected="${envViewTab==='table'}">시간별 측정 목록 (${rows.length}건)</button>
+   <button type="button" class="env-inline-tab" role="tab" id="envTabChart" aria-selected="${envViewTab==='chart'}">그래프로 보기</button>
+   <button type="button" class="env-inline-tab" role="tab" id="envTabTable" aria-selected="${envViewTab==='table'}">목록으로 보기</button>
   </div>
   <div class="env-history-controls">
    ${envViewTab==='chart'?`<label class="env-ctrl-field"><span>항목</span><select id="envChartMetric" class="ctrl">${options(metricOptions,envChartKey)}</select></label>`:''}
