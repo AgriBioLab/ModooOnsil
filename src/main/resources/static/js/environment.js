@@ -148,7 +148,7 @@ function renderEnvList(){
  const from=(environmentListPage-1)*size,shown=rows.slice(from,from+size);
  const fields=config.measurementFields||[];
  const metricOptions=fields.map(f=>({value:f.key,label:f.unit==='pH'?envShortLabel(f.label):`${envShortLabel(f.label)} (${f.unit})`}));
- const tableCols=fields.map(f=>`<th class="tnum">${htmlText(f.unit==='pH'?envShortLabel(f.label):`${envShortLabel(f.label)}(${f.unit})`)}</th>`).join('');
+ const tableCols=fields.map(f=>`<th class="tnum" scope="col">${htmlText(f.unit==='pH'?envShortLabel(f.label):`${envShortLabel(f.label)}(${f.unit})`)}</th>`).join('');
  const historyHead=`<div class="panel-head env-history-head">
   <div class="env-inline-tabs" role="tablist" aria-label="환경변화 보기 방식">
    <button type="button" class="env-inline-tab" role="tab" id="envTabChart" aria-selected="${envViewTab==='chart'}">그래프로 보기</button>
@@ -165,7 +165,7 @@ function renderEnvList(){
  </div>`;
  const historyBody=envViewTab==='chart'
   ?envLineChart(rows)
-  :`<div class="tablewrap"><table class="data-table module-table env-table"><thead><tr><th class="row-index">번호</th><th>측정일시</th>${tableCols}</tr></thead><tbody>${shown.map((r,i)=>`<tr><td class="row-index">${rows.length-from-i}</td><td>${formatAt(r.measuredAt)}</td>${fields.map(f=>`<td class="tnum">${fmtVal(r[f.key])}</td>`).join('')}</tr>`).join('')||'<tr><td colspan="11" class="empty">해당 작기의 측정 기록이 없습니다.</td></tr>'}</tbody></table></div>${pageControls(rows.length,environmentListPage,size,'온실 환경변화')}`;
+  :`<div class="tablewrap"><table class="data-table module-table env-table"><caption class="sr-only">온실 환경변화 측정 목록</caption><thead><tr><th class="row-index" scope="col">번호</th><th scope="col">측정일시</th>${tableCols}</tr></thead><tbody>${shown.map((r,i)=>`<tr><td class="row-index">${rows.length-from-i}</td><td>${formatAt(r.measuredAt)}</td>${fields.map(f=>`<td class="tnum">${fmtVal(r[f.key])}</td>`).join('')}</tr>`).join('')||'<tr><td colspan="11" class="empty">해당 작기의 측정 기록이 없습니다.</td></tr>'}</tbody></table></div>${pageControls(rows.length,environmentListPage,size,'온실 환경변화')}`;
  main.innerHTML=moduleHeading('온실 환경변화 목록')+
  cycleContextBar('envGh','envCycle',listCycles,selectedCycle)+
  envLatestSummary(cycleAllRows)+
@@ -253,12 +253,13 @@ function renderIssues(detail){
   count:rows.length,
   filterTag:'form',
   filterId:'issueFilters',
-  filterHtml:`${listFilterField('issueGh','온실명',`<select id="issueGh" class="ctrl">${options(ghList,selectedIssueCycle.greenhouseId)}</select>`)}${listFilterField('issueCycle','작기계획명',`<select id="issueCycle" class="ctrl">${options(ghCycles.map(c=>({value:c.cycleId,label:`${c.name} (${cycleStatus(c)})`})),selectedIssueCycle.cycleId)}</select>`)}${choose('issueType','이슈 유형',values(['온도','습도','이산화탄소','일사량','광도','배지온도','배지수분량','배지 EC','배지 pH',...cycleIssues.map(item=>item.issueType)]),issueFilters.type)}${choose('issueStatus','조치 상태',values(['발생','조치중','조치 완료']),issueFilters.status)}${listFilterField('issueTrigger','조회 기간',dateRangeControl('issue',issueFilters.from,issueFilters.to),'is-span-2')}<button class="btn main list-search-btn" type="submit">검색</button>`,
-  bodyHtml:`<div class="tablewrap"><table class="data-table module-table issue-table"><thead><tr><th class="row-index">번호</th><th class="col-type">이슈 유형</th><th>이슈 내용</th><th class="tnum col-val">발생 측정값</th><th class="col-date">발생일시</th><th class="col-status">조치 상태</th></tr></thead><tbody>${pagedIssues.map((item,i)=>`<tr><td class="row-index">${rows.length-fromIdx-i}</td><td class="col-type">${htmlText(item.issueType)}</td><td><button class="linkbtn" data-issue="${item.issueId}">${htmlText(item.message)}</button></td><td class="tnum col-val">${htmlText(String(item.issueValue??'—'))}</td><td class="col-date">${formatAt(item.occurredAt)}</td><td class="col-status">${issueBadge(item.status)}</td></tr>`).join('')||'<tr><td colspan="6" class="empty">조회된 이슈가 없습니다.</td></tr>'}</tbody></table></div>`,
+  filterHtml:`${listFilterField('issueGh','온실명',`<select id="issueGh" class="ctrl">${options(ghList,selectedIssueCycle.greenhouseId)}</select>`)}${listFilterField('issueCycle','작기계획명',`<select id="issueCycle" class="ctrl">${options(ghCycles.map(c=>({value:c.cycleId,label:`${c.name} (${cycleStatus(c)})`})),selectedIssueCycle.cycleId)}</select>`)}${choose('issueType','이슈 유형',values(['온도','습도','이산화탄소','일사량','광도','배지온도','배지수분량','배지 EC','배지 pH',...cycleIssues.map(item=>item.issueType)]),issueFilters.type)}${choose('issueStatus','조치 상태',values(['발생','조치중','조치 완료']),issueFilters.status)}${listFilterField('issueTrigger','조회 기간',dateRangeControl('issue',issueFilters.from,issueFilters.to),'is-span-2')}<div class="list-filter-actions"><button class="btn list-reset-btn" type="button" id="issueResetFilter">초기화</button><button class="btn main list-search-btn" type="submit">검색</button></div>`,
+  bodyHtml:`<div class="tablewrap"><table class="data-table module-table issue-table"><caption class="sr-only">온실 환경 이슈 목록</caption><thead><tr><th class="row-index" scope="col">번호</th><th class="col-type" scope="col">이슈 유형</th><th scope="col">이슈 내용</th><th class="tnum col-val" scope="col">발생 측정값</th><th class="col-date" scope="col">발생일시</th><th class="col-status" scope="col">조치 상태</th></tr></thead><tbody>${pagedIssues.map((item,i)=>`<tr><td class="row-index">${rows.length-fromIdx-i}</td><td class="col-type">${htmlText(item.issueType)}</td><td><button class="linkbtn" data-issue="${item.issueId}">${htmlText(item.message)}</button></td><td class="tnum col-val">${htmlText(String(item.issueValue??'—'))}</td><td class="col-date">${formatAt(item.occurredAt)}</td><td class="col-status">${issueBadge(item.status)}</td></tr>`).join('')||'<tr><td colspan="6" class="empty">조회된 이슈가 없습니다.</td></tr>'}</tbody></table></div>`,
   footHtml:pageControls(rows.length,issueListPage,size,'온실 환경 이슈')
  });
  mountDateRangePicker('issue');
  bindCycleContextBar('issueGh','issueCycle',selectableCycles,nextId=>{issueFilters={cycle:nextId,type:'all',status:'all',from:'',to:''};issueListPage=1;renderIssues(false)});
+ $('#issueResetFilter').onclick=()=>{issueFilters={cycle:selectedIssueCycle.cycleId,type:'all',status:'all',from:'',to:''};issueListPage=1;renderIssues(false)};
  $('#issueFilters').onsubmit=event=>{
   event.preventDefault();
   const from=$('#issueFrom').value,to=$('#issueTo').value;

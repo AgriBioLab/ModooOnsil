@@ -174,7 +174,7 @@
 .module-facts{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px 16px}
 .module-facts>div{min-width:0;display:flex;flex-direction:column;gap:4px}.module-facts>div>span{font-size:11px;color:var(--muted)}
 .module-facts>div>strong{font-size:12px;font-weight:650;word-break:keep-all}.module-facts.compact{grid-template-columns:repeat(4,minmax(0,1fr))}
-.module-table{min-width:920px}.module-table th{font-size:11px}.module-table td{font-size:12px}.module-table td.tnum{white-space:nowrap;font-variant-numeric:tabular-nums}
+.module-table{min-width:920px}.module-table th{font-size:13px}.module-table td{font-size:13px}.module-table td.tnum{white-space:nowrap;font-variant-numeric:tabular-nums}
 .module-filter .field{flex:1 1 158px}.module-filter .field.query{flex:1 1 180px}.module-filter .btn{flex:none}.env-filters .field{flex:1 1 140px}.env-filters .field:nth-child(2){flex:1 1 195px}
 .module-form{flex:1;min-height:0;overflow:hidden}.module-form-scroll{padding:16px;overflow:auto;flex:1;min-height:0}.module-input-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:13px 16px;width:100%}
 .module-input-grid .field{margin:0}.module-input-grid .field.wide{grid-column:span 2}.module-input-grid .ctrl{max-width:100%}
@@ -356,6 +356,38 @@ textarea:focus-visible {
   outline-offset: 2px;
 }
 
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.skip-link {
+  position: fixed;
+  top: -48px;
+  left: 16px;
+  z-index: 2000;
+  padding: 10px 16px;
+  border-radius: 8px;
+  background: var(--primary);
+  color: #ffffff;
+  font-size: 14px;
+  font-weight: 700;
+  text-decoration: none;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.18);
+  transition: top 0.12s ease;
+}
+
+.skip-link:focus {
+  top: 12px;
+}
+
 /* 공통 레이아웃: 사이드바 · 헤더 */
 .app {
   background: #ffffff;
@@ -529,9 +561,9 @@ main {
 }
 
 .pagehead h1 {
-  font-size: 24px;
+  font-size: 28px;
   line-height: 1.35;
-  letter-spacing: -0.02em;
+  letter-spacing: -0.025em;
   font-weight: 700;
   color: var(--krds-light-color-text-bolder, #131416);
 }
@@ -1138,6 +1170,22 @@ select.ctrl {
   background-position: right 10px center;
   background-size: 15px 15px;
   cursor: pointer;
+}
+
+.list-filter-actions {
+  grid-column: 4;
+  justify-self: end;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.list-reset-btn {
+  min-height: 38px;
+  padding: 0 14px;
+  border-radius: 8px;
+  font-size: 13.5px;
+  font-weight: 600;
 }
 
 .list-search-btn {

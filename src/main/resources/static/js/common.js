@@ -67,6 +67,14 @@
     slot.outerHTML = fallback;
   }
 
+  if (document.getElementById('main') && !document.querySelector('.skip-link')) {
+    const skip = document.createElement('a');
+    skip.className = 'skip-link';
+    skip.href = '#main';
+    skip.textContent = '본문 바로가기';
+    document.body.prepend(skip);
+  }
+
   const ready = Promise.all([
     loadFragment('sidebarSlot', 'fragments/sidebar.html', SIDEBAR_HTML),
     loadFragment('headerSlot', 'fragments/header.html', HEADER_HTML),

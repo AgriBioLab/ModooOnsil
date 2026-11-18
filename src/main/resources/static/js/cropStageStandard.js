@@ -174,7 +174,7 @@ function renderStandardPage(){
    ariaLabel:'품목 목록',
    actionHtml:'<button type="button" class="btn main xs" id="stdCropAdd">+ 품목 등록</button>',
    filterHtml:`${listFilterField('stdCropFilter','품목명',`<select id="stdCropFilter" class="ctrl">${options([{value:'all',label:'전체 품목'},...cropOpts],state.cropFilter)}</select>`)}<button type="button" class="btn main list-search-btn" id="stdCropSearch">검색</button>`,
-   bodyHtml:`<div class="tablewrap"><table class="data-table module-table std-crop-table"><thead><tr><th class="row-index">번호</th><th>품목명</th><th>품종명</th></tr></thead><tbody>${rows.map((r,i)=>`<tr><td class="row-index">${rows.length-i}</td><td>${htmlText(r.cropName)}</td><td><button type="button" class="linkbtn" data-std-crop-detail="${r.varietyId}">${htmlText(r.varietyName)}</button></td></tr>`).join('')||'<tr><td colspan="3" class="empty">등록된 품목이 없습니다.</td></tr>'}</tbody></table></div>`
+   bodyHtml:`<div class="tablewrap"><table class="data-table module-table std-crop-table"><caption class="sr-only">품목 · 품종 목록</caption><thead><tr><th class="row-index" scope="col">번호</th><th scope="col">품목명</th><th scope="col">품종명</th></tr></thead><tbody>${rows.map((r,i)=>`<tr><td class="row-index">${rows.length-i}</td><td>${htmlText(r.cropName)}</td><td><button type="button" class="linkbtn" data-std-crop-detail="${r.varietyId}">${htmlText(r.varietyName)}</button></td></tr>`).join('')||'<tr><td colspan="3" class="empty">등록된 품목이 없습니다.</td></tr>'}</tbody></table></div>`
   });
   $('#stdCropSearch').onclick=()=>{state.cropFilter=$('#stdCropFilter').value;renderStandardPage()};
   $('#stdCropFilter').onchange=()=>{state.cropFilter=$('#stdCropFilter').value;renderStandardPage()};
