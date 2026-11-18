@@ -80,7 +80,8 @@ function render(){updateNavigation();if(page.startsWith('cycle-')){if(page==='cy
 function unifiedListPanel({title,count,actionHtml='',filterHtml='',filterTag='div',filterId='',bodyHtml='',footHtml='',ariaLabel}){
  const fAttr=filterId?` id="${filterId}"`:'';
  const filterBar=filterHtml?`<${filterTag} class="list-filter-strip"${fAttr}>${filterHtml}</${filterTag}>`:'';
- return `<section class="panel list-section" aria-label="${htmlText(ariaLabel||title)}"><div class="panel-head"><div class="panel-head-title"><h2>${htmlText(title)}</h2><span class="counter">총 ${count}건</span></div>${actionHtml}</div>${filterBar}${bodyHtml}${footHtml}</section>`;
+ const summaryBar=`<div class="list-summary-bar"><span class="list-total-count">총 <strong>${count}</strong>건</span>${actionHtml?`<div class="list-summary-actions">${actionHtml}</div>`:''}</div>`;
+ return `<section class="panel list-section" aria-label="${htmlText(ariaLabel||title)}">${filterBar}${summaryBar}${bodyHtml}${footHtml}</section>`;
 }
 function listFilterField(id,label,ctrlHtml){return `<label class="list-ctrl-field"${id?` for="${id}"`:''}><span>${htmlText(label)}</span>${ctrlHtml}</label>`}
 
