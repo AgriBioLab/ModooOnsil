@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="kr.swdl.modooonsil.greenhouse.repository.GreenhouseRepository">
+
+    <select id="findAll" resultType="kr.swdl.modooonsil.greenhouse.domain.Greenhouse">
+        SELECT greenhouse_id,
+        greenhouse_name,
+        greenhouse_type,
+        cover_type,
+        medium_type,
+        greenhouse_image_url
+        FROM greenhouse
+        WHERE member_id = #{memberId}
+        <if test="greenhouseName != null and greenhouseName != ''">
+            AND greenhouse_name LIKE CONCAT('%', #{greenhouseName}, '%')
+        </if>
+        <if test="greenhouseType != null and greenhouseType != ''">
+            AND greenhouse_type LIKE CONCAT('%', #{greenhouseType}, '%')
+        </if>
+        <if test="coverType != null and coverType != ''">
+            AND cover_type LIKE CONCAT('%', #{coverType}, '%')
+        </if>
+        <if test="mediumType != null and mediumType != ''">
+            AND medium_type LIKE CONCAT('%', #{mediumType}, '%')
+        </if>
+        ORDER BY created_at DESC, greenhouse_id DESC
+    </select>
+
+    <select id="findById" resultType="kr.swdl.modooonsil.greenhouse.domain.Greenhouse">
+        SELECT
+        greenhouse_id,
+        greenhouse_name,
+        greenhouse_type,
+        cover_type,
+        building_count,
+        side_height,
+        width,
+        length,
+        registered_area,
+        medium_type,
+        greenhouse_image_url,
+        deleted_at
+        FROM greenhouse
+        WHERE member_id = #{memberId}
+        AND greenhouse_id = #{greenhouseId}
+    </select>
+
+    <insert id="addGreenhouse" parameterType="kr.swdl.modooonsil.greenhouse.domain.Greenhouse" useGeneratedKeys="true"
+            keyProperty="greenhouseId">
+        INSERT INTO greenhouse (
+        member_id,
+        greenhouse_name,
+        created_at,
+        greenhouse_type,
+        cover_type,
+        building_count,
+        side_height,
+        width,
+        length,
+        registered_area,
+        medium_type,
+        greenhouse_image_url
+        )
+        VALUES (
+        #{memberId},
+        #{greenhouseName},
+        NOW(),
+        #{greenhouseType},
+        #{coverType},
+        #{buildingCount},
+        #{sideHeight},
+        #{width},
+        #{length},
+        #{registeredArea},
+        #{mediumType},
+        #{greenhouseImageUrl}
+        )
+    </insert>
+
+    <update id="updateGreenhouse" parameterType="kr.swdl.modooonsil.greenhouse.domain.Greenhouse">
+        UPDATE greenhouse
+        SET greenhouse_name = #{greenhouseName},
+        greenhouse_type = #{greenhouseType},
+        cover_type = #{coverType},
+        building_count = #{buildingCount},
+        side_height = #{sideHeight},
+        width = #{width},
+        length = #{length},
+        registered_area = #{registeredArea},
+        medium_type = #{mediumType},
+        greenhouse_image_url = #{greenhouseImageUrl},
+        updated_at = NOW()
+        WHERE member_id = #{memberId}
+        AND greenhouse_id = #{greenhouseId}
+    </update>
+
+    <update id="deleteGreenhouseById">
+        UPDATE greenhouse
+        SET deleted_at = CURRENT_TIMESTAMP
+        WHERE greenhouse_id = #{greenhouseId}
+        AND member_id = #{memberId}
+        AND deleted_at IS NULL
+    </update>
+</mapper>
