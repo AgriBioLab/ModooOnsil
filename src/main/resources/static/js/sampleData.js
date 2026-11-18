@@ -387,7 +387,16 @@ const sampleData = {
       "cropId": "940002",
       "varietyId": "940002",
       "environmentStandardSetId": "940005",
-      "stageHistory": [],
+      "stageHistory": [
+        {
+          "eventId": "940005-VEG",
+          "stageId": "VEG",
+          "effectiveDate": "2026-11-03",
+          "effectiveAt": "2026-11-03T09:00:00",
+          "sourceDiaryId": null,
+          "reason": null
+        }
+      ],
       "actualStartDate": "2026-11-03",
       "plannedStartAt": "2026-11-01T00:00:00",
       "expectedEndAt": "2026-12-29T23:59:59",
@@ -420,9 +429,9 @@ const sampleData = {
       "cycleId": "940008",
       "memberId": "940002",
       "greenhouseId": "940009",
-      "cropId": "940002",
-      "varietyId": "940004",
-      "environmentStandardSetId": "940010",
+      "cropId": "940010",
+      "varietyId": "940011",
+      "environmentStandardSetId": "940029",
       "stageHistory": [],
       "actualStartDate": null,
       "plannedStartAt": "2026-12-01T00:00:00",
@@ -460,7 +469,7 @@ const sampleData = {
         },
         {
           "eventId": "940010",
-          "stageId": "BLO",
+          "stageId": "REP",
           "effectiveDate": "2026-11-14",
           "effectiveAt": "2026-11-14T09:00:00",
           "sourceDiaryId": null,
@@ -481,27 +490,18 @@ const sampleData = {
       "cycleId": "940010",
       "memberId": "940002",
       "greenhouseId": "941018",
-      "cropId": "940002",
-      "varietyId": "940004",
-      "environmentStandardSetId": "940010",
-      "stageHistory": [
-        {
-          "eventId": "940011",
-          "stageId": "VEG",
-          "effectiveDate": "2026-11-10",
-          "effectiveAt": "2026-11-10T09:00:00",
-          "sourceDiaryId": null,
-          "reason": null
-        }
-      ],
-      "actualStartDate": "2026-11-10",
-      "plannedStartAt": "2026-11-10T00:00:00",
+      "cropId": "940001",
+      "varietyId": "940001",
+      "environmentStandardSetId": "940001",
+      "stageHistory": [],
+      "actualStartDate": null,
+      "plannedStartAt": "2026-11-18T00:00:00",
       "expectedEndAt": "2027-01-25T23:59:59",
-      "actualStartAt": "2026-11-10T00:00:00",
+      "actualStartAt": null,
       "actualEndAt": null,
       "registeredAt": "2026-11-05T09:00:00",
       "name": "2026년 초겨울 1차 작기",
-      "status": "진행",
+      "status": "미진행",
       "endReason": null
     }
   ],

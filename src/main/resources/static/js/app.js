@@ -202,11 +202,19 @@ const getReading=id=>config.environmentChanges.find(s=>s.environmentChangeId===i
 const stdSet=id=>config.standardSets.find(x=>x.id===id)||config.standardSets[0];
 const getCriteria=(cycle,stageId)=>{const standard=stdSet(cycle?.environmentStandardSetId);return config.stageEnvironmentalCriteria.find(x=>x.varietyId===standard.varietyId&&x.stageId===stageId)};
 const fmtVal=v=>v===null||v===undefined?'—':String(v);
-function storeCycleExtras(){try{localStorage.setItem(storageKey("cycles"),JSON.stringify({cycles:config.cycles}))}catch{}}
+const CYCLE_SEED_REV='2026-11-18-v2';
+function storeCycleExtras(){try{localStorage.setItem(storageKey("cycles"),JSON.stringify({seedRev:CYCLE_SEED_REV,cycles:config.cycles}))}catch{}}
 function loadCycleExtras(){try{const saved=JSON.parse(localStorage.getItem(storageKey("cycles"))||'null');if(Array.isArray(saved?.cycles)){
-  // Only replace records with compatible full objects. Avoid erasing seed data on older versions.
-  config.cycles=saved.cycles.filter(c=>c&&c.cycleId&&c.greenhouseId&&c.environmentStandardSetId).map(c=>({...c,stageHistory:Array.isArray(c.stageHistory)?c.stageHistory:[]}));
-  if(!config.cycles.length)throw Error('empty');const seed10=sampleData.cycles.find(x=>x.cycleId==='940010');if(seed10&&!config.cycles.some(x=>x.cycleId==='940010'))config.cycles.push(clone(seed10));const c9=config.cycles.find(x=>x.cycleId==='940009');if(c9&&!c9.stageHistory.some(h=>h.eventId==='940010'))c9.stageHistory.push({eventId:'940010',stageId:'BLO',effectiveDate:'2026-11-14',effectiveAt:'2026-11-14T09:00:00',sourceDiaryId:null,reason:'?? ?? ? ?? ?? ??'});
+  const valid=saved.cycles.filter(c=>c&&c.cycleId&&c.greenhouseId&&c.environmentStandardSetId).map(c=>({...c,stageHistory:Array.isArray(c.stageHistory)?c.stageHistory:[]}));
+  if(saved.seedRev!==CYCLE_SEED_REV){
+   const seedIds=new Set(sampleData.cycles.map(s=>s.cycleId));
+   const customCycles=valid.filter(c=>!seedIds.has(c.cycleId));
+   config.cycles=[...clone(sampleData.cycles),...customCycles];
+   storeCycleExtras();
+   return;
+  }
+  config.cycles=valid;
+  if(!config.cycles.length)throw Error('empty');
  }}catch{}}
 function cycleStatus(c){return c.status||'미진행'}
 function moduleHeading(title,caption='',backLabel='',onback=''){
@@ -228,23 +236,27 @@ function renderCycleList(){let list=config.cycles.filter(c=>(cycleFilters.status
  $$('[data-cycle-detail]').forEach(b=>b.onclick=()=>go('cycle-detail',b.dataset.cycleDetail));bindPages('',()=>cycleListPage,v=>cycleListPage=v,list.length,size,renderCycleList);
 }
 const stdMetricCols=[['dayTempC','주간 온도(°C)'],['nightTempC','야간 온도(°C)'],['humidityPct','습도(%RH)'],['co2Ppm','CO₂(ppm)'],['solarWm2','일사량(W/m²)'],['lightUmolM2S','광도(μmol/m²/s)'],['substrateTempC','배지 온도(°C)'],['substrateMoisturePct','배지 수분(%)'],['substrateEcMsCm','배지 EC(mS/cm)'],['substratePh','배지 pH']];
-function stageRows(c){const stages=config.growthStages.map(s=>{const k=getCriteria(c,s.stageId);let expectedStart=new Date(c.plannedStartAt||'2026-01-01T00:00:00');for(const prev of config.growthStages.filter(x=>x.order<s.order)){const n=getCriteria(c,prev.stageId)?.standardDays||0;expectedStart.setDate(expectedStart.getDate()+n)}
- const effective=c.stageHistory.find(h=>h.stageId===s.stageId);const range=k?.thresholds||{};
- return `<tr><td>${s.order}단계 · ${htmlText(s.name)}</td><td>${k?.standardDays??'—'}일</td><td>${dateFrom(expectedStart.toISOString())}</td><td>${effective?effective.effectiveDate:'—'}</td>${stdMetricCols.map(([key])=>`<td class="tnum">${range[key]?.join(' ~ ')||'—'}</td>`).join('')}</tr>`;});return stages.join('')}
+function stageRows(c){const stages=config.growthStages.map(s=>{const k=getCriteria(c,s.stageId);
+ const range=k?.thresholds||{};
+ return `<tr><td>${s.order}단계 · ${htmlText(s.name)}</td><td>${k?.standardDays??'—'}일</td>${stdMetricCols.map(([key])=>`<td class="tnum">${range[key]?.join(' ~ ')||'—'}</td>`).join('')}</tr>`;});return stages.join('')}
 function renderCycleDetail(){const c=getSelectedCycle();if(!c){go('cycle-list');return}const lastStage=c.stageHistory.at(-1),curStage=lastStage?getStage(lastStage.stageId).name:'—',stdMeta=getCriteriaMeta(c.varietyId),stdLabel=`${varietyOf(c)?.name||'—'} · ${stdMeta.hasStd?stdMeta.name:'기준 미입력'}`;
  const ghName=gh(c.greenhouseId)?.name||'—',cropLabel=`${cropOf(c)?.name||'—'} · ${varietyOf(c)?.name||'—'}`;
  const planPeriod=`${dateFrom(c.plannedStartAt)||'—'} ~ ${dateFrom(c.expectedEndAt)||'—'}`;
  const actualPeriod=c.actualStartAt?`${dateFrom(c.actualStartAt)} ~ ${dateFrom(c.actualEndAt)||'진행 중'}`:'미시작';
- const facts=[['온실',ghName],['품목 · 품종',cropLabel],['현재 생육단계',curStage],['단계별 환경 기준',stdLabel],['계획 기간',planPeriod],['실제 기간',actualPeriod]];
+ const facts=[['온실',ghName],['품목 · 품종',cropLabel],['현재 생육단계',curStage],['생육단계별 환경기준',stdLabel],['계획 기간',planPeriod],['실제 기간',actualPeriod]];
  if(c.status==='종료'||c.endReason)facts.push(['종료 사유',c.endReason||'—']);
  const factsHtml=`<dl class="profile-facts facts-2col">${facts.map(([a,b])=>`<dt>${htmlText(a)}</dt><dd>${htmlText(b)}</dd>`).join('')}</dl>`;
  main.innerHTML=moduleHeading('작기계획 상세','')+`<div class="module-scroll"><section class="panel"><div class="panel-head"><div class="panel-head-title"><h2>${htmlText(c.name)}</h2>${statusBadge(cycleStatus(c),{'진행':'bg-light-success','미진행':'bg-light-information','종료':'bg-light-gray'})}</div><span class="counter">등록일 ${htmlText(dateFrom(c.registeredAt)||'—')}</span></div><div class="panel-body">${factsHtml}</div></section>
  ${cycleTimelineChart(c)}
- <section class="panel"><div class="panel-head"><h2>생육단계별 환경 기준과 일정</h2></div><div class="tablewrap"><table class="data-table module-table"><thead><tr><th>생육단계</th><th>기준 기간</th><th>계획상 시작일</th><th>실제 시작일</th>${stdMetricCols.map(([,lbl])=>`<th>${htmlText(lbl)}</th>`).join('')}</tr></thead><tbody>${stageRows(c)}</tbody></table></div></section></div>
+ <section class="panel"><div class="panel-head"><h2>생육단계별 환경기준</h2></div><div class="tablewrap"><table class="data-table module-table"><thead><tr><th>생육단계</th><th>기준 기간</th>${stdMetricCols.map(([,lbl])=>`<th>${htmlText(lbl)}</th>`).join('')}</tr></thead><tbody>${stageRows(c)}</tbody></table></div></section></div>
  <section class="panel hidden" id="cycleStartPanel"><div class="panel-head"><h2>작기 실제 시작일 등록</h2></div><div class="panel-body"><div class="filterbar"><div class="field"><label for="cycleStartTime">실제 시작일 *</label><input class="ctrl" type="date" id="cycleStartTime"></div><button class="btn" type="button" id="cycleStartCancel">취소</button><button class="btn main" type="button" id="cycleStartConfirm">작기 시작 확정</button></div></div></section>
  <section class="panel hidden" id="cycleEndPanel"><div class="panel-head"><h2>작기 종료</h2></div><div class="panel-body"><div class="module-input-grid"><div class="field"><label for="cycleEndTime">실제 종료일 *</label><input class="ctrl" type="date" id="cycleEndTime"></div><div class="field wide"><label for="cycleEndReason">종료 사유</label><textarea class="ctrl textarea" id="cycleEndReason" placeholder="종료 사유를 입력하세요"></textarea></div></div><div class="dialog-actions"><button class="btn" type="button" id="cycleEndCancel">취소</button><button class="btn main" type="button" id="cycleEndConfirm">종료 확정</button></div></div></section>
- <div class="module-actions"><div class="module-actions-left"><button class="btn" id="cycleToList">목록</button><button class="btn" id="cycleViewDiary">재배일지작업 목록 조회</button></div><button class="btn" id="cycleToEdit">작기계획 수정</button>${c.status==='미진행'?'<button class="btn main" id="cycleStart">작기 시작</button>':''}${c.status==='진행'?'<button class="btn main" id="cycleEnd">작기 종료</button>':''}</div>`;
- bindModuleBack();$('#cycleToList').onclick=()=>go('cycle-list');$('#cycleToEdit').onclick=()=>go('cycle-edit');$('#cycleViewDiary').onclick=()=>{filterCycle=c.cycleId;listPage=1;go('list')};
+ <section class="panel hidden" id="cycleDeleteConfirm"><div class="panel-body" style="display:flex;align-items:center;justify-content:flex-end;gap:8px"><span>미진행 상태의 작기계획을 삭제하시겠습니까?</span><button type="button" class="btn" id="cycleDeleteCancel">취소</button><button type="button" class="btn danger" id="cycleDeleteOk">삭제 확인</button></div></section>
+ <div class="module-actions"><div class="module-actions-left"><button class="btn" id="cycleToList">목록</button><button class="btn" id="cycleViewDiary">재배일지작업 목록 조회</button></div>${cycleStatus(c)==='미진행'?'<button class="btn danger" id="cycleDelete">삭제</button><button class="btn" id="cycleToEdit">작기계획 수정</button><button class="btn main" id="cycleStart">작기 시작</button>':''}${cycleStatus(c)==='진행'?'<button class="btn main" id="cycleEnd">작기 종료</button>':''}</div>`;
+ bindModuleBack();$('#cycleToList').onclick=()=>go('cycle-list');if($('#cycleToEdit'))$('#cycleToEdit').onclick=()=>go('cycle-edit');$('#cycleViewDiary').onclick=()=>{filterCycle=c.cycleId;listPage=1;go('list')};
+ if($('#cycleDelete'))$('#cycleDelete').onclick=()=>$('#cycleDeleteConfirm').classList.remove('hidden');
+ if($('#cycleDeleteCancel'))$('#cycleDeleteCancel').onclick=()=>$('#cycleDeleteConfirm').classList.add('hidden');
+ if($('#cycleDeleteOk'))$('#cycleDeleteOk').onclick=()=>{if(cycleStatus(c)!=='미진행'){toast('미진행 상태의 작기계획만 삭제할 수 있습니다.');return}config.cycles=config.cycles.filter(x=>x.cycleId!==c.cycleId);storeCycleExtras();toast('작기계획을 삭제했습니다.');go('cycle-list')};
  const start=$('#cycleStart');if(start)start.onclick=()=>{$('#cycleStartTime').value=today();$('#cycleStartPanel').classList.remove('hidden');$('#cycleStartTime').focus()};
  const end=$('#cycleEnd');if(end)end.onclick=()=>{$('#cycleEndTime').value=today();$('#cycleEndReason').value='';$('#cycleEndPanel').classList.remove('hidden');$('#cycleEndTime').focus()};
  if($('#cycleStartCancel'))$('#cycleStartCancel').onclick=()=>$('#cycleStartPanel').classList.add('hidden');
@@ -262,28 +274,29 @@ function commitCycleEnd(){const c=getSelectedCycle(),at=$('#cycleEndTime').value
  if(c.status!=='진행'||!at||dateFrom(at)<dateFrom(c.actualStartAt)||dateFrom(at)>today()){toast('실제 종료일을 확인하세요.');return}
  c.actualEndAt=`${dateFrom(at)}T23:59:59`;c.endReason=reason;c.status='종료';storeCycleExtras();toast('작기를 종료했습니다.');renderCycleDetail();
 }
-function renderCycleEditor(edit){if(!config.greenhouses.length){main.innerHTML=moduleHeading('작기계획 등록','등록된 온실이 없습니다.','작기계획 목록으로','cycle-list');bindModuleBack();return}const c=edit?getSelectedCycle():null,def={cycleId:'',name:'',greenhouseId:config.greenhouses[0].greenhouseId,cropId:config.crops[0]?.cropId||'',varietyId:config.crops[0]?.varieties[0]?.varietyId||'',plannedStartAt:`${today()}T00:00:00`,expectedEndAt:'2027-03-01T23:59:59',environmentStandardSetId:config.standardSets[0]?.id||''};const row=c||def;const hasData=!!(c&&diaryRows.some(d=>d.cycleId===c.cycleId));
- main.innerHTML=moduleHeading(edit?'작기계획 수정':'작기계획 등록','')+`<form class="module-form panel" id="cycleForm" novalidate><div class="panel-head"><h2>작기정보</h2><span class="counter">* 필수 입력</span></div><div class="module-form-scroll"><div class="module-input-grid">
- <div class="field wide"><label for="cycleName">작기계획명 *</label><input class="ctrl" id="cycleName" maxlength="80" value="${htmlText(row.name)}" placeholder="예: 2026년 가을 4차 작기"></div>
- <div class="field"><label for="cycleGreenhouse">온실 *</label><select class="ctrl" id="cycleGreenhouse" ${hasData?'disabled':''}>${options(config.greenhouses.map(x=>({value:x.greenhouseId,label:x.name})),row.greenhouseId)}</select></div>
+function renderCycleEditor(edit){if(!config.greenhouses.length){main.innerHTML=moduleHeading('작기계획 등록','등록된 온실이 없습니다.','작기계획 목록으로','cycle-list');bindModuleBack();return}const c=edit?getSelectedCycle():null;if(edit&&c&&cycleStatus(c)!=='미진행'){toast('미진행 상태의 작기만 수정할 수 있습니다.');go('cycle-detail',c.cycleId);return}const def={cycleId:'',name:'',greenhouseId:config.greenhouses[0].greenhouseId,cropId:config.crops[0]?.cropId||'',varietyId:config.crops[0]?.varieties[0]?.varietyId||'',plannedStartAt:`${today()}T00:00:00`,expectedEndAt:'2027-03-01T23:59:59',environmentStandardSetId:config.standardSets[0]?.id||''};const row=c||def;const hasData=!!(c&&diaryRows.some(d=>d.cycleId===c.cycleId));
+ main.innerHTML=moduleHeading(edit?'작기계획 수정':'작기계획 등록','')+`<form class="module-form panel" id="cycleForm" novalidate><div class="panel-head"><h2>작기 기본 정보</h2><span class="counter">* 필수 입력</span></div><div class="module-form-scroll"><div class="module-input-grid cycle-basic-grid">
+ <div class="field"><label for="cycleName">작기계획명 *</label><input class="ctrl" id="cycleName" maxlength="80" value="${htmlText(row.name)}" placeholder="예: 2026년 가을 4차 작기"></div>
+ <div class="field"><label for="cycleGreenhouse">온실 *</label><select class="ctrl" id="cycleGreenhouse" ${edit||hasData?'disabled':''}>${options(config.greenhouses.map(x=>({value:x.greenhouseId,label:x.name})),row.greenhouseId)}</select></div>
  <div class="field"><label for="cyclePlanStart">계획 시작일 *</label><input type="date" class="ctrl" id="cyclePlanStart" value="${dateFrom(row.plannedStartAt)}"></div>
  <div class="field"><label for="cycleExpectedEnd">예상 종료일 *</label><input type="date" class="ctrl" id="cycleExpectedEnd" value="${dateFrom(row.expectedEndAt)}"></div>
- <div class="field"><label for="cycleStdSummary">적용 환경기준</label><input class="ctrl" id="cycleStdSummary" readonly></div>
- <div class="field"><label for="cycleCrop">재배 품목 *</label><select class="ctrl" id="cycleCrop" ${hasData?'disabled':''}></select></div>
- <div class="field"><label for="cycleVariety">재배 품종 *</label><select class="ctrl" id="cycleVariety" ${hasData?'disabled':''}></select></div>
- <div class="field" style="display:flex;align-items:flex-end"><button type="button" class="btn" id="cycleLoadStdBtn">환경기준 불러오기</button></div>
- </div><div class="subsection"><h3>생육단계별 환경 기준</h3><div class="tablewrap"><table class="data-table module-table"><thead><tr><th>생육단계</th><th>기준 기간</th>${stdMetricCols.map(([,lbl])=>`<th>${htmlText(lbl)}</th>`).join('')}</tr></thead><tbody></tbody></table></div></div>
- ${edit?`<div class="module-readonly"><span>작기 상태</span><strong>${htmlText(c.status)}</strong><span>실제 시작일</span><strong>${dateFrom(c.actualStartAt)||'—'}</strong><span>실제 종료일</span><strong>${dateFrom(c.actualEndAt)||'—'}</strong></div>`:''}
+ </div><div class="subsection"><div class="subsection-head"><h3>생육단계별 환경기준</h3></div><div class="module-input-grid cycle-crop-bar"><div class="field"><label for="cycleCrop">재배 품목 *</label><select class="ctrl" id="cycleCrop" ${edit||hasData?'disabled':''}></select></div><div class="field"><label for="cycleVariety">재배 품종 *</label><select class="ctrl" id="cycleVariety" ${edit||hasData?'disabled':''}></select></div>${edit?'':'<div class="field cycle-load-action"><button type="button" class="btn" id="cycleLoadStdBtn">환경기준 불러오기</button></div>'}</div><div class="tablewrap" style="margin-top:14px"><table class="data-table module-table"><thead><tr><th>생육단계</th><th>기준 기간</th>${stdMetricCols.map(([,lbl])=>`<th>${htmlText(lbl)}</th>`).join('')}</tr></thead><tbody></tbody></table></div></div>
  <div class="errorbox hidden" id="cycleFormError" role="alert"></div></div><div class="module-actions inside"><button type="button" class="btn" id="cycleCancel">취소</button><button type="submit" class="btn main">${edit?'수정 저장':'작기계획 등록'}</button></div></form>`;
  const allPairs=config.crops.flatMap(cr=>cr.varieties.map(v=>({cropId:cr.cropId,cropName:cr.name,varietyId:v.varietyId,varietyName:v.name})));
  let curCropId=row.cropId||allPairs[0]?.cropId||'';
  let curVarietyId=row.varietyId||allPairs[0]?.varietyId||'';
+ let standardsLoaded=!!edit;
  const getSetForVariety=vid=>config.standardSets.find(x=>x.varietyId===vid)||config.standardSets[0];
  const paintStandards=()=>{
   const standard=getSetForVariety(curVarietyId);
-  const stdMeta=getCriteriaMeta(curVarietyId);
-  const vObj=allPairs.find(x=>x.varietyId===curVarietyId);
-  $('#cycleStdSummary').value=vObj?`${vObj.cropName} · ${vObj.varietyName} (${stdMeta.hasStd?stdMeta.name:'기준 미입력'})`:'—';
+  const loadBtn=$('#cycleLoadStdBtn');
+  if(loadBtn){
+   loadBtn.classList.toggle('main',!standardsLoaded);
+  }
+  if(!standardsLoaded){
+   $('#cycleForm tbody').innerHTML=`<tr><td colspan="12" class="empty" style="padding:24px 12px">불러온 환경기준이 없습니다.</td></tr>`;
+   return;
+  }
   $('#cycleForm tbody').innerHTML=config.growthStages.map(stage=>{
    const criterion=standard?getCriteria({...row,environmentStandardSetId:standard.id},stage.stageId):null;
    const ranges=criterion?.thresholds||{};
@@ -299,16 +312,16 @@ function renderCycleEditor(edit){if(!config.greenhouses.length){main.innerHTML=m
   $('#cycleVariety').innerHTML=options(vars,curVarietyId);
   paintStandards();
  };
- $('#cycleCrop').onchange=()=>{curCropId=$('#cycleCrop').value;curVarietyId='';syncSelectors()};
- $('#cycleVariety').onchange=()=>{curVarietyId=$('#cycleVariety').value;paintStandards()};
- $('#cycleLoadStdBtn').onclick=()=>{paintStandards();toast('선택한 품목·품종의 생육단계별 환경기준을 불러왔습니다.')};
+ $('#cycleCrop').onchange=()=>{curCropId=$('#cycleCrop').value;curVarietyId='';standardsLoaded=false;syncSelectors()};
+ $('#cycleVariety').onchange=()=>{curVarietyId=$('#cycleVariety').value;standardsLoaded=false;paintStandards()};
+ if($('#cycleLoadStdBtn'))$('#cycleLoadStdBtn').onclick=()=>{standardsLoaded=true;paintStandards();toast('선택한 품목·품종의 생육단계별 환경기준을 불러왔습니다.')};
  syncSelectors();
  bindModuleBack();$('#cycleCancel').onclick=()=>go(edit?'cycle-detail':'cycle-list');$('#cycleForm').onsubmit=e=>{e.preventDefault();const name=$('#cycleName').value.trim(),ghId=$('#cycleGreenhouse').value,start=$('#cyclePlanStart').value,end=$('#cycleExpectedEnd').value;
  const standard=getSetForVariety(curVarietyId);
- const errors=[];if(!name)errors.push('작기계획명을 입력하세요.');if(!ghId)errors.push('온실을 선택하세요.');if(!curVarietyId||!standard)errors.push('재배 품목과 품종을 선택하세요.');if(!start||!end||start>=end)errors.push('계획 시작일과 예상 종료일을 확인하세요.');if(config.cycles.some(x=>x.name===name&&x.cycleId!==c?.cycleId))errors.push('동일한 작기계획명이 존재합니다.');
+ const errors=[];if(!name)errors.push('작기계획명을 입력하세요.');if(!ghId)errors.push('온실을 선택하세요.');if(!curVarietyId||!standard)errors.push('재배 품목과 품종을 선택하세요.');if(!standardsLoaded)errors.push('환경기준 불러오기를 먼저 진행하세요.');if(!start||!end||start>end)errors.push('계획 시작일과 예상 종료일을 확인하세요.');if(config.cycles.some(x=>x.name===name&&x.cycleId!==c?.cycleId))errors.push('동일한 작기계획명이 존재합니다.');
  if(errors.length){$('#cycleFormError').textContent=errors.join(' ');$('#cycleFormError').classList.remove('hidden');return}
  const startAt=`${dateFrom(start)}T00:00:00`,endAt=`${dateFrom(end)}T23:59:59`;
- if(edit){Object.assign(c,{cropId:curCropId,varietyId:curVarietyId,name,greenhouseId:hasData?c.greenhouseId:ghId,plannedStartAt:startAt,expectedEndAt:endAt,environmentStandardSetId:standard.id});storeCycleExtras();toast('작기계획을 수정했습니다.');go('cycle-detail',c.cycleId)}else{
+ if(edit){Object.assign(c,{name,plannedStartAt:startAt,expectedEndAt:endAt});storeCycleExtras();toast('작기계획을 수정했습니다.');go('cycle-detail',c.cycleId)}else{
  const newId='CY-NEW-'+Date.now();config.cycles.push({cycleId:newId,name,greenhouseId:ghId,cropId:curCropId,varietyId:curVarietyId,plannedStartAt:startAt,expectedEndAt:endAt,actualStartAt:null,actualStartDate:null,actualEndAt:null,endReason:null,registeredAt:`${today()}T09:00:00`,memberId:config.header.currentUser.id,status:'미진행',environmentStandardSetId:standard.id,stageHistory:[]});storeCycleExtras();toast('작기계획을 등록했습니다.');go('cycle-detail',newId)}
  };
 }
@@ -372,10 +385,11 @@ function cycleTimelineChart(c){
  const stages=config.growthStages.map((st,i)=>{
   const k=getCriteria(c,st.stageId);const days=k?.standardDays||20;
   const eff=c.stageHistory.find(h=>h.stageId===st.stageId);
-  return {name:st.name,days,cls:`s${i+1}`,date:eff?eff.effectiveDate:'미전환'};
+  const startDate=eff?.effectiveDate||(st.order===1&&c.actualStartAt?dateFrom(c.actualStartAt):'');
+  return {name:st.name,days,cls:`s${i+1}`,date:startDate||'미시작'};
  });
  const sumDays=stages.reduce((a,x)=>a+x.days,0)||1;
- return `<section class="panel chart-section"><div class="panel-head"><h2>작기 일정 · 생육단계 진행</h2><span class="counter">진행률 ${pct}%</span></div><div class="panel-body"><div class="timeline-meta"><span>계획 시작: ${dateFrom(c.plannedStartAt)||'—'}</span><span>예상 종료: ${dateFrom(c.expectedEndAt)||'—'}</span></div><div class="bar-track" style="height:10px;margin:6px 0 12px"><div class="bar-fill" style="width:${pct}%"></div></div><div class="timeline-bar">${stages.map(x=>`<div class="timeline-seg ${x.cls}" style="width:${((x.days/sumDays)*100).toFixed(1)}%" title="${htmlText(x.name)} (${x.days}일)">${htmlText(x.name)}</div>`).join('')}</div><div class="timeline-meta">${stages.map(x=>`<span>${htmlText(x.name)}: ${htmlText(x.date)}</span>`).join('')}</div></div></section>`;
+ return `<section class="panel chart-section"><div class="panel-head"><h2>작기 일정 · 생육단계 진행</h2><span class="counter">계획 기간 대비 작기 진행률 ${pct}%</span></div><div class="panel-body"><div class="timeline-meta"><span>계획 시작: ${dateFrom(c.plannedStartAt)||'—'}</span><span>예상 종료: ${dateFrom(c.expectedEndAt)||'—'}</span></div><div class="bar-track" style="height:10px;margin:6px 0 12px"><div class="bar-fill" style="width:${pct}%"></div></div><div class="timeline-bar">${stages.map(x=>`<div class="timeline-seg ${x.cls}" style="width:${((x.days/sumDays)*100).toFixed(1)}%" title="${htmlText(x.name)} (${x.days}일)">${htmlText(x.name)}</div>`).join('')}</div><div class="timeline-meta">${stages.map(x=>`<span>${htmlText(x.name)} 시작일: ${htmlText(x.date)}</span>`).join('')}</div></div></section>`;
 }
 function renderEnvList(){
  let selectedCycle=config.cycles.find(c=>c.cycleId===envFilters.cycle);

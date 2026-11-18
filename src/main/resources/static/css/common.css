@@ -2030,3 +2030,43 @@ select.ctrl:disabled {
   flex-wrap: wrap;
   gap: 8px;
 }
+
+.subsection-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-bottom: 10px;
+}
+
+.subsection-head h3 {
+  margin: 0;
+}
+
+.subsection-head .counter {
+  font-size: 13px;
+  color: var(--muted);
+}
+
+/* 작기계획 등록·수정 2단 위계 그리드 */
+.module-input-grid.cycle-basic-grid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.module-input-grid.cycle-crop-bar {
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) auto;
+  align-items: end;
+}
+
+.cycle-load-action {
+  display: flex;
+  align-items: flex-end;
+}
+
+@media (max-width: 720px) {
+  .module-input-grid.cycle-basic-grid,
+  .module-input-grid.cycle-crop-bar {
+    grid-template-columns: 1fr;
+  }
+}
