@@ -1,27 +1,26 @@
 package kr.swdl.modooonsil.greenhouse.domain;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.NoArgsConstructor;
+import kr.swdl.modooonsil.common.BaseEntity;
+import lombok.*;
 
 import java.time.LocalDateTime;
 
 @Builder
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class Greenhouse {
-    public Long greenhouseId;
-    public Long memberId;
-    public String greenhouseName;
-    public LocalDateTime createdAt;
-    public String greenhouseType;
-    public String coverType;
-    public Integer buildingCount;
-    public Double sideHeight;
-    public Double width;
-    public Double length;
-    public Double registeredArea;
-    public String mediumType;
-    public String greenhouseImageUrl;
-    public LocalDateTime updatedAt;
+public class Greenhouse extends BaseEntity {
+    private Long greenhouseId;
+    private Long memberId;
+    private String greenhouseName;
+    private String greenhouseType;
+    private String coverType;
+    private Integer buildingCount;
+    private Double sideHeight;
+    private Double width;
+    private Double length;
+    private Double registeredArea;
+    private String mediumType;
+    private String greenhouseImageUrl;
 }
