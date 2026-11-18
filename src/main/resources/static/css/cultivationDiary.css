@@ -109,11 +109,11 @@
 
 .task-list-header {
   padding: 11px 14px;
-  background: var(--krds-light-color-surface-gray-subtle, #eef0f3);
+  background: #ffffff;
   color: var(--krds-light-color-text-bolder, #131416);
   font-size: 13px;
   font-weight: 700;
-  border-bottom: 1px solid var(--line);
+  border-bottom: 1px solid #d5dbe3;
 }
 
 .task-summary {
