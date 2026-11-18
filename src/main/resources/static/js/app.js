@@ -411,14 +411,14 @@ function envLineChart(rows){
  const scopeLabel=targetDate?`${targetDate===today()?`오늘 ${targetDate}`:targetDate} · 1시간 단위`:`${envFilters.from||'시작'} ~ ${envFilters.to||'종료'} · 1시간 단위`;
  return `<div class="env-chart-toolbar"><div class="env-chart-meta"><span class="env-chart-badge">${htmlText(envShortLabel(field.label))} (${htmlText(field.unit)})</span><span class="counter">${htmlText(scopeLabel)} · 총 ${pts.length}건</span></div></div><div class="panel-body env-chart-body">${body}</div>`;
 }
-function issueSummaryChart(rows){
- const total=Math.max(1,rows.length);
- const statusCounts=['발생','조치중','조치 완료'].map(st=>({label:st,count:rows.filter(r=>r.status===st).length}));
- const typeMap=new Map();
- for(const r of rows)typeMap.set(r.issueType,(typeMap.get(r.issueType)||0)+1);
- const typeCounts=[...typeMap.entries()].map(([label,count])=>({label,count})).sort((a,b)=>b.count-a.count);
- const bar=(label,count,statusAttr='')=>`<div class="bar-row"><span>${htmlText(label)}</span><div class="bar-track"><div class="bar-fill" ${statusAttr?`data-status="${htmlText(statusAttr)}"`:''} style="width:${Math.round((count/total)*100)}%"></div></div><strong style="text-align:right">${count}건</strong></div>`;
- return `<section class="panel chart-section" aria-label="이슈 현황 요약"><div class="panel-head"><h2>이슈 현황 요약</h2><span class="counter">총 ${rows.length}건</span></div><div class="panel-body"><div class="chart-grid"><div><h3 style="margin:0 0 8px;font-size:13px">조치 상태별</h3><div class="bar-list">${statusCounts.map(x=>bar(x.label,x.count,x.label)).join('')}</div></div><div><h3 style="margin:0 0 8px;font-size:13px">이슈 유형별</h3><div class="bar-list">${typeCounts.length?typeCounts.map(x=>bar(x.label,x.count)).join(''):'<span class="muted">표시할 데이터가 없습니다.</span>'}</div></div></div></div></section>`;
+function issueSummaryStrip(rows,activeStatus){
+ const items=[
+  {key:'발생',label:'미조치 (발생)',tone:'is-danger',count:rows.filter(r=>r.status==='발생').length},
+  {key:'조치중',label:'조치중',tone:'is-warning',count:rows.filter(r=>r.status==='조치중').length},
+  {key:'조치 완료',label:'조치 완료',tone:'is-success',count:rows.filter(r=>r.status==='조치 완료').length},
+  {key:'all',label:'전체 이슈',tone:'is-neutral',count:rows.length}
+ ];
+ return `<section class="issue-kpi-strip" aria-label="이슈 현황 요약">${items.map(x=>`<button type="button" class="issue-kpi-card ${x.tone}${activeStatus===x.key?' is-active':''}" data-issue-status-card="${x.key}"><span class="issue-kpi-label">${x.label}</span><strong class="issue-kpi-value">${x.count}<small>건</small></strong></button>`).join('')}</section>`;
 }
 function cycleTimelineChart(c){
  const startMs=new Date(c.plannedStartAt||today()).getTime(),endMs=new Date(c.expectedEndAt||today()).getTime();
@@ -520,12 +520,19 @@ function renderIssues(detail){
   if(!issue){go('issue-list');return}
   selectedIssueId=issue.issueId;
   const cycle=getCycle(issue.cycleId);
-  const facts=[['작기계획',cycle?.name||'—'],['온실',gh(cycle?.greenhouseId)?.name||'—'],['발생일시',formatAt(issue.occurredAt)],['이슈 유형',issue.issueType],['이슈 메시지',issue.message],['발생 측정값',issue.issueValue??'—'],['조치 내용',issue.actionContent||'—'],['조치 완료일시',formatAt(issue.actionCompletedAt)]];
+  const facts=[
+   ['온실',gh(cycle?.greenhouseId)?.name||'—'],
+   ['작기계획',cycle?.name||'—'],
+   ['이슈 유형',issue.issueType||'—'],
+   ['발생 측정값',issue.issueValue??'—'],
+   ['발생일시',formatAt(issue.occurredAt)],
+   ['조치 완료일시',formatAt(issue.actionCompletedAt)]
+  ];
   main.innerHTML=moduleHeading('온실 환경 이슈 상세','')+
-  `<div class="module-scroll"><section class="panel"><div class="panel-head"><div class="panel-head-title"><h2>이슈 정보</h2>${issueBadge(issue.status)}</div></div><div class="panel-body"><dl class="profile-facts facts-2col">${facts.map(([label,value])=>`<dt>${label}</dt><dd>${htmlText(value??'—')}</dd>`).join('')}</dl></div></section>
-  <section class="panel" style="margin-top:14px"><div class="panel-head"><h2>조치 등록 및 상태 변경</h2></div><div class="panel-body"><form id="issueActionForm" style="display:grid;gap:14px">
-  <div class="field" style="max-width:280px;margin:0"><label for="issueNextStatus">조치 상태 *</label><select id="issueNextStatus" class="ctrl">${options(['발생','조치중','조치 완료'].map(v=>({value:v,label:v})),issue.status)}</select></div>
-  <div class="field" style="margin:0"><label for="issueActionInput">조치 내용</label><textarea id="issueActionInput" class="ctrl textarea" placeholder="조치 내용을 입력하세요 (조치 완료 시 필수)">${htmlText(issue.actionContent||'')}</textarea></div>
+  `<div class="module-scroll"><section class="panel" aria-label="이슈 발생 정보"><div class="panel-head"><div class="panel-head-title"><h2>${htmlText(issue.message||'이슈 상세')}</h2>${issueBadge(issue.status)}</div><span class="counter">${htmlText(issue.issueType)} · ${htmlText(String(issue.issueValue??'—'))}</span></div><div class="panel-body"><dl class="profile-facts facts-2col">${facts.map(([label,value])=>`<dt>${label}</dt><dd>${htmlText(value??'—')}</dd>`).join('')}</dl></div></section>
+  <section class="panel" style="margin-top:12px" aria-label="조치 등록 및 상태 변경"><div class="panel-head"><h2>조치 등록 및 상태 변경</h2></div><div class="panel-body"><form id="issueActionForm" class="issue-action-form">
+  <div class="field"><label for="issueNextStatus">조치 상태 *</label><select id="issueNextStatus" class="ctrl">${options(['발생','조치중','조치 완료'].map(v=>({value:v,label:v})),issue.status)}</select></div>
+  <div class="field"><label for="issueActionInput">조치 내용</label><textarea id="issueActionInput" class="ctrl textarea" placeholder="조치 내용을 입력하세요 (조치 완료 시 필수)">${htmlText(issue.actionContent||'')}</textarea></div>
   <div class="module-actions"><div class="module-actions-left"><button type="button" class="btn" id="issueToList">목록</button></div><button type="submit" class="btn main">조치 저장</button></div></form></div></section></div>`;
   bindModuleBack();
   $('#issueToList').onclick=()=>go('issue-list');
@@ -544,7 +551,7 @@ function renderIssues(detail){
   return;
  }
  const all=label=>({value:'all',label});
- const choose=(id,label,items,selected)=>`<div class="field"><label for="${id}">${label}</label><select id="${id}" class="ctrl">${options([all('전체'),...items],selected)}</select></div>`;
+ const choose=(id,label,items,selected)=>`<label class="env-ctrl-field"><span>${label}</span><select id="${id}" class="ctrl">${options([all('전체'),...items],selected)}</select></label>`;
  const values=items=>[...new Set(items)].map(value=>({value,label:value}));
  const selectableCycles=config.cycles.filter(row=>['진행','종료'].includes(cycleStatus(row)));
  let selectedIssueCycle=selectableCycles.find(c=>c.cycleId===issueFilters.cycle);
@@ -557,21 +564,31 @@ function renderIssues(detail){
   return;
  }
  const cycleIssues=issues.filter(item=>item.cycleId===selectedIssueCycle.cycleId);
- const rows=cycleIssues.filter(item=>(issueFilters.type==='all'||item.issueType===issueFilters.type)&&(issueFilters.status==='all'||item.status===issueFilters.status)&&(!issueFilters.from||dateFrom(item.occurredAt)>=issueFilters.from)&&(!issueFilters.to||dateFrom(item.occurredAt)<=issueFilters.to)).sort((a,b)=>b.occurredAt.localeCompare(a.occurredAt));
+ const statusRank=st=>st==='발생'?0:st==='조치중'?1:2;
+ const rows=cycleIssues
+  .filter(item=>(issueFilters.type==='all'||item.issueType===issueFilters.type)&&(issueFilters.status==='all'||item.status===issueFilters.status)&&(!issueFilters.from||dateFrom(item.occurredAt)>=issueFilters.from)&&(!issueFilters.to||dateFrom(item.occurredAt)<=issueFilters.to))
+  .sort((a,b)=>statusRank(a.status)-statusRank(b.status)||b.occurredAt.localeCompare(a.occurredAt));
  const size=Number(config.pagination?.pageSize)||5;issueListPage=Math.min(Math.max(1,issueListPage),Math.max(1,Math.ceil(rows.length/size)));const fromIdx=(issueListPage-1)*size,pagedIssues=rows.slice(fromIdx,fromIdx+size);
  main.innerHTML=moduleHeading('온실 환경 이슈 목록')+
  cycleContextBar('issueGh','issueCycle',selectableCycles,selectedIssueCycle)+
- `${issueSummaryChart(cycleIssues)}
- <section class="panel search-section" aria-label="검색 조건"><div class="panel-body"><form class="filterbar module-filter" id="issueFilters">
- ${choose('issueType','이슈 유형',values(['온도','습도','이산화탄소','일사량','광도','배지온도','배지수분량','배지 EC','배지 pH',...cycleIssues.map(item=>item.issueType)]),issueFilters.type)}
- ${choose('issueStatus','조치 상태',values(['발생','조치중','조치 완료']),issueFilters.status)}
- <div class="field"><label for="issueFrom">시작일</label><input id="issueFrom" class="ctrl" type="date" value="${issueFilters.from}"></div>
- <div class="field"><label for="issueTo">종료일</label><input id="issueTo" class="ctrl" type="date" value="${issueFilters.to}"></div>
- <button class="btn filter-submit" type="submit">검색</button></form></div></section>
-
- <section class="panel list-section" aria-label="온실 환경 이슈 목록"><div class="panel-head"><h2>온실 환경 이슈 목록</h2><span class="counter">총 ${rows.length}건</span></div><div class="tablewrap"><table class="data-table module-table"><thead><tr><th>발생일시</th><th>이슈 유형</th><th>이슈 내용</th><th>조치 상태</th></tr></thead>
- <tbody>${pagedIssues.map(item=>`<tr><td>${formatAt(item.occurredAt)}</td><td>${htmlText(item.issueType)}</td><td><button class="linkbtn" data-issue="${item.issueId}">${htmlText(item.message)}</button></td><td>${issueBadge(item.status)}</td></tr>`).join('')||'<tr><td colspan="4" class="empty">조회된 이슈가 없습니다.</td></tr>'}</tbody></table></div>${pageControls(rows.length,issueListPage,size,'온실 환경 이슈')}</section>`;
+ issueSummaryStrip(cycleIssues,issueFilters.status)+
+ `<section class="panel list-section" aria-label="온실 환경 이슈 목록">
+  <div class="panel-head"><div class="panel-head-title"><h2>온실 환경 이슈 목록</h2><span class="counter">총 ${rows.length}건</span></div></div>
+  <form class="issue-filter-strip" id="issueFilters">
+   ${choose('issueType','이슈 유형',values(['온도','습도','이산화탄소','일사량','광도','배지온도','배지수분량','배지 EC','배지 pH',...cycleIssues.map(item=>item.issueType)]),issueFilters.type)}
+   ${choose('issueStatus','조치 상태',values(['발생','조치중','조치 완료']),issueFilters.status)}
+   <label class="env-ctrl-field"><span>시작일</span><input id="issueFrom" class="ctrl" type="date" value="${issueFilters.from}"></label>
+   <label class="env-ctrl-field"><span>종료일</span><input id="issueTo" class="ctrl" type="date" value="${issueFilters.to}"></label>
+   <button class="btn main env-search-btn" type="submit">검색</button>
+  </form>
+  <div class="tablewrap"><table class="data-table module-table issue-table"><thead><tr><th class="col-type">이슈 유형</th><th>이슈 내용</th><th class="tnum col-val">발생 측정값</th><th class="col-date">발생일시</th><th class="col-status">조치 상태</th></tr></thead>
+  <tbody>${pagedIssues.map(item=>`<tr><td class="col-type">${htmlText(item.issueType)}</td><td><button class="linkbtn" data-issue="${item.issueId}">${htmlText(item.message)}</button></td><td class="tnum col-val">${htmlText(String(item.issueValue??'—'))}</td><td class="col-date">${formatAt(item.occurredAt)}</td><td class="col-status">${issueBadge(item.status)}</td></tr>`).join('')||'<tr><td colspan="5" class="empty">조회된 이슈가 없습니다.</td></tr>'}</tbody></table></div>${pageControls(rows.length,issueListPage,size,'온실 환경 이슈')}</section>`;
  bindCycleContextBar('issueGh','issueCycle',selectableCycles,nextId=>{issueFilters={cycle:nextId,type:'all',status:'all',from:'',to:''};issueListPage=1;renderIssues(false)});
+ $$('[data-issue-status-card]').forEach(btn=>btn.onclick=()=>{
+  issueFilters={...issueFilters,status:btn.dataset.issueStatusCard};
+  issueListPage=1;
+  renderIssues(false);
+ });
  $('#issueFilters').onsubmit=event=>{
   event.preventDefault();
   const from=$('#issueFrom').value,to=$('#issueTo').value;

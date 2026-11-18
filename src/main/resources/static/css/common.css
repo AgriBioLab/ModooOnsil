@@ -2468,3 +2468,124 @@ select.ctrl:disabled {
   min-width: 150px;
   max-width: 280px;
 }
+
+.issue-kpi-strip {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.issue-kpi-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 11px 14px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: #ffffff;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease, background-color 0.15s ease;
+}
+
+.issue-kpi-card:hover {
+  border-color: #b7c8be;
+}
+
+.issue-kpi-card.is-active {
+  border-color: #1f7a4c;
+  box-shadow: 0 0 0 2px rgba(31, 122, 76, 0.14);
+}
+
+.issue-kpi-label {
+  font-size: 12.5px;
+  font-weight: 700;
+  color: var(--muted);
+}
+
+.issue-kpi-value {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--ink);
+  font-variant-numeric: tabular-nums;
+}
+
+.issue-kpi-value small {
+  margin-left: 2px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--muted);
+}
+
+.issue-kpi-card.is-danger .issue-kpi-value {
+  color: #b91c1c;
+}
+
+.issue-kpi-card.is-warning .issue-kpi-value {
+  color: #b45309;
+}
+
+.issue-kpi-card.is-success .issue-kpi-value {
+  color: #15803d;
+}
+
+.issue-filter-strip {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  padding: 10px 16px;
+  background: var(--soft);
+  border-bottom: 1px solid var(--line);
+}
+
+.issue-filter-strip .env-search-btn {
+  margin-left: auto;
+}
+
+.issue-table th.col-status,
+.issue-table td.col-status {
+  width: 96px;
+  text-align: center;
+  white-space: nowrap;
+}
+
+.issue-table th.col-date,
+.issue-table td.col-date {
+  width: 155px;
+  white-space: nowrap;
+}
+
+.issue-table th.col-type,
+.issue-table td.col-type {
+  width: 110px;
+  white-space: nowrap;
+}
+
+.issue-table th.tnum.col-val,
+.issue-table td.tnum.col-val {
+  width: 110px;
+  text-align: right;
+  white-space: nowrap;
+}
+
+.issue-action-form {
+  display: grid;
+  gap: 12px;
+}
+
+.issue-action-form .field {
+  margin: 0;
+}
+
+.issue-action-form .ctrl#issueNextStatus {
+  max-width: 260px;
+}
+
+@media (max-width: 900px) {
+  .issue-kpi-strip {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
