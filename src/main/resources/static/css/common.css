@@ -2846,35 +2846,75 @@ select.ctrl {
   white-space: nowrap;
 }
 
-.cycle-table th:nth-child(2),
-.cycle-table td:nth-child(2) {
-  width: 24%;
-}
-
 .cycle-table th:nth-child(3),
 .cycle-table td:nth-child(3),
 .cycle-table th:nth-child(4),
 .cycle-table td:nth-child(4) {
-  width: 11%;
+  width: 88px;
   white-space: nowrap;
 }
 
 .cycle-table th:nth-child(5),
 .cycle-table td:nth-child(5) {
-  width: 12%;
+  width: 96px;
   white-space: nowrap;
 }
 
 .cycle-table th:nth-child(6),
 .cycle-table td:nth-child(6) {
-  width: 24%;
+  width: 210px;
   white-space: nowrap;
 }
 
 .cycle-table th:nth-child(7),
 .cycle-table td:nth-child(7) {
-  width: 100px;
+  width: 195px;
+  white-space: nowrap;
+}
+
+.cycle-table th:nth-child(8),
+.cycle-table td:nth-child(8) {
+  width: 92px;
   text-align: center;
+  white-space: nowrap;
+}
+
+.diary-table th:nth-child(2),
+.diary-table td:nth-child(2) {
+  width: 118px;
+  white-space: nowrap;
+}
+
+.diary-table th:nth-child(3),
+.diary-table td:nth-child(3),
+.diary-table th:nth-child(4),
+.diary-table td:nth-child(4) {
+  width: 92px;
+  white-space: nowrap;
+}
+
+.diary-table th:nth-child(5),
+.diary-table td:nth-child(5) {
+  width: 104px;
+  white-space: nowrap;
+}
+
+.diary-table th:nth-child(7),
+.diary-table td:nth-child(7) {
+  width: 112px;
+  white-space: nowrap;
+}
+
+.diary-table th.tnum,
+.diary-table td.tnum {
+  width: 160px;
+  text-align: right;
+  white-space: nowrap;
+}
+
+.std-crop-table th:nth-child(2),
+.std-crop-table td:nth-child(2) {
+  width: 200px;
   white-space: nowrap;
 }
 
