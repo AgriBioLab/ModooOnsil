@@ -183,8 +183,40 @@
     return current;
   }
 
+  const HTML_ESCAPE_MAP = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' };
+
+  function escapeHtml(value) {
+    return String(value ?? '').replace(/[&<>"']/g, ch => HTML_ESCAPE_MAP[ch]);
+  }
+
+  // HTTP 응답 상태 확인 및 JSON 오류 메시지 추출 (CJPA 공통 응답 처리 기준)
+  function checkResponse(response) {
+    if (response.ok) return response;
+    return response.json()
+      .catch(() => null)
+      .then(errorBody => {
+        const message = errorBody && typeof errorBody.message === 'string'
+          ? errorBody.message
+          : 'HTTP ' + response.status;
+        throw new Error(message);
+      });
+  }
+
+  function fetchJson(url, options) {
+    return fetch(url, options)
+      .then(checkResponse)
+      .then(response => response.json());
+  }
+
+  function setButtonsDisabled(buttons, disabled) {
+    for (const button of buttons) {
+      if (button) button.disabled = disabled;
+    }
+  }
+
   window.ModooCommon = {
-    ready, notify, signupKey, loadSignupMembers, allMembers, saveAuthUser, loadAuthUser,
+    ready, notify, escapeHtml, checkResponse, fetchJson, setButtonsDisabled,
+    signupKey, loadSignupMembers, allMembers, saveAuthUser, loadAuthUser,
     saveProfilePatch, showAccount, bindAccount, setCurrentMenu
   };
 })();

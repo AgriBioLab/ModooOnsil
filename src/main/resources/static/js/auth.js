@@ -1,9 +1,8 @@
 (() => {
   'use strict';
-  const { ready, notify: toast, allMembers, loadSignupMembers, signupKey, saveAuthUser, loadAuthUser } = window.ModooCommon;
+  const { ready, notify: toast, escapeHtml, allMembers, loadSignupMembers, signupKey, saveAuthUser, loadAuthUser } = window.ModooCommon;
   const $ = (s, base = document) => base.querySelector(s);
   const $$ = (s, base = document) => [...base.querySelectorAll(s)];
-  const escapeHtml = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 
   function setupLogin() {
     const form = $('#loginForm');
@@ -17,14 +16,14 @@
     if (!username.value) username.value = loadAuthUser() || defaults.loginUsername || '';
     if (!password.value) password.value = defaults.loginPassword || '';
 
-    toggle.onclick = () => {
+    toggle.addEventListener('click', () => {
       const reveal = password.type === 'password';
       password.type = reveal ? 'text' : 'password';
       toggle.textContent = reveal ? '비밀번호 숨기기' : '비밀번호 보기';
-    };
+    });
 
     form.addEventListener('input', () => { feedback.textContent = ''; });
-    form.onsubmit = event => {
+    form.addEventListener('submit', event => {
       event.preventDefault();
       const member = allMembers().find(row => row.username === username.value.trim());
       const pw = password.value;
@@ -35,7 +34,7 @@
       }
       feedback.textContent = '아이디와 비밀번호를 확인하세요.';
       feedback.focus();
-    };
+    });
   }
 
   const signupStages = ['회원정보 입력', '농업경영체 인증', '완료'];
@@ -55,7 +54,7 @@
     return `<div class="form-group">
       <label class="form-label" for="${id}">${label}${required ? ' <span class="required" aria-hidden="true">*</span>' : ''}</label>
       <div class="${checkLabel ? 'auth-input-row' : 'form-conts'}">
-        <input id="${id}" class="krds-input medium" type="${type}" aria-describedby="${hint ? id + '-hint ' : ''}${id}-feedback" ${required ? 'required' : ''} ${attributes}>
+        <input id="${id}" name="${id}" class="krds-input medium" type="${type}" aria-describedby="${hint ? id + '-hint ' : ''}${id}-feedback" ${required ? 'required' : ''} ${attributes}>
         ${checkLabel ? `<button type="button" class="krds-btn medium secondary" data-check="${id}" aria-label="${checkLabel} 중복 확인">중복 확인</button>` : ''}
       </div>
       ${hint ? `<p id="${id}-hint" class="auth-hint">${hint}</p>` : ''}
