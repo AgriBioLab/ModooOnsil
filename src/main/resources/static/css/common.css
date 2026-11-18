@@ -218,7 +218,7 @@ main:has(.editor-shell) {
 .module-hint.module-hint-filter{margin:10px 0 0}
 .module-hint.module-hint-detail{margin:12px 0 0}
 
-.app[hidden], .signed-out[hidden], .login-form [hidden] { display: none; }
+.app[hidden], .signed-out[hidden], .login-form [hidden], .navgroup[hidden] { display: none; }
 .login-brand { font-weight: 700; margin: 0 0 12px; }
 .login-form { display: grid; gap: 16px; text-align: left; }
 .login-form p { margin: 0; }
@@ -1936,4 +1936,97 @@ select.ctrl:disabled {
 .std-criteria-meta .field {
   margin: 0;
   max-width: 420px;
+}
+
+/* 작기정보 상세 위계 · 2단 정의 목록 */
+.cycle-hero-summary {
+  padding-bottom: 14px;
+  margin-bottom: 16px;
+  border-bottom: 1px solid var(--line);
+}
+
+.cycle-hero-summary h3 {
+  margin: 0 0 4px;
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--ink);
+  letter-spacing: -0.02em;
+}
+
+.cycle-hero-summary p {
+  margin: 0;
+  font-size: 13.5px;
+  color: var(--muted);
+}
+
+.cycle-facts-groups {
+  display: grid;
+  gap: 16px;
+}
+
+.cycle-facts-group h4 {
+  margin: 0 0 8px;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--muted);
+}
+
+.profile-facts.facts-2col {
+  grid-template-columns: minmax(0, 145px) minmax(0, 1fr) minmax(0, 145px) minmax(0, 1fr);
+}
+
+.profile-facts.facts-2col dt,
+.profile-facts.facts-2col dd {
+  padding: 12px 15px;
+  font-size: 14px;
+  overflow-wrap: anywhere;
+}
+
+.profile-facts.facts-2col dd:nth-of-type(odd) {
+  border-right: 1px solid var(--line);
+}
+
+.profile-facts.facts-2col dd:last-of-type:nth-of-type(odd) {
+  grid-column: 2 / -1;
+  border-right: 0;
+}
+
+.profile-facts.facts-2col dt:nth-of-type(odd):nth-last-of-type(2),
+.profile-facts.facts-2col dd:nth-of-type(odd):nth-last-of-type(2),
+.profile-facts.facts-2col dt:last-of-type,
+.profile-facts.facts-2col dd:last-of-type {
+  border-bottom: 0;
+}
+
+@media (max-width: 720px) {
+  .profile-facts.facts-2col {
+    grid-template-columns: minmax(0, 110px) minmax(0, 1fr);
+  }
+  .profile-facts.facts-2col dd:nth-of-type(odd) {
+    border-right: 0;
+  }
+  .profile-facts.facts-2col dt:nth-of-type(odd):nth-last-of-type(2),
+  .profile-facts.facts-2col dd:nth-of-type(odd):nth-last-of-type(2) {
+    border-bottom: 1px solid var(--line);
+  }
+}
+
+.cycle-hero-row {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.cycle-hero-date {
+  font-size: 12.5px;
+  color: var(--muted);
+}
+
+.module-actions-left {
+  margin-right: auto;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
 }
