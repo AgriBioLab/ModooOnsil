@@ -7,7 +7,7 @@ const pageNums=(cur,total)=>{if(total<=7)return Array.from({length:total},(_,i)=
 const pageBtns=(cur,total,attr)=>pageNums(cur,total).map(p=>p==='...'?'<span class="page-ellipsis" aria-hidden="true">…</span>':`<button type="button" class="page-button" ${attr}="${p}" ${p===cur?'aria-current="page"':''} aria-label="${p}페이지">${p}</button>`).join('');
 const storageKey=kind=>`modoo-sprint2:${sampleData.meta.version}:${config.header.currentUser.id}:${kind}`;
 let config=clone(sampleData), diaryRows=[], page='list',selectedId=null,working=[],editRow=null,selectedStage='VEG',filterCycle='all',filterGreenhouse='all',filterCrop='all',filterVariety='all',filterDate='',listPage=1;
-const main=$('#main'), today=()=>config.meta.today;
+const main=$('#main'), today=()=>{const d=new Date();return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`};
 const options=(values,sel)=>values.map(x=>`<option value="${escapeHtml(x.value)}" ${String(x.value)===String(sel)?'selected':''}>${escapeHtml(x.label)}</option>`).join('');
 const getCycle=id=>config.cycles.find(c=>c.cycleId===id)||config.cycles[0];
 const gh=id=>config.greenhouses.find(g=>g.greenhouseId===id);
@@ -531,9 +531,18 @@ function renderGreenhouseDetail(){
  if(!g){go('gh-list');return}
  selectedGhId=g.greenhouseId;
  const linked=config.cycles.filter(c=>c.greenhouseId===g.greenhouseId);
- const facts=[['온실명',g.name],['유형',g.type||'—'],['피복형태',g.coverType||'—'],['동 수',g.buildingCount??'—'],['측고(m)',g.sideHeight??'—'],['폭(m)',g.width??'—'],['길이(m)',g.length??'—'],['등록 면적(㎡)',g.registeredArea??'—'],['배지형태',g.mediumType||'—'],['온실 사진 URL',g.imageUrl||'—'],['연결된 작기 수',`${linked.length}건`]];
+ const facts=[
+  ['등록 면적',g.registeredArea!=null?`${g.registeredArea} ㎡`:'—'],
+  ['동 수',g.buildingCount!=null?`${g.buildingCount}동`:'—'],
+  ['피복형태',g.coverType||'—'],
+  ['배지형태',g.mediumType||'—'],
+  ['측고',g.sideHeight!=null?`${g.sideHeight} m`:'—'],
+  ['폭',g.width!=null?`${g.width} m`:'—'],
+  ['길이',g.length!=null?`${g.length} m`:'—'],
+  ['온실 사진 URL',g.imageUrl||'—']
+ ];
  main.innerHTML=moduleHeading('온실 정보 상세','')+
- `<div class="module-scroll"><section class="panel"><div class="panel-head"><h2>온실 정보</h2></div><div class="panel-body">${g.imageUrl?`<div class="gh-photo-box"><img class="gh-detail-photo" src="${escapeHtml(g.imageUrl)}" alt="${htmlText(g.name)} 사진"></div>`:''}<div class="module-facts">${facts.map(([a,b])=>`<div><span>${htmlText(a)}</span><strong>${htmlText(String(b))}</strong></div>`).join('')}</div></div></section>
+ `<div class="module-scroll"><section class="panel"><div class="panel-head"><div class="panel-head-title"><h2>${htmlText(g.name)}</h2>${g.type?`<span class="krds-badge bg-light-success">${htmlText(g.type)}</span>`:''}</div><span class="counter">${htmlText(g.type||'유형 미지정')} · ${htmlText(g.coverType||'피복 미지정')}</span></div><div class="panel-body"><div class="${g.imageUrl?'gh-detail-layout':''}">${g.imageUrl?`<div class="gh-photo-box"><img class="gh-detail-photo" src="${escapeHtml(g.imageUrl)}" alt="${htmlText(g.name)} 사진"></div>`:''}<dl class="profile-facts facts-2col">${facts.map(([a,b])=>`<dt>${htmlText(a)}</dt><dd>${htmlText(String(b))}</dd>`).join('')}</dl></div></div></section>
  <div class="hidden" id="ghDeleteConfirm" style="padding:10px 12px;border:1px solid var(--line);background:#fff;display:flex;align-items:center;justify-content:flex-end;gap:8px"><span>이 온실을 삭제하시겠습니까?</span><button type="button" class="btn" id="ghDeleteCancel">취소</button><button type="button" class="btn main" id="ghDeleteOk">삭제 확인</button></div>
  <div class="module-actions"><button class="btn" id="ghToList">목록</button><button class="btn" id="ghDelete">삭제</button><button class="btn main" id="ghToEdit">수정</button></div></div>`;
  bindModuleBack();$('#ghToList').onclick=()=>go('gh-list');$('#ghToEdit').onclick=()=>go('gh-edit',g.greenhouseId);
@@ -559,7 +568,7 @@ function renderGreenhouseEditor(edit){
  <div class="field"><label for="ghWidth">폭 (m)</label><input class="ctrl" id="ghWidth" type="number" step="0.01" min="0" value="${row.width??''}"></div>
  <div class="field"><label for="ghLength">길이 (m)</label><input class="ctrl" id="ghLength" type="number" step="0.01" min="0" value="${row.length??''}"></div>
  <div class="field"><label for="ghArea">등록 면적 (㎡)</label><input class="ctrl" id="ghArea" type="number" step="0.01" min="0" value="${row.registeredArea??''}"></div>
- <div class="field wide"><label for="ghImageUrl">온실 사진 URL</label><input class="ctrl" id="ghImageUrl" type="text" maxlength="500" value="${htmlText(row.imageUrl||'')}" placeholder="이미지 URL을 입력하세요 (예: https://... 또는 img/gh-a.svg)"><div id="ghPhotoPreview" class="${row.imageUrl?'gh-photo-box':'gh-photo-box hidden'}" style="margin-top:10px">${row.imageUrl?`<img class="gh-detail-photo" src="${escapeHtml(row.imageUrl)}" alt="온실 사진 미리보기">`:''}</div></div>
+ <div class="field wide"><label for="ghImageUrl">온실 사진 URL</label><input class="ctrl" id="ghImageUrl" type="text" maxlength="500" value="${htmlText(row.imageUrl||'')}" placeholder="이미지 URL을 입력하세요 (예: https://... 또는 img/gh-a.jpg)"><div id="ghPhotoPreview" class="${row.imageUrl?'gh-photo-box':'gh-photo-box hidden'}" style="margin-top:10px">${row.imageUrl?`<img class="gh-detail-photo" src="${escapeHtml(row.imageUrl)}" alt="온실 사진 미리보기">`:''}</div></div>
  </div><div class="errorbox hidden" id="ghErr"></div></div>
  <div class="module-actions"><button type="button" class="btn" id="ghCancel">취소</button><button type="submit" class="btn main">${edit?'수정 저장':'등록'}</button></div></form>`;
  bindModuleBack();$('#ghCancel').onclick=()=>go(edit?'gh-detail':'gh-list',g?.greenhouseId);
