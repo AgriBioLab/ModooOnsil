@@ -232,7 +232,7 @@
       input.value = businessNumber;
 
       function updateCertification() {
-        certStatus = businessNumber ? '인증중' : '미인증';
+        certStatus = businessNumber ? '인증 대기중' : '미인증';
       }
 
       input.oninput = () => {

@@ -51,9 +51,10 @@
     }
 
     function updateProfileValues() {
-      const certification = user.certification || '미인증';
+      const rawCert = user.certification || '미인증';
+      const certification = rawCert === '인증중' ? '인증 대기중' : rawCert;
       const complete = certification === '인증';
-      const pending = certification === '인증중';
+      const pending = certification === '인증 대기중';
       const values = {
         ...user,
         certification,
@@ -140,13 +141,13 @@
     bindForm(certForm, () => ({
       certBusinessNumber: certNumber.value.trim() ? '' : '농업경영체 등록번호를 입력하세요.'
     }), () => {
-      const patch = { businessNumber: certNumber.value.trim(), certification: '인증중' };
+      const patch = { businessNumber: certNumber.value.trim(), certification: '인증 대기중' };
       if (!actions.save(user.username, patch)) return;
       Object.assign(user, patch);
       actions.updateAccount();
       updateProfileValues();
       get('profileCertHeading').focus();
-      actions.notify('농업경영체 인증을 요청했습니다. 현재 인증중입니다.');
+      actions.notify('농업경영체 인증을 요청했습니다. 현재 인증 대기중입니다.');
     });
 
     const current = get('curPw');
