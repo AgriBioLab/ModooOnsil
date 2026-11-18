@@ -2812,25 +2812,33 @@ select.ctrl {
   font-size: 13px;
 }
 
-.cycle-period-group {
+.cycle-period-head {
   display: flex;
   align-items: center;
-  gap: 8px;
-  padding: 4px;
-  border: 1px solid var(--line);
-  border-radius: 10px;
-  background: #f7f9f8;
+  justify-content: space-between;
+  gap: 10px;
 }
 
-.cycle-period-group .ctrl {
-  flex: 1 1 0;
-  min-width: 0;
-  min-height: 34px;
+.cycle-period-radios {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
 }
 
-.cycle-period-group .cycle-period-select {
-  flex: 0 0 130px;
-  font-weight: 600;
+.cycle-radio {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 12.5px;
+  font-weight: 500;
+  color: var(--ink);
+  cursor: pointer;
+}
+
+.cycle-radio input[type="radio"] {
+  accent-color: var(--primary);
+  margin: 0;
+  cursor: pointer;
 }
 
 .cycle-period-cell {
@@ -2941,12 +2949,6 @@ select.ctrl {
   .list-ctrl-field.is-span-2,
   .list-ctrl-field.is-span-3 {
     grid-column: 1 / -1;
-  }
-  .cycle-period-group {
-    flex-wrap: wrap;
-  }
-  .cycle-period-group .cycle-period-select {
-    flex: 1 1 100%;
   }
   .list-search-btn {
     grid-column: 2;
