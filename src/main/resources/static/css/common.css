@@ -2692,7 +2692,7 @@ select.ctrl {
   align-items: center;
   justify-content: space-between;
   gap: 12px;
-  padding: 0 2px 10px;
+  padding: 0 6px 10px;
   background: transparent;
 }
 
@@ -2750,6 +2750,16 @@ select.ctrl {
   padding: 14px;
   border-bottom: 1px solid #e6e9ed;
   font-size: 13.5px;
+}
+
+.list-section .data-table th:first-child,
+.list-section .data-table td:first-child {
+  padding-left: 18px;
+}
+
+.list-section .data-table th:last-child,
+.list-section .data-table td:last-child {
+  padding-right: 24px;
 }
 
 .env-history-panel .data-table td {
@@ -3013,35 +3023,40 @@ select.ctrl {
   white-space: nowrap;
 }
 
+.cycle-table th:nth-child(2),
+.cycle-table td:nth-child(2) {
+  width: 19%;
+}
+
 .cycle-table th:nth-child(3),
 .cycle-table td:nth-child(3),
 .cycle-table th:nth-child(4),
 .cycle-table td:nth-child(4) {
-  width: 88px;
+  width: 10%;
   white-space: nowrap;
 }
 
 .cycle-table th:nth-child(5),
 .cycle-table td:nth-child(5) {
-  width: 96px;
+  width: 11%;
   white-space: nowrap;
 }
 
 .cycle-table th:nth-child(6),
 .cycle-table td:nth-child(6) {
-  width: 210px;
+  width: 21%;
   white-space: nowrap;
 }
 
 .cycle-table th:nth-child(7),
 .cycle-table td:nth-child(7) {
-  width: 195px;
+  width: 20%;
   white-space: nowrap;
 }
 
 .cycle-table th:nth-child(8),
 .cycle-table td:nth-child(8) {
-  width: 92px;
+  width: 104px;
   text-align: center;
   white-space: nowrap;
 }
