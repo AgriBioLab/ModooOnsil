@@ -89,7 +89,7 @@
         length = #{length},
         registered_area = #{registeredArea},
         medium_type = #{mediumType},
-        greenhouse_image_url = #{greenhouseImageUrl, jdbcType=VARCHAR},
+        greenhouse_image_url = #{greenhouseImageUrl},
         updated_at = NOW()
         WHERE member_id = #{memberId}
         AND greenhouse_id = #{greenhouseId}
