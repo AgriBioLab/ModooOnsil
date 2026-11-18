@@ -270,7 +270,7 @@ function signIn(member, initialPage='list', initialId=null){
  else if(page.startsWith('env-')&&initialId)selectedMeasurementId=initialId;
  else if(initialId)selectedId=initialId;
  filterCycle=filterGreenhouse=filterCrop=filterVariety='all';filterDate='';listPage=cycleListPage=ghListPage=environmentListPage=issueListPage=1;
- cycleFilters={status:'all',greenhouse:'all',crop:'all',variety:'all',periodType:'planned',from:'',to:''};ghFilters={name:'',type:'all',cover:'all',medium:'all'};envFilters={cycle:'all',from:'',to:'',comparison:'all'};
+ cycleFilters={status:'all',greenhouse:'all',crop:'all',variety:'all',periodType:'planned',from:'',to:''};ghFilters={name:'all',type:'all',cover:'all',medium:'all'};envFilters={cycle:'all',from:'',to:'',comparison:'all'};
  issueFilters={cycle:'all',type:'all',status:'all',from:'',to:''};
  showAccount(member);loadStandards();loadGreenhouseExtras();loadCycleExtras();loadIssueExtras();loadSaved();render();
  if(main)main.focus();
@@ -704,22 +704,21 @@ function renderIssues(detail){
  $$('[data-issue]').forEach(button=>button.onclick=()=>go('issue-detail',button.dataset.issue));
  bindPages('',()=>issueListPage,v=>issueListPage=v,rows.length,size,()=>renderIssues(false));
 }
-let selectedGhId=null,ghListPage=1,ghFilters={name:'',type:'all',cover:'all',medium:'all'};
+let selectedGhId=null,ghListPage=1,ghFilters={name:'all',type:'all',cover:'all',medium:'all'};
 function storeGreenhouseExtras(){try{localStorage.setItem(storageKey('greenhouses'),JSON.stringify({greenhouses:config.greenhouses}))}catch{}}
 function loadGreenhouseExtras(){try{const saved=JSON.parse(localStorage.getItem(storageKey('greenhouses'))||'null');if(Array.isArray(saved?.greenhouses)&&saved.greenhouses.length)config.greenhouses=saved.greenhouses.map(g=>(g.imageUrl!==undefined&&!String(g.imageUrl||'').endsWith('.svg'))?g:{...g,imageUrl:sampleData.greenhouses.find(x=>x.greenhouseId===g.greenhouseId)?.imageUrl??null})}catch{}}
 function renderGreenhouseList(){
- const rows=config.greenhouses.filter(g=>(!ghFilters.name||g.name.includes(ghFilters.name))&&(ghFilters.type==='all'||g.type===ghFilters.type)&&(ghFilters.cover==='all'||g.coverType===ghFilters.cover)&&(ghFilters.medium==='all'||g.mediumType===ghFilters.medium));
+ const rows=config.greenhouses.filter(g=>(ghFilters.name==='all'||g.greenhouseId===ghFilters.name)&&(ghFilters.type==='all'||g.type===ghFilters.type)&&(ghFilters.cover==='all'||g.coverType===ghFilters.cover)&&(ghFilters.medium==='all'||g.mediumType===ghFilters.medium));
  const size=Number(config.pagination?.pageSize)||5;ghListPage=Math.min(Math.max(1,ghListPage),Math.max(1,Math.ceil(rows.length/size)));const from=(ghListPage-1)*size,paged=rows.slice(from,from+size);
  main.innerHTML=moduleHeading('온실 정보')+unifiedListPanel({
   title:'온실 정보',
   count:rows.length,
   actionHtml:'<button type="button" class="btn main xs" id="ghCreate">+ 온실 등록</button>',
-  filterHtml:`${listFilterField('ghFilterName','온실명',`<input class="ctrl" id="ghFilterName" value="${htmlText(ghFilters.name)}" placeholder="온실명을 입력하세요">`)}${listFilterField('ghFilterType','유형',`<select class="ctrl" id="ghFilterType">${options([{value:'all',label:'전체'},{value:'단동',label:'단동'},{value:'연동',label:'연동'}],ghFilters.type)}</select>`)}${listFilterField('ghFilterCover','피복형태',`<select class="ctrl" id="ghFilterCover">${options([{value:'all',label:'전체'},{value:'유리',label:'유리'},{value:'비닐',label:'비닐'}],ghFilters.cover)}</select>`)}${listFilterField('ghFilterMedium','배지형태',`<select class="ctrl" id="ghFilterMedium">${options([{value:'all',label:'전체'},{value:'수태',label:'수태'},{value:'코코피트',label:'코코피트'}],ghFilters.medium)}</select>`)}<button type="button" class="btn main list-search-btn" id="ghDoFilter">검색</button>`,
+  filterHtml:`${listFilterField('ghFilterName','온실명',`<select class="ctrl" id="ghFilterName">${options([{value:'all',label:'전체'},...config.greenhouses.map(g=>({value:g.greenhouseId,label:g.name}))],ghFilters.name)}</select>`)}${listFilterField('ghFilterType','유형',`<select class="ctrl" id="ghFilterType">${options([{value:'all',label:'전체'},{value:'단동',label:'단동'},{value:'연동',label:'연동'}],ghFilters.type)}</select>`)}${listFilterField('ghFilterCover','피복형태',`<select class="ctrl" id="ghFilterCover">${options([{value:'all',label:'전체'},{value:'유리',label:'유리'},{value:'비닐',label:'비닐'}],ghFilters.cover)}</select>`)}${listFilterField('ghFilterMedium','배지형태',`<select class="ctrl" id="ghFilterMedium">${options([{value:'all',label:'전체'},{value:'수태',label:'수태'},{value:'코코피트',label:'코코피트'}],ghFilters.medium)}</select>`)}<button type="button" class="btn main list-search-btn" id="ghDoFilter">검색</button>`,
   bodyHtml:`<div class="panel-body">${paged.length?`<div class="gh-card-grid">${paged.map(g=>`<article class="gh-card"><button type="button" class="gh-card-media" data-gh-detail="${g.greenhouseId}" aria-label="${htmlText(g.name)} 상세 보기">${g.imageUrl?`<img src="${escapeHtml(g.imageUrl)}" alt="${htmlText(g.name)} 사진">`:`<div class="gh-card-placeholder"><span>등록된 사진 없음</span></div>`}</button><div class="gh-card-body"><div class="gh-card-head"><button type="button" class="linkbtn gh-card-title" data-gh-detail="${g.greenhouseId}">${htmlText(g.name)}</button>${g.type?`<span class="krds-badge bg-light-success">${htmlText(g.type)}</span>`:''}</div><dl class="gh-card-specs"><div><dt>피복형태</dt><dd>${htmlText(g.coverType||'—')}</dd></div><div><dt>동 수</dt><dd>${g.buildingCount!=null?`${g.buildingCount}동`:'—'}</dd></div><div><dt>등록 면적</dt><dd>${g.registeredArea!=null?`${g.registeredArea} ㎡`:'—'}</dd></div><div><dt>배지형태</dt><dd>${htmlText(g.mediumType||'—')}</dd></div></dl></div></article>`).join('')}</div>`:'<p class="empty" style="padding:40px 12px;margin:0">등록된 온실이 없습니다.</p>'}</div>`,
   footHtml:pageControls(rows.length,ghListPage,size,'온실 정보')
  });
- $('#ghDoFilter').onclick=()=>{ghFilters={name:$('#ghFilterName').value.trim(),type:$('#ghFilterType').value,cover:$('#ghFilterCover').value,medium:$('#ghFilterMedium').value};ghListPage=1;renderGreenhouseList()};
- $('#ghFilterName').onkeydown=e=>{if(e.key==='Enter')$('#ghDoFilter').click()};
+ $('#ghDoFilter').onclick=()=>{ghFilters={name:$('#ghFilterName').value,type:$('#ghFilterType').value,cover:$('#ghFilterCover').value,medium:$('#ghFilterMedium').value};ghListPage=1;renderGreenhouseList()};
  $('#ghCreate').onclick=()=>go('gh-create');
  $$('[data-gh-detail]').forEach(b=>b.onclick=()=>go('gh-detail',b.dataset.ghDetail));
  bindPages('',()=>ghListPage,v=>ghListPage=v,rows.length,size,renderGreenhouseList);
