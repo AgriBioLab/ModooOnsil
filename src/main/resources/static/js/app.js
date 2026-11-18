@@ -259,11 +259,11 @@ const stdMetricCols=[['dayTempC','주간 온도(°C)'],['nightTempC','야간 온
 function stageRows(c){const stages=config.growthStages.map(s=>{const k=getCriteria(c,s.stageId);
  const range=k?.thresholds||{};
  return `<tr><td>${s.order}단계 · ${htmlText(s.name)}</td><td>${k?.standardDays??'—'}일</td>${stdMetricCols.map(([key])=>`<td class="tnum">${range[key]?.join(' ~ ')||'—'}</td>`).join('')}</tr>`;});return stages.join('')}
-function renderCycleDetail(){const c=getSelectedCycle();if(!c){go('cycle-list');return}const lastStage=c.stageHistory.at(-1),curStage=lastStage?getStage(lastStage.stageId).name:'—',stdMeta=getCriteriaMeta(c.varietyId),stdLabel=`${varietyOf(c)?.name||'—'} · ${stdMeta.hasStd?stdMeta.name:'기준 미입력'}`;
+function renderCycleDetail(){const c=getSelectedCycle();if(!c){go('cycle-list');return}
  const ghName=gh(c.greenhouseId)?.name||'—',cropLabel=`${cropOf(c)?.name||'—'} · ${varietyOf(c)?.name||'—'}`;
  const planPeriod=`${dateFrom(c.plannedStartAt)||'—'} ~ ${dateFrom(c.expectedEndAt)||'—'}`;
  const actualPeriod=c.actualStartAt?`${dateFrom(c.actualStartAt)} ~ ${dateFrom(c.actualEndAt)||'진행 중'}`:'미시작';
- const facts=[['온실',ghName],['품목 · 품종',cropLabel],['현재 생육단계',curStage],['생육단계별 환경기준',stdLabel],['계획 기간',planPeriod],['실제 기간',actualPeriod]];
+ const facts=[['온실',ghName],['품목 · 품종',cropLabel],['계획 기간',planPeriod],['실제 기간',actualPeriod]];
  if(c.status==='종료'||c.endReason)facts.push(['종료 사유',c.endReason||'—']);
  const factsHtml=`<dl class="profile-facts facts-2col">${facts.map(([a,b])=>`<dt>${htmlText(a)}</dt><dd>${htmlText(b)}</dd>`).join('')}</dl>`;
  main.innerHTML=moduleHeading('작기계획 상세','')+`<div class="module-scroll"><section class="panel"><div class="panel-head"><div class="panel-head-title"><h2>${htmlText(c.name)}</h2>${statusBadge(cycleStatus(c),{'진행':'bg-light-success','미진행':'bg-light-information','종료':'bg-light-gray'})}</div><span class="counter">등록일 ${htmlText(dateFrom(c.registeredAt)||'—')}</span></div><div class="panel-body">${factsHtml}</div></section>
