@@ -125,28 +125,6 @@
   margin-inline-start: auto;
 }
 
-.site-footer {
-  flex: none;
-  background: var(--paper);
-  border-top: 1px solid var(--line);
-  padding: 16px var(--krds-padding-8);
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  flex-wrap: wrap;
-  gap: 12px;
-  font-size: 13px;
-  color: var(--muted);
-}
-
-.site-footer strong {
-  color: var(--ink);
-}
-
-.workarea > .site-footer {
-  padding-block: 8px;
-}
-
 .errorbox {
   padding: 10px 14px;
   background: var(--krds-light-color-surface-danger-subtler, #fdefec);

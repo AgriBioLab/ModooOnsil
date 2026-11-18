@@ -493,6 +493,28 @@ textarea:focus-visible {
   background: #fbfcfc;
 }
 
+.site-footer {
+  flex: none;
+  background: var(--paper);
+  border-top: 1px solid var(--line);
+  padding: 16px var(--krds-padding-8, 26px);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+  font-size: 13px;
+  color: var(--muted);
+}
+
+.site-footer strong {
+  color: var(--ink);
+}
+
+.workarea > .site-footer {
+  padding: 10px 26px;
+}
+
 .topbar {
   height: var(--top);
   background: #ffffff;
