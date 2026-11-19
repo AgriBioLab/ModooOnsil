@@ -4,7 +4,6 @@ import kr.swdl.modooonsil.cultivation.diary.domain.CultivationDiary;
 import kr.swdl.modooonsil.cultivation.diary.domain.FindAllCultivationDiaryVO;
 import kr.swdl.modooonsil.cultivation.diary.domain.FindCultivationDiaryDetailVO;
 import org.apache.ibatis.annotations.Mapper;
-import org.apache.ibatis.annotations.Param;
 
 import java.time.LocalDate;
 import java.util.List;

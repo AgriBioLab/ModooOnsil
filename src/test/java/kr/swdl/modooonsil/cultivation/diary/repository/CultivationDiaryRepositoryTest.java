@@ -135,12 +135,14 @@ class CultivationDiaryRepositoryTest {
     void 재배일지_논리_삭제() {
         long diaryId = 940004L;
 
+        assertThat(cultivationDiaryRepository.findByMemberIdAndDiaryId(MEMBER_ID, diaryId))
+                .isNotNull();
+
         cultivationDiaryRepository.deleteDiaryById(MEMBER_ID, diaryId);
 
         assertThat(cultivationDiaryRepository
                 .findByMemberIdAndDiaryId(MEMBER_ID, diaryId))
                 .isNull();
     }
-
 
 }
