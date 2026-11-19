@@ -451,7 +451,8 @@
 }
 
 .env-history-panel .data-table th {
-  background: var(--krds-light-color-surface-gray-subtler, #f4f5f6);
+  background: #ffffff;
+  border-bottom: 1px solid #d5dbe3;
   padding: 12px 14px;
   font-size: 13.5px;
 }
