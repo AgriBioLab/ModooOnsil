@@ -244,35 +244,21 @@ function renderLanding() {
     <main id="landingMain" class="landing-main" tabindex="-1">
       <section class="landing-hero" aria-label="서비스 소개">
         <div class="landing-hero-copy">
-          <span class="landing-eyebrow">시설원예 · 화훼농가 온실 관리</span>
+          <span class="krds-badge bg-light-success">시설원예 · 화훼농가 온실 관리</span>
           <h1>온실 환경부터 작기계획,<br>재배일지까지 한곳에서</h1>
           <p>농민 누구나 쉽고 간편하게 온실별 환경 변화와 이상 이슈를 확인하고, 작기 일정과 매일의 재배작업을 기록할 수 있습니다.</p>
           <div class="landing-hero-actions">
-            <a class="btn landing-cta-primary" href="login.html">로그인하기</a>
-            <a class="btn landing-cta-secondary" href="signup.html">농민 회원가입</a>
+            <a class="btn main" href="login.html">로그인하기</a>
+            <a class="btn" href="signup.html">농민 회원가입</a>
           </div>
         </div>
         <div class="landing-hero-visual" aria-hidden="true">
-          <div class="landing-preview-card">
-            <img class="landing-preview-img" src="img/gh-a.jpg" alt="">
-            <div class="landing-preview-body">
-              <div class="landing-preview-top">
-                <strong>A온실 · 호접란</strong>
-                <span class="krds-badge bg-light-success">운영 중</span>
-              </div>
-              <div class="landing-preview-metrics">
-                <div><span>내부 온도</span><strong>24.8 °C</strong></div>
-                <div><span>내부 습도</span><strong>63.9 %</strong></div>
-                <div><span>이산화탄소</span><strong>630 ppm</strong></div>
-              </div>
-            </div>
-          </div>
+          <img class="landing-hero-photo" src="img/gh-a.jpg" alt="">
         </div>
       </section>
       <section class="landing-section" aria-label="주요 기능 안내">
         <div class="landing-section-head">
           <h2>모두의온실 주요 서비스</h2>
-          <span>온실 운영에 꼭 필요한 4가지 핵심 기능을 제공합니다</span>
         </div>
         <div class="landing-features">
           <article class="landing-feature-card">
