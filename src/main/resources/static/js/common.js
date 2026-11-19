@@ -33,7 +33,7 @@
 </aside>`;
 
   const HEADER_HTML = `<header class="topbar">
-  <div class="topbar-title">모두의 온실 재배관리</div>
+  <div class="topbar-title"></div>
   <div class="header-account" aria-label="로그인 사용자 정보">
     <span class="header-identity"><strong id="userName"></strong><span id="userCertification"></span></span>
     <a class="btn xs header-btn" href="mypage.html" id="myInfoButton">내정보</a>

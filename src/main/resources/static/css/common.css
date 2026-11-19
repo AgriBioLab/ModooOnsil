@@ -408,19 +408,22 @@ textarea:focus-visible {
 }
 
 .brand {
-  display: block;
+  display: flex;
+  align-items: center;
+  height: 64px;
+  min-height: 64px;
   text-decoration: none;
   font-weight: 700;
   font-size: 19px;
   letter-spacing: -0.02em;
   color: #ffffff;
-  padding: 22px 20px 18px;
+  padding: 0 20px;
   border-bottom: 1px solid rgba(255, 255, 255, 0.14);
 }
 
 .brand-logo {
   display: block;
-  width: 158px;
+  width: 152px;
   height: auto;
 }
 
@@ -468,9 +471,9 @@ textarea:focus-visible {
 }
 
 .navgroup {
-  margin-top: 6px;
-  padding-top: 10px;
-  border-top: 1px solid rgba(255, 255, 255, 0.18);
+  margin-top: 10px;
+  padding-top: 12px;
+  border-top: 1px solid rgba(255, 255, 255, 0.16);
 }
 
 .navhead.nav-group-title {
@@ -535,7 +538,8 @@ textarea:focus-visible {
 }
 
 .topbar {
-  height: var(--top);
+  height: 64px;
+  min-height: 64px;
   background: #ffffff;
   border-bottom: 1px solid var(--line);
   color: var(--ink);
