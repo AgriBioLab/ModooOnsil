@@ -14,11 +14,6 @@
       <a class="navbtn nav-sub" href="cultivationPlanList.html" data-go="cycle-list">작기계획목록</a>
       <a class="navbtn nav-sub" href="cultivationPlanList.html?view=cycle-create" data-go="cycle-create">작기계획등록</a>
     </div>
-    <div class="navgroup" role="group" aria-label="재배품목" hidden>
-      <div class="navhead nav-group-title"><svg class="nav-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M12 22v-9M12 13C12 7 7 4 3 4c0 5 3 9 9 9ZM12 13c0-5 4-8 9-8 0 5-3 8-9 8Z"/></svg>재배품목</div>
-      <a class="navbtn nav-sub" href="cropStageStandard.html" data-go="standard">품목 · 품종 목록</a>
-      <a class="navbtn nav-sub" href="cropStageStandard.html?view=standard-create" data-go="standard-create">품목 · 품종 등록</a>
-    </div>
     <div class="navgroup" role="group" aria-label="온실">
       <div class="navhead nav-group-title"><svg class="nav-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M3 21h18M5 21V10l7-6 7 6v11M9 21v-6h6v6"/></svg>온실</div>
       <a class="navbtn nav-sub" href="environmentChangeList.html" data-go="env-list">온실 환경변화</a>
