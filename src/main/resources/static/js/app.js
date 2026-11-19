@@ -58,19 +58,20 @@ function updateNavigation() {
  const stdModal = window.__stdState?.cropModal;
  const stdDetail = window.__stdState?.cropDetailId;
  const isStdCreate = state.page==='standard-create' || (stdModal && !stdModal.varietyId);
- const entry = isStd ? (isStdCreate?'standard-create':'standard') : state.page==='cycle-create' ? 'cycle-create' : state.page.startsWith('cycle-') ? 'cycle-list' : state.page==='gh-create' ? 'gh-create' : state.page.startsWith('gh-') ? 'gh-list' : state.page.startsWith('env-') ? 'env-list' : state.page.startsWith('issue-') ? 'issue-list' : state.page==='create' ? 'create' : 'list';
+ const entry = state.page==='home' ? 'home' : isStd ? (isStdCreate?'standard-create':'standard') : state.page==='cycle-create' ? 'cycle-create' : state.page.startsWith('cycle-') ? 'cycle-list' : state.page==='gh-create' ? 'gh-create' : state.page.startsWith('gh-') ? 'gh-list' : state.page.startsWith('env-') ? 'env-list' : state.page.startsWith('issue-') ? 'issue-list' : state.page==='create' ? 'create' : 'list';
  const current = setCurrentMenu(entry);
  if (isStd) {
   $('#crumb').textContent = isStdCreate ? '재배품목 / 품목 · 품종 등록' : stdModal?.varietyId ? '재배품목 / 품목 · 품종 수정' : stdDetail ? '재배품목 / 품목 · 품종 상세' : '재배품목 / 품목 · 품종 목록';
   return;
  }
+ if(state.page==='home'){$('#crumb').textContent='홈 / 농장 현황';return;}
  const viewState = state.page.replace(/^(cycle-|gh-|env-|issue-)/, '');
  const step = {list:'목록',create:'등록',detail:'상세',edit:'수정'}[viewState] || '목록';
  const section = state.page.startsWith('cycle-') ? '작기계획' : state.page.startsWith('gh-') ? '온실 정보' : (state.page.startsWith('env-')||state.page.startsWith('issue-')) ? (current?.textContent||'') : '재배일지작업';
  const prefix = (state.page.startsWith('gh-')||state.page.startsWith('env-')||state.page.startsWith('issue-')) ? ['온실', section, step] : [section, step];
  $('#crumb').textContent = prefix.filter(Boolean).join(' / ');
 }
-const pageFile=target=>(target==='standard'||target==='standard-create')?'cropStageStandard.html':target.startsWith('cycle-')?'cultivationPlanList.html':target.startsWith('gh-')?'greenhouseList.html':target.startsWith('env-')?'environmentChangeList.html':target.startsWith('issue-')?'environmentIssueList.html':target==='member'?'mypage.html?tab=pw':target==='profile'?'mypage.html':target==='cert'?'mypage.html?tab=cert':'cultivationDiaryList.html';
+const pageFile=target=>target==='home'?'home.html':(target==='standard'||target==='standard-create')?'cropStageStandard.html':target.startsWith('cycle-')?'cultivationPlanList.html':target.startsWith('gh-')?'greenhouseList.html':target.startsWith('env-')?'environmentChangeList.html':target.startsWith('issue-')?'environmentIssueList.html':target==='member'?'mypage.html?tab=pw':target==='profile'?'mypage.html':target==='cert'?'mypage.html?tab=cert':'cultivationDiaryList.html';
 function go(target,id){
  const hostPage=document.body?.dataset?.page;
  if(hostPage&&pageFile(target).split('?')[0]!==pageFile(hostPage).split('?')[0]){
@@ -98,7 +99,8 @@ function bindBack(){const el=$('#returnList');if(el)el.addEventListener('click',
 function render(){
   updateNavigation();
   const p = pages;
-  if (state.page.startsWith('cycle-')) {
+  if (state.page === 'home') { p.home?.renderHome();
+  } else if (state.page.startsWith('cycle-')) {
     if (state.page === 'cycle-list') p.cycle?.renderCycleList();
     else if (state.page === 'cycle-detail') p.cycle?.renderCycleDetail();
     else p.cycle?.renderCycleEditor(state.page === 'cycle-edit');
@@ -329,7 +331,7 @@ async function init(){
  if(hostPage==='entry'){
   const saved=loadAuthUser();
   const member=allMembers().find(row=>row.username===saved);
-  location.replace(member?'cultivationDiaryList.html':'login.html');return;
+  location.replace(member?'home.html':'login.html');return;
  }
  await ready;
  const savedUser=loadAuthUser();

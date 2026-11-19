@@ -3,6 +3,8 @@
 const app = window.ModooApp;
 const { state, config, diaryRows, pages, $, $$, escapeHtml, htmlText, clone, toast, today, options, storageKey, pageNums, pageBtns, pageControls, bindPages, getCycle, gh, cropOf, varietyOf, getStage, stageOrder, stageByDate, lastEvent, getDiary, timeOf, timeSort, makeStarted, statusBadge, taskTone, trashSvg, formatAt, dateFrom, getSelectedCycle, getReading, stdSet, getCriteria, fmtVal, stdMetricCols, toReason, getReasons, getContextHTML, persist, loadSaved, storeCycleExtras, loadCycleExtras, storeIssueExtras, loadIssueExtras, storeGreenhouseExtras, loadGreenhouseExtras, storeStandards, loadStandards, error, go, render, updateNavigation, heading, bindBack, moduleHeading, bindModuleBack, cycleStatus, unifiedListPanel, listFilterField, dateRangeControl, mountDateRangePicker } = app;
 let environmentListPage=1,envFilters={cycle:'all',from:'',to:'',comparison:'all'},envChartKey='insideTempC',envViewTab='chart',issueListPage=1,issueFilters={cycle:'all',type:'all',status:'all',from:'',to:''};
+const homeCycleId=new URLSearchParams(location.search).get('cycleId');
+if(homeCycleId){envFilters.cycle=homeCycleId;issueFilters.cycle=homeCycleId;}
 function readingStage(r){
  const cycle=config.cycles.find(c=>c.cycleId===r.cycleId);
  return cycle?.stageHistory.filter(event=>(event.effectiveAt||event.effectiveDate)<=r.measuredAt).at(-1)?.stageId;
