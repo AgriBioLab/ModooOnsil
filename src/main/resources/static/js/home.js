@@ -3,8 +3,8 @@
 const app = window.ModooApp;
 const {
   config, diaryRows, pages, $, $$, htmlText, today,
-  getCycle, gh, cropOf, varietyOf, getStage, stageByDate,
-  statusBadge, dateFrom, getReading, cycleStatus, go
+  getCycle, gh, cropOf, varietyOf, getStage,
+  statusBadge, dateFrom, cycleStatus, go
 } = app;
 
 function calcElapsedDays(cycle) {
@@ -98,7 +98,6 @@ function renderHome() {
     ? activeCycles.map(c => {
         const g = gh(c.greenhouseId);
         const crop = `${cropOf(c)?.name || '—'} · ${varietyOf(c)?.name || '—'}`;
-        const stage = getStage(stageByDate(c, today()));
         const days = calcElapsedDays(c);
         const reading = latestReadingForCycle(c.cycleId);
         return `
@@ -107,7 +106,6 @@ function renderHome() {
               <div>
                 <div class="home-cycle-title">
                   <button type="button" class="linkbtn home-cycle-link" data-home-cycle="${c.cycleId}">${htmlText(g?.name || '—')} · ${htmlText(c.name)}</button>
-                  ${statusBadge(stage.name, { [stage.name]: 'bg-light-success' })}
                 </div>
                 <div class="home-cycle-meta">
                   ${htmlText(crop)}${days ? ` · 재배 ${days}일차` : ''} · 최근 측정 ${htmlText(fmtMeasuredAt(reading?.measuredAt))}
