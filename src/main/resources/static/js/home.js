@@ -19,6 +19,17 @@ function fmtMeasuredAt(value) {
   return String(value).slice(0, 16).replace('T', ' ');
 }
 
+function latestReadingForCycle(cycleId) {
+  const rows = (config.environmentChanges || []).filter(
+    r => r && r.cycleId === cycleId && !r.deletedAt && !r.deleted_at
+  );
+  if (!rows.length) return null;
+  return rows.sort((a, b) =>
+    String(b.measuredAt || '').localeCompare(String(a.measuredAt || '')) ||
+    String(b.environmentChangeId || '').localeCompare(String(a.environmentChangeId || ''), undefined, { numeric: true })
+  )[0];
+}
+
 function renderHome() {
   const main = $('#main');
   if (!main) return;
@@ -89,7 +100,7 @@ function renderHome() {
         const crop = `${cropOf(c)?.name || '—'} · ${varietyOf(c)?.name || '—'}`;
         const stage = getStage(stageByDate(c, today()));
         const days = calcElapsedDays(c);
-        const reading = typeof getReading === 'function' ? getReading(c.cycleId) : null;
+        const reading = latestReadingForCycle(c.cycleId);
         return `
           <article class="home-cycle-card">
             <div class="home-cycle-head">
