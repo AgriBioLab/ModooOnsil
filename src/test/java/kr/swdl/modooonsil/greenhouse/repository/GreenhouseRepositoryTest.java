@@ -1,7 +1,6 @@
-package kr.swdl.modooonsil.repository;
+package kr.swdl.modooonsil.greenhouse.repository;
 
 import kr.swdl.modooonsil.greenhouse.domain.Greenhouse;
-import kr.swdl.modooonsil.greenhouse.repository.GreenhouseRepository;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
