@@ -334,30 +334,48 @@
 }
 
 .landing-hero {
-  background: var(--paper);
-  border: 1px solid var(--border);
-  border-radius: 12px;
-  padding: 36px 32px;
+  background: linear-gradient(135deg, #176b3a 0%, #124f2c 100%);
+  border-radius: 16px;
+  padding: 36px 36px;
+  display: grid;
+  grid-template-columns: minmax(0, 1.25fr) minmax(280px, 0.9fr);
+  align-items: center;
+  gap: 28px;
+  color: #ffffff;
+}
+
+.landing-hero-copy {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
   gap: 12px;
 }
 
+.landing-eyebrow {
+  display: inline-flex;
+  align-items: center;
+  padding: 5px 12px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.16);
+  color: #f0f9f3;
+  font-size: 13px;
+  font-weight: 600;
+}
+
 .landing-hero h1 {
-  margin: 4px 0 0;
-  font-size: 30px;
-  line-height: 1.35;
+  margin: 0;
+  font-size: 32px;
+  line-height: 1.32;
   letter-spacing: -0.02em;
-  color: var(--ink);
+  color: #ffffff;
 }
 
 .landing-hero p {
   margin: 0;
-  max-width: 640px;
+  max-width: 560px;
   font-size: 15px;
   line-height: 1.6;
-  color: var(--muted);
+  color: rgba(255, 255, 255, 0.9);
 }
 
 .landing-hero-actions {
@@ -373,14 +391,110 @@
   font-size: 15px;
   font-weight: 600;
   text-decoration: none;
+  border-radius: 8px;
 }
 
-.landing-section h2,
+.landing-hero-actions .btn.landing-cta-primary {
+  background: #ffffff;
+  color: #145a31;
+  border: 1px solid #ffffff;
+}
+
+.landing-hero-actions .btn.landing-cta-primary:hover {
+  background: #eaf4ee;
+  color: #145a31;
+}
+
+.landing-hero-actions .btn.landing-cta-secondary {
+  background: rgba(255, 255, 255, 0.14);
+  color: #ffffff;
+  border: 1px solid rgba(255, 255, 255, 0.45);
+}
+
+.landing-hero-actions .btn.landing-cta-secondary:hover {
+  background: rgba(255, 255, 255, 0.24);
+  color: #ffffff;
+}
+
+.landing-preview-card {
+  background: #ffffff;
+  color: var(--ink);
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 12px 28px rgba(10, 36, 20, 0.22);
+}
+
+.landing-preview-img {
+  width: 100%;
+  height: 150px;
+  object-fit: cover;
+  display: block;
+}
+
+.landing-preview-body {
+  padding: 14px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.landing-preview-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.landing-preview-top strong {
+  font-size: 15px;
+  color: var(--ink);
+}
+
+.landing-preview-metrics {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+  padding: 8px 10px;
+  border-radius: 8px;
+  background: #f4f7f5;
+}
+
+.landing-preview-metrics span {
+  display: block;
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.landing-preview-metrics strong {
+  font-size: 14px;
+  color: var(--ink);
+  font-variant-numeric: tabular-nums;
+}
+
+.landing-section-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.landing-section-head h2,
 .landing-steps-box h2 {
-  margin: 0 0 12px;
+  margin: 0;
   font-size: 18px;
   font-weight: 700;
   color: var(--ink);
+}
+
+.landing-steps-box h2 {
+  margin-bottom: 12px;
+}
+
+.landing-section-head span {
+  font-size: 13.5px;
+  color: var(--muted);
 }
 
 .landing-features {
@@ -396,14 +510,36 @@
   padding: 20px;
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 10px;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.landing-feature-card:hover {
+  border-color: var(--primary);
+  box-shadow: 0 6px 18px rgba(23, 107, 58, 0.08);
+}
+
+.landing-feature-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  background: #eaf4ee;
+  color: #176b3a;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.landing-feature-icon svg {
+  width: 20px;
+  height: 20px;
 }
 
 .landing-feature-card h3 {
   margin: 0;
   font-size: 16px;
   font-weight: 700;
-  color: var(--primary-text, #176b3a);
+  color: var(--ink);
 }
 
 .landing-feature-card p {
@@ -457,6 +593,10 @@
 }
 
 @media (max-width: 960px) {
+  .landing-hero {
+    grid-template-columns: 1fr;
+    padding: 28px 24px;
+  }
   .landing-features {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
