@@ -37,7 +37,7 @@
 </aside>`;
 
   const HEADER_HTML = `<header class="topbar">
-  <div class="topbar-title">모두의온실 재배 · 환경 관리</div>
+  <div class="topbar-title">모두의 온실 재배관리</div>
   <div class="header-account" aria-label="로그인 사용자 정보">
     <span class="header-identity"><strong id="userName"></strong><span id="userCertification"></span></span>
     <a class="btn xs header-btn" href="mypage.html" id="myInfoButton">내정보</a>
@@ -47,7 +47,7 @@
 
   const FOOTER_HTML = `<footer class="site-footer">
   <strong>모두의온실</strong>
-  <span>화훼농민의 농장과 재배 기록을 연결합니다.</span>
+  <span>농민의 농장과 재배 기록을 연결합니다.</span>
 </footer>`;
 
   async function loadFragment(slotId, url, fallback) {
