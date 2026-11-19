@@ -360,6 +360,11 @@ textarea:focus-visible {
   border: 0;
 }
 
+.page-content:focus {
+  outline: none;
+  box-shadow: none;
+}
+
 .skip-link {
   position: fixed;
   top: -48px;
