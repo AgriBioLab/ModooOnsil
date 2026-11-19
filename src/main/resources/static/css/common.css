@@ -143,8 +143,6 @@
     .account-dialog{width:min(390px,calc(100vw - 30px));border:1px solid #999;padding:22px;background:#fff;color:#222;box-shadow:0 12px 40px #0002}
     .account-dialog::backdrop{background:rgba(0,0,0,.25)}
     .account-dialog h2{margin:0 0 14px;font-size:17px}.account-dialog p{margin:0 0 18px;font-size:13px}
-    .profile-facts{display:grid;grid-template-columns:90px 1fr;gap:11px 8px;margin:0 0 20px;padding:12px;border:1px solid var(--line)}
-    .profile-facts dt{color:var(--muted)}.profile-facts dd{margin:0;font-weight:650}
     .dialog-actions{display:flex;justify-content:flex-end;gap:8px}
     .signed-out{background:#fafafa;display:flex;align-items:center;justify-content:center;padding:20px}
     .signed-out[hidden]{display:none}.signed-out-card{max-width:360px;width:100%;padding:28px;border:1px solid #ccc;background:white;text-align:center}
@@ -257,12 +255,6 @@ a.btn.main { color: #fff; }
 .timeline-seg.s2 { background: #3b6f4e; }
 .timeline-seg.s3 { background: #1f4d31; }
 .timeline-meta { display: flex; justify-content: space-between; font-size: 12px; color: var(--muted); }
-.tabbar { display: flex; gap: 6px; border-bottom: 1px solid var(--line); margin-bottom: 12px; }
-.tabbtn { border: 1px solid var(--line); border-bottom: 0; background: #f6f6f6; color: #555; padding: 8px 14px; font-size: 12px; font-weight: 600; cursor: pointer; }
-.tabbtn[aria-selected="true"] { background: #fff; color: #183e26; border-color: #b7cdb9; border-bottom: 1px solid #fff; margin-bottom: -1px; }
-.profile-summary-card { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 14px 16px; border: 1px solid var(--line); background: #fff; margin-bottom: 12px; }
-.profile-summary-card h2 { margin: 0 0 4px; font-size: 16px; }
-.profile-summary-card p { margin: 0; font-size: 12px; color: var(--muted); }
 .stepper { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 16px; }
 .step-item { border: 1px solid var(--line); padding: 9px 10px; font-size: 12px; color: var(--muted); background: #fafafa; text-align: center; }
 .step-item[aria-current="step"] { border-color: #333; background: #fff; color: #111; font-weight: 700; }

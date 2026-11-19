@@ -107,8 +107,7 @@ function render(){
     else if (state.page === 'gh-detail') p.greenhouse?.renderGreenhouseDetail();
     else p.greenhouse?.renderGreenhouseEditor(state.page === 'gh-edit');
   } else if (state.page.startsWith('env-')) {
-    if (state.page === 'env-list') p.environment?.renderEnvList();
-    else p.environment?.renderEnvDetail();
+    p.environment?.renderEnvList();
   } else if (state.page.startsWith('issue-')) {
     p.environment?.renderIssues(state.page === 'issue-detail');
   } else if (state.page === 'standard' || state.page === 'standard-create') {

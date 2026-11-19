@@ -182,9 +182,6 @@ function renderEnvList(){
  if($('#envChartMetric'))$('#envChartMetric').onchange=e=>{envChartKey=e.target.value;renderEnvList()};
  bindPages('',()=>environmentListPage,v=>environmentListPage=v,rows.length,size,renderEnvList);
 }
-function renderEnvDetail(){
- state.page='env-list';updateNavigation();renderEnvList();
-}
 
 function renderIssues(detail){
  const issues=config.issueSamples;
@@ -270,5 +267,5 @@ function renderIssues(detail){
  bindPages('',()=>issueListPage,v=>issueListPage=v,rows.length,size,()=>renderIssues(false));
 }
 
-pages.environment = { renderEnvList, renderEnvDetail, renderIssues };
+pages.environment = { renderEnvList, renderIssues };
 })();
