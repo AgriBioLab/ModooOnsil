@@ -764,11 +764,20 @@ select.ctrl {
   -webkit-appearance: none !important;
   -moz-appearance: none !important;
   padding-right: 34px !important;
-  background-color: var(--paper);
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 16 16' fill='none'%3E%3Cpath d='M4 6L8 10L12 6' stroke='%23464c53' stroke-width='1.75' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+  background-color: #ffffff;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%2333363d' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
   background-repeat: no-repeat;
   background-position: right 10px center;
-  background-size: 16px 16px;
+  background-size: 15px 15px;
+  cursor: pointer;
+}
+
+select.ctrl::picker-icon {
+  display: none !important;
+}
+
+select.ctrl::-ms-expand {
+  display: none !important;
 }
 
 select.ctrl:disabled {
@@ -1191,19 +1200,6 @@ select.ctrl:disabled {
   border-radius: 8px;
   font-size: 13.5px;
   background-color: #ffffff;
-}
-
-select.ctrl {
-  appearance: none !important;
-  -webkit-appearance: none !important;
-  -moz-appearance: none !important;
-  padding-right: 34px;
-  background-color: #ffffff;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%2333363d' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
-  background-repeat: no-repeat;
-  background-position: right 10px center;
-  background-size: 15px 15px;
-  cursor: pointer;
 }
 
 .list-filter-actions {
