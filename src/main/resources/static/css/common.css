@@ -1,5 +1,12 @@
 @charset "UTF-8";
 
+@font-face {
+  font-family: 'GmarketSansBold';
+  src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2001@1.1/GmarketSansBold.woff') format('woff');
+  font-weight: 700;
+  font-display: swap;
+}
+
 /* 화면 배치와 업무 화면 공통 규칙 */
     :root{color-scheme:light;--paper:#fff;--soft:#f6f6f6;--soft2:#fafafa;--ink:#222;--muted:#666;--line:#d4d4d4;--line-dark:#aaa;--sidebar:218px;--top:55px}
     *{box-sizing:border-box}html,body{height:100%;margin:0;background:var(--paper);color:var(--ink);font:13px/1.45 'Malgun Gothic','Apple SD Gothic Neo',Arial,sans-serif}
@@ -407,7 +414,13 @@ textarea:focus-visible {
   font-size: 19px;
   letter-spacing: -0.02em;
   color: #ffffff;
-  padding: 20px 20px 12px;
+  padding: 18px 20px 10px;
+}
+
+.brand-logo {
+  display: block;
+  width: 118px;
+  height: auto;
 }
 
 .brand small {

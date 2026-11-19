@@ -297,10 +297,10 @@
   color: var(--ink);
 }
 
-.landing-brand strong {
-  font-size: 20px;
-  font-weight: 750;
-  letter-spacing: -0.02em;
+.landing-logo {
+  display: block;
+  width: 118px;
+  height: auto;
 }
 
 .landing-brand span {

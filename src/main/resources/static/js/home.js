@@ -231,8 +231,8 @@ function renderLanding() {
     <a class="skip-link" href="#landingMain">본문 바로가기</a>
     <header class="landing-topbar">
       <div class="landing-topbar-inner">
-        <a class="landing-brand" href="index.html">
-          <strong>모두의온실</strong>
+        <a class="landing-brand" href="index.html" aria-label="모두의 온실">
+          <svg class="landing-logo" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 212 76" aria-hidden="true"><g fill="#13261B" font-family="'GmarketSansBold','Pretendard GOV','Malgun Gothic',sans-serif" font-weight="700" text-anchor="end"><text x="112" y="34" font-size="27" letter-spacing="-1.2">모두의</text><text x="112" y="64" font-size="27" letter-spacing="-1.2">온실</text></g><g transform="translate(124,10)"><path d="M21 0C9.4 0 0 9.4 0 21v35h38V21C38 9.4 28.6 0 21 0z" fill="#176B3A"/><path d="M52 10c-10.5 0-19 8.5-19 19v27h38V29c0-10.5-8.5-19-19-19z" fill="#176B3A" fill-opacity="0.45"/><path d="M33 29v27h6V25c-3.5 1-6 2.3-6 4z" fill="#FFFFFF"/></g></svg>
           <span>재배 관리</span>
         </a>
         <div class="landing-top-actions">
