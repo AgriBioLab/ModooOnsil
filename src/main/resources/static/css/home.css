@@ -1,0 +1,259 @@
+@charset "UTF-8";
+
+.home-scroll {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  min-height: 0;
+}
+
+.home-quick-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.home-cert-banner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 12px 18px;
+  border: 1px solid #c9decb;
+  border-radius: 10px;
+  background: #f3f8f4;
+  font-size: 14px;
+  color: var(--ink);
+}
+
+.home-kpis {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.home-kpi-card {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 16px 20px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: var(--paper);
+  text-align: left;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease, transform 0.15s ease;
+}
+
+.home-kpi-card:hover {
+  border-color: var(--primary);
+  box-shadow: 0 4px 14px rgba(23, 107, 58, 0.08);
+  transform: translateY(-1px);
+}
+
+.home-kpi-card.is-alert {
+  border-color: #e5b4b4;
+}
+
+.home-kpi-label {
+  font-size: 13.5px;
+  font-weight: 600;
+  color: var(--muted);
+}
+
+.home-kpi-value {
+  font-size: 23px;
+  font-weight: 750;
+  letter-spacing: -0.02em;
+  color: var(--ink);
+  font-variant-numeric: tabular-nums;
+}
+
+.home-kpi-card.is-alert .home-kpi-value {
+  color: #b42318;
+}
+
+.home-kpi-sub {
+  font-size: 13px;
+  color: var(--muted);
+}
+
+.home-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.35fr) minmax(320px, 1fr);
+  gap: 16px;
+  align-items: start;
+}
+
+.home-col {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  min-width: 0;
+}
+
+.home-cycle-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 16px;
+}
+
+.home-cycle-card {
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 16px;
+  background: #fcfdfc;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.home-cycle-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.home-cycle-title {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.home-cycle-link {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--ink);
+}
+
+.home-cycle-meta {
+  margin-top: 3px;
+  font-size: 13px;
+  color: var(--muted);
+}
+
+.home-sensor-strip {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+  padding: 10px 14px;
+  border-radius: 8px;
+  background: #f4f7f5;
+}
+
+.home-sensor-item {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.home-sensor-item span {
+  font-size: 13px;
+  color: var(--muted);
+}
+
+.home-sensor-item strong {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--ink);
+  font-variant-numeric: tabular-nums;
+}
+
+.home-feed-list {
+  display: flex;
+  flex-direction: column;
+}
+
+.home-feed-item {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 12px 20px;
+  border: 0;
+  border-bottom: 1px solid #eef1ef;
+  background: transparent;
+  text-align: left;
+  transition: background-color 0.12s ease;
+}
+
+.home-feed-item:last-child {
+  border-bottom: 0;
+}
+
+.home-feed-item:hover {
+  background: #f4f8f5;
+}
+
+.home-feed-main {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.home-feed-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--ink);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.home-feed-sub {
+  font-size: 13px;
+  color: var(--muted);
+}
+
+.home-feed-right {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.home-quick-actions .btn.xs,
+.home-cycle-head .btn.xs,
+.home-scroll .panel-head .btn.xs {
+  min-height: 36px;
+  padding: 6px 12px;
+}
+
+@media (max-width: 1120px) {
+  .home-kpis {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .home-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 640px) {
+  .pagehead {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+  .home-cert-banner {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  .home-kpis {
+    grid-template-columns: 1fr;
+  }
+  .home-cycle-head {
+    flex-direction: column;
+  }
+  .home-sensor-strip {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .home-quick-actions .btn.xs,
+  .home-cycle-head .btn.xs,
+  .home-scroll .panel-head .btn.xs {
+    min-height: 40px;
+  }
+}

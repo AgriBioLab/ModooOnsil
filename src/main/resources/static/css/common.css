@@ -401,6 +401,8 @@ textarea:focus-visible {
 }
 
 .brand {
+  display: block;
+  text-decoration: none;
   font-weight: 700;
   font-size: 19px;
   letter-spacing: -0.02em;
@@ -430,6 +432,12 @@ textarea:focus-visible {
   font-weight: 500;
   color: #ffffff;
   transition: background-color 0.15s ease, color 0.15s ease;
+}
+
+.navbtn.nav-home {
+  display: flex;
+  align-items: center;
+  gap: 8px;
 }
 
 .navbtn:hover {
@@ -1482,5 +1490,60 @@ select.ctrl:disabled {
 
 .empty-cell {
   padding: 24px 12px;
+}
+
+@media (max-width: 600px) {
+  .app {
+    display: flex;
+    flex-direction: column;
+    height: auto;
+    min-height: 100dvh;
+    overflow: visible;
+  }
+  .workarea,
+  .workarea main {
+    overflow: visible;
+    min-height: auto;
+  }
+  .sidebar {
+    border-radius: 0 0 14px 14px;
+  }
+  .nav {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    padding: 4px 10px 10px;
+  }
+  .navgroup {
+    display: contents;
+  }
+  .navbtn {
+    flex: 1 1 calc(50% - 6px);
+    min-height: 40px;
+    padding: 8px 10px;
+    font-size: 13px;
+    text-align: center;
+  }
+  .navbtn.nav-home {
+    justify-content: center;
+  }
+  .topbar {
+    height: auto;
+    min-height: 48px;
+    padding: 8px 12px;
+    gap: 8px;
+    flex-wrap: wrap;
+    justify-content: space-between;
+  }
+  .topbar-title {
+    font-size: 13px;
+  }
+  #userCertification {
+    display: none;
+  }
+  .btn.xs {
+    min-height: 40px;
+    padding: 8px 12px;
+  }
 }
 
