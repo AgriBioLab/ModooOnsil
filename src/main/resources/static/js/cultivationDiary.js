@@ -1,0 +1,107 @@
+(() => {
+'use strict';
+const app = window.ModooApp;
+const { state, config, diaryRows, pages, $, $$, escapeHtml, htmlText, clone, toast, today, options, storageKey, pageNums, pageBtns, pageControls, bindPages, getCycle, gh, cropOf, varietyOf, getStage, stageOrder, stageByDate, lastEvent, getDiary, timeOf, timeSort, makeStarted, statusBadge, taskTone, trashSvg, formatAt, dateFrom, getSelectedCycle, getReading, stdSet, getCriteria, fmtVal, stdMetricCols, toReason, getReasons, getContextHTML, persist, loadSaved, storeCycleExtras, loadCycleExtras, storeIssueExtras, loadIssueExtras, storeGreenhouseExtras, loadGreenhouseExtras, storeStandards, loadStandards, error, go, render, heading, bindBack, moduleHeading, bindModuleBack, cycleStatus, unifiedListPanel, listFilterField, dateRangeControl, mountDateRangePicker, singleDateControl, setSingleDateValue, mountSingleDatePicker } = app;
+let working=[],editRow=null,selectedStage='VEG',filterCycle='all',filterGreenhouse='all',filterCrop='all',filterVariety='all',filterDate='',listPage=1;
+function renderList(){const rows=diaryRows.filter(d=>{
+ const c=getCycle(d.cycleId);return(filterCycle==='all'||d.cycleId===filterCycle)&&(filterGreenhouse==='all'||c.greenhouseId===filterGreenhouse)&&(filterCrop==='all'||c.cropId===filterCrop)&&(filterVariety==='all'||c.varietyId===filterVariety)&&(!filterDate||d.workDate===filterDate)}).sort((a,b)=>b.workDate.localeCompare(a.workDate)||a.cycleId.localeCompare(b.cycleId));
+ const usedCycles=diaryRows.map(d=>getCycle(d.cycleId)).filter(Boolean),usedCropIds=new Set(usedCycles.map(c=>c.cropId)),usedVarIds=new Set(usedCycles.map(c=>c.varietyId));const crops=config.crops.filter(c=>usedCropIds.has(c.cropId)).map(c=>({value:c.cropId,label:c.name})),varieties=config.crops.filter(c=>usedCropIds.has(c.cropId)&&(filterCrop==='all'||c.cropId===filterCrop)).flatMap(c=>c.varieties.filter(v=>usedVarIds.has(v.varietyId)).map(v=>({...v,cropId:c.cropId})));
+ const pageSize=Number(config.pagination?.pageSize)||5,totalPages=Math.max(1,Math.ceil(rows.length/pageSize));listPage=Math.min(Math.max(1,listPage),totalPages);
+ const first=(listPage-1)*pageSize,paged=rows.slice(first,first+pageSize),start=rows.length?first+1:0,end=Math.min(first+pageSize,rows.length);
+ const pageButtons=pageBtns(listPage,totalPages,'data-list-page');
+ main.innerHTML=heading('재배일지작업 목록')+unifiedListPanel({
+  title:'재배일지작업 목록',
+  count:rows.length,
+  actionHtml:'<button class="btn main xs" type="button" id="createButton">+ 재배일지작업 등록</button>',
+  filterHtml:`${listFilterField('filterCycle','작기계획명',`<select id="filterCycle" class="ctrl">${options([{value:'all',label:'전체 작기'},...config.cycles.map(c=>({value:c.cycleId,label:c.name}))],filterCycle)}</select>`)}${listFilterField('filterGreenhouse','온실명',`<select id="filterGreenhouse" class="ctrl">${options([{value:'all',label:'전체 온실'},...config.greenhouses.map(g=>({value:g.greenhouseId,label:g.name}))],filterGreenhouse)}</select>`)}${listFilterField('filterCrop','품목명',`<select id="filterCrop" class="ctrl">${options([{value:'all',label:'전체 품목'},...crops],filterCrop)}</select>`)}${listFilterField('filterVariety','품종명',`<select id="filterVariety" class="ctrl">${options([{value:'all',label:'전체 품종'},...varieties.map(v=>({value:v.varietyId,label:v.name}))],filterVariety)}</select>`)}${listFilterField('workDateFilterTrigger','실제 작업일',singleDateControl('workDateFilter',filterDate))}<div class="list-filter-actions"><button class="btn list-reset-btn" type="button" id="filterReset">초기화</button><button class="btn main list-search-btn" type="button" id="filterButton">검색</button></div>`,
+  bodyHtml:`<div class="tablewrap"><table class="data-table diary-table"><caption class="sr-only">재배일지작업 목록</caption><thead><tr><th class="row-index" scope="col">번호</th><th scope="col">실제 작업일</th><th scope="col">온실명</th><th scope="col">품목명</th><th scope="col">품종명</th><th scope="col">작기계획명</th><th scope="col">생육단계</th><th class="tnum" scope="col">작업 건수 (전체/미완료)</th></tr></thead><tbody>${paged.map((d,i)=>{const c=getCycle(d.cycleId),done=d.tasks.filter(t=>t.status==='완료').length;return `<tr><td class="row-index">${rows.length-first-i}</td><td><button class="linkbtn" data-detail="${d.diaryId}">${escapeHtml(d.workDate)}</button></td><td>${htmlText(gh(c.greenhouseId)?.name||'-')}</td><td>${htmlText(cropOf(c)?.name||'-')}</td><td>${htmlText(varietyOf(c)?.name||'-')}</td><td>${htmlText(c.name)}</td><td>${htmlText(getStage(d.stageId).name)}</td><td class="tnum">${d.tasks.length} / ${d.tasks.length-done}</td></tr>`}).join('')||'<tr><td class="empty" colspan="8">조회 결과가 없습니다.</td></tr>'}</tbody></table></div>`,
+  footHtml:`<div class="list-foot"><nav class="pagination" aria-label="재배일지작업 페이지 이동"><button class="page-button" type="button" data-page-direction="prev" ${listPage===1?'disabled':''}>이전</button>${pageButtons}<button class="page-button" type="button" data-page-direction="next" ${listPage===totalPages?'disabled':''}>다음</button></nav></div>`
+ });
+ mountSingleDatePicker('workDateFilter');
+ $('#filterCrop').onchange=()=>{const selected=$('#filterCrop').value;const possible=config.crops.filter(c=>usedCropIds.has(c.cropId)&&(selected==='all'||c.cropId===selected)).flatMap(c=>c.varieties.filter(v=>usedVarIds.has(v.varietyId)).map(v=>({value:v.varietyId,label:v.name})));const variety=$('#filterVariety');const old=variety.value;variety.innerHTML=options([{value:'all',label:'전체 품종'},...possible],possible.some(v=>v.value===old)?old:'all')};
+ $('#filterReset').onclick=()=>{filterCycle=filterGreenhouse=filterCrop=filterVariety='all';filterDate='';listPage=1;renderList()};
+ $('#filterButton').onclick=()=>{filterCycle=$('#filterCycle').value;filterGreenhouse=$('#filterGreenhouse').value;filterCrop=$('#filterCrop').value;filterVariety=$('#filterVariety').value;filterDate=$('#workDateFilter').value;listPage=1;renderList()};$('#createButton').onclick=()=>go('create');$$('[data-detail]').forEach(b=>b.onclick=()=>go('detail',b.dataset.detail));
+ $$('[data-list-page]').forEach(b=>b.onclick=()=>{listPage=Number(b.dataset.listPage);renderList()});$$('[data-page-direction]').forEach(b=>b.onclick=()=>{listPage+=b.dataset.pageDirection==='next'?1:-1;renderList()});
+}
+
+function renderDetail(){const d=getDiary(state.selectedId);if(!d){go('list');return}state.selectedId=d.diaryId;const c=getCycle(d.cycleId),done=d.tasks.filter(t=>t.status==='완료').length,reason=toReason(d.stageChangeReason||d.stageChangeReasons);
+ const dateMeta=[d.createdAt?`등록일 ${d.createdAt.slice(0,10)}`:'',d.updatedAt?`수정일 ${d.updatedAt.slice(0,10)}`:''].filter(Boolean).join(' · ');
+ main.innerHTML=heading('재배일지작업 상세','')+`<div class="editor-shell"><section class="panel editor-summary detail-summary-card" aria-label="재배일지 요약">${summaryHTML(c,d.workDate,d.stageId)}${reason?`<div class="detail-meta-bar"><div class="detail-reason"><strong>생육단계 변경 사유</strong><span>${htmlText(reason)}</span></div></div>`:''}</section>
+ <section class="panel editor-workpanel"><div class="panel-head"><h2>작업내용</h2><span class="counter">${d.tasks.length}건 · 완료 ${done} / 미완료 ${d.tasks.length-done}${dateMeta?` · ${htmlText(dateMeta)}`:''}</span></div><div class="task-body"><div class="task-list-header detail-task-header"><span>작업명</span><span>작업시간</span><span>작업유형</span><span>상태</span></div><div class="task-scroll detail-list">${[...d.tasks].sort(timeSort).map(t=>`<article class="detail-task"><div class="t-row"><strong>${htmlText(t.name)}</strong><span>${timeOf(t)}</span><span>${htmlText(t.type)}</span><span>${htmlText(t.status)}</span></div><div class="details-content">${htmlText(t.content||'—')}</div></article>`).join('')||'<p class="empty" style="padding:24px">등록된 작업내용이 없습니다.</p>'}</div><div class="hidden" id="detailDeleteConfirm" style="padding:10px 12px;border-top:1px solid var(--line);display:flex;align-items:center;justify-content:flex-end;gap:8px"><span>이 재배일지작업을 삭제하시겠습니까?</span><button type="button" class="btn" id="detailDeleteCancel">취소</button><button type="button" class="btn main" id="detailDeleteOk">삭제 확인</button></div><div class="form-actions"><div class="module-actions-left"><button class="btn" id="detailBack">목록</button></div><button class="btn" id="detailDelete">삭제</button><button class="btn main" id="detailEdit">수정</button></div></div></section></div>`;
+ bindBack();$('#detailBack').onclick=()=>go('list');$('#detailEdit').onclick=()=>go('edit',d.diaryId);
+ $('#detailDelete').onclick=()=>$('#detailDeleteConfirm').classList.remove('hidden');
+ $('#detailDeleteCancel').onclick=()=>$('#detailDeleteConfirm').classList.add('hidden');
+ $('#detailDeleteOk').onclick=()=>{diaryRows.splice(0,diaryRows.length,...diaryRows.filter(x=>x.diaryId!==d.diaryId));persist();toast('재배일지작업을 삭제했습니다.');go('list')};
+}
+
+function freshTask(date){return{taskId:'NEW-'+Date.now()+'-'+Math.random().toString(36).slice(2,6),name:'',type:config.workTypes[0].value,startedAt:makeStarted(date,'09:00'),status:'미완료',content:''}}
+function taskPanel(t){return `<article class="task-card" data-taskid="${escapeHtml(t.taskId)}"><div class="task-summary"><strong class="task-title title-text">${htmlText(t.name||'새 작업')}</strong><span class="summary-time">${timeOf(t)}</span><span class="summary-type">${htmlText(t.type)}</span><span class="krds-badge ${taskTone(t.status)} summary-status">${htmlText(t.status)}</span><button class="trash" type="button" data-remove="${escapeHtml(t.taskId)}" aria-label="${htmlText(t.name||'새 작업')} 삭제" title="삭제">${trashSvg}</button></div><div class="task-detail"><div class="field wide"><label>작업명 *</label><input class="ctrl compact-input t-name" maxlength="100" value="${escapeHtml(t.name)}" placeholder="작업명"></div><div class="field"><label>작업유형 *</label><select class="ctrl t-type">${options(config.workTypes,t.type)}</select></div><div class="field"><label>작업시간 *</label><input class="ctrl t-time" type="time" value="${timeOf(t)}"></div><div class="field"><label>작업상태 *</label><select class="ctrl t-status">${options(config.taskStatuses,t.status)}</select></div><div class="field wide"><label>작업내용</label><textarea class="ctrl t-content" rows="2" placeholder="작업 내용을 입력하세요">${htmlText(t.content)}</textarea></div></div></article>`}
+function gatherTasks(){const current=$$('[data-taskid]',main);if(!current.length)return;
+ working=current.map(el=>{const old=working.find(x=>x.taskId===el.dataset.taskid)||freshTask($('#workDate')?.value||today());const time=$('.t-time',el)?.value||timeOf(old);return{...old,name:$('.t-name',el)?.value??old.name,type:$('.t-type',el)?.value??old.type,status:$('.t-status',el)?.value??old.status,content:$('.t-content',el)?.value??old.content,startedAt:makeStarted($('#workDate')?.value||today(),time)}})}
+function paintTasks(){const list=$('#taskList');if(!list)return;working.sort(timeSort);$('#taskTotal').textContent=`${working.length}건`;list.innerHTML=working.map(taskPanel).join('');
+ $$('[data-remove]',list).forEach(btn=>btn.onclick=()=>{gatherTasks();working=working.filter(t=>t.taskId!==btn.dataset.remove);paintTasks()});
+ $$('.task-card',list).forEach(card=>{
+  const title=$('.title-text',card),tn=$('.t-name',card),tt=$('.t-time',card),ty=$('.t-type',card),ts=$('.t-status',card);
+  tn.addEventListener('input',()=>{title.textContent=tn.value.trim()||'새 작업'});tt.addEventListener('input',()=>{$('.summary-time',card).textContent=tt.value||'--:--'});
+  ty.addEventListener('change',()=>{$('.summary-type',card).textContent=ty.value});ts.addEventListener('change',()=>{const badge=$('.summary-status',card);badge.textContent=ts.value;badge.className=`krds-badge ${taskTone(ts.value)} summary-status`});
+  tt.addEventListener('change',()=>{const focused=card.dataset.taskid;gatherTasks();paintTasks();const moved=$$('[data-taskid]',list).find(el=>el.dataset.taskid===focused);moved?.scrollIntoView({block:'nearest'})});
+ });
+}
+function reasonInputHtml(value=''){return `<div class="reason-box hidden" id="reasonBox"><label for="stageChangeReason" class="label">생육단계 변경 사유 *</label><textarea class="ctrl textarea" id="stageChangeReason" rows="4" maxlength="500" placeholder="실제 생육단계를 변경한 근거와 관찰 내용을 입력하세요">${htmlText(toReason(value))}</textarea></div>`}
+function gatherReason(){return ($('#stageChangeReason')?.value||'').trim()}
+function stagePolicy(c,date,d){const last=lastEvent(c),pastStage=stageByDate(c,date),laterHistory=c.stageHistory.some(e=>e.effectiveDate>date),laterDiary=diaryRows.some(x=>x.cycleId===c.cycleId&&x.workDate>date&&x.diaryId!==d?.diaryId),isEdit=!!d;
+ const canChange=!isEdit&&!laterHistory&&!laterDiary&&date>=(last?.effectiveDate||c.actualStartDate||'')&&date>=c.actualStartDate&&date<=today();
+ return {stageId:isEdit?d.stageId:pastStage,canChange,laterDiary,laterHistory}}
+function updateCycleData(){const sel=$('#cycleId');if(!sel)return;const c=getCycle(sel.value);const date=$('#workDate');const nextVal=(!date.value||date.value<c.actualStartDate)?c.actualStartDate:date.value;setSingleDateValue('workDate',nextVal,{min:c.actualStartDate,max:today()});updateStageOptions()}
+function updateStageOptions(){const c=getCycle($('#cycleId').value),date=$('#workDate').value||today(),policy=stagePolicy(c,date,editRow),select=$('#stageId');
+ const allowed=new Set([policy.stageId]);if(policy.canChange){let next=config.growthStages.find(s=>s.order===stageOrder(policy.stageId)+1);if(next)allowed.add(next.stageId)}
+ const candidate=select.value;select.innerHTML=config.growthStages.map(s=>`<option value="${s.stageId}" ${!allowed.has(s.stageId)?'disabled':''}>${htmlText(s.name)}${stageOrder(s.stageId)<stageOrder(policy.stageId)?' (종료)':''}</option>`).join('');select.value=allowed.has(candidate)?candidate:policy.stageId;
+ select.disabled=!policy.canChange;
+ updateReasonVisibility();refreshSummary();const duplicated=diaryRows.find(d=>d.cycleId===c.cycleId&&d.workDate===date&&d.diaryId!==editRow?.diaryId);const el=$('#duplicateNotice');el.classList.toggle('hidden',!duplicated);if(duplicated)el.textContent='해당 날짜에 이미 재배일지가 등록되어 있습니다.';
+}
+function updateReasonVisibility(){const box=$('#reasonBox');if(!box)return;const c=getCycle($('#cycleId').value),date=$('#workDate').value||today();const needs=!editRow&&$('#stageId').value!==stageByDate(c,date)&&!$('#stageId').disabled;box.classList.toggle('hidden',!needs)}
+function summaryHTML(c,date,stage){return `<div class="summary-strip"><div class="summary-fact"><span>작기계획명</span><strong id="summaryCycle" title="${htmlText(c.name)}">${htmlText(c.name)}</strong></div><div class="summary-fact"><span>품목명 · 품종명</span><strong id="summaryCrop">${htmlText(cropOf(c)?.name||'-')} · ${htmlText(varietyOf(c)?.name||'-')}</strong></div><div class="summary-fact"><span>온실명</span><strong id="summaryHouse">${htmlText(gh(c.greenhouseId)?.name||'-')}</strong></div><div class="summary-fact"><span>실제 작업일</span><strong id="summaryDate">${htmlText(date)}</strong></div><div class="summary-fact"><span>실제 생육단계</span><strong id="summaryStage">${htmlText(getStage(stage).name)}</strong></div></div>`}
+function refreshSummary(){const cycle=$('#cycleId'),date=$('#workDate'),stage=$('#stageId');if(!cycle||!date||!stage)return;const c=getCycle(cycle.value);const values={summaryCycle:c.name,summaryCrop:`${cropOf(c)?.name||'-'} · ${varietyOf(c)?.name||'-'}`,summaryHouse:gh(c.greenhouseId)?.name||'-',summaryDate:date.value||'미선택',summaryStage:getStage(stage.value).name};for(const [id,val] of Object.entries(values)){const el=$('#'+id);if(el){el.textContent=val;el.title=val}}}
+function renderEditor(isEdit){const d=isEdit?getDiary(state.selectedId):null;if(isEdit&&!d){go('list');return}editRow=d;
+ const active=config.cycles.filter(c=>c.status==='진행'&&c.actualStartDate);
+ if(!d&&!active.length){main.innerHTML=heading('재배일지작업 등록','진행 중인 작기가 없습니다.');bindBack();return}
+ const c=getCycle(d?.cycleId||active[0].cycleId),date=d?.workDate||today();selectedStage=d?.stageId||stageByDate(c,date);working=d?clone(d.tasks): (config.formDefaults?.newDiaryTasks||[]).map((t,i)=>({...freshTask(date),taskId:`SAMPLE-${i+1}`,name:t.name,type:t.type,startedAt:makeStarted(date,t.time),status:t.status,content:t.content}));
+ main.innerHTML=heading(isEdit?'재배일지작업 수정':'재배일지작업 등록','')+`<form class="editor-shell" id="diaryForm" novalidate><section class="panel editor-summary" aria-label="재배일지작업 기본정보">${summaryHTML(c,date,selectedStage)}<div class="summary-detail" id="baseFields"><div class="field"><label for="cycleId">작기계획명 <span class="required">*</span></label><select class="ctrl" id="cycleId" ${isEdit?'disabled':''}>${options((isEdit?[c]:active).map(c=>({value:c.cycleId,label:c.name})),c.cycleId)}</select></div>
+ <div class="field"><label for="workDateTrigger">실제 작업일 <span class="required">*</span></label>${singleDateControl('workDate',date,{min:c.actualStartDate,max:today(),disabled:isEdit,clearable:false})}</div>
+ <div class="stage-group" aria-label="실제 생육단계"><div class="field"><label for="stageId">해당 날짜의 실제 생육단계 <span class="required">*</span></label><select class="ctrl" id="stageId"></select></div></div>
+ ${isEdit&&toReason(d.stageChangeReason||d.stageChangeReasons)?`<div class="reason-box"><strong>확정된 변경 사유</strong>${getReasons(d.stageChangeReason||d.stageChangeReasons)}</div>`:''}${!isEdit?reasonInputHtml():''}
+ <div id="duplicateNotice" class="errorbox hidden" role="status"></div><div id="formError" class="errorbox hidden" role="alert"></div>
+ </div></section><section class="panel editor-workpanel"><div class="panel-head"><h2>작업내용</h2><span class="counter" id="taskTotal">0건</span></div><div class="task-body"><div class="task-tools"><span class="muted small">작업시간 오름차순</span></div><div class="task-scroll" id="tasksScroll"><div class="task-list-header"><span>작업명</span><span>작업시간</span><span>작업유형</span><span>작업상태</span><span></span></div><div id="taskList"></div></div><button class="add-btn" id="addTask" type="button">+ 작업내용 추가</button><div class="form-actions"><button class="btn" type="button" id="cancel">취소</button><button class="btn main" type="submit">${isEdit?'수정 저장':'등록'}</button></div></div></section></form>`;
+ mountSingleDatePicker('workDate');
+ bindBack();paintTasks();$('#cycleId').onchange=()=>{updateCycleData();refreshSummary()};$('#workDate').onchange=()=>{gatherTasks();working.forEach(t=>t.startedAt=makeStarted($('#workDate').value,timeOf(t)));updateStageOptions();refreshSummary()};$('#stageId').onchange=()=>{updateReasonVisibility();refreshSummary()};
+ $('#addTask').onclick=()=>{gatherTasks();let newTask=freshTask($('#workDate').value);const last=[...working].sort(timeSort).at(-1);if(last){const [hours,minutes]=timeOf(last).split(':').map(Number);const next=hours*60+minutes+30;if(next<24*60)newTask.startedAt=makeStarted($('#workDate').value,`${String(Math.floor(next/60)).padStart(2,'0')}:${String(next%60).padStart(2,'0')}`)}working.push(newTask);paintTasks();const target=$$('[data-taskid]',$('#taskList')).find(el=>el.dataset.taskid===newTask.taskId);target?.scrollIntoView({block:'nearest'});$('.t-name',target)?.focus()};
+ $('#cancel').onclick=()=>go(isEdit?'detail':'list');$('#diaryForm').onsubmit=e=>{e.preventDefault();saveEditor()};
+ updateStageOptions();refreshSummary();
+}
+
+function saveEditor(){const c=getCycle($('#cycleId').value),date=$('#workDate').value,policy=stagePolicy(c,date,editRow),stageId=$('#stageId').value,reason=editRow?toReason(editRow.stageChangeReason||editRow.stageChangeReasons):gatherReason();gatherTasks();
+ let fail='';if(!date||date<c.actualStartDate||date>today())fail='실제 작업일을 확인하세요.';
+ else if(diaryRows.some(d=>d.cycleId===c.cycleId&&d.workDate===date&&d.diaryId!==editRow?.diaryId))fail='같은 작기와 날짜에 일지가 이미 등록되어 있습니다.';
+
+ else if(working.some(t=>!t.name.trim()||!t.type||!timeOf(t)||!config.taskStatuses.some(s=>s.value===t.status)))fail='모든 작업의 작업명·유형·시간·상태를 입력하세요.';
+ else if(working.some(t=>t.startedAt.slice(0,10)!==date))fail='작업시간이 실제 작업일과 일치하지 않습니다.';
+ else if(editRow&&stageId!==editRow.stageId)fail='저장된 일지의 생육단계는 변경할 수 없습니다.';
+ else if(!editRow&&!policy.canChange&&stageId!==policy.stageId)fail='선택한 날짜의 생육단계는 변경할 수 없습니다.';
+ else if(stageOrder(stageId)<stageOrder(policy.stageId)||stageOrder(stageId)>stageOrder(policy.stageId)+1)fail='생육단계 순서에 맞는 단계를 선택하세요.';
+ else if(!editRow&&stageId!==policy.stageId&&!reason)fail='생육단계 변경 사유를 입력하세요.';
+ if(fail){error(fail);return}
+ const timestamp=`${today()}T${new Date().toTimeString().slice(0,8)}`;
+ const diaryId=editRow?.diaryId||`D-NEW-${Date.now()}`;
+ const payload={diaryId,cycleId:c.cycleId,workDate:date,stageId,stageChangeReason:stageId!==policy.stageId?reason:(editRow?toReason(editRow.stageChangeReason||editRow.stageChangeReasons):''),createdAt:editRow?.createdAt||timestamp,updatedAt:timestamp,tasks:working.map(t=>({...t,startedAt:makeStarted(date,timeOf(t))})).sort(timeSort)};
+ if(editRow)diaryRows=diaryRows.map(d=>d.diaryId===diaryId?payload:d);else diaryRows.push(payload);
+ if(!editRow&&stageId!==policy.stageId)c.stageHistory.push({eventId:`EV-NEW-${Date.now()}`,stageId,effectiveDate:date,sourceDiaryId:diaryId,reason});
+ persist();state.selectedId=diaryId;toast(editRow?'재배일지작업을 수정했습니다.':'재배일지작업을 등록했습니다.');go('detail',diaryId);
+}
+function profileFacts(facts) {
+ return `<dl class="profile-facts">
+  ${facts.map(([label, value]) => `<dt>${label}</dt><dd>${htmlText(value || '—')}</dd>`).join('')}
+ </dl>`;
+}
+
+pages.diary = { renderList, renderDetail, renderEditor, applyCycleFilter(cid) { filterCycle = cid; listPage = 1; renderList(); } };
+})();
