@@ -201,6 +201,80 @@ function mountDateRangePicker(idPrefix){
  document.addEventListener('click',window.__drpDocClick);
 }
 
+function singleDateControl(id,value='',opts={}){
+ const val=value||'';
+ const hasVal=Boolean(val);
+ const ph=opts.placeholder||'연도-월-일';
+ return `<div class="drp-wrap drp-single-wrap" id="${id}Wrap"><input type="hidden" id="${id}" value="${htmlText(val)}" data-min="${htmlText(opts.min||'')}" data-max="${htmlText(opts.max||'')}" data-placeholder="${htmlText(ph)}"${opts.clearable===false?' data-clearable="0"':''}><button type="button" class="ctrl drp-trigger${hasVal?'':' is-placeholder'}" id="${id}Trigger" aria-expanded="false"${opts.disabled?' disabled':''}><span>${htmlText(hasVal?val:ph)}</span><svg class="drp-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg></button><div class="drp-popover drp-single hidden" id="${id}Pop" role="dialog" aria-label="날짜 선택 달력"></div></div>`;
+}
+function setSingleDateValue(id,value,opts={}){
+ const input=$(`#${id}`),trig=$(`#${id}Trigger`);
+ if(!input)return;
+ const val=value||'';
+ input.value=val;
+ if(opts.min!==undefined)input.dataset.min=opts.min||'';
+ if(opts.max!==undefined)input.dataset.max=opts.max||'';
+ if(trig){
+  const ph=input.dataset.placeholder||'연도-월-일';
+  trig.classList.toggle('is-placeholder',!val);
+  const span=trig.querySelector('span');
+  if(span)span.textContent=val||ph;
+ }
+}
+function mountSingleDatePicker(id){
+ const wrap=$(`#${id}Wrap`),trig=$(`#${id}Trigger`),pop=$(`#${id}Pop`),input=$(`#${id}`);
+ if(!wrap||!trig||!pop||!input||trig.disabled)return;
+ const pad2=n=>String(n).padStart(2,'0');
+ const ymStr=(y,m)=>`${y}-${pad2(m+1)}`;
+ const shiftYM=([y,m],d)=>{const dt=new Date(y,m+d,1);return [dt.getFullYear(),dt.getMonth()]};
+ let viewYM=null;
+ const initYM=()=>{
+  const base=input.value?new Date(input.value+'T00:00:00'):new Date(today()+'T00:00:00');
+  viewYM=[base.getFullYear(),base.getMonth()];
+ };
+ const closePop=()=>{pop.classList.add('hidden');trig.setAttribute('aria-expanded','false')};
+ const drawPop=()=>{
+  const [y,m]=viewYM,firstDow=new Date(y,m,1).getDay(),daysInMonth=new Date(y,m+1,0).getDate();
+  const prevDays=new Date(y,m,0).getDate();
+  const minD=input.dataset.min||'',maxD=input.dataset.max||'',cur=input.value||'';
+  const clearable=input.dataset.clearable!=='0';
+  let cells='';
+  for(let i=firstDow-1;i>=0;i--)cells+=`<span class="drp-day is-out">${prevDays-i}</span>`;
+  for(let d=1;d<=daysInMonth;d++){
+   const iso=`${ymStr(y,m)}-${pad2(d)}`;
+   const disabled=(minD&&iso<minD)||(maxD&&iso>maxD);
+   cells+=`<button type="button" class="drp-day${iso===cur?' is-selected':''}" data-sdp-date="${iso}"${disabled?' disabled':''}>${d}</button>`;
+  }
+  const rem=(firstDow+daysInMonth)%7;
+  if(rem)for(let d=1;d<=7-rem;d++)cells+=`<span class="drp-day is-out">${d}</span>`;
+  const t=today(),todayDisabled=(minD&&t<minD)||(maxD&&t>maxD);
+  pop.innerHTML=`<div class="drp-pane"><div class="drp-nav"><button type="button" class="drp-nav-btn" data-sdp-nav="-1" aria-label="이전 달">‹</button><strong>${y}년 ${m+1}월</strong><button type="button" class="drp-nav-btn" data-sdp-nav="1" aria-label="다음 달">›</button></div><div class="drp-weekdays"><span>일</span><span>월</span><span>화</span><span>수</span><span>목</span><span>금</span><span>토</span></div><div class="drp-days">${cells}</div></div><div class="drp-foot">${clearable?'<button type="button" class="btn xs" data-sdp-action="clear">초기화</button>':'<span></span>'}<div class="drp-foot-right"><button type="button" class="btn xs" data-sdp-action="today"${todayDisabled?' disabled':''}>오늘</button><button type="button" class="btn xs" data-sdp-action="close">닫기</button></div></div>`;
+  pop.querySelectorAll('[data-sdp-nav]').forEach(b=>b.onclick=()=>{viewYM=shiftYM(viewYM,Number(b.dataset.sdpNav));drawPop()});
+  const pick=iso=>{
+   setSingleDateValue(id,iso);
+   input.dispatchEvent(new Event('change',{bubbles:true}));
+   closePop();
+  };
+  pop.querySelectorAll('[data-sdp-date]').forEach(b=>b.onclick=()=>pick(b.dataset.sdpDate));
+  const clr=pop.querySelector('[data-sdp-action="clear"]');
+  if(clr)clr.onclick=()=>pick('');
+  pop.querySelector('[data-sdp-action="today"]').onclick=()=>pick(today());
+  pop.querySelector('[data-sdp-action="close"]').onclick=()=>closePop();
+ };
+ pop.onclick=e=>e.stopPropagation();
+ trig.onclick=e=>{
+  e.stopPropagation();
+  const open=pop.classList.contains('hidden');
+  document.querySelectorAll('.drp-popover').forEach(p=>p.classList.add('hidden'));
+  document.querySelectorAll('.drp-trigger').forEach(t=>t.setAttribute('aria-expanded','false'));
+  if(open){initYM();drawPop();pop.classList.remove('hidden');trig.setAttribute('aria-expanded','true')}
+  else closePop();
+ };
+ if(window.__drpDocClick)document.removeEventListener('click',window.__drpDocClick);
+ window.__drpDocClick=e=>{if(!e.target.closest('.drp-wrap')){document.querySelectorAll('.drp-popover').forEach(p=>p.classList.add('hidden'));document.querySelectorAll('.drp-trigger').forEach(t=>t.setAttribute('aria-expanded','false'))}};
+ document.addEventListener('click',window.__drpDocClick);
+}
+
 function signIn(member, initialPage='list', initialId=null){
  Object.assign(config, clone(sampleData));config.header.currentUser=member;
  config.greenhouses=config.greenhouses.filter(row=>row.memberId===member.id);
@@ -293,7 +367,8 @@ window.ModooApp = {
   persist, loadSaved, storeCycleExtras, loadCycleExtras, storeIssueExtras, loadIssueExtras,
   storeGreenhouseExtras, loadGreenhouseExtras, storeStandards, loadStandards,
   error, go, render, updateNavigation, heading, bindBack, moduleHeading, bindModuleBack, cycleStatus,
-  unifiedListPanel, listFilterField, dateRangeControl, mountDateRangePicker
+  unifiedListPanel, listFilterField, dateRangeControl, mountDateRangePicker,
+  singleDateControl, setSingleDateValue, mountSingleDatePicker
 };
 document.addEventListener('DOMContentLoaded', init);
 })();
