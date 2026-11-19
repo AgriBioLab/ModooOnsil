@@ -308,10 +308,11 @@
 }
 
 .env-search-btn {
-  min-height: 36px;
-  padding: 0 16px;
+  height: 40px;
+  min-height: 40px;
+  padding: 0 18px;
   border-radius: 8px;
-  font-size: 13px;
+  font-size: 13.5px;
   font-weight: 600;
 }
 
@@ -511,8 +512,9 @@
 }
 
 .env-period-filter .env-search-btn {
-  min-height: 36px;
-  padding: 0 16px;
+  height: 40px;
+  min-height: 40px;
+  padding: 0 18px;
 }
 
 .env-table {
