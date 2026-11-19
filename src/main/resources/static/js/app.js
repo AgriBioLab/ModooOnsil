@@ -324,7 +324,10 @@ async function init(){
  await ready;
  const savedUser=loadAuthUser();
  const member=allMembers().find(row=>row.username===savedUser);
- if(!member){location.replace('login.html');return}
+ if(!member){
+  if(hostPage==='home'){pages.home?.renderLanding();return}
+  location.replace('login.html');return;
+ }
  bindAccount(() => go('profile'));
  for(const button of $$('#navigation [data-go]'))button.addEventListener('click',e=>{e.preventDefault();go(button.dataset.go)});
  for(const button of $$('[data-close-dialog]'))button.addEventListener('click',()=>document.getElementById(button.dataset.closeDialog).close());

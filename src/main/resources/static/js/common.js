@@ -153,7 +153,7 @@
       sessionStorage.removeItem(key);
       localStorage.removeItem(key);
     } catch {}
-    location.href = 'login.html';
+    location.href = 'index.html';
   }
 
   function showAccount(member) {

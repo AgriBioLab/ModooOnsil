@@ -224,5 +224,71 @@ function renderHome() {
   $$('[data-home-diary]').forEach(el => el.onclick = () => go('detail', el.dataset.homeDiary));
 }
 
-pages.home = { renderHome };
+function renderLanding() {
+  document.body.className = 'landing-shell';
+  document.title = '모두의온실 | 온실 재배관리 서비스';
+  document.body.innerHTML = `
+    <a class="skip-link" href="#landingMain">본문 바로가기</a>
+    <header class="landing-topbar">
+      <div class="landing-topbar-inner">
+        <a class="landing-brand" href="index.html">
+          <strong>모두의온실</strong>
+          <span>재배 관리</span>
+        </a>
+        <div class="landing-top-actions">
+          <a class="btn xs header-btn" href="login.html">로그인</a>
+          <a class="btn main xs" href="signup.html">농민 회원가입</a>
+        </div>
+      </div>
+    </header>
+    <main id="landingMain" class="landing-main" tabindex="-1">
+      <section class="landing-hero" aria-label="서비스 소개">
+        <span class="krds-badge bg-light-success">시설원예 · 화훼농가 온실 관리</span>
+        <h1>온실 환경부터 작기계획,<br>재배일지까지 한곳에서 관리하세요</h1>
+        <p>농민 누구나 쉽고 간편하게 온실별 환경 변화와 이상 이슈를 확인하고, 작기 일정과 매일의 재배작업을 기록할 수 있습니다.</p>
+        <div class="landing-hero-actions">
+          <a class="btn main" href="login.html">로그인하기</a>
+          <a class="btn" href="signup.html">농민 회원가입</a>
+        </div>
+      </section>
+      <section class="landing-section" aria-label="주요 기능 안내">
+        <h2>주요 제공 서비스</h2>
+        <div class="landing-features">
+          <article class="landing-feature-card">
+            <h3>재배일지작업</h3>
+            <p>작기별 실제 작업일과 작업 내용을 시간순으로 기록하고 미완료 작업을 빠짐없이 관리합니다.</p>
+          </article>
+          <article class="landing-feature-card">
+            <h3>작기계획</h3>
+            <p>온실과 품목·품종별 재배 기간을 계획하고 진행·종료 상태를 체계적으로 관리합니다.</p>
+          </article>
+          <article class="landing-feature-card">
+            <h3>온실 · 환경관리</h3>
+            <p>온실 시설 정보와 시간별 환경 변화 추이, 확인이 필요한 환경 이슈를 한눈에 파악합니다.</p>
+          </article>
+          <article class="landing-feature-card">
+            <h3>농업경영체 인증</h3>
+            <p>농장 기본 정보와 농업경영체 인증 상태를 내정보에서 간편하게 등록하고 확인합니다.</p>
+          </article>
+        </div>
+      </section>
+      <section class="landing-steps-box" aria-label="이용 순서">
+        <h2>이용 안내</h2>
+        <ol class="landing-steps">
+          <li><strong>1. 회원가입 및 인증</strong><span>농장 기본 정보 입력 후 농업경영체 인증을 진행합니다.</span></li>
+          <li><strong>2. 온실 · 작기 등록</strong><span>운영 중인 온실과 재배할 작기계획을 등록합니다.</span></li>
+          <li><strong>3. 현황 확인 · 일지 작성</strong><span>농장 현황에서 이상 이슈를 확인하고 재배일지를 기록합니다.</span></li>
+        </ol>
+      </section>
+    </main>
+    <footer class="landing-footer">
+      <div class="landing-footer-inner">
+        <strong>모두의온실</strong>
+        <span>농민 누구나 쉽고 간편하게 쓰는 온실 재배관리</span>
+      </div>
+    </footer>
+    <div class="notice-toast hidden" id="toast" role="status" aria-live="polite"></div>`;
+}
+
+pages.home = { renderHome, renderLanding };
 })();
