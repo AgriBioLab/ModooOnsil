@@ -232,35 +232,44 @@
   display: inline-flex;
   align-items: center;
   gap: 4px;
-  padding: 3px;
-  background: var(--soft);
-  border: 1px solid var(--line);
-  border-radius: 8px;
+  padding: 0;
+  background: transparent;
+  border: 0;
+  border-bottom: 1px solid var(--line);
+  border-radius: 0;
 }
 
 .env-inline-tab {
   border: 0;
+  border-bottom: 2px solid transparent;
   background: transparent;
   color: var(--muted);
   font: inherit;
-  font-size: 13px;
+  font-size: 13.5px;
   font-weight: 600;
-  padding: 5px 12px;
-  border-radius: 6px;
+  padding: 8px 14px;
+  margin-bottom: -1px;
+  border-radius: 0;
   cursor: pointer;
-  transition: background-color 0.15s ease, color 0.15s ease;
+  transition: color 0.15s ease, border-color 0.15s ease;
+}
+
+.env-inline-tab:hover {
+  color: var(--ink);
 }
 
 .env-inline-tab[aria-selected="true"] {
-  background: #ffffff;
-  color: var(--ink);
-  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.08);
+  background: transparent;
+  color: var(--primary-text);
+  border-bottom: 2px solid var(--primary);
+  font-weight: 700;
+  box-shadow: none;
 }
 
 .env-period-filter {
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: 8px;
   flex-wrap: wrap;
 }
 
@@ -274,8 +283,8 @@
 .env-ctrl-field {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
-  font-size: 12px;
+  gap: 8px;
+  font-size: 13px;
   color: var(--muted);
   font-weight: 600;
 }
@@ -283,9 +292,14 @@
 .env-ctrl-field .ctrl,
 .env-period-filter .ctrl {
   width: auto;
-  min-height: 30px;
-  padding: 3px 8px;
-  font-size: 12.5px;
+  min-height: 36px;
+  padding: 4px 10px;
+  border-radius: 8px;
+  font-size: 13px;
+}
+
+.env-ctrl-field select.ctrl {
+  padding-right: 32px;
 }
 
 .env-date-tilde {
@@ -294,9 +308,11 @@
 }
 
 .env-search-btn {
-  min-height: 30px;
-  padding: 4px 12px;
-  font-size: 12.5px;
+  min-height: 36px;
+  padding: 0 16px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 600;
 }
 
 .env-chart-toolbar {
@@ -489,14 +505,14 @@
 
 .env-period-filter .drp-trigger {
   width: 100%;
-  min-height: 34px;
+  min-height: 36px;
   padding: 4px 10px;
-  font-size: 12.5px;
+  font-size: 13px;
 }
 
 .env-period-filter .env-search-btn {
-  min-height: 34px;
-  padding: 4px 14px;
+  min-height: 36px;
+  padding: 0 16px;
 }
 
 .env-table {
