@@ -211,11 +211,6 @@
   background: transparent;
 }
 
-.workarea main > * {
-  width: 100%;
-  max-width: 1200px;
-}
-
 .env-history-panel {
   flex: none;
 }
