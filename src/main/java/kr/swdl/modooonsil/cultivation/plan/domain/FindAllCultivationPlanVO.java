@@ -13,10 +13,12 @@ public class FindAllCultivationPlanVO {
     private Long memberId;
     private Long planId;
     private String planName;
-    private String greenhouseName ;
-    private String cropName ;
-    private String varietyName ;
-    private String planStatus ;
-    private LocalDateTime plannedStartDate ;
+    private String greenhouseName;
+    private String cropName;
+    private String varietyName;
+    private String planStatus;
+    private LocalDateTime plannedStartDate;
     private LocalDateTime plannedEndDate;
+    private LocalDateTime actualStartDate;
+    private LocalDateTime actualEndDate;
 }

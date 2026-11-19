@@ -6,12 +6,15 @@
     <select id="findAll"
             resultType="kr.swdl.modooonsil.cultivation.plan.domain.FindAllCultivationPlanVO"
             parameterType="kr.swdl.modooonsil.cultivation.plan.domain.FindAllCultivationPlanVO">
-        SELECT p.plan_id, p.plan_name, g.greenhouse_name, c.crop_name, c.variety_name, p.plan_status, p.planned_start_date, p.planned_end_date
+        SELECT p.member_id, p.plan_id, p.plan_name, g.greenhouse_name, c.crop_name, c.variety_name, p.plan_status, p.planned_start_date, p.planned_end_date, p.actual_start_date, p.actual_end_date
         FROM cultivation_plan AS p
             JOIN greenhouse AS g ON g.greenhouse_id = p.greenhouse_id
             JOIN crop_stage_standard AS s ON s.standard_id = p.standard_id
             JOIN crop AS c ON c.crop_id = s.crop_id
         WHERE p.member_id = #{memberId}
+        <if test="planName != null">
+            AND p.plan_name LIKE CONCAT('%', TRIM(#{planName}),'%')
+        </if>
         <if test="greenhouseName != null">
             AND g.greenhouse_name LIKE CONCAT('%', #{greenhouseName},'%')
         </if>
@@ -23,6 +26,18 @@
         </if>
         <if test="planStatus != null">
             AND p.plan_status LIKE CONCAT('%', #{planStatus},'%')
+        </if>
+        <if test="plannedStartDate != null">
+            AND p.planned_end_date >= #{plannedStartDate}
+        </if>
+        <if test="plannedEndDate != null">
+            AND #{plannedEndDate} >= p.planned_start_date
+        </if>
+        <if test="actualStartDate != null">
+            AND (p.actual_end_date >= #{actualStartDate} OR p.actual_end_date IS NULL)
+        </if>
+        <if test="actualEndDate != null">
+            AND #{actualEndDate} >= p.actual_start_date
         </if>
         ORDER BY p.plan_id DESC;
     </select>
@@ -47,8 +62,30 @@
                  JOIN greenhouse AS g ON g.greenhouse_id = cp.greenhouse_id
                  JOIN crop_stage_standard AS css ON css.standard_id = cp.standard_id
                  JOIN crop AS c ON c.crop_id = css.crop_id
-        WHERE cp.member_id = #{memberId}
-          AND cp.plan_id = #{planId};
+        WHERE cp.member_id = #{memberId} AND cp.plan_id = #{planId} AND cp.deleted_at IS NULL;
+    </select>
+
+    <select id="findDeletedByMemberIdAndPlanId" parameterType="Long" resultType="kr.swdl.modooonsil.cultivation.plan.domain.FindCultivationPlanDetailVO">
+        SELECT
+            cp.plan_id,
+            cp.plan_name,
+            g.greenhouse_name,
+            c.crop_name,
+            c.variety_name,
+            cp.planned_start_date,
+            cp.planned_end_date,
+            cp.actual_start_date,
+            cp.actual_end_date,
+            cp.plan_status,
+            cp.end_reason,
+            cp.created_at,
+            cp.updated_at,
+            cp.deleted_at
+        FROM cultivation_plan AS cp
+                 JOIN greenhouse AS g ON g.greenhouse_id = cp.greenhouse_id
+                 JOIN crop_stage_standard AS css ON css.standard_id = cp.standard_id
+                 JOIN crop AS c ON c.crop_id = css.crop_id
+        WHERE cp.member_id = #{memberId} AND cp.plan_id = #{planId} AND cp.deleted_at IS NOT NULL;
     </select>
     
     <insert id="addCultivationPlan"
@@ -79,15 +116,17 @@
     </insert>
 
     <update id="updateCultivationPlan"
-            parameterType="kr.swdl.modooonsil.cultivation.plan.domain.CultivationPlan">
+            parameterType="kr.swdl.modooonsil.cultivation.plan.domain.UpdateCultivationPlan">
         UPDATE cultivation_plan
         SET
+            greenhouse_id = #{greenhouseId},
+            standard_id = #{standardId},
             plan_name = #{planName},
             planned_start_date = #{plannedStartDate},
             planned_end_date = #{plannedEndDate},
             updated_at = NOW()
         WHERE
-            member_id = #{memberId} AND plan_id = #{planId}
+            member_id = #{memberId} AND plan_id = #{planId} AND plan_status = '미진행'
     </update>
 
     <update id="updateCultivationPlanStart" parameterType="Long">

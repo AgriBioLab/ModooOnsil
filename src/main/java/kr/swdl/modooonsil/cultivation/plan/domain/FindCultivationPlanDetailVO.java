@@ -1,5 +1,6 @@
 package kr.swdl.modooonsil.cultivation.plan.domain;
 
+import kr.swdl.modooonsil.common.BaseEntity;
 import lombok.*;
 
 import java.time.LocalDateTime;
@@ -9,7 +10,7 @@ import java.time.LocalDateTime;
 @ToString
 @NoArgsConstructor
 @AllArgsConstructor
-public class FindCultivationPlanDetailVO {
+public class FindCultivationPlanDetailVO extends BaseEntity {
     private Long planId;
     private String planName;
     private String greenhouseName;
@@ -21,7 +22,4 @@ public class FindCultivationPlanDetailVO {
     private LocalDateTime actualEndDate;
     private String planStatus;
     private String endReason;
-    private LocalDateTime createdAt;
-    private LocalDateTime updatedAt;
-    private LocalDateTime deletedAt;
 }
