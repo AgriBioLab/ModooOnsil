@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="kr.swdl.modooonsil.greenhouse.repository.EnvironmentHistoryRepository">
+
+    <select id="findEnvironmentsByPlanId" resultType="kr.swdl.modooonsil.greenhouse.domain.EnvironmentHistory" parameterType="map">
+        SELECT
+        environment_history_id,
+        plan_id,
+        measured_at,
+        temperature,
+        humidity,
+        co2,
+        radiation,
+        light,
+        soil_temperature,
+        soil_moisture,
+        soil_ec,
+        soil_ph
+        FROM greenhouse_environment_history
+        WHERE plan_id = #{planId} AND deleted_at IS NULL
+          <if test="startDate != null">
+            AND measured_at >= #{startDate}
+          </if>
+        <if test="endDate != null">
+            AND DATE_ADD(#{endDate}, INTERVAL 1 DAY) > measured_at
+        </if>
+        ORDER BY environment_history_id DESC;
+    </select>
+
+    <select id="findCurrentEnvironmentByPlanId" resultType="kr.swdl.modooonsil.greenhouse.domain.EnvironmentHistory" parameterType="Long">
+        SELECT
+        environment_history_id,
+        plan_id,
+        measured_at,
+        temperature,
+        humidity,
+        co2,
+        radiation,
+        light,
+        soil_temperature,
+        soil_moisture,
+        soil_ec,
+        soil_ph
+        FROM greenhouse_environment_history
+        WHERE plan_id = #{planId} AND deleted_at IS NULL
+        ORDER BY measured_at DESC, environment_history_id DESC
+        LIMIT 1;
+    </select>
+
+    <insert id="addEnvironmentHistory" parameterType="kr.swdl.modooonsil.greenhouse.domain.EnvironmentHistory">
+        INSERT INTO greenhouse_environment_history (
+            plan_id,
+            measured_at,
+            temperature,
+            humidity,
+            co2,
+            radiation,
+            light,
+            soil_temperature,
+            soil_moisture,
+            soil_ec,
+            soil_ph
+        )
+        VALUES (
+                   #{planId},
+                   #{measuredAt},
+                   #{temperature},
+                   #{humidity},
+                   #{co2},
+                   #{radiation},
+                   #{light},
+                   #{soilTemperature},
+                   #{soilMoisture},
+                   #{soilEc},
+                   #{soilPh}
+               );
+    </insert>
+
+</mapper>
