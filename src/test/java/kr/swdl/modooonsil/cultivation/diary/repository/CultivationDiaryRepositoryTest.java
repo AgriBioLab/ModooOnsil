@@ -120,7 +120,6 @@ class CultivationDiaryRepositoryTest {
         String growthStage = cultivationDiaryRepository.findNextDiaryGrowthStage(
                 MEMBER_ID, 940001L, LocalDate.of(2026, 10, 2));
 
-        System.out.println(growthStage);
         assertThat(growthStage).isEqualTo("꽃눈유도기");
     }
 
