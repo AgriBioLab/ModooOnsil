@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="kr.swdl.modooonsil.cultivation.diary.task.repository.CultivationDiaryTaskRepository">
+    <select id="findAllByDiaryId" resultType="kr.swdl.modooonsil.cultivation.diary.task.domain.CultivationDiaryTask">
+        SELECT t.task_id,
+        t.task_name,
+        t.task_type,
+        t.task_time,
+        t.task_status,
+        t.task_content,
+        t.updated_at
+        FROM cultivation_diary_task AS t
+        JOIN cultivation_diary AS d ON d.diary_id = t.diary_id
+        JOIN cultivation_plan AS p ON p.plan_id = d.plan_id
+        WHERE t.diary_id = #{diaryId}
+        AND p.member_id = #{memberId}
+        AND d.deleted_at IS NULL
+        ORDER BY t.task_time ASC, t.task_id ASC
+    </select>
+
+    <insert id="addTasks">
+        INSERT INTO cultivation_diary_task (
+        diary_id, task_name, task_type, task_time, task_status, task_content, created_at
+        )
+        VALUES
+        <foreach collection="tasks" item="task" separator=",">
+            (#{diaryId}, #{task.taskName}, #{task.taskType}, #{task.taskTime},
+            #{task.taskStatus}, #{task.taskContent}, CURRENT_TIMESTAMP)
+        </foreach>
+    </insert>
+
+    <update id="updateTasks">
+        UPDATE cultivation_diary_task AS t
+        JOIN cultivation_diary AS d ON d.diary_id = t.diary_id
+        JOIN cultivation_plan AS p ON p.plan_id = d.plan_id
+        JOIN (
+            <foreach collection="tasks" item="task" separator=" UNION ALL ">
+                SELECT #{task.taskId} AS task_id,
+                       #{task.taskName} AS task_name,
+                       #{task.taskType} AS task_type,
+                       #{task.taskTime} AS task_time,
+                       #{task.taskStatus} AS task_status,
+                       #{task.taskContent,jdbcType=VARCHAR} AS task_content
+            </foreach>
+        ) AS changes ON changes.task_id = t.task_id
+        SET t.task_name = changes.task_name,
+            t.task_type = changes.task_type,
+            t.task_time = changes.task_time,
+            t.task_status = changes.task_status,
+            t.task_content = changes.task_content,
+            t.updated_at = CURRENT_TIMESTAMP
+        WHERE t.diary_id = #{diaryId}
+          AND p.member_id = #{memberId}
+          AND t.deleted_at IS NULL
+          AND d.deleted_at IS NULL
+          AND p.deleted_at IS NULL
+    </update>
+
+    <delete id="deleteTasks">
+        DELETE t
+        FROM cultivation_diary_task AS t
+        JOIN cultivation_diary AS d ON d.diary_id = t.diary_id
+        JOIN cultivation_plan AS p ON p.plan_id = d.plan_id
+        WHERE t.diary_id = #{diaryId}
+          AND p.member_id = #{memberId}
+          AND d.deleted_at IS NULL
+          AND p.deleted_at IS NULL
+          AND t.task_id IN
+        <foreach collection="taskIds" item="taskId" open="(" separator="," close=")">
+            #{taskId}
+        </foreach>
+    </delete>
+
+</mapper>

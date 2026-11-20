@@ -1,0 +1,145 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="kr.swdl.modooonsil.cultivation.diary.repository.CultivationDiaryRepository">
+    <select id="findAll" resultType="kr.swdl.modooonsil.cultivation.diary.domain.FindAllCultivationDiaryVO">
+        SELECT d.diary_id,
+        d.worked_at,
+        c.crop_name,
+        c.variety_name,
+        p.plan_name,
+        g.greenhouse_name,
+        d.growth_stage
+        FROM cultivation_diary AS d
+        JOIN cultivation_plan AS p ON p.plan_id = d.plan_id
+        JOIN greenhouse AS g ON g.greenhouse_id = p.greenhouse_id
+        JOIN crop_stage_standard AS s ON s.standard_id = p.standard_id
+        JOIN crop AS c ON c.crop_id = s.crop_id
+        WHERE p.member_id = #{memberId}
+        AND d.deleted_at IS NULL
+        AND p.deleted_at IS NULL
+        AND g.deleted_at IS NULL
+        <if test="planName != null and planName != ''">
+            AND p.plan_name = #{planName}
+        </if>
+        <if test="cropName != null and cropName != ''">
+            AND c.crop_name = #{cropName}
+        </if>
+        <if test="varietyName != null and varietyName != ''">
+            AND c.variety_name = #{varietyName}
+        </if>
+        <if test="workedDate != null">
+            AND d.worked_at &gt;= #{workedDate}
+            AND d.worked_at &lt; DATE_ADD(#{workedDate}, INTERVAL 1 DAY)
+        </if>
+        <if test="greenhouseName != null and greenhouseName != ''">
+            AND g.greenhouse_name = #{greenhouseName}
+        </if>
+        ORDER BY d.worked_at DESC, d.diary_id DESC
+    </select>
+
+    <select id="findStartedPlanNames" resultType="string">
+        SELECT
+        p.plan_name
+        FROM cultivation_plan AS p
+        WHERE p.member_id = #{memberId}
+        AND p.plan_status = '진행'
+        AND p.actual_start_date IS NOT NULL
+        ORDER BY p.plan_name, p.plan_id
+    </select>
+
+    <select id="findCropNames" resultType="string">
+        SELECT DISTINCT crop_name
+        FROM crop
+        ORDER BY crop_name;
+    </select>
+
+    <select id="findVarietyNames" resultType="string">
+        SELECT DISTINCT c.variety_name
+        FROM crop AS c
+        <where>
+            <if test="cropName != null and cropName != ''">
+                c.crop_name = #{cropName}
+            </if>
+        </where>
+        ORDER BY c.variety_name
+    </select>
+
+    <select id="findGreenhouseNames" resultType="string">
+        SELECT DISTINCT g.greenhouse_name
+        FROM cultivation_plan AS p
+        JOIN greenhouse AS g ON g.greenhouse_id = p.greenhouse_id
+        WHERE p.member_id = #{memberId}
+        ORDER BY g.greenhouse_name
+    </select>
+
+    <select id="findByMemberIdAndDiaryId"
+            resultType="kr.swdl.modooonsil.cultivation.diary.domain.FindCultivationDiaryDetailVO">
+        SELECT d.diary_id,
+        p.plan_name,
+        c.crop_name,
+        c.variety_name,
+        g.greenhouse_name,
+        d.worked_at,
+        d.growth_stage,
+        d.stage_change_reason,
+        d.created_at,
+        d.updated_at
+        FROM cultivation_diary AS d
+        JOIN cultivation_plan AS p ON p.plan_id = d.plan_id
+        JOIN greenhouse AS g ON g.greenhouse_id = p.greenhouse_id
+        JOIN crop_stage_standard AS s ON s.standard_id = p.standard_id
+        JOIN crop AS c ON c.crop_id = s.crop_id
+        WHERE d.diary_id = #{diaryId}
+        AND p.member_id = #{memberId}
+        AND d.deleted_at IS NULL
+    </select>
+
+    <select id="findPreviousDiaryGrowthStage"
+            resultType="string">
+        SELECT d.growth_stage
+        FROM cultivation_diary AS d
+        JOIN cultivation_plan AS p ON p.plan_id = d.plan_id
+        WHERE d.plan_id = #{planId}
+        AND p.member_id = #{memberId}
+        AND d.worked_at &lt; #{workedDate}
+        AND d.deleted_at IS NULL
+        AND p.deleted_at IS NULL
+        ORDER BY d.worked_at DESC, d.diary_id DESC
+        LIMIT 1
+    </select>
+
+    <select id="findNextDiaryGrowthStage" resultType="string">
+        SELECT d.growth_stage
+        FROM cultivation_diary AS d
+        JOIN cultivation_plan AS p ON p.plan_id = d.plan_id
+        WHERE d.plan_id = #{planId}
+          AND p.member_id = #{memberId}
+          AND d.worked_at &gt;= DATE_ADD(#{workedDate}, INTERVAL 1 DAY)
+          AND d.deleted_at IS NULL
+          AND p.deleted_at IS NULL
+        ORDER BY d.worked_at ASC, d.diary_id ASC
+        LIMIT 1
+    </select>
+
+    <insert id="addDiary" useGeneratedKeys="true" keyProperty="diary.diaryId" keyColumn="diary_id">
+        INSERT INTO cultivation_diary (
+        plan_id, worked_at, growth_stage, stage_change_reason, created_at
+        )
+        SELECT p.plan_id, #{diary.workedAt}, #{diary.growthStage},
+        #{diary.stageChangeReason}, CURRENT_TIMESTAMP
+        FROM cultivation_plan AS p
+        WHERE p.plan_id = #{diary.planId}
+        AND p.member_id = #{memberId}
+        AND p.deleted_at IS NULL
+    </insert>
+
+    <update id="deleteDiaryById">
+        UPDATE cultivation_diary AS d
+        JOIN cultivation_plan AS p ON p.plan_id = d.plan_id
+        SET d.deleted_at = CURRENT_TIMESTAMP
+        WHERE d.diary_id = #{diaryId}
+        AND p.member_id = #{memberId}
+        AND d.deleted_at IS NULL
+    </update>
+</mapper>
