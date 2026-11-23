@@ -84,4 +84,23 @@
             member_id = #{memberId}
     </update>
     
+    <update id="updateFarmProfile" parameterType="kr.swdl.modooonsil.member.domain.Member">
+        UPDATE farm_member
+        SET farm_name = #{farmName},
+            farm_address = #{farmAddress},
+            farm_address_detail = #{farmAddressDetail},
+            main_crop = #{mainCrop},
+            farm_description = #{farmDescription},
+            updated_at = NOW()
+        WHERE member_id = #{memberId} AND deleted_at IS NULL
+    </update>
+
+    <update id="updateMemberProfile" parameterType="kr.swdl.modooonsil.member.domain.Member">
+        UPDATE farm_member
+        SET representative_name = #{representativeName},
+            email = #{email},
+            phone_number = #{phoneNumber},
+            updated_at = NOW()
+        WHERE member_id = #{memberId} AND deleted_at IS NULL
+    </update>
 </mapper>

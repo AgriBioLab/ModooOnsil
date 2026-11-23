@@ -142,7 +142,7 @@
       certBusinessNumber: certNumber.value.trim() ? '' : '농업경영체 등록번호를 입력하세요.'
     }), () => {
       const patch = { businessNumber: certNumber.value.trim(), certification: '인증 대기중' };
-      if (!actions.save(user.username, patch)) return;
+      if (!actions.saveCertificationRequest(user.username, patch)) return;
       Object.assign(user, patch);
       actions.updateAccount();
       updateProfileValues();
@@ -200,16 +200,45 @@
     get('profileCancelBtn').addEventListener('click', showFarmDetails);
 
     const value = id => get(id).value.trim() || null;
+
+    async function saveProfile(form, path, fields, showDetails, message) {
+      const button = form.querySelector('button[type="submit"]');
+      if (button.disabled) return;
+      button.disabled = true;
+      try {
+        const profile = Object.fromEntries(Object.entries(fields).map(([key, id]) => [key, value(id)]));
+        const response = await fetch(path, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(profile)
+        });
+        if (response.status === 401) {
+          location.replace('login.html');
+          return;
+        }
+        if (response.status === 409 && form === memberForm) {
+          const email = get('profEmail');
+          showFieldError(email, '이미 사용 중인 이메일입니다.');
+          email.focus();
+          return;
+        }
+        if (!response.ok) throw new Error('HTTP ' + response.status);
+        const saved = await response.json();
+        for (const key of Object.keys(fields)) user[key] = saved[key];
+        actions.updateAccount();
+        updateProfileValues();
+        if (!form.closest('[hidden]')) showDetails();
+        actions.notify(message);
+      } catch {
+        actions.notify('프로필을 저장하지 못했습니다. 다시 시도하세요.');
+      } finally {
+        button.disabled = false;
+      }
+    }
     bindForm(farmForm, () => ({
       profFarmName: value('profFarmName') ? '' : '농장명을 입력하세요.'
     }), () => {
-      const patch = Object.fromEntries(Object.entries(farmFields).map(([key, id]) => [key, value(id)]));
-      if (!actions.save(user.username, patch)) return;
-      Object.assign(user, patch);
-      actions.updateAccount();
-      updateProfileValues();
-      showFarmDetails();
-      actions.notify('농장정보를 저장했습니다.');
+      return saveProfile(farmForm, '/api/auth/me/farm', farmFields, showFarmDetails, '농장정보를 저장했습니다.');
     });
 
     function showMemberDetails() {
@@ -227,13 +256,7 @@
       profDisplayName: value('profDisplayName') ? '' : '대표자명을 입력하세요.',
       profEmail: get('profEmail').validity.typeMismatch ? '이메일 주소 형식을 확인하세요.' : ''
     }), () => {
-      const patch = Object.fromEntries(Object.entries(memberFields).map(([key, id]) => [key, value(id)]));
-      if (!actions.save(user.username, patch)) return;
-      Object.assign(user, patch);
-      actions.updateAccount();
-      updateProfileValues();
-      showMemberDetails();
-      actions.notify('농민 회원정보를 저장했습니다.');
+      return saveProfile(memberForm, '/api/auth/me/profile', memberFields, showMemberDetails, '농민 회원정보를 저장했습니다.');
     });
 
     get('addrSearchBtn').addEventListener('click', () => {
@@ -266,7 +289,7 @@
     const main = document.getElementById('main');
     const crumb = document.getElementById('crumb');
     const profile = createProfilePage(main, {
-      save: common.saveProfilePatch,
+      saveCertificationRequest: common.saveCertificationRequest,
       notify: common.notify,
       updateAccount: () => common.showAccount(member),
       openTab

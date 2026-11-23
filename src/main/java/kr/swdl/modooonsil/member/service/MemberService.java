@@ -1,7 +1,9 @@
 package kr.swdl.modooonsil.member.service;
 
 import kr.swdl.modooonsil.member.domain.Member;
+import kr.swdl.modooonsil.member.dto.FarmProfileUpdateRequest;
 import kr.swdl.modooonsil.member.dto.MemberPasswordChangeRequest;
+import kr.swdl.modooonsil.member.dto.MemberProfileUpdateRequest;
 import kr.swdl.modooonsil.member.dto.MemberRegistrationRequest;
 import kr.swdl.modooonsil.member.dto.MemberResponse;
 import kr.swdl.modooonsil.member.repository.MemberRepository;
@@ -19,10 +21,7 @@ public class MemberService {
     private final PasswordEncoder passwordEncoder;
 
     public MemberResponse getCurrentMember(Long memberId) {
-        Member member = repository.findMemberByMemberId(memberId);
-        if (member == null) {
-            throw new UsernameNotFoundException("회원을 찾을 수 없습니다.");
-        }
+        Member member = requireMember(memberId);
         return MemberResponse.builder()
                 .id(member.getMemberId().toString())
                 .username(member.getUsername())
@@ -38,6 +37,43 @@ public class MemberService {
                 .description(member.getFarmDescription())
                 .createdAt(member.getCreatedAt())
                 .build();
+    }
+
+    @Transactional
+    public MemberResponse updateFarmProfile(Long memberId, FarmProfileUpdateRequest request) {
+        repository.updateFarmProfile(Member.builder()
+                .memberId(memberId)
+                .farmName(request.farmName())
+                .farmAddress(request.address())
+                .farmAddressDetail(request.addressDetail())
+                .mainCrop(request.mainCrop())
+                .farmDescription(request.description())
+                .build());
+        return getCurrentMember(memberId);
+    }
+
+    @Transactional
+    public MemberResponse updateMemberProfile(Long memberId, MemberProfileUpdateRequest request) {
+        Member current = requireMember(memberId);
+        String email = request.email() == null || request.email().isBlank() ? null : request.email();
+        if (email != null && !email.equalsIgnoreCase(current.getEmail()) && repository.existsByEmail(email)) {
+            throw new DuplicateKeyException("이미 사용 중인 이메일입니다.");
+        }
+        repository.updateMemberProfile(Member.builder()
+                .memberId(memberId)
+                .representativeName(request.displayName())
+                .email(email)
+                .phoneNumber(request.phone())
+                .build());
+        return getCurrentMember(memberId);
+    }
+
+    private Member requireMember(Long memberId) {
+        Member member = repository.findMemberByMemberId(memberId);
+        if (member == null) {
+            throw new UsernameNotFoundException("회원을 찾을 수 없습니다.");
+        }
+        return member;
     }
 
     public boolean isAvailable(String username, String email) {

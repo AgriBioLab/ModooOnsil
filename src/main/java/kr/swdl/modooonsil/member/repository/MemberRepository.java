@@ -19,5 +19,8 @@ public interface MemberRepository {
 
     void addMember(Member newMember);
 
-    void updateMember(Member upDateMember);
+    void updateMember(Member updateMember);
+
+    void updateFarmProfile(Member member);
+    void updateMemberProfile(Member member);
 }

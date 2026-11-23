@@ -101,7 +101,7 @@
     }
   }
 
-  function saveProfilePatch(username, patch) {
+  function saveCertificationRequest(username, patch) {
     try {
       const changes = loadMemberChanges();
       changes[username] = { ...changes[username], ...patch };
@@ -117,7 +117,13 @@
     const response = await fetch('/api/auth/me', { headers: { Accept: 'application/json' } });
     if (response.status === 401) return null;
     const member = await (await checkResponse(response)).json();
-    return { ...member, ...loadMemberChanges()[member.username] };
+    const localCertification = loadMemberChanges()[member.username];
+    if ((!member.certification || member.certification === '미인증') &&
+        localCertification?.certification === '인증 대기중') {
+      member.businessNumber = localCertification.businessNumber;
+      member.certification = localCertification.certification;
+    }
+    return member;
   }
 
   async function logout() {
@@ -195,6 +201,6 @@
   window.ModooCommon = {
     ready, notify, escapeHtml, checkResponse, fetchJson, setButtonsDisabled,
     currentMember,
-    saveProfilePatch, showAccount, bindAccount, setCurrentMenu
+    saveCertificationRequest, showAccount, bindAccount, setCurrentMenu
   };
 })();
