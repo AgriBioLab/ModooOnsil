@@ -1,20 +1,20 @@
 (() => {
   'use strict';
-  const { ready, notify: toast, escapeHtml, allMembers, loadSignupMembers, signupKey, saveAuthUser, loadAuthUser } = window.ModooCommon;
+  const { ready, notify: toast, escapeHtml, fetchJson } = window.ModooCommon;
   const $ = (s, base = document) => base.querySelector(s);
   const $$ = (s, base = document) => [...base.querySelectorAll(s)];
 
   function setupLogin() {
     const form = $('#loginForm');
     if (!form) return;
-    const username = $('#loginUsername');
     const password = $('#loginPassword');
     const toggle = $('#loginPasswordToggle');
     const feedback = $('#loginError');
 
-    const defaults = (typeof sampleData !== 'undefined' ? sampleData?.authDefaults : null) || {};
-    if (!username.value) username.value = loadAuthUser() || defaults.loginUsername || '';
-    if (!password.value) password.value = defaults.loginPassword || '';
+    if (new URLSearchParams(location.search).has('error')) {
+      feedback.textContent = '아이디와 비밀번호를 확인하세요.';
+      feedback.focus();
+    }
 
     toggle.addEventListener('click', () => {
       const reveal = password.type === 'password';
@@ -23,18 +23,6 @@
     });
 
     form.addEventListener('input', () => { feedback.textContent = ''; });
-    form.addEventListener('submit', event => {
-      event.preventDefault();
-      const member = allMembers().find(row => row.username === username.value.trim());
-      const pw = password.value;
-      if (member && (pw === 'modoodemo01' || pw === 'demo' || pw === member.demoPassword)) {
-        saveAuthUser(member.username);
-        location.href = 'cultivationDiaryList.html';
-        return;
-      }
-      feedback.textContent = '아이디와 비밀번호를 확인하세요.';
-      feedback.focus();
-    });
   }
 
   const signupStages = ['회원정보 입력', '농업경영체 인증', '완료'];
@@ -72,19 +60,12 @@
     feedback.textContent = message;
   }
 
-  function signupDuplicateMessage(members, key, value) {
-    const normalized = value.trim().toLowerCase();
-    if (!normalized || !members.some(member => member[key]?.trim().toLowerCase() === normalized)) return '';
-    return key === 'username' ? '이미 사용 중인 아이디입니다.' : '이미 사용 중인 이메일입니다.';
-  }
-
   function setupSignup() {
     const mount = $('#signupStepMount');
     if (!mount) return;
     let step = 1;
-    const defaults = (typeof sampleData !== 'undefined' ? sampleData?.authDefaults : null) || {};
-    let draft = { ...(defaults.signup || {}) };
-    let businessNumber = defaults.businessNumber || '';
+    let draft = {};
+    let businessNumber = '';
     let certStatus = '미인증';
     let savedMember;
 
@@ -183,10 +164,20 @@
       for (const button of $$('[data-check]', form)) {
         const id = button.dataset.check;
         const field = fieldsToCheck[id];
-        button.onclick = () => {
+        button.onclick = async () => {
           const current = value(id);
-          const message = !current ? field.empty :
-            field.validate() || signupDuplicateMessage(allMembers(), field.key, current);
+          let message = !current ? field.empty : field.validate();
+          if (!message) {
+            try {
+              const query = new URLSearchParams({ [field.key]: current });
+              if (!await fetchJson('/api/members/availability?' + query)) {
+                message = field.key === 'username' ? '이미 사용 중인 아이디입니다.' : '이미 사용 중인 이메일입니다.';
+              }
+            } catch {
+              message = '중복 확인에 실패했습니다. 다시 시도하세요.';
+            }
+          }
+          if (value(id) !== current) return;
           signupFeedback(input(id), message || '사용할 수 있는 ' + field.label + '입니다.', message ? 'error' : 'success');
           if (message) input(id).focus();
         };
@@ -194,17 +185,15 @@
 
       form.onsubmit = event => {
         event.preventDefault();
-        const members = allMembers();
         const password = input('signupPassword').value;
         const confirmation = input('signupPasswordConfirm').value;
         const errors = {
           signupFarmName: value('signupFarmName') ? '' : '농장명을 입력하세요.',
           signupRepresentativeName: value('signupRepresentativeName') ? '' : '대표자명을 입력하세요.',
-          signupUsername: !value('signupUsername') ? '아이디를 입력하세요.' : fieldsToCheck.signupUsername.validate() ||
-            signupDuplicateMessage(members, 'username', value('signupUsername')),
+          signupUsername: !value('signupUsername') ? '아이디를 입력하세요.' : fieldsToCheck.signupUsername.validate(),
           signupPassword: password.length >= 8 && password.length <= 20 ? '' : '비밀번호를 8~20자로 입력하세요.',
           signupPasswordConfirm: confirmation && confirmation === password ? '' : '비밀번호와 같은 값을 입력하세요.',
-          signupEmail: fieldsToCheck.signupEmail.validate() || signupDuplicateMessage(members, 'email', value('signupEmail'))
+          signupEmail: fieldsToCheck.signupEmail.validate()
         };
         if (displayErrors(errors)) return;
         draft = Object.fromEntries($$('input, textarea', form).map(field => [field.id, field.value]));
@@ -257,19 +246,15 @@
         renderMemberForm();
         focusStep();
       };
-      form.onsubmit = event => {
+      form.onsubmit = async event => {
         event.preventDefault();
         if (submit.disabled) return;
         businessNumber = input.value.trim();
         updateCertification();
-        const newMember = {
-          id: 'MEM-' + Date.now(),
+        const registration = {
           displayName: draft.signupRepresentativeName.trim(),
-          role: '화훼농민',
-          certification: certStatus,
           businessNumber: businessNumber || null,
           username: draft.signupUsername.trim(),
-          demoPassword: draft.signupPassword,
           farmName: draft.signupFarmName.trim(),
           email: draft.signupEmail.trim() || null,
           phone: draft.signupPhone.trim() || null,
@@ -277,25 +262,27 @@
           addressDetail: draft.signupAddressDetail?.trim() || null,
           mainCrop: draft.signupMainCrop.trim() || null,
           description: draft.signupDescription?.trim() || null,
-          createdAt: new Date().toISOString().slice(0, 10)
         };
-        const members = allMembers();
-        const conflicts = {
-          signupUsername: signupDuplicateMessage(members, 'username', newMember.username),
-          signupEmail: signupDuplicateMessage(members, 'email', newMember.email || '')
-        };
-        if (conflicts.signupUsername || conflicts.signupEmail) {
-          renderMemberForm(conflicts);
-          return;
-        }
         submit.disabled = true;
         try {
-          localStorage.setItem(signupKey, JSON.stringify([...loadSignupMembers(), newMember]));
-        } catch {}
-        saveAuthUser(newMember.username);
-        savedMember = newMember;
-        renderComplete();
-        focusStep();
+          const response = await fetch('/api/members', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ ...registration, password: draft.signupPassword })
+          });
+          if (response.status === 409) {
+            renderMemberForm({ signupUsername: '이미 사용 중인 아이디 또는 이메일입니다.' });
+            return;
+          }
+          if (!response.ok) throw new Error('HTTP ' + response.status);
+          savedMember = { ...registration, certification: certStatus };
+          draft = {};
+          renderComplete();
+          focusStep();
+        } catch {
+          $('#signupSaveError', form).textContent = '가입 정보를 저장하지 못했습니다. 다시 시도하세요.';
+          submit.disabled = false;
+        }
       };
     }
 

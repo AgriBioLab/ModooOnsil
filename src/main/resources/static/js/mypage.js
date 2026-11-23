@@ -154,18 +154,38 @@
     const next = get('newPw');
     const confirmation = get('chkPw');
     bindForm(passwordForm, () => {
-      const expected = user.demoPassword || 'modoodemo01';
-      const matches = [expected, 'modoodemo01', 'demo'].includes(current.value);
       return {
-        curPw: current.value ? (matches ? '' : '현재 비밀번호가 일치하지 않습니다.') : '현재 비밀번호를 입력하세요.',
+        curPw: current.value ? '' : '현재 비밀번호를 입력하세요.',
         newPw: next.value.length < 8 || next.value.length > 20 ? '새 비밀번호를 8~20자로 입력하세요.' : '',
         chkPw: confirmation.value ? (confirmation.value === next.value ? '' : '새 비밀번호와 일치하지 않습니다.') : '새 비밀번호를 한 번 더 입력하세요.'
       };
-    }, () => {
-      if (!actions.save(user.username, { demoPassword: next.value })) return;
-      user.demoPassword = next.value;
-      passwordForm.reset();
-      actions.notify('비밀번호를 변경했습니다.');
+    }, async () => {
+      const button = passwordForm.querySelector('button[type="submit"]');
+      if (button.disabled) return;
+      button.disabled = true;
+      try {
+        const response = await fetch('/api/auth/password', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ currentPassword: current.value, newPassword: next.value })
+        });
+        if (response.status === 401) {
+          location.replace('login.html');
+          return;
+        }
+        if (response.status === 409) {
+          showFieldError(current, '현재 비밀번호가 일치하지 않습니다.');
+          current.focus();
+          return;
+        }
+        if (!response.ok) throw new Error('HTTP ' + response.status);
+        passwordForm.reset();
+        actions.notify('비밀번호를 변경했습니다.');
+      } catch {
+        actions.notify('비밀번호를 변경하지 못했습니다. 다시 시도하세요.');
+      } finally {
+        button.disabled = false;
+      }
     });
 
     function showFarmDetails() {
@@ -237,8 +257,7 @@
   async function init() {
     const common = window.ModooCommon;
     await common.ready;
-    const username = common.loadAuthUser();
-    const member = common.allMembers().find(account => account.username === username);
+    const member = await common.currentMember();
     if (!member) {
       location.replace('login.html');
       return;

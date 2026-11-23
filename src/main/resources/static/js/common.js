@@ -1,4 +1,4 @@
-// 공통 레이아웃과 브라우저 계정 상태.
+// 공통 레이아웃과 서버 세션.
 // HTTP(S) 환경에서는 fragments/*.html을 fetch하고, file:// 환경에서는 동일 마크업 폴백을 사용한다.
 (function () {
   const SIDEBAR_HTML = `<aside class="sidebar" aria-label="서비스 탐색">
@@ -77,7 +77,6 @@
   ]);
 
   const accountKey = name => 'modoo-' + name + ':' + sampleData.meta.version;
-  const signupKey = () => accountKey('signup-members');
   let toastTimer;
 
   function notify(message) {
@@ -114,45 +113,21 @@
     }
   }
 
-  function loadSignupMembers() {
-    const members = JSON.parse(localStorage.getItem(signupKey()) || '[]');
-    return Array.isArray(members) ? members : [];
+  async function currentMember() {
+    const response = await fetch('/api/auth/me', { headers: { Accept: 'application/json' } });
+    if (response.status === 401) return null;
+    const member = await (await checkResponse(response)).json();
+    return { ...member, ...loadMemberChanges()[member.username] };
   }
 
-  function allMembers(registeredMembers) {
-    if (!registeredMembers) {
-      try { registeredMembers = loadSignupMembers(); } catch { registeredMembers = []; }
-    }
-    const changes = loadMemberChanges();
-    return [...sampleData.members, ...registeredMembers].map(member => ({
-      ...member,
-      ...changes[member.username]
-    }));
-  }
-
-  function saveAuthUser(username) {
+  async function logout() {
     try {
-      sessionStorage.setItem(accountKey('auth'), username);
-      localStorage.setItem(accountKey('auth'), username);
-    } catch {}
-  }
-
-  function loadAuthUser() {
-    try {
-      const key = accountKey('auth');
-      return sessionStorage.getItem(key) || localStorage.getItem(key) || '';
+      const response = await fetch('/logout', { method: 'POST' });
+      await checkResponse(response);
+      location.replace('login.html');
     } catch {
-      return '';
+      notify('로그아웃하지 못했습니다. 다시 시도하세요.');
     }
-  }
-
-  function logout() {
-    try {
-      const key = accountKey('auth');
-      sessionStorage.removeItem(key);
-      localStorage.removeItem(key);
-    } catch {}
-    location.href = 'login.html';
   }
 
   function showAccount(member) {
@@ -219,7 +194,7 @@
 
   window.ModooCommon = {
     ready, notify, escapeHtml, checkResponse, fetchJson, setButtonsDisabled,
-    signupKey, loadSignupMembers, allMembers, saveAuthUser, loadAuthUser,
+    currentMember,
     saveProfilePatch, showAccount, bindAccount, setCurrentMenu
   };
 })();

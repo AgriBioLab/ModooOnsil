@@ -3,14 +3,28 @@
 
 <mapper namespace="kr.swdl.modooonsil.member.repository.MemberRepository">
     <select id="findMemberByMemberId" resultType="kr.swdl.modooonsil.member.domain.Member" parameterType="Long">
-        SELECT member_id, farm_name, representative_name, username, created_at, phone_number, email, farm_address, farm_address_detail, main_crop, farm_description, certified_at, farm_business_number, certification_status, updated_at
+        SELECT member_id, farm_name, representative_name, username, password,
+               created_at, phone_number, email, farm_address, farm_address_detail, main_crop,
+               farm_description, certified_at, farm_business_number, certification_status, updated_at
         FROM farm_member
-        WHERE member_id = #{memberId};
+        WHERE member_id = #{memberId} AND deleted_at IS NULL
+    </select>
+
+    <select id="findActiveMemberByUsername" resultType="kr.swdl.modooonsil.member.domain.Member">
+        SELECT member_id, username, password
+        FROM farm_member
+        WHERE username = #{username} AND deleted_at IS NULL
     </select>
     
     <select id="existsByUsername" resultType="Boolean" parameterType="String">
         SELECT EXISTS(SELECT 1 FROM farm_member WHERE username = #{username})
     </select>
+
+    <update id="updatePassword">
+        UPDATE farm_member
+        SET password = #{newHash}, updated_at = NOW()
+        WHERE member_id = #{memberId} AND password = #{oldHash} AND deleted_at IS NULL
+    </update>
 
     <select id="existsByEmail" resultType="Boolean" parameterType="String">
         SELECT EXISTS(SELECT 1 FROM farm_member WHERE email = #{email})
