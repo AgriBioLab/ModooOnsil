@@ -25,9 +25,14 @@
   display: flex;
   align-items: center;
   gap: 12px;
-  font-size: 20px;
-  font-weight: 700;
+  text-decoration: none;
   color: var(--krds-light-color-text-bolder, #131416);
+}
+
+.auth-brand-logo {
+  display: block;
+  width: 156px;
+  height: auto;
 }
 
 .signup-topbar-sub {

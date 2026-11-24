@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 76 76" width="76" height="76" role="img" aria-label="모두의 온실">
+  <g transform="translate(3,10)">
+    <path d="M21 0C9.4 0 0 9.4 0 21v35h38V21C38 9.4 28.6 0 21 0z" fill="#176B3A"/>
+    <path d="M52 10c-10.5 0-19 8.5-19 19v27h38V29c0-10.5-8.5-19-19-19z" fill="#176B3A" fill-opacity="0.45"/>
+    <path d="M33 29v27h6V25c-3.5 1-6 2.3-6 4z" fill="#FFFFFF"/>
+  </g>
+</svg>
