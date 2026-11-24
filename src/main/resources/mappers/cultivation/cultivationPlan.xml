@@ -92,7 +92,7 @@
             parameterType="kr.swdl.modooonsil.cultivation.plan.domain.CultivationPlan"
             useGeneratedKeys="true"
             keyProperty="planId"
-            keyColumn="planId">
+            keyColumn="plan_id">
         INSERT INTO cultivation_plan (
             greenhouse_id,
             member_id,
@@ -118,15 +118,31 @@
     <update id="updateCultivationPlan"
             parameterType="kr.swdl.modooonsil.cultivation.plan.domain.UpdateCultivationPlan">
         UPDATE cultivation_plan
-        SET
-            greenhouse_id = #{greenhouseId},
-            standard_id = #{standardId},
-            plan_name = #{planName},
-            planned_start_date = #{plannedStartDate},
-            planned_end_date = #{plannedEndDate},
+        <set>
+            <if test="planName != null">
+                plan_name = #{planName},
+            </if>
+
+            <if test="greenhouseId != null">
+                greenhouse_id = #{greenhouseId},
+            </if>
+
+            <if test="standardId != null">
+                standard_id = #{standardId},
+            </if>
+
+            <if test="plannedStartDate != null">
+                planned_start_date = #{plannedStartDate},
+            </if>
+
+            <if test="plannedEndDate != null">
+                planned_end_date = #{plannedEndDate},
+            </if>
+
             updated_at = NOW()
+        </set>
         WHERE
-            member_id = #{memberId} AND plan_id = #{planId} AND plan_status = '미진행'
+            member_id = #{memberId} AND plan_id = #{planId} AND plan_status = '미진행' AND deleted_at IS NULL
     </update>
 
     <update id="updateCultivationPlanStart" parameterType="Long">
@@ -135,8 +151,12 @@
             actual_start_date = NOW(),
             plan_status = '진행',
             updated_at = NOW()
-        WHERE
-            member_id = #{memberId} AND plan_id = #{planId}
+        WHERE member_id = #{memberId}
+          AND plan_id = #{planId}
+          AND plan_status = '미진행'
+          AND actual_start_date IS NULL
+          AND actual_end_date IS NULL
+          AND deleted_at IS NULL
     </update>
 
     <update id="updateCultivationPlanEnd" parameterType="kr.swdl.modooonsil.cultivation.plan.domain.CultivationPlan">
@@ -146,8 +166,12 @@
             plan_status = '종료',
             end_reason = #{endReason},
             updated_at = NOW()
-        WHERE
-            member_id = #{memberId} AND plan_id = #{planId}
+        WHERE member_id = #{memberId}
+          AND plan_id = #{planId}
+          AND plan_status = '진행'
+          AND actual_start_date IS NOT NULL
+          AND actual_end_date IS NULL
+          AND deleted_at IS NULL
     </update>
 
     <update id="deleteCultivationPlan" parameterType="Long">
@@ -157,4 +181,19 @@
         WHERE
             member_id = #{memberId} AND plan_id = #{planId} AND plan_status = '미진행'
     </update>
+
+    <select id="existsOngoingPlanInSameGreenhouse" resultType="boolean">
+        SELECT EXISTS (
+            SELECT 1
+            FROM cultivation_plan AS target
+                     JOIN cultivation_plan AS ongoing
+                          ON ongoing.greenhouse_id = target.greenhouse_id
+            WHERE target.member_id = #{memberId}
+              AND target.plan_id = #{planId}
+              AND target.deleted_at IS NULL
+              AND ongoing.plan_id != target.plan_id
+              AND ongoing.plan_status = '진행'
+              AND ongoing.deleted_at IS NULL
+        )
+    </select>
 </mapper>

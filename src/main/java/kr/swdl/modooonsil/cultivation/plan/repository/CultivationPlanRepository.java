@@ -5,17 +5,27 @@ import kr.swdl.modooonsil.cultivation.plan.domain.FindAllCultivationPlanVO;
 import kr.swdl.modooonsil.cultivation.plan.domain.FindCultivationPlanDetailVO;
 import kr.swdl.modooonsil.cultivation.plan.domain.UpdateCultivationPlan;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 
 @Mapper
 public interface CultivationPlanRepository {
     List<FindAllCultivationPlanVO> findAll(FindAllCultivationPlanVO vo);
-    FindCultivationPlanDetailVO findByMemberIdAndPlanId(Long memberId, Long planId);
-    FindCultivationPlanDetailVO findDeletedByMemberIdAndPlanId(Long memberId, Long planId);
+
+    FindCultivationPlanDetailVO findByMemberIdAndPlanId(@Param("memberId") Long memberId, @Param("planId") Long planId);
+
+    FindCultivationPlanDetailVO findDeletedByMemberIdAndPlanId(@Param("memberId") Long memberId, @Param("planId") Long planId);
+
     void addCultivationPlan(CultivationPlan newCultivationPlan);
+
     void updateCultivationPlan(UpdateCultivationPlan updateCultivationPlan);
-    void updateCultivationPlanStart(Long memberId, Long planId);
+
+    void updateCultivationPlanStart(@Param("memberId") Long memberId, @Param("planId") Long planId);
+
     void updateCultivationPlanEnd(CultivationPlan endCultivationPlan);
-    void deleteCultivationPlan(Long memberId, Long planId);
+
+    void deleteCultivationPlan(@Param("memberId") Long memberId, @Param("planId") Long planId);
+
+    boolean existsOngoingPlanInSameGreenhouse(@Param("memberId") Long memberId, @Param("planId") Long planId);
 }
