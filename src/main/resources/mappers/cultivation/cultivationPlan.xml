@@ -181,4 +181,19 @@
         WHERE
             member_id = #{memberId} AND plan_id = #{planId} AND plan_status = '미진행'
     </update>
+
+    <select id="existsOngoingPlanInSameGreenhouse" resultType="boolean">
+        SELECT EXISTS (
+            SELECT 1
+            FROM cultivation_plan AS target
+                     JOIN cultivation_plan AS ongoing
+                          ON ongoing.greenhouse_id = target.greenhouse_id
+            WHERE target.member_id = #{memberId}
+              AND target.plan_id = #{planId}
+              AND target.deleted_at IS NULL
+              AND ongoing.plan_id != target.plan_id
+              AND ongoing.plan_status = '진행'
+              AND ongoing.deleted_at IS NULL
+        )
+    </select>
 </mapper>

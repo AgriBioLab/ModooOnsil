@@ -483,23 +483,35 @@ class CultivationPlanServiceTest {
     // =========================================================
 
     @Test
-    void 작기_시작상태변경_성공() {
+    void 작기_시작_성공() {
+
+        // given
+        Long memberId = 940002L;
+        Long planId = 940006L;
+
         LocalDateTime beforeUpdate = LocalDateTime.now().minusSeconds(2);
 
+        planService.updateCultivationPlanStart(memberId, planId);
+
+        FindCultivationPlanDetailVO result = planService.findByMemberIdAndPlanId(memberId, planId);
+        
         LocalDateTime afterUpdate = LocalDateTime.now().plusSeconds(2);
-
-        planService.updateCultivationPlanStart(MEMBER_ID, WAITING_PLAN_ID);
-
-        FindCultivationPlanDetailVO result = planService.findByMemberIdAndPlanId(MEMBER_ID, WAITING_PLAN_ID);
-
-        assertNotNull(result);
-        assertEquals(WAITING_PLAN_ID, result.getPlanId());
         assertEquals("진행", result.getPlanStatus());
         assertNotNull(result.getActualStartDate());
-        assertNotNull(result.getUpdatedAt());
-
         assertFalse(result.getActualStartDate().isBefore(beforeUpdate));
         assertFalse(result.getActualStartDate().isAfter(afterUpdate));
+    }
+
+    @Test
+    void 작기_시작_동일온실에_진행중인_작기_존재_예외처리() {
+        Long memberId = 940001L;
+        Long planId = 940003L;
+
+        assertExceptionStatus(HttpStatus.CONFLICT, () -> planService.updateCultivationPlanStart(memberId, planId));
+
+        FindCultivationPlanDetailVO result = planService.findByMemberIdAndPlanId(memberId, planId);
+        assertEquals("미진행", result.getPlanStatus());
+        assertNull(result.getActualStartDate());
     }
 
     @Test

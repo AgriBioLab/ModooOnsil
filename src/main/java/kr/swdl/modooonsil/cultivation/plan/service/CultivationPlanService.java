@@ -152,8 +152,14 @@ public class CultivationPlanService {
 
         FindCultivationPlanDetailVO current = findByMemberIdAndPlanId(memberId, planId);
 
+        // 미진행 상태에서만 시작 허용
         if (!"미진행".equals(current.getPlanStatus())) {
             throw new ResponseStatusException(HttpStatus.CONFLICT, "미진행 상태의 작기만 시작할 수 있습니다.");
+        }
+
+        // 같은 온실에 진행 중인 작기가 있는지 확인
+        if (planRepository.existsOngoingPlanInSameGreenhouse(memberId, planId)) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "해당 온실에 이미 진행 중인 작기가 존재합니다.");
         }
 
         planRepository.updateCultivationPlanStart(memberId, planId);
