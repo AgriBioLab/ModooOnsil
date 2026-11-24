@@ -43,11 +43,11 @@ public class MemberService {
     public MemberResponse updateFarmProfile(Long memberId, FarmProfileUpdateRequest request) {
         repository.updateFarmProfile(Member.builder()
                 .memberId(memberId)
-                .farmName(request.farmName())
-                .farmAddress(request.address())
-                .farmAddressDetail(request.addressDetail())
-                .mainCrop(request.mainCrop())
-                .farmDescription(request.description())
+                .farmName(request.getFarmName())
+                .farmAddress(request.getAddress())
+                .farmAddressDetail(request.getAddressDetail())
+                .mainCrop(request.getMainCrop())
+                .farmDescription(request.getDescription())
                 .build());
         return getCurrentMember(memberId);
     }
@@ -55,15 +55,16 @@ public class MemberService {
     @Transactional
     public MemberResponse updateMemberProfile(Long memberId, MemberProfileUpdateRequest request) {
         Member current = requireMember(memberId);
-        String email = request.email() == null || request.email().isBlank() ? null : request.email();
+        String requestedEmail = request.getEmail();
+        String email = requestedEmail == null || requestedEmail.isBlank() ? null : requestedEmail;
         if (email != null && !email.equalsIgnoreCase(current.getEmail()) && repository.existsByEmail(email)) {
             throw new DuplicateKeyException("이미 사용 중인 이메일입니다.");
         }
         repository.updateMemberProfile(Member.builder()
                 .memberId(memberId)
-                .representativeName(request.displayName())
+                .representativeName(request.getDisplayName())
                 .email(email)
-                .phoneNumber(request.phone())
+                .phoneNumber(request.getPhone())
                 .build());
         return getCurrentMember(memberId);
     }

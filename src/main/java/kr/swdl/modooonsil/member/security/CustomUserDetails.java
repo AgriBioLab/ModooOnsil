@@ -9,7 +9,7 @@ import java.util.List;
 public class CustomUserDetails implements UserDetails {
     private final Long memberId;
     private final String username;
-    private String password;
+    private final String password;
 
     public CustomUserDetails(Member member) {
         this.memberId = member.getMemberId();
