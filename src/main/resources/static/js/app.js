@@ -91,7 +91,6 @@ function go(target,id){
  else if(target.startsWith('gh-')&&id)state.selectedGhId=id;
  else if(target.startsWith('env-')&&id)state.selectedMeasurementId=id;
  else if(id)state.selectedId=id;
- if((target==='detail'||target==='edit')&&!diaryRows.length){toast('등록된 재배일지작업이 없습니다.');return}
  state.page=target;render();}
 function heading(title,description='',back=false){return `<div class="pagehead"><div><h1>${title}</h1>${description?`<p>${htmlText(description)}</p>`:''}</div>${back?'<button type="button" class="backlink" id="returnList">← 재배일지작업 목록으로</button>':''}</div>`}
 function bindBack(){const el=$('#returnList');if(el)el.addEventListener('click',()=>go('list'))}
@@ -346,8 +345,9 @@ async function init(){
  const initialId=params.get('id');
  const initialCycleId=params.get('cycleId');
  signIn(member,initialView,initialId);
- if(initialCycleId&&initialView==='list'&&config.cycles.some(c=>c.cycleId===initialCycleId)){
-  pages.diary?.applyCycleFilter(initialCycleId);
+ const initialCycle=config.cycles.find(c=>c.cycleId===initialCycleId);
+ if(initialCycle&&initialView==='list'){
+  pages.diary?.applyCycleFilter(initialCycle.name);
  }
 }
 
