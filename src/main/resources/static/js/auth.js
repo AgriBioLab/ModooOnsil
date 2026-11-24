@@ -102,7 +102,7 @@
           <div class="form-group">
             <label class="form-label" for="signupAddress">농장 주소 (선택)</label>
             <div class="auth-input-row">
-              <input id="signupAddress" class="krds-input medium" type="text" maxlength="255" readonly aria-describedby="signupAddress-feedback">
+              <input id="signupAddress" class="krds-input medium" type="text" maxlength="255" placeholder="주소 검색으로 입력하세요" readonly aria-describedby="signupAddress-feedback">
               <button type="button" class="krds-btn medium secondary" id="signupAddrSearchBtn">주소 검색</button>
             </div>
             <p id="signupAddress-feedback" class="auth-feedback" aria-live="polite"></p>

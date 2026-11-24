@@ -2,8 +2,9 @@
 // HTTP(S) 환경에서는 fragments/*.html을 fetch하고, file:// 환경에서는 동일 마크업 폴백을 사용한다.
 (function () {
   const SIDEBAR_HTML = `<aside class="sidebar" aria-label="서비스 탐색">
-  <div class="brand" id="brand">모두의온실<small>재배 관리</small></div>
+  <a class="brand" id="brand" href="index.html">모두의온실<small>재배 관리</small></a>
   <nav class="nav" id="navigation" aria-label="주 메뉴">
+    <a class="navbtn nav-home" href="index.html" data-go="home"><svg class="nav-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M3 10.5 12 3l9 7.5V20a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"/></svg><span>홈</span></a>
     <div class="navgroup" role="group" aria-label="재배일지작업">
       <div class="navhead nav-group-title"><svg class="nav-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2"/><rect x="9" y="3" width="6" height="4" rx="1"/><path d="M9 12h6M9 16h4"/></svg>재배일지작업</div>
       <a class="navbtn nav-sub" href="cultivationDiaryList.html" data-go="list">재배일지작업목록</a>
@@ -130,12 +131,11 @@
     try {
       const response = await fetch('/logout', { method: 'POST' });
       await checkResponse(response);
-      location.replace('login.html');
+      location.replace('index.html');
     } catch {
       notify('로그아웃하지 못했습니다. 다시 시도하세요.');
     }
   }
-
   function showAccount(member) {
     document.getElementById('userName').textContent = member.displayName;
     const certText = member.certification === '인증' ? '농업경영체 인증회원' : member.certification;

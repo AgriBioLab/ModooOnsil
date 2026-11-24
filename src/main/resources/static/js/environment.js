@@ -130,17 +130,17 @@ function bindCycleContextBar(ghSelectId,cycleSelectId,cycles,onChange){
  $(`#${cycleSelectId}`).onchange=()=>onChange($(`#${cycleSelectId}`).value);
 }
 function renderEnvList(){
- const envCycles=config.cycles.filter(c=>['진행','종료'].includes(cycleStatus(c)));
+ const envCycles=config.cycles.filter(c=>cycleStatus(c)==='진행');
  let selectedCycle=envCycles.find(c=>c.cycleId===envFilters.cycle);
  if(!selectedCycle){
-  selectedCycle=envCycles.find(c=>config.environmentChanges.some(e=>e.cycleId===c.cycleId))||envCycles[0]||config.cycles[0];
+  selectedCycle=envCycles.find(c=>config.environmentChanges.some(e=>e.cycleId===c.cycleId))||envCycles[0]||null;
   envFilters.cycle=selectedCycle?.cycleId||'';
  }
  if(!selectedCycle){
-  main.innerHTML=moduleHeading('온실 환경변화 목록')+'<section class="panel list-section"><div class="panel-body"><p class="empty">조회할 작기계획이 없습니다.</p></div></section>';
+  main.innerHTML=moduleHeading('온실 환경변화 목록')+'<section class="panel list-section"><div class="panel-body"><p class="empty">진행 중인 작기계획이 없습니다.</p></div></section>';
   return;
  }
- const listCycles=envCycles.length?envCycles:config.cycles;
+ const listCycles=envCycles;
  const cycleAllRows=config.environmentChanges.filter(s=>s.cycleId===selectedCycle.cycleId);
  const rows=cycleAllRows.filter(s=>(!envFilters.from||dateFrom(s.measuredAt)>=envFilters.from)&&(!envFilters.to||dateFrom(s.measuredAt)<=envFilters.to)).sort((a,b)=>b.measuredAt.localeCompare(a.measuredAt));
  const size=7;

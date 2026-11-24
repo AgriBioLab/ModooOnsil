@@ -50,27 +50,23 @@ function loadSaved(){let saved;try{saved=JSON.parse(localStorage.getItem(storage
  diaryRows.splice(0, diaryRows.length, ...(Array.isArray(saved?.diaries) ? saved.diaries : clone(config.sampleDiaries)));
  if(saved?.cycleStageHistories)for(const c of config.cycles){if(Array.isArray(saved.cycleStageHistories[c.cycleId]))c.stageHistory=saved.cycleStageHistories[c.cycleId].map(e=>{const {reasons,...rest}=e;return {...rest,reason:toReason(e.reason||reasons)}})}
  diaryRows.forEach(d=>{delete d.title;d.stageChangeReason=toReason(d.stageChangeReason||d.stageChangeReasons);delete d.stageChangeReasons;d.tasks=(d.tasks||[]).map(t=>({...t,startedAt:t.startedAt||makeStarted(d.workDate,t.time||'09:00'),name:t.name||t.type,content:t.content??''})).sort(timeSort)});
- loadStandards();
 }
 function error(s){const el=$('#formError');if(el){el.textContent=s;el.classList.remove('hidden')}toast(s)}
 function updateNavigation() {
- const isStd = state.page==='standard'||state.page==='standard-create';
- const stdModal = window.__stdState?.cropModal;
- const stdDetail = window.__stdState?.cropDetailId;
- const isStdCreate = state.page==='standard-create' || (stdModal && !stdModal.varietyId);
- const entry = isStd ? (isStdCreate?'standard-create':'standard') : state.page==='cycle-create' ? 'cycle-create' : state.page.startsWith('cycle-') ? 'cycle-list' : state.page==='gh-create' ? 'gh-create' : state.page.startsWith('gh-') ? 'gh-list' : state.page.startsWith('env-') ? 'env-list' : state.page.startsWith('issue-') ? 'issue-list' : state.page==='create' ? 'create' : 'list';
- const current = setCurrentMenu(entry);
- if (isStd) {
-  $('#crumb').textContent = isStdCreate ? '재배품목 / 품목 · 품종 등록' : stdModal?.varietyId ? '재배품목 / 품목 · 품종 수정' : stdDetail ? '재배품목 / 품목 · 품종 상세' : '재배품목 / 품목 · 품종 목록';
+ if (state.page === 'home') {
+  setCurrentMenu('home');
+  $('#crumb').textContent = '홈 / 농장 현황';
   return;
  }
+ const entry = state.page==='cycle-create' ? 'cycle-create' : state.page.startsWith('cycle-') ? 'cycle-list' : state.page==='gh-create' ? 'gh-create' : state.page.startsWith('gh-') ? 'gh-list' : state.page.startsWith('env-') ? 'env-list' : state.page.startsWith('issue-') ? 'issue-list' : state.page==='create' ? 'create' : 'list';
+ const current = setCurrentMenu(entry);
  const viewState = state.page.replace(/^(cycle-|gh-|env-|issue-)/, '');
  const step = {list:'목록',create:'등록',detail:'상세',edit:'수정'}[viewState] || '목록';
  const section = state.page.startsWith('cycle-') ? '작기계획' : state.page.startsWith('gh-') ? '온실 정보' : (state.page.startsWith('env-')||state.page.startsWith('issue-')) ? (current?.textContent||'') : '재배일지작업';
  const prefix = (state.page.startsWith('gh-')||state.page.startsWith('env-')||state.page.startsWith('issue-')) ? ['온실', section, step] : [section, step];
  $('#crumb').textContent = prefix.filter(Boolean).join(' / ');
 }
-const pageFile=target=>(target==='standard'||target==='standard-create')?'cropStageStandard.html':target.startsWith('cycle-')?'cultivationPlanList.html':target.startsWith('gh-')?'greenhouseList.html':target.startsWith('env-')?'environmentChangeList.html':target.startsWith('issue-')?'environmentIssueList.html':target==='member'?'mypage.html?tab=pw':target==='profile'?'mypage.html':target==='cert'?'mypage.html?tab=cert':'cultivationDiaryList.html';
+const pageFile=target=>target==='home'?'index.html':target.startsWith('cycle-')?'cultivationPlanList.html':target.startsWith('gh-')?'greenhouseList.html':target.startsWith('env-')?'environmentChangeList.html':target.startsWith('issue-')?'environmentIssueList.html':target==='member'?'mypage.html?tab=pw':target==='profile'?'mypage.html':target==='cert'?'mypage.html?tab=cert':'cultivationDiaryList.html';
 function go(target,id){
  const hostPage=document.body?.dataset?.page;
  if(hostPage&&pageFile(target).split('?')[0]!==pageFile(hostPage).split('?')[0]){
@@ -79,12 +75,6 @@ function go(target,id){
   if (id) url.searchParams.set('id', id);
   location.href = url.href;
   return;
- }
- if(target==='standard'||target==='standard-create'){
-  const st=window.__stdState||(window.__stdState={cropFilter:'all',editCriteria:false,cropModal:null,cropDetailId:null});
-  st.editCriteria=false;st.cropDetailId=null;
-  st.cropModal=target==='standard-create'?{cropId:'',varietyId:'',cropName:'',varietyName:''}:null;
-  state.page=target;render();return;
  }
  if(target.startsWith('issue-')&&id)state.selectedIssueId=id;
  else if(target.startsWith('cycle-')&&id)state.selectedCycleId=id;
@@ -97,7 +87,9 @@ function bindBack(){const el=$('#returnList');if(el)el.addEventListener('click',
 function render(){
   updateNavigation();
   const p = pages;
-  if (state.page.startsWith('cycle-')) {
+  if (state.page === 'home') {
+    p.home?.renderHome();
+  } else if (state.page.startsWith('cycle-')) {
     if (state.page === 'cycle-list') p.cycle?.renderCycleList();
     else if (state.page === 'cycle-detail') p.cycle?.renderCycleDetail();
     else p.cycle?.renderCycleEditor(state.page === 'cycle-edit');
@@ -109,8 +101,6 @@ function render(){
     p.environment?.renderEnvList();
   } else if (state.page.startsWith('issue-')) {
     p.environment?.renderIssues(state.page === 'issue-detail');
-  } else if (state.page === 'standard' || state.page === 'standard-create') {
-    p.standard?.renderStandardPage();
   } else if (state.page === 'list') {
     p.diary?.renderList();
   } else if (state.page === 'detail') {
@@ -286,7 +276,7 @@ function signIn(member, initialPage='list', initialId=null){
  else if(state.page.startsWith('env-')&&initialId)state.selectedMeasurementId=initialId;
  else if(initialId)state.selectedId=initialId;
  
- showAccount(member);loadStandards();loadGreenhouseExtras();loadCycleExtras();loadIssueExtras();loadSaved();render();
+ showAccount(member);loadGreenhouseExtras();loadCycleExtras();loadIssueExtras();loadSaved();render();
  if(main)main.focus();
 }
 
@@ -329,7 +319,10 @@ async function init(){
  if(hostPage==='entry'){
   location.replace(member?'cultivationDiaryList.html':'login.html');return;
  }
- if(!member){location.replace('login.html');return}
+ if(!member){
+  if(hostPage==='home'){await ready;pages.home?.renderLanding();return}
+  location.replace('login.html');return;
+ }
  await ready;
  bindAccount(() => go('profile'));
  for(const button of $$('#navigation [data-go]'))button.addEventListener('click',e=>{e.preventDefault();go(button.dataset.go)});
