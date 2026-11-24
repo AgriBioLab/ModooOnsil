@@ -23,21 +23,6 @@ const sampleData = {
       }
     }
   },
-  "authDefaults": {
-    "loginUsername": "seedmum02",
-    "loginPassword": "modoodemo01",
-    "signup": {
-      "signupFarmName": "해솔 호접란농장",
-      "signupRepresentativeName": "이서연",
-      "signupUsername": "haesol02",
-      "signupEmail": "haesol.orchid@example.com",
-      "signupPassword": "modoodemo01",
-      "signupPasswordConfirm": "modoodemo01",
-      "signupPhone": "010-7315-8492",
-      "signupMainCrop": "호접란"
-    },
-    "businessNumber": "123-45-67890"
-  },
   "header": {
     "breadcrumb": [
       "재배관리",

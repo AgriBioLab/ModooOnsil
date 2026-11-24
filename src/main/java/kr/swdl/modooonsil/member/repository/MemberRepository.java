@@ -2,10 +2,16 @@ package kr.swdl.modooonsil.member.repository;
 
 import kr.swdl.modooonsil.member.domain.Member;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 
 @Mapper
 public interface MemberRepository {
     Member findMemberByMemberId(Long memberId);
+
+    Member findActiveMemberByUsername(String username);
+
+    int updatePassword(@Param("memberId") Long memberId, @Param("oldHash") String oldHash,
+                       @Param("newHash") String newHash);
 
     boolean existsByUsername(String username);
 
@@ -13,5 +19,8 @@ public interface MemberRepository {
 
     void addMember(Member newMember);
 
-    void updateMember(Member upDateMember);
+    void updateMember(Member updateMember);
+
+    void updateFarmProfile(Member member);
+    void updateMemberProfile(Member member);
 }

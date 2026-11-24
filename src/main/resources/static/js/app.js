@@ -1,6 +1,6 @@
 (() => {
 'use strict';
-const { ready, notify: toast, escapeHtml, allMembers, loadSignupMembers, signupKey, saveAuthUser, loadAuthUser, showAccount, bindAccount, setCurrentMenu } = window.ModooCommon;
+const { ready, notify: toast, escapeHtml, currentMember, showAccount, bindAccount, setCurrentMenu } = window.ModooCommon;
 const $ = (s, base = document) => base.querySelector(s), $$ = (s, base = document) => [...base.querySelectorAll(s)];
 const htmlText = escapeHtml, clone = x => JSON.parse(JSON.stringify(x));
 const pageNums = (cur, total) => { if (total <= 7) return Array.from({ length: total }, (_, i) => i + 1); let s = Math.max(2, cur - 2), e = Math.min(total - 1, cur + 2); if (cur <= 3) e = 5; if (cur >= total - 2) s = total - 4; const list = [1]; if (s > 2) list.push('...'); for (let i = s; i <= e; i++) list.push(i); if (e < total - 1) list.push('...'); list.push(total); return list; };
@@ -326,15 +326,12 @@ function loadStandards(){try{const saved=JSON.parse(localStorage.getItem(storage
 
 async function init(){
  const hostPage=document.body?.dataset?.page||'entry';
+ const member=await currentMember();
  if(hostPage==='entry'){
-  const saved=loadAuthUser();
-  const member=allMembers().find(row=>row.username===saved);
   location.replace(member?'cultivationDiaryList.html':'login.html');return;
  }
- await ready;
- const savedUser=loadAuthUser();
- const member=allMembers().find(row=>row.username===savedUser);
  if(!member){location.replace('login.html');return}
+ await ready;
  bindAccount(() => go('profile'));
  for(const button of $$('#navigation [data-go]'))button.addEventListener('click',e=>{e.preventDefault();go(button.dataset.go)});
  for(const button of $$('[data-close-dialog]'))button.addEventListener('click',()=>document.getElementById(button.dataset.closeDialog).close());

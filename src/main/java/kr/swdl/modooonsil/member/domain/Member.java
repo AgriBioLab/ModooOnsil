@@ -15,6 +15,7 @@ public class Member {
     private String farmName;
     private String representativeName;
     private String username;
+    @ToString.Exclude
     private String password;
     private LocalDateTime createdAt;
     private String phoneNumber;
