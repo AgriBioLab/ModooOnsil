@@ -37,11 +37,14 @@
   flex-direction: column;
   gap: 4px;
   padding: 16px 20px;
-  border: 1px solid var(--border);
+  border: 1px solid var(--line);
   border-radius: 12px;
   background: var(--paper);
   text-align: left;
-  transition: border-color 0.15s ease, box-shadow 0.15s ease, transform 0.15s ease;
+  transition:
+    border-color 0.15s ease,
+    box-shadow 0.15s ease,
+    transform 0.15s ease;
 }
 
 .home-kpi-card:hover {
@@ -99,7 +102,7 @@
 }
 
 .home-cycle-card {
-  border: 1px solid var(--border);
+  border: 1px solid var(--line);
   border-radius: 10px;
   padding: 16px;
   background: #fcfdfc;
@@ -258,9 +261,9 @@
   }
 }
 
-/* 미로그인 서비스 소개(랜딩) 화면 - KRDS 기준 */
 .landing-shell {
   min-height: 100dvh;
+  height: auto;
   display: flex;
   flex-direction: column;
   background: var(--soft, #f6f8f7);
@@ -426,13 +429,15 @@
 
 .landing-feature-card {
   background: var(--paper);
-  border: 1px solid var(--border);
+  border: 1px solid var(--line);
   border-radius: 12px;
   padding: 20px;
   display: flex;
   flex-direction: column;
   gap: 10px;
-  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+  transition:
+    border-color 0.15s ease,
+    box-shadow 0.15s ease;
 }
 
 .landing-feature-card:hover {
@@ -472,7 +477,7 @@
 
 .landing-steps-box {
   background: var(--paper);
-  border: 1px solid var(--border);
+  border: 1px solid var(--line);
   border-radius: 12px;
   padding: 20px 24px;
 }

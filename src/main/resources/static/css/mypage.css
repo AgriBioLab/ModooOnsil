@@ -196,12 +196,8 @@
   color: var(--krds-light-color-text-danger);
 }
 
-.profile-form .ctrl[aria-invalid="true"] {
+.profile-form .ctrl[aria-invalid='true'] {
   border-color: var(--krds-light-color-border-danger);
-}
-
-.profile-notice {
-  max-width: min(390px, calc(100% - 48px));
 }
 
 @media (max-width: 840px) {
@@ -229,32 +225,6 @@
 }
 
 @media (max-width: 600px) {
-  .profile-app .nav {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 6px;
-    padding: 8px 12px;
-  }
-
-  .profile-app .navgroup {
-    grid-column: 1 / -1;
-    display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: 6px;
-    margin: 0;
-    padding: 0;
-    border: 0;
-  }
-
-  .profile-app .navbtn {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    min-height: 44px;
-    padding: 6px 4px;
-    font-size: 13px;
-    word-break: keep-all;
-  }
-
   .profile-page .pagehead h1 {
     font-size: 24px;
   }

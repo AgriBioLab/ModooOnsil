@@ -8,11 +8,12 @@
   <link rel="stylesheet" href="vendor/krds/css/component/output.css">
   <link rel="stylesheet" href="css/common.css">
   <link rel="stylesheet" href="css/auth.css">
-  <script src="https://t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js" defer></script>
+  <script src="https://t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js" async></script>
   <script src="js/common.js" defer></script>
   <script src="js/auth.js" defer></script>
 </head>
 <body data-page="signup" class="signup-shell">
+<a class="skip-link" href="#signupOverlay">본문 바로가기</a>
 <header class="signup-topbar">
   <a class="signup-topbar-brand" href="index.html" aria-label="모두의 온실">
     <svg class="auth-brand-logo" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 228 48" aria-hidden="true"><g transform="translate(4,6)"><path d="M13 0C5.8 0 0 5.8 0 13v23h24V13C24 5.8 18.2 0 13 0z" fill="#176B3A"/><path d="M33 6c-6.6 0-12 5.4-12 12v18h24V18c0-6.6-5.4-12-12-12z" fill="#176B3A" fill-opacity="0.45"/><path d="M21 18v18h4V15.5c-2.2.6-4 1.4-4 2.5z" fill="#FFFFFF"/></g><text x="60" y="33" fill="#13261B" font-family="'GmarketSansBold','Pretendard GOV','Malgun Gothic',sans-serif" font-size="25" font-weight="700" letter-spacing="-1">모두의 온실</text></svg>
@@ -20,7 +21,7 @@
   </a>
   <a class="btn xs header-btn signup-topbar-btn" href="login.html">로그인 화면</a>
 </header>
-<main id="signupOverlay" class="signup-container">
+<main id="signupOverlay" class="signup-container" tabindex="-1">
   <nav class="crumb" aria-label="현재 위치">처음 화면 &rsaquo; 농민 회원가입</nav>
   <h1 id="signupTitle">농민 회원가입</h1>
   <div id="signupStepMount"></div>

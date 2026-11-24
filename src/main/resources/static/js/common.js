@@ -1,8 +1,22 @@
 // 공통 레이아웃과 서버 세션.
 // HTTP(S) 환경에서는 fragments/*.html을 fetch하고, file:// 환경에서는 동일 마크업 폴백을 사용한다.
-(function () {
-  const SIDEBAR_HTML = `<aside class="sidebar" aria-label="서비스 탐색">
-  <a class="brand" id="brand" href="index.html" aria-label="모두의 온실 홈"><svg class="brand-logo" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 228 48" aria-hidden="true"><g transform="translate(4,6)"><path d="M13 0C5.8 0 0 5.8 0 13v23h24V13C24 5.8 18.2 0 13 0z" fill="#FFFFFF"/><path d="M33 6c-6.6 0-12 5.4-12 12v18h24V18c0-6.6-5.4-12-12-12z" fill="#FFFFFF" fill-opacity="0.45"/><path d="M21 18v18h4V15.5c-2.2.6-4 1.4-4 2.5z" fill="#176B3A"/></g><text x="60" y="33" fill="#FFFFFF" font-family="'GmarketSansBold','Pretendard GOV','Malgun Gothic',sans-serif" font-size="25" font-weight="700" letter-spacing="-1">모두의 온실</text></svg></a>
+(() => {
+  'use strict';
+
+  const SIDEBAR_FALLBACK_HTML = `<aside class="sidebar" id="appSidebar" aria-label="서비스 탐색">
+  <div class="sidebar-head">
+    <a class="brand" id="brand" href="index.html" aria-label="모두의 온실 홈"><svg class="brand-logo" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 228 48" aria-hidden="true"><g transform="translate(4,6)"><path d="M13 0C5.8 0 0 5.8 0 13v23h24V13C24 5.8 18.2 0 13 0z" fill="#FFFFFF"/><path d="M33 6c-6.6 0-12 5.4-12 12v18h24V18c0-6.6-5.4-12-12-12z" fill="#FFFFFF" fill-opacity="0.45"/><path d="M21 18v18h4V15.5c-2.2.6-4 1.4-4 2.5z" fill="#176B3A"/></g><text x="60" y="33" fill="#FFFFFF" font-family="'GmarketSansBold','Pretendard GOV','Malgun Gothic',sans-serif" font-size="25" font-weight="700" letter-spacing="-1">모두의 온실</text></svg></a>
+    <button type="button" class="sidebar-close-btn" id="sidebarCloseBtn" aria-label="전체메뉴 닫기">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M18 6 6 18M6 6l12 12"/></svg>
+    </button>
+  </div>
+  <div class="sidebar-user-bar" id="sidebarUserBar" aria-label="로그인 계정 요약">
+    <div class="sidebar-user-meta">
+      <strong id="sidebarUserName"></strong>
+      <span class="sidebar-cert-badge" id="sidebarUserCert"></span>
+    </div>
+    <div class="sidebar-user-farm" id="sidebarUserFarm"></div>
+  </div>
   <nav class="nav" id="navigation" aria-label="주 메뉴">
     <a class="navbtn nav-home" href="index.html" data-go="home"><svg class="nav-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M3 10.5 12 3l9 7.5V20a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"/></svg><span>홈</span></a>
     <div class="navgroup" role="group" aria-label="재배일지작업">
@@ -32,8 +46,17 @@
   <div class="sidebar-foot" id="sidebarFoot"></div>
 </aside>`;
 
-  const HEADER_HTML = `<header class="topbar">
-  <div class="topbar-title"></div>
+  const HEADER_FALLBACK_HTML = `<header class="topbar">
+  <div class="topbar-start">
+    <button type="button" class="mobile-menu-btn" id="menuToggleBtn" aria-label="전체메뉴 열기" aria-controls="appSidebar" aria-expanded="false">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+      <span>메뉴</span>
+    </button>
+    <a class="topbar-brand" href="index.html" aria-label="모두의 온실 홈">
+      <svg class="topbar-brand-logo" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 228 48" aria-hidden="true"><g transform="translate(4,6)"><path d="M13 0C5.8 0 0 5.8 0 13v23h24V13C24 5.8 18.2 0 13 0z" fill="#176B3A"/><path d="M33 6c-6.6 0-12 5.4-12 12v18h24V18c0-6.6-5.4-12-12-12z" fill="#176B3A" fill-opacity="0.45"/><path d="M21 18v18h4V15.5c-2.2.6-4 1.4-4 2.5z" fill="#FFFFFF"/></g><text x="60" y="33" fill="#13261B" font-family="'GmarketSansBold','Pretendard GOV','Malgun Gothic',sans-serif" font-size="25" font-weight="700" letter-spacing="-1">모두의 온실</text></svg>
+    </a>
+    <div class="topbar-title"></div>
+  </div>
   <div class="header-account" aria-label="로그인 사용자 정보">
     <span class="header-identity"><strong id="userName"></strong><span id="userCertification"></span></span>
     <a class="btn xs header-btn" href="mypage.html" id="myInfoButton">내정보</a>
@@ -41,62 +64,198 @@
   </div>
 </header>`;
 
-  const FOOTER_HTML = `<footer class="site-footer">
+  const FOOTER_FALLBACK_HTML = `<footer class="site-footer">
   <strong>모두의온실</strong>
   <span>농민 누구나 쉽고 간편하게 쓰는 온실 재배관리</span>
 </footer>`;
 
-  async function loadFragment(slotId, url, fallback) {
+  const HTML_ESCAPE_MAP = {
+    '&': '&amp;',
+    '<': '&lt;',
+    '>': '&gt;',
+    '"': '&quot;',
+    "'": '&#39;'
+  };
+
+  let toastTimer;
+
+  function ensureSkipLink() {
+    if (!document.getElementById('main') || document.querySelector('.skip-link')) return;
+    const skipLink = document.createElement('a');
+    skipLink.className = 'skip-link';
+    skipLink.href = '#main';
+    skipLink.textContent = '본문 바로가기';
+    document.body.prepend(skipLink);
+  }
+
+  async function loadFragment(slotId, url, fallbackHtml) {
     const slot = document.getElementById(slotId);
     if (!slot) return;
     if (location.protocol.startsWith('http')) {
       try {
-        const res = await fetch(url, { cache: 'no-cache' });
-        if (res.ok) {
-          slot.outerHTML = await res.text();
+        const response = await fetch(url, { cache: 'no-cache' });
+        if (response.ok) {
+          slot.outerHTML = await response.text();
           return;
         }
-      } catch {
-        // Fallback below when static fragment fetch is unavailable.
-      }
+      } catch {}
     }
-    slot.outerHTML = fallback;
+    slot.outerHTML = fallbackHtml;
   }
 
-  if (document.getElementById('main') && !document.querySelector('.skip-link')) {
-    const skip = document.createElement('a');
-    skip.className = 'skip-link';
-    skip.href = '#main';
-    skip.textContent = '본문 바로가기';
-    document.body.prepend(skip);
+  function initMobileDrawer() {
+    const sidebar = document.getElementById('appSidebar');
+    const toggleBtn = document.getElementById('menuToggleBtn');
+    if (!sidebar || !toggleBtn) return;
+
+    const closeBtn = document.getElementById('sidebarCloseBtn');
+    let backdrop = document.getElementById('sidebarBackdrop');
+    if (!backdrop) {
+      backdrop = document.createElement('div');
+      backdrop.className = 'sidebar-backdrop';
+      backdrop.id = 'sidebarBackdrop';
+      backdrop.setAttribute('aria-hidden', 'true');
+      document.body.appendChild(backdrop);
+    }
+
+    const mobileQuery = window.matchMedia('(max-width: 1023px)');
+    let isOpen = false;
+
+    const getFocusableElements = () =>
+      Array.from(
+        sidebar.querySelectorAll('a[href], button:not([disabled]), [tabindex]:not([tabindex="-1"])')
+      ).filter(element => element.offsetParent !== null);
+
+    const syncDrawerAccessibility = () => {
+      if (mobileQuery.matches) {
+        if (isOpen) {
+          sidebar.removeAttribute('aria-hidden');
+          sidebar.inert = false;
+          sidebar.setAttribute('role', 'dialog');
+          sidebar.setAttribute('aria-modal', 'true');
+          sidebar.setAttribute('aria-label', '전체메뉴');
+          return;
+        }
+        sidebar.setAttribute('aria-hidden', 'true');
+        sidebar.inert = true;
+        sidebar.removeAttribute('role');
+        sidebar.removeAttribute('aria-modal');
+        sidebar.setAttribute('aria-label', '서비스 탐색');
+        return;
+      }
+
+      if (isOpen) {
+        isOpen = false;
+        sidebar.classList.remove('is-open');
+        backdrop.classList.remove('is-open');
+        document.body.classList.remove('drawer-open');
+        toggleBtn.setAttribute('aria-expanded', 'false');
+      }
+      sidebar.removeAttribute('aria-hidden');
+      sidebar.inert = false;
+      sidebar.removeAttribute('role');
+      sidebar.removeAttribute('aria-modal');
+      sidebar.setAttribute('aria-label', '서비스 탐색');
+    };
+
+    const openDrawer = () => {
+      if (!mobileQuery.matches || isOpen) return;
+      isOpen = true;
+      sidebar.classList.add('is-open');
+      backdrop.classList.add('is-open');
+      document.body.classList.add('drawer-open');
+      toggleBtn.setAttribute('aria-expanded', 'true');
+      syncDrawerAccessibility();
+      void sidebar.offsetWidth;
+      const focusTarget = closeBtn || getFocusableElements()[0];
+      if (!focusTarget) return;
+      focusTarget.focus({ preventScroll: true });
+      requestAnimationFrame(() => {
+        if (isOpen && document.activeElement !== focusTarget) {
+          focusTarget.focus({ preventScroll: true });
+        }
+      });
+    };
+
+    const closeDrawer = (restoreFocus = true) => {
+      if (!isOpen) return;
+      isOpen = false;
+      sidebar.classList.remove('is-open');
+      backdrop.classList.remove('is-open');
+      document.body.classList.remove('drawer-open');
+      toggleBtn.setAttribute('aria-expanded', 'false');
+      syncDrawerAccessibility();
+      if (restoreFocus && mobileQuery.matches) {
+        toggleBtn.focus({ preventScroll: true });
+      }
+    };
+
+    toggleBtn.addEventListener('click', () => (isOpen ? closeDrawer(true) : openDrawer()));
+    if (closeBtn) closeBtn.addEventListener('click', () => closeDrawer(true));
+    backdrop.addEventListener('click', () => closeDrawer(true));
+
+    sidebar.addEventListener('click', event => {
+      if (isOpen && event.target.closest('a.navbtn, a.brand')) {
+        closeDrawer(false);
+      }
+    });
+
+    document.addEventListener('keydown', event => {
+      if (!isOpen) return;
+      if (event.key === 'Escape') {
+        event.preventDefault();
+        closeDrawer(true);
+        return;
+      }
+      if (event.key !== 'Tab') return;
+      const focusable = getFocusableElements();
+      if (!focusable.length) return;
+      const first = focusable[0];
+      const last = focusable[focusable.length - 1];
+      if (event.shiftKey && document.activeElement === first) {
+        event.preventDefault();
+        last.focus();
+      } else if (!event.shiftKey && document.activeElement === last) {
+        event.preventDefault();
+        first.focus();
+      }
+    });
+
+    if (typeof mobileQuery.addEventListener === 'function') {
+      mobileQuery.addEventListener('change', syncDrawerAccessibility);
+    } else if (typeof mobileQuery.addListener === 'function') {
+      mobileQuery.addListener(syncDrawerAccessibility);
+    }
+
+    syncDrawerAccessibility();
   }
+
+  ensureSkipLink();
 
   const ready = Promise.all([
-    loadFragment('sidebarSlot', 'fragments/sidebar.html', SIDEBAR_HTML),
-    loadFragment('headerSlot', 'fragments/header.html', HEADER_HTML),
-    loadFragment('footerSlot', 'fragments/footer.html', FOOTER_HTML),
-  ]);
+    loadFragment('sidebarSlot', 'fragments/sidebar.html', SIDEBAR_FALLBACK_HTML),
+    loadFragment('headerSlot', 'fragments/header.html', HEADER_FALLBACK_HTML),
+    loadFragment('footerSlot', 'fragments/footer.html', FOOTER_FALLBACK_HTML)
+  ]).then(() => {
+    initMobileDrawer();
+  });
 
-  const accountKey = name => 'modoo-' + name + ':' + sampleData.meta.version;
-  let toastTimer;
+  const accountStorageKey = name => `modoo-${name}:${sampleData.meta.version}`;
 
   function notify(message) {
     const notice = document.getElementById('toast');
     if (!notice) return;
-    const announcement = document.getElementById('toastAnnouncement');
     notice.textContent = message;
     notice.classList.remove('hidden');
-    if (announcement) announcement.textContent = message;
     clearTimeout(toastTimer);
     toastTimer = setTimeout(() => {
       notice.classList.add('hidden');
-      if (announcement) announcement.textContent = '';
     }, 3400);
   }
 
-  function loadMemberChanges() {
+  function loadMemberOverrides() {
     try {
-      return JSON.parse(localStorage.getItem(accountKey('cert-overrides')) || '{}') || {};
+      return JSON.parse(localStorage.getItem(accountStorageKey('cert-overrides')) || '{}') || {};
     } catch {
       return {};
     }
@@ -104,9 +263,9 @@
 
   function saveCertificationRequest(username, patch) {
     try {
-      const changes = loadMemberChanges();
-      changes[username] = { ...changes[username], ...patch };
-      localStorage.setItem(accountKey('cert-overrides'), JSON.stringify(changes));
+      const overrides = loadMemberOverrides();
+      overrides[username] = { ...overrides[username], ...patch };
+      localStorage.setItem(accountStorageKey('cert-overrides'), JSON.stringify(overrides));
       return true;
     } catch {
       notify('브라우저에 변경 내용을 저장하지 못했습니다.');
@@ -118,7 +277,7 @@
     const response = await fetch('/api/auth/me', { headers: { Accept: 'application/json' } });
     if (response.status === 401) return null;
     const member = await (await checkResponse(response)).json();
-    const localCertification = loadMemberChanges()[member.username];
+    const localCertification = loadMemberOverrides()[member.username];
     if ((!member.certification || member.certification === '미인증') &&
         localCertification?.certification === '인증 대기중') {
       member.businessNumber = localCertification.businessNumber;
@@ -136,38 +295,64 @@
       notify('로그아웃하지 못했습니다. 다시 시도하세요.');
     }
   }
+
+  function resolveCertificationDisplay(certification) {
+    const label = certification === '인증' ? '농업경영체 인증회원' : certification || '';
+    if (!label) return { label: '', state: '' };
+    if (certification === '인증') return { label, state: 'certified' };
+    if (certification === '인증 대기중') return { label, state: 'pending' };
+    return { label, state: 'none' };
+  }
+
+  function applyCertificationBadge(element, label, state) {
+    if (!element) return;
+    element.textContent = label;
+    if (state) element.dataset.cert = state;
+    else delete element.dataset.cert;
+  }
   function showAccount(member) {
-    document.getElementById('userName').textContent = member.displayName;
-    const certText = member.certification === '인증' ? '농업경영체 인증회원' : member.certification;
-    document.getElementById('userCertification').textContent = certText ? ' (' + certText + ')' : '';
+    const { label, state } = resolveCertificationDisplay(member.certification);
+    const userNameEl = document.getElementById('userName');
+    if (userNameEl) userNameEl.textContent = member.displayName;
+    applyCertificationBadge(document.getElementById('userCertification'), label, state);
+
+    const sidebarUserName = document.getElementById('sidebarUserName');
+    if (sidebarUserName) sidebarUserName.textContent = member.displayName || '';
+    applyCertificationBadge(document.getElementById('sidebarUserCert'), label, state);
+
+    const sidebarUserFarm = document.getElementById('sidebarUserFarm');
+    if (sidebarUserFarm) sidebarUserFarm.textContent = member.farmName || '';
+
     const sidebarFoot = document.getElementById('sidebarFoot');
     if (sidebarFoot) sidebarFoot.textContent = member.farmName;
   }
 
   function bindAccount(onProfile) {
-    const profile = document.getElementById('myInfoButton');
-    if (profile) profile.addEventListener('click', event => {
-      event.preventDefault();
-      onProfile();
-    });
+    const profileButton = document.getElementById('myInfoButton');
+    if (profileButton) {
+      profileButton.addEventListener('click', event => {
+        event.preventDefault();
+        onProfile();
+      });
+    }
     const logoutButton = document.getElementById('logoutButton');
-    if (logoutButton) logoutButton.addEventListener('click', logout);
+    if (logoutButton) {
+      logoutButton.addEventListener('click', logout);
+    }
   }
 
   function setCurrentMenu(entry) {
-    let current;
+    let activeLink;
     for (const link of document.querySelectorAll('#navigation [data-go]')) {
       if (link.dataset.go === entry) {
-        current = link;
+        activeLink = link;
         link.setAttribute('aria-current', 'location');
       } else {
         link.removeAttribute('aria-current');
       }
     }
-    return current;
+    return activeLink;
   }
-
-  const HTML_ESCAPE_MAP = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' };
 
   function escapeHtml(value) {
     return String(value ?? '').replace(/[&<>"']/g, ch => HTML_ESCAPE_MAP[ch]);

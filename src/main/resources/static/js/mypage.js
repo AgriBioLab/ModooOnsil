@@ -15,11 +15,16 @@
     const certNumber = get('certBusinessNumber');
     const address = get('profAddress');
     const farmFields = {
-      farmName: 'profFarmName', address: 'profAddress', addressDetail: 'profAddressDetail',
-      mainCrop: 'profMainCrop', description: 'profDesc'
+      farmName: 'profFarmName',
+      address: 'profAddress',
+      addressDetail: 'profAddressDetail',
+      mainCrop: 'profMainCrop',
+      description: 'profDesc'
     };
     const memberFields = {
-      displayName: 'profDisplayName', email: 'profEmail', phone: 'profPhone'
+      displayName: 'profDisplayName',
+      email: 'profEmail',
+      phone: 'profPhone'
     };
     let user;
     let editorVersion = 0;
@@ -66,7 +71,8 @@
         item.textContent = values[item.dataset.profileValue] || '—';
       }
       get('profileFarmTitle').textContent = user.farmName || '—';
-      get('profileFarmSummary').textContent = (user.displayName || '—') + ' · ' + (user.mainCrop || '품목 미등록');
+      get('profileFarmSummary').textContent =
+        (user.displayName || '—') + ' · ' + (user.mainCrop || '품목 미등록');
       get('profileCertLabel').textContent = certification;
       const badge = get('profileCertBadge');
       badge.classList.toggle('bg-light-success', complete);
@@ -200,7 +206,6 @@
     get('profileCancelBtn').addEventListener('click', showFarmDetails);
 
     const value = id => get(id).value.trim() || null;
-
     async function saveProfile(form, path, fields, showDetails, message) {
       const button = form.querySelector('button[type="submit"]');
       if (button.disabled) return;
@@ -262,11 +267,13 @@
     get('addrSearchBtn').addEventListener('click', () => {
       if (window.daum?.Postcode) {
         const version = editorVersion;
-        new window.daum.Postcode({ oncomplete: data => {
-          if (editorVersion !== version) return;
-          address.value = data.roadAddress || data.jibunAddress || '';
-          get('profAddressDetail').focus();
-        } }).open();
+        new window.daum.Postcode({
+          oncomplete: data => {
+            if (editorVersion !== version) return;
+            address.value = data.roadAddress || data.jibunAddress || '';
+            get('profAddressDetail').focus();
+          }
+        }).open();
         return;
       }
       address.readOnly = false;
@@ -298,13 +305,20 @@
     function showTab(tab, focusId) {
       const menuKey = tab === 'cert' ? 'cert' : tab === 'pw' ? 'member' : 'profile';
       common.setCurrentMenu(menuKey);
-      crumb.textContent = tab === 'cert' ? '내정보 / 농업경영체 인증' : tab === 'pw' ? '내정보 / 농민 회원정보' : '내정보 / 농장정보';
+      crumb.textContent =
+        tab === 'cert'
+          ? '내정보 / 농업경영체 인증'
+          : tab === 'pw'
+            ? '내정보 / 농민 회원정보'
+            : '내정보 / 농장정보';
       profile.show(member, tab, focusId);
     }
 
     common.showAccount(member);
     common.bindAccount(() => openTab('info'));
-    for (const link of document.querySelectorAll('#navigation [data-go="profile"], #navigation [data-go="cert"], #navigation [data-go="member"]')) {
+    for (const link of document.querySelectorAll(
+      '#navigation [data-go="profile"], #navigation [data-go="cert"], #navigation [data-go="member"]'
+    )) {
       link.addEventListener('click', event => {
         event.preventDefault();
         openTab(link.dataset.go === 'cert' ? 'cert' : link.dataset.go === 'member' ? 'pw' : 'info');
@@ -319,7 +333,7 @@
     const paramTab = params.get('tab') || params.get('view');
     showTab(paramTab === 'cert' ? 'cert' : paramTab === 'pw' ? 'pw' : 'info');
     main.inert = false;
-    main.focus();
+    main.focus({ preventScroll: true });
   }
 
   init();

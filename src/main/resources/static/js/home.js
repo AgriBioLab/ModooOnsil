@@ -1,76 +1,108 @@
 (() => {
-'use strict';
-const app = window.ModooApp;
-const {
-  config, diaryRows, pages, $, $$, htmlText, today,
-  getCycle, gh, cropOf, varietyOf, getStage,
-  statusBadge, dateFrom, cycleStatus, go
-} = app;
+  'use strict';
+  const {
+    config,
+    diaryRows,
+    pages,
+    $,
+    $$,
+    htmlText,
+    today,
+    getCycle,
+    gh,
+    cropOf,
+    varietyOf,
+    getStage,
+    statusBadge,
+    dateFrom,
+    cycleStatus,
+    go
+  } = window.ModooApp;
 
-function calcElapsedDays(cycle) {
-  const start = dateFrom(cycle.actualStartAt || cycle.plannedStartAt);
-  if (!start) return null;
-  const diff = Math.floor((new Date(today()) - new Date(start)) / (1000 * 60 * 60 * 24)) + 1;
-  return diff > 0 ? diff : null;
-}
+  function calculateElapsedDays(cycle) {
+    const start = dateFrom(cycle.actualStartAt || cycle.plannedStartAt);
+    if (!start) return null;
+    const elapsedDays =
+      Math.floor((new Date(today()) - new Date(start)) / (1000 * 60 * 60 * 24)) + 1;
+    return elapsedDays > 0 ? elapsedDays : null;
+  }
 
-function fmtMeasuredAt(value) {
-  if (!value) return '측정 이력 없음';
-  return String(value).slice(0, 16).replace('T', ' ');
-}
+  function formatMeasuredAt(value) {
+    if (!value) return '측정 이력 없음';
+    return String(value).slice(0, 16).replace('T', ' ');
+  }
 
-function latestReadingForCycle(cycleId) {
-  const rows = (config.environmentChanges || []).filter(
-    r => r && r.cycleId === cycleId && !r.deletedAt && !r.deleted_at
-  );
-  if (!rows.length) return null;
-  return rows.sort((a, b) =>
-    String(b.measuredAt || '').localeCompare(String(a.measuredAt || '')) ||
-    String(b.environmentChangeId || '').localeCompare(String(a.environmentChangeId || ''), undefined, { numeric: true })
-  )[0];
-}
+  function latestReadingForCycle(cycleId) {
+    const rows = (config.environmentChanges || []).filter(
+      reading => reading && reading.cycleId === cycleId && !reading.deletedAt && !reading.deleted_at
+    );
+    if (!rows.length) return null;
+    return rows.sort(
+      (a, b) =>
+        String(b.measuredAt || '').localeCompare(String(a.measuredAt || '')) ||
+        String(b.environmentChangeId || '').localeCompare(
+          String(a.environmentChangeId || ''),
+          undefined,
+          { numeric: true }
+        )
+    )[0];
+  }
 
-function renderHome() {
-  const main = $('#main');
-  if (!main) return;
+  function renderHome() {
+    const main = $('#main');
+    if (!main) return;
 
-  const member = config.header?.currentUser || {};
-  const isCertified = member.certification === '인증';
-  const greenhouses = config.greenhouses || [];
-  const totalArea = greenhouses.reduce((sum, g) => sum + (Number(g.registeredArea) || 0), 0);
-  const activeCycles = (config.cycles || []).filter(c => cycleStatus(c) === '진행');
-  const pendingCycles = (config.cycles || []).filter(c => cycleStatus(c) === '미진행');
+    const member = config.header?.currentUser || {};
+    const isCertified = member.certification === '인증';
+    const greenhouses = config.greenhouses || [];
+    const totalArea = greenhouses.reduce(
+      (sum, greenhouse) => sum + (Number(greenhouse.registeredArea) || 0),
+      0
+    );
+    const activeCycles = (config.cycles || []).filter(cycle => cycleStatus(cycle) === '진행');
+    const pendingCycles = (config.cycles || []).filter(cycle => cycleStatus(cycle) === '미진행');
 
-  const issues = [...(config.issueSamples || [])].sort((a, b) => (b.occurredAt || '').localeCompare(a.occurredAt || ''));
-  const openIssues = issues.filter(i => i.status !== '조치 완료' && i.status !== '조치완료');
+    const issues = [...(config.issueSamples || [])].sort((a, b) =>
+      (b.occurredAt || '').localeCompare(a.occurredAt || '')
+    );
+    const openIssues = issues.filter(
+      issue => issue.status !== '조치 완료' && issue.status !== '조치완료'
+    );
 
-  const pendingDiaries = [...diaryRows]
-    .map(d => ({
-      diary: d,
-      pendingTasks: d.tasks.filter(t => t.status !== '완료')
-    }))
-    .filter(item => item.pendingTasks.length > 0)
-    .sort((a, b) => b.diary.workDate.localeCompare(a.diary.workDate));
+    const pendingDiaries = [...diaryRows]
+      .map(diary => ({
+        diary,
+        pendingTasks: diary.tasks.filter(task => task.status !== '완료')
+      }))
+      .filter(item => item.pendingTasks.length > 0)
+      .sort((a, b) => b.diary.workDate.localeCompare(a.diary.workDate));
 
-  const openTaskCount = pendingDiaries.reduce((sum, item) => sum + item.pendingTasks.length, 0);
-  const recentDiaries = [...diaryRows].sort((a, b) => b.workDate.localeCompare(a.workDate)).slice(0, 4);
+    const openTaskCount = pendingDiaries.reduce((sum, item) => sum + item.pendingTasks.length, 0);
+    const recentDiaries = [...diaryRows]
+      .sort((a, b) => b.workDate.localeCompare(a.workDate))
+      .slice(0, 4);
 
-  const issueTone = {
-    '발생': 'bg-light-danger',
-    '미조치': 'bg-light-danger',
-    '조치중': 'bg-light-warning',
-    '조치 완료': 'bg-light-success',
-    '조치완료': 'bg-light-success'
-  };
+    const issueTone = {
+      발생: 'bg-light-danger',
+      미조치: 'bg-light-danger',
+      조치중: 'bg-light-warning',
+      '조치 완료': 'bg-light-success',
+      조치완료: 'bg-light-success'
+    };
 
-  const certBannerHtml = !isCertified
-    ? `<section class="home-cert-banner" aria-label="농업경영체 인증 안내">
-        <span>현재 <strong>농업경영체 미인증</strong> 상태입니다. 인증 완료 시 농장 맞춤형 영농 관리를 이용할 수 있습니다.</span>
-        <button type="button" class="btn xs" data-home-go="cert">농업경영체 인증하기</button>
+    const isPending = member.certification === '인증 대기중';
+    const certBannerHtml = !isCertified
+      ? `<section class="home-cert-banner" aria-label="농업경영체 인증 안내">
+        <span>${
+          isPending
+            ? '현재 <strong>농업경영체 인증 심사 대기중</strong>입니다. 심사 완료 후 농장 맞춤형 영농 관리를 이용할 수 있습니다.'
+            : '현재 <strong>농업경영체 미인증</strong> 상태입니다. 인증 완료 시 농장 맞춤형 영농 관리를 이용할 수 있습니다.'
+        }</span>
+        <button type="button" class="btn xs" data-home-go="cert">${isPending ? '인증 현황 확인' : '농업경영체 인증하기'}</button>
       </section>`
-    : '';
+      : '';
 
-  const kpiHtml = `
+    const kpiHtml = `
     <section class="home-kpis" aria-label="농장 주요 현황">
       <button type="button" class="home-kpi-card ${openIssues.length ? 'is-alert' : ''}" data-home-go="issue-list">
         <span class="home-kpi-label">미해결 환경 이슈</span>
@@ -94,24 +126,25 @@ function renderHome() {
       </button>
     </section>`;
 
-  const activeCycleHtml = activeCycles.length
-    ? activeCycles.map(c => {
-        const g = gh(c.greenhouseId);
-        const crop = `${cropOf(c)?.name || '—'} · ${varietyOf(c)?.name || '—'}`;
-        const days = calcElapsedDays(c);
-        const reading = latestReadingForCycle(c.cycleId);
-        return `
+    const activeCycleHtml = activeCycles.length
+      ? activeCycles
+          .map(cycle => {
+            const greenhouse = gh(cycle.greenhouseId);
+            const crop = `${cropOf(cycle)?.name || '—'} · ${varietyOf(cycle)?.name || '—'}`;
+            const days = calculateElapsedDays(cycle);
+            const reading = latestReadingForCycle(cycle.cycleId);
+            return `
           <article class="home-cycle-card">
             <div class="home-cycle-head">
               <div>
                 <div class="home-cycle-title">
-                  <button type="button" class="linkbtn home-cycle-link" data-home-cycle="${c.cycleId}">${htmlText(g?.name || '—')} · ${htmlText(c.name)}</button>
+                  <button type="button" class="linkbtn home-cycle-link" data-home-cycle="${cycle.cycleId}">${htmlText(greenhouse?.name || '—')} · ${htmlText(cycle.name)}</button>
                 </div>
                 <div class="home-cycle-meta">
-                  ${htmlText(crop)}${days ? ` · 재배 ${days}일차` : ''} · 최근 측정 ${htmlText(fmtMeasuredAt(reading?.measuredAt))}
+                  ${htmlText(crop)}${days ? ` · 재배 ${days}일차` : ''} · 최근 측정 ${htmlText(formatMeasuredAt(reading?.measuredAt))}
                 </div>
               </div>
-              <button type="button" class="btn main xs" data-home-diary-create="${c.cycleId}">일지 작성</button>
+              <button type="button" class="btn main xs" data-home-diary-create="${cycle.cycleId}">일지 작성</button>
             </div>
             <div class="home-sensor-strip">
               <div class="home-sensor-item"><span>내부 온도</span><strong>${reading?.insideTempC != null ? `${reading.insideTempC} °C` : '—'}</strong></div>
@@ -120,60 +153,72 @@ function renderHome() {
               <div class="home-sensor-item"><span>배지 수분</span><strong>${reading?.substrateMoisturePct != null ? `${reading.substrateMoisturePct} %` : '—'}</strong></div>
             </div>
           </article>`;
-      }).join('')
-    : '<p class="empty" style="padding:28px 16px;margin:0">현재 진행 중인 작기계획이 없습니다.</p>';
+          })
+          .join('')
+      : '<p class="empty" style="padding:28px 16px;margin:0">현재 진행 중인 작기계획이 없습니다.</p>';
 
-  const openIssueHtml = openIssues.length
-    ? openIssues.map(issue => {
-        const c = getCycle(issue.cycleId);
-        const g = c ? gh(c.greenhouseId) : null;
-        return `
+    const openIssueHtml = openIssues.length
+      ? openIssues
+          .map(issue => {
+            const cycle = getCycle(issue.cycleId);
+            const greenhouse = cycle ? gh(cycle.greenhouseId) : null;
+            return `
           <button type="button" class="home-feed-item" data-home-issue="${issue.issueId}">
             <div class="home-feed-main">
-              <span class="home-feed-title">${htmlText(issue.title || issue.issueType || '환경 이슈')}</span>
-              <span class="home-feed-sub">${htmlText(g?.name || '—')} · ${htmlText((issue.occurredAt || '').slice(0, 16).replace('T', ' '))}</span>
+              <span class="home-feed-title">${htmlText(issue.message || issue.title || issue.issueType || '환경 이슈')}${issue.issueValue ? ` (${htmlText(issue.issueValue)})` : ''}</span>
+              <span class="home-feed-sub">${htmlText(greenhouse?.name || '—')} · ${htmlText((issue.occurredAt || '').slice(0, 16).replace('T', ' '))}</span>
             </div>
             <div class="home-feed-right">
               ${statusBadge(issue.status || '발생', issueTone)}
             </div>
           </button>`;
-      }).join('')
-    : '<p class="empty" style="padding:22px 16px;margin:0">현재 조치가 필요한 환경 이슈가 없습니다.</p>';
+          })
+          .join('')
+      : '<p class="empty" style="padding:22px 16px;margin:0">현재 조치가 필요한 환경 이슈가 없습니다.</p>';
 
-  const hasPendingTasks = pendingDiaries.length > 0;
-  const rightSecondTitle = hasPendingTasks ? '미완료 재배 작업' : '최근 재배일지';
-  const rightSecondBody = hasPendingTasks
-    ? pendingDiaries.slice(0, 4).map(({ diary: d, pendingTasks }) => {
-        const c = getCycle(d.cycleId);
-        const firstNames = pendingTasks.slice(0, 2).map(t => t.name).join(', ');
-        const extra = pendingTasks.length > 2 ? ` 외 ${pendingTasks.length - 2}건` : '';
-        return `
-          <button type="button" class="home-feed-item" data-home-diary="${d.diaryId}">
+    const hasPendingTasks = pendingDiaries.length > 0;
+    const rightSecondTitle = hasPendingTasks ? '미완료 재배 작업' : '최근 재배일지';
+    const rightSecondBody = hasPendingTasks
+      ? pendingDiaries
+          .slice(0, 4)
+          .map(({ diary, pendingTasks }) => {
+            const cycle = getCycle(diary.cycleId);
+            const firstNames = pendingTasks
+              .slice(0, 2)
+              .map(task => task.name)
+              .join(', ');
+            const extra = pendingTasks.length > 2 ? ` 외 ${pendingTasks.length - 2}건` : '';
+            return `
+          <button type="button" class="home-feed-item" data-home-diary="${diary.diaryId}">
             <div class="home-feed-main">
               <span class="home-feed-title">${htmlText(firstNames + extra)}</span>
-              <span class="home-feed-sub">${htmlText(d.workDate)} · ${htmlText(gh(c?.greenhouseId)?.name || '—')}</span>
+              <span class="home-feed-sub">${htmlText(diary.workDate)} · ${htmlText(gh(cycle?.greenhouseId)?.name || '—')}</span>
             </div>
             <div class="home-feed-right">
               <span class="krds-badge bg-light-warning">미완료 ${pendingTasks.length}건</span>
             </div>
           </button>`;
-      }).join('')
-    : (recentDiaries.map(d => {
-        const c = getCycle(d.cycleId);
-        const done = d.tasks.filter(t => t.status === '완료').length;
-        return `
-          <button type="button" class="home-feed-item" data-home-diary="${d.diaryId}">
+          })
+          .join('')
+      : recentDiaries
+          .map(diary => {
+            const cycle = getCycle(diary.cycleId);
+            const done = diary.tasks.filter(task => task.status === '완료').length;
+            return `
+          <button type="button" class="home-feed-item" data-home-diary="${diary.diaryId}">
             <div class="home-feed-main">
-              <span class="home-feed-title">${htmlText(c?.name || '작기 미지정')} (${htmlText(getStage(d.stageId).name)})</span>
-              <span class="home-feed-sub">${htmlText(d.workDate)} · ${htmlText(gh(c?.greenhouseId)?.name || '—')}</span>
+              <span class="home-feed-title">${htmlText(cycle?.name || '작기 미지정')} (${htmlText(getStage(diary.stageId).name)})</span>
+              <span class="home-feed-sub">${htmlText(diary.workDate)} · ${htmlText(gh(cycle?.greenhouseId)?.name || '—')}</span>
             </div>
             <div class="home-feed-right">
-              <span class="krds-badge bg-light-success">${done}/${d.tasks.length} 완료</span>
+              <span class="krds-badge bg-light-success">${done}/${diary.tasks.length} 완료</span>
             </div>
           </button>`;
-      }).join('') || '<p class="empty" style="padding:22px 16px;margin:0">등록된 재배일지가 없습니다.</p>');
+          })
+          .join('') ||
+        '<p class="empty" style="padding:22px 16px;margin:0">등록된 재배일지가 없습니다.</p>';
 
-  main.innerHTML = `
+    main.innerHTML = `
     <div class="pagehead">
       <div>
         <h1>${htmlText(member.farmName || '모두의온실')} 현황</h1>
@@ -215,19 +260,27 @@ function renderHome() {
       </div>
     </div>`;
 
-  $('#homeGoEnv').onclick = () => go('env-list');
-  $('#homeGoDiaryCreate').onclick = () => go('create');
-  $$('[data-home-go]').forEach(el => el.onclick = () => go(el.dataset.homeGo));
-  $$('[data-home-cycle]').forEach(el => el.onclick = () => go('cycle-detail', el.dataset.homeCycle));
-  $$('[data-home-diary-create]').forEach(el => el.onclick = () => go('create', el.dataset.homeDiaryCreate));
-  $$('[data-home-issue]').forEach(el => el.onclick = () => go('issue-detail', el.dataset.homeIssue));
-  $$('[data-home-diary]').forEach(el => el.onclick = () => go('detail', el.dataset.homeDiary));
-}
+    $('#homeGoEnv').onclick = () => go('env-list');
+    $('#homeGoDiaryCreate').onclick = () => go('create');
+    $$('[data-home-go]').forEach(button => (button.onclick = () => go(button.dataset.homeGo)));
+    $$('[data-home-cycle]').forEach(
+      button => (button.onclick = () => go('cycle-detail', button.dataset.homeCycle))
+    );
+    $$('[data-home-diary-create]').forEach(
+      button => (button.onclick = () => go('create', button.dataset.homeDiaryCreate))
+    );
+    $$('[data-home-issue]').forEach(
+      button => (button.onclick = () => go('issue-detail', button.dataset.homeIssue))
+    );
+    $$('[data-home-diary]').forEach(
+      button => (button.onclick = () => go('detail', button.dataset.homeDiary))
+    );
+  }
 
-function renderLanding() {
-  document.body.className = 'landing-shell';
-  document.title = '모두의온실 | 온실 재배관리 서비스';
-  document.body.innerHTML = `
+  function renderLanding() {
+    document.body.className = 'landing-shell';
+    document.title = '모두의온실 | 온실 재배관리 서비스';
+    document.body.innerHTML = `
     <a class="skip-link" href="#landingMain">본문 바로가기</a>
     <header class="landing-topbar">
       <div class="landing-topbar-inner">
@@ -299,7 +352,7 @@ function renderLanding() {
       </div>
     </footer>
     <div class="notice-toast hidden" id="toast" role="status" aria-live="polite"></div>`;
-}
+  }
 
-pages.home = { renderHome, renderLanding };
+  pages.home = { renderHome, renderLanding };
 })();

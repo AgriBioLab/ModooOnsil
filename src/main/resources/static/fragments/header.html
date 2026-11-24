@@ -1,7 +1,56 @@
 <header class="topbar">
-  <div class="topbar-title"></div>
+  <div class="topbar-start">
+    <button
+      type="button"
+      class="mobile-menu-btn"
+      id="menuToggleBtn"
+      aria-label="전체메뉴 열기"
+      aria-controls="appSidebar"
+      aria-expanded="false">
+      <svg
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2"
+        stroke-linecap="round"
+        aria-hidden="true">
+        <path d="M4 7h16M4 12h16M4 17h16" />
+      </svg>
+      <span>메뉴</span>
+    </button>
+    <a class="topbar-brand" href="index.html" aria-label="모두의 온실 홈">
+      <svg
+        class="topbar-brand-logo"
+        xmlns="http://www.w3.org/2000/svg"
+        viewBox="0 0 228 48"
+        aria-hidden="true">
+        <g transform="translate(4,6)">
+          <path d="M13 0C5.8 0 0 5.8 0 13v23h24V13C24 5.8 18.2 0 13 0z" fill="#176B3A" />
+          <path
+            d="M33 6c-6.6 0-12 5.4-12 12v18h24V18c0-6.6-5.4-12-12-12z"
+            fill="#176B3A"
+            fill-opacity="0.45" />
+          <path d="M21 18v18h4V15.5c-2.2.6-4 1.4-4 2.5z" fill="#FFFFFF" />
+        </g>
+        <text
+          x="60"
+          y="33"
+          fill="#13261B"
+          font-family="'GmarketSansBold','Pretendard GOV','Malgun Gothic',sans-serif"
+          font-size="25"
+          font-weight="700"
+          letter-spacing="-1">
+          모두의 온실
+        </text>
+      </svg>
+    </a>
+    <div class="topbar-title"></div>
+  </div>
   <div class="header-account" aria-label="로그인 사용자 정보">
-    <span class="header-identity"><strong id="userName"></strong><span id="userCertification"></span></span>
+    <span class="header-identity">
+      <strong id="userName"></strong>
+      <span id="userCertification"></span>
+    </span>
     <a class="btn xs header-btn" href="mypage.html" id="myInfoButton">내정보</a>
     <button class="btn xs header-btn" type="button" id="logoutButton">로그아웃</button>
   </div>
