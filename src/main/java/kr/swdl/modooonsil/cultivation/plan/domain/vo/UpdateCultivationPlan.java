@@ -1,4 +1,4 @@
-package kr.swdl.modooonsil.cultivation.plan.domain;
+package kr.swdl.modooonsil.cultivation.plan.domain.vo;
 
 import lombok.*;
 

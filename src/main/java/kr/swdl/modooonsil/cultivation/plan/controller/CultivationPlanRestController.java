@@ -1,7 +1,7 @@
 package kr.swdl.modooonsil.cultivation.plan.controller;
 
-import kr.swdl.modooonsil.cultivation.plan.domain.FindAllCultivationPlanVO;
-import kr.swdl.modooonsil.cultivation.plan.domain.FindCultivationPlanDetailVO;
+import kr.swdl.modooonsil.cultivation.plan.domain.vo.FindAllCultivationPlanVO;
+import kr.swdl.modooonsil.cultivation.plan.domain.vo.FindCultivationPlanDetailVO;
 import kr.swdl.modooonsil.cultivation.plan.service.CultivationPlanService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;

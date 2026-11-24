@@ -4,8 +4,8 @@
 <mapper namespace="kr.swdl.modooonsil.cultivation.plan.repository.CultivationPlanRepository">
 
     <select id="findAll"
-            resultType="kr.swdl.modooonsil.cultivation.plan.domain.FindAllCultivationPlanVO"
-            parameterType="kr.swdl.modooonsil.cultivation.plan.domain.FindAllCultivationPlanVO">
+            resultType="kr.swdl.modooonsil.cultivation.plan.domain.vo.FindAllCultivationPlanVO"
+            parameterType="kr.swdl.modooonsil.cultivation.plan.domain.vo.FindAllCultivationPlanVO">
         SELECT p.member_id, p.plan_id, p.plan_name, g.greenhouse_name, c.crop_name, c.variety_name, p.plan_status, p.planned_start_date, p.planned_end_date, p.actual_start_date, p.actual_end_date
         FROM cultivation_plan AS p
             JOIN greenhouse AS g ON g.greenhouse_id = p.greenhouse_id
@@ -42,7 +42,7 @@
         ORDER BY p.plan_id DESC;
     </select>
 
-    <select id="findByMemberIdAndPlanId" parameterType="Long" resultType="kr.swdl.modooonsil.cultivation.plan.domain.FindCultivationPlanDetailVO">
+    <select id="findByMemberIdAndPlanId" parameterType="Long" resultType="kr.swdl.modooonsil.cultivation.plan.domain.vo.FindCultivationPlanDetailVO">
         SELECT
             cp.plan_id,
             cp.plan_name,
@@ -65,7 +65,7 @@
         WHERE cp.member_id = #{memberId} AND cp.plan_id = #{planId} AND cp.deleted_at IS NULL;
     </select>
 
-    <select id="findDeletedByMemberIdAndPlanId" parameterType="Long" resultType="kr.swdl.modooonsil.cultivation.plan.domain.FindCultivationPlanDetailVO">
+    <select id="findDeletedByMemberIdAndPlanId" parameterType="Long" resultType="kr.swdl.modooonsil.cultivation.plan.domain.vo.FindCultivationPlanDetailVO">
         SELECT
             cp.plan_id,
             cp.plan_name,
@@ -89,7 +89,7 @@
     </select>
     
     <insert id="addCultivationPlan"
-            parameterType="kr.swdl.modooonsil.cultivation.plan.domain.CultivationPlan"
+            parameterType="kr.swdl.modooonsil.cultivation.plan.domain.vo.CultivationPlan"
             useGeneratedKeys="true"
             keyProperty="planId"
             keyColumn="plan_id">
@@ -116,7 +116,7 @@
     </insert>
 
     <update id="updateCultivationPlan"
-            parameterType="kr.swdl.modooonsil.cultivation.plan.domain.UpdateCultivationPlan">
+            parameterType="kr.swdl.modooonsil.cultivation.plan.domain.vo.UpdateCultivationPlan">
         UPDATE cultivation_plan
         <set>
             <if test="planName != null">
@@ -159,7 +159,7 @@
           AND deleted_at IS NULL
     </update>
 
-    <update id="updateCultivationPlanEnd" parameterType="kr.swdl.modooonsil.cultivation.plan.domain.CultivationPlan">
+    <update id="updateCultivationPlanEnd" parameterType="kr.swdl.modooonsil.cultivation.plan.domain.vo.CultivationPlan">
         UPDATE cultivation_plan
         SET
             actual_end_date = NOW(),
