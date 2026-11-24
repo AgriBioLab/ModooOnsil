@@ -3,9 +3,9 @@ package kr.swdl.modooonsil.cultivation.diary.controller;
 import kr.swdl.modooonsil.cultivation.diary.domain.DiaryPlan;
 import kr.swdl.modooonsil.cultivation.diary.domain.FindAllCultivationDiaryVO;
 import kr.swdl.modooonsil.cultivation.diary.dto.CreateRequest;
-import kr.swdl.modooonsil.cultivation.diary.dto.CreatedDiary;
-import kr.swdl.modooonsil.cultivation.diary.dto.Detail;
-import kr.swdl.modooonsil.cultivation.diary.dto.StageOptions;
+import kr.swdl.modooonsil.cultivation.diary.dto.CreateDiaryResponse;
+import kr.swdl.modooonsil.cultivation.diary.dto.DiaryDetailResponse;
+import kr.swdl.modooonsil.cultivation.diary.dto.StageOptionsResponse;
 import kr.swdl.modooonsil.cultivation.diary.dto.TaskInput;
 import kr.swdl.modooonsil.cultivation.diary.dto.UpdateRequest;
 import kr.swdl.modooonsil.cultivation.diary.service.CultivationDiaryService;
@@ -45,20 +45,20 @@ public class CultivationDiaryController {
     }
 
     @GetMapping("/plans/{planId}/stages")
-    public StageOptions stages(@AuthenticationPrincipal CustomUserDetails user, @PathVariable Long planId,
+    public StageOptionsResponse stages(@AuthenticationPrincipal CustomUserDetails user, @PathVariable Long planId,
                                @RequestParam LocalDate workedDate) {
         return service.stageOptions(user.getMemberId(), planId, workedDate);
     }
 
     @GetMapping("/{diaryId}")
-    public Detail detail(@AuthenticationPrincipal CustomUserDetails user, @PathVariable Long diaryId) {
+    public DiaryDetailResponse detail(@AuthenticationPrincipal CustomUserDetails user, @PathVariable Long diaryId) {
         return service.findDetail(user.getMemberId(), diaryId);
     }
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public CreatedDiary create(@AuthenticationPrincipal CustomUserDetails user, @RequestBody CreateRequest request) {
-        return new CreatedDiary(service.create(user.getMemberId(), request));
+    public CreateDiaryResponse create(@AuthenticationPrincipal CustomUserDetails user, @RequestBody CreateRequest request) {
+        return new CreateDiaryResponse(service.create(user.getMemberId(), request));
     }
 
     @PutMapping("/{diaryId}/tasks")

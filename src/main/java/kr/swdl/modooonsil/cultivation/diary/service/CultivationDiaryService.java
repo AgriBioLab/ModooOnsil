@@ -5,8 +5,8 @@ import kr.swdl.modooonsil.cultivation.diary.domain.DiaryPlan;
 import kr.swdl.modooonsil.cultivation.diary.domain.FindAllCultivationDiaryVO;
 import kr.swdl.modooonsil.cultivation.diary.domain.FindCultivationDiaryDetailVO;
 import kr.swdl.modooonsil.cultivation.diary.dto.CreateRequest;
-import kr.swdl.modooonsil.cultivation.diary.dto.Detail;
-import kr.swdl.modooonsil.cultivation.diary.dto.StageOptions;
+import kr.swdl.modooonsil.cultivation.diary.dto.DiaryDetailResponse;
+import kr.swdl.modooonsil.cultivation.diary.dto.StageOptionsResponse;
 import kr.swdl.modooonsil.cultivation.diary.dto.TaskInput;
 import kr.swdl.modooonsil.cultivation.diary.repository.CultivationDiaryRepository;
 import kr.swdl.modooonsil.cultivation.diary.task.service.CultivationDiaryTaskService;
@@ -17,20 +17,17 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDate;
-import java.time.ZoneId;
 import java.util.List;
 
 @Service
 @RequiredArgsConstructor
-@Transactional(readOnly = true)
 public class CultivationDiaryService {
     private static final List<String> STAGES = List.of("영양생장기", "꽃눈유도기", "생식생장기");
-    private static final ZoneId FARM_ZONE = ZoneId.of("Asia/Seoul");
     private final CultivationDiaryRepository repository;
     private final CultivationDiaryTaskService taskService;
 
     public List<FindAllCultivationDiaryVO> findAll(Long memberId, String planName, String cropName,
-                                                  String varietyName, LocalDate workedDate, String greenhouseName) {
+                                                   String varietyName, LocalDate workedDate, String greenhouseName) {
         return repository.findAll(memberId, planName, cropName, varietyName, workedDate, greenhouseName);
     }
 
@@ -38,15 +35,15 @@ public class CultivationDiaryService {
         return repository.findActivePlans(memberId);
     }
 
-    public Detail findDetail(Long memberId, Long diaryId) {
-        return new Detail(requireDiary(memberId, diaryId), taskService.findAll(memberId, diaryId));
+    public DiaryDetailResponse findDetail(Long memberId, Long diaryId) {
+        return new DiaryDetailResponse(requireDiary(memberId, diaryId), taskService.findAll(memberId, diaryId));
     }
 
-    public StageOptions stageOptions(Long memberId, Long planId, LocalDate workedDate) {
+    public StageOptionsResponse stageOptions(Long memberId, Long planId, LocalDate workedDate) {
         DiaryPlan plan = findActivePlans(memberId).stream().filter(row -> row.getPlanId().equals(planId))
                 .findFirst().orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "진행 중인 작기를 찾을 수 없습니다."));
         if (workedDate == null || workedDate.isBefore(plan.getActualStartDate().toLocalDate())
-                || workedDate.isAfter(LocalDate.now(FARM_ZONE))) {
+                || workedDate.isAfter(LocalDate.now())) {
             throw invalid("실제 작업일을 확인하세요.");
         }
 
@@ -57,7 +54,7 @@ public class CultivationDiaryService {
         String nextStage = !duplicate && nextIndex > 0 && nextIndex < STAGES.size()
                 && !repository.existsAfterDate(planId, workedDate)
                 ? STAGES.get(nextIndex) : null;
-        return new StageOptions(currentStage, nextStage, duplicate);
+        return new StageOptionsResponse(currentStage, nextStage, duplicate);
     }
 
     @Transactional
@@ -65,7 +62,7 @@ public class CultivationDiaryService {
         if (request.getPlanId() == null || repository.lockActivePlan(memberId, request.getPlanId()) == null) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "진행 중인 작기를 찾을 수 없습니다.");
         }
-        StageOptions options = stageOptions(memberId, request.getPlanId(), request.getWorkedDate());
+        StageOptionsResponse options = stageOptions(memberId, request.getPlanId(), request.getWorkedDate());
         if (options.isDuplicate()) {
             throw new ResponseStatusException(HttpStatus.CONFLICT, "해당 날짜에 이미 재배일지가 등록되어 있습니다.");
         }

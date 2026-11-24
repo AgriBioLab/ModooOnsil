@@ -8,7 +8,7 @@ import java.util.List;
 
 @Getter
 @AllArgsConstructor
-public class Detail {
+public class DiaryDetailResponse {
     private final FindCultivationDiaryDetailVO diary;
     private final List<CultivationDiaryTask> tasks;
 }

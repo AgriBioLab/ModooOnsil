@@ -5,7 +5,7 @@ import lombok.Getter;
 
 @Getter
 @AllArgsConstructor
-public class StageOptions {
+public class StageOptionsResponse {
     private final String currentStage;
     private final String nextStage;
     private final boolean duplicate;

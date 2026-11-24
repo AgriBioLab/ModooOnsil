@@ -5,6 +5,6 @@ import lombok.Getter;
 
 @Getter
 @AllArgsConstructor
-public class CreatedDiary {
+public class CreateDiaryResponse {
     private final Long diaryId;
 }

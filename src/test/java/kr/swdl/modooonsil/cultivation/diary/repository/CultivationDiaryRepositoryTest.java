@@ -35,7 +35,7 @@ class CultivationDiaryRepositoryTest {
         assertThat(cultivationDiaryRepository.lockActivePlan(MEMBER_ID, planId)).isEqualTo(planId);
         assertThat(cultivationDiaryRepository.lockActivePlan(OTHER_MEMBER_ID, planId)).isNull();
 
-        var diary = CultivationDiary.builder().planId(planId).workedAt(workedDate.atStartOfDay())
+        CultivationDiary diary = CultivationDiary.builder().planId(planId).workedAt(workedDate.atStartOfDay())
                 .growthStage("생식생장기").stageChangeReason("생육단계 확인").build();
         cultivationDiaryRepository.addDiary(MEMBER_ID, diary);
         assertThat(cultivationDiaryRepository.existsOnDate(planId, workedDate)).isTrue();
