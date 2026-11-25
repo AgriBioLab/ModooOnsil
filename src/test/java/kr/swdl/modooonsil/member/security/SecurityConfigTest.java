@@ -31,20 +31,32 @@ class SecurityConfigTest {
     }
 
     @Test
-    void 비로그인_포털_페이지는_로그인게이트_껍데기를_제공한다() throws Exception {
+    void 비로그인_템플릿_페이지는_200과_공통_프래그먼트를_반환한다() throws Exception {
         for (String path : new String[]{
+                "/",
                 "/index.html",
-                "/login.html",
-                "/signup.html",
-                "/mypage.html",
                 "/greenhouseList.html",
                 "/cultivationPlanList.html",
-                "/cultivationDiaryList.html",
                 "/environmentChangeList.html",
                 "/environmentIssueList.html"
         }) {
             HttpResponse<String> response = get(path, "text/html");
             assertThat(response.statusCode()).isEqualTo(200);
+            assertThat(response.body()).contains("class=\"topbar\"", "class=\"sidebar\"", "class=\"site-footer\"");
+        }
+        for (String path : new String[]{"/login.html", "/signup.html"}) {
+            HttpResponse<String> response = get(path, "text/html");
+            assertThat(response.statusCode()).isEqualTo(200);
+        }
+    }
+
+    @Test
+    void 비로그인_인증필요_뷰는_로그인으로_리다이렉트한다() throws Exception {
+        for (String path : new String[]{"/mypage.html", "/cultivationDiaryList.html"}) {
+            HttpResponse<String> response = get(path, "text/html");
+            assertThat(response.statusCode()).isEqualTo(302);
+            assertThat(response.headers().firstValue("Location")).hasValueSatisfying(
+                    location -> assertThat(location).endsWith("/login.html"));
         }
     }
 

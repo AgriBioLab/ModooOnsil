@@ -1,6 +1,6 @@
 package kr.swdl.modooonsil.member.controller;
 
-import kr.swdl.modooonsil.member.security.CustomUserDetails;
+import kr.swdl.modooonsil.security.CustomUserDetails;
 import kr.swdl.modooonsil.member.service.MemberService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -25,6 +25,9 @@ public class MemberController {
 
     @GetMapping("/mypage.html")
     public String mypage(@AuthenticationPrincipal CustomUserDetails user, Model model) {
+        if (user == null) {
+            return "redirect:/login.html";
+        }
         model.addAttribute("member", memberService.getCurrentMember(user.getMemberId()));
         return "mypage";
     }

@@ -8,7 +8,7 @@ import kr.swdl.modooonsil.cultivation.diary.dto.DiaryDetailResponse;
 import kr.swdl.modooonsil.cultivation.diary.dto.StageOptionsResponse;
 import kr.swdl.modooonsil.cultivation.diary.dto.UpdateRequest;
 import kr.swdl.modooonsil.cultivation.diary.service.CultivationDiaryService;
-import kr.swdl.modooonsil.member.security.CustomUserDetails;
+import kr.swdl.modooonsil.security.CustomUserDetails;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ProblemDetail;
