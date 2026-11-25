@@ -1,6 +1,7 @@
 package kr.swdl.modooonsil.cultivation.diary.repository;
 
 import kr.swdl.modooonsil.cultivation.diary.domain.CultivationDiary;
+import kr.swdl.modooonsil.cultivation.diary.domain.DiaryPlan;
 import kr.swdl.modooonsil.cultivation.diary.domain.FindAllCultivationDiaryVO;
 import kr.swdl.modooonsil.cultivation.diary.domain.FindCultivationDiaryDetailVO;
 import org.apache.ibatis.annotations.Mapper;
@@ -29,4 +30,18 @@ public interface CultivationDiaryRepository {
     void addDiary(Long memberId, CultivationDiary diary);
 
     void deleteDiaryById(Long memberId, Long diaryId);
+
+    List<DiaryPlan> findActivePlans(Long memberId);
+
+    Long lockActivePlan(Long memberId, Long planId);
+
+    Long lockDiary(Long memberId, Long diaryId);
+
+    boolean existsOnDate(Long planId, LocalDate workedDate);
+
+    String findStageAtDate(Long planId, LocalDate workedDate);
+
+    boolean existsAfterDate(Long planId, LocalDate workedDate);
+
+    void touchDiary(Long diaryId);
 }

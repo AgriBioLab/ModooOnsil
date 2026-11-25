@@ -17,4 +17,6 @@ public class FindAllCultivationDiaryVO {
     private String planName;
     private String greenhouseName;
     private String growthStage;
+    private int taskCount;
+    private int incompleteTaskCount;
 }

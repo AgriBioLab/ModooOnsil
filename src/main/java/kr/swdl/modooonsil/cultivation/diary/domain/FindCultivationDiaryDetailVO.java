@@ -11,6 +11,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 public class FindCultivationDiaryDetailVO {
     private Long diaryId;
+    private Long planId;
     private String planName;
     private String cropName;
     private String varietyName;

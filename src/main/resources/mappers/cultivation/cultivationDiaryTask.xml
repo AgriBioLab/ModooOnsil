@@ -16,6 +16,8 @@
         WHERE t.diary_id = #{diaryId}
         AND p.member_id = #{memberId}
         AND d.deleted_at IS NULL
+        AND t.deleted_at IS NULL
+        AND p.deleted_at IS NULL
         ORDER BY t.task_time ASC, t.task_id ASC
     </select>
 
@@ -57,11 +59,11 @@
           AND p.deleted_at IS NULL
     </update>
 
-    <delete id="deleteTasks">
-        DELETE t
-        FROM cultivation_diary_task AS t
+    <update id="deleteTasks">
+        UPDATE cultivation_diary_task AS t
         JOIN cultivation_diary AS d ON d.diary_id = t.diary_id
         JOIN cultivation_plan AS p ON p.plan_id = d.plan_id
+        SET t.deleted_at = CURRENT_TIMESTAMP
         WHERE t.diary_id = #{diaryId}
           AND p.member_id = #{memberId}
           AND d.deleted_at IS NULL
@@ -70,6 +72,7 @@
         <foreach collection="taskIds" item="taskId" open="(" separator="," close=")">
             #{taskId}
         </foreach>
-    </delete>
+          AND t.deleted_at IS NULL
+    </update>
 
 </mapper>

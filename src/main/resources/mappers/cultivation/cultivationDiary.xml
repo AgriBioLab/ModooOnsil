@@ -9,7 +9,11 @@
         c.variety_name,
         p.plan_name,
         g.greenhouse_name,
-        d.growth_stage
+        d.growth_stage,
+        (SELECT COUNT(*) FROM cultivation_diary_task t
+         WHERE t.diary_id = d.diary_id AND t.deleted_at IS NULL) AS task_count,
+        (SELECT COUNT(*) FROM cultivation_diary_task t
+         WHERE t.diary_id = d.diary_id AND t.deleted_at IS NULL AND t.task_status = '미완료') AS incomplete_task_count
         FROM cultivation_diary AS d
         JOIN cultivation_plan AS p ON p.plan_id = d.plan_id
         JOIN greenhouse AS g ON g.greenhouse_id = p.greenhouse_id
@@ -75,7 +79,7 @@
 
     <select id="findByMemberIdAndDiaryId"
             resultType="kr.swdl.modooonsil.cultivation.diary.domain.FindCultivationDiaryDetailVO">
-        SELECT d.diary_id,
+        SELECT d.diary_id, d.plan_id,
         p.plan_name,
         c.crop_name,
         c.variety_name,
@@ -93,6 +97,8 @@
         WHERE d.diary_id = #{diaryId}
         AND p.member_id = #{memberId}
         AND d.deleted_at IS NULL
+        AND p.deleted_at IS NULL
+        AND g.deleted_at IS NULL
     </select>
 
     <select id="findPreviousDiaryGrowthStage"
@@ -141,5 +147,62 @@
         WHERE d.diary_id = #{diaryId}
         AND p.member_id = #{memberId}
         AND d.deleted_at IS NULL
+    </update>
+
+    <select id="findActivePlans" resultType="kr.swdl.modooonsil.cultivation.diary.domain.DiaryPlan">
+        SELECT p.plan_id, p.plan_name, g.greenhouse_name, c.crop_name, c.variety_name, p.actual_start_date
+        FROM cultivation_plan p
+        JOIN greenhouse g ON g.greenhouse_id = p.greenhouse_id
+        JOIN crop_stage_standard s ON s.standard_id = p.standard_id
+        JOIN crop c ON c.crop_id = s.crop_id
+        WHERE p.member_id = #{memberId} AND p.plan_status = '진행'
+          AND p.actual_start_date IS NOT NULL AND p.deleted_at IS NULL AND g.deleted_at IS NULL
+        ORDER BY p.plan_name, p.plan_id
+    </select>
+
+    <select id="lockActivePlan" resultType="long">
+        SELECT p.plan_id FROM cultivation_plan p
+        WHERE p.plan_id = #{planId} AND p.member_id = #{memberId}
+          AND p.plan_status = '진행' AND p.actual_start_date IS NOT NULL AND p.deleted_at IS NULL
+        FOR UPDATE
+    </select>
+
+    <select id="lockDiary" resultType="long">
+        SELECT d.diary_id FROM cultivation_diary d
+        JOIN cultivation_plan p ON p.plan_id = d.plan_id
+        WHERE d.diary_id = #{diaryId} AND p.member_id = #{memberId}
+          AND d.deleted_at IS NULL AND p.deleted_at IS NULL
+        FOR UPDATE
+    </select>
+
+    <select id="existsOnDate" resultType="boolean">
+        SELECT EXISTS (
+            SELECT 1 FROM cultivation_diary
+            WHERE plan_id = #{planId} AND deleted_at IS NULL
+              AND worked_at &gt;= #{workedDate}
+              AND worked_at &lt; DATE_ADD(#{workedDate}, INTERVAL 1 DAY)
+        )
+    </select>
+
+    <select id="findStageAtDate" resultType="string">
+        SELECT growth_stage FROM cultivation_diary
+        WHERE plan_id = #{planId} AND growth_stage IS NOT NULL
+          AND ((deleted_at IS NULL AND worked_at &lt; #{workedDate})
+               OR (NULLIF(TRIM(stage_change_reason), '') IS NOT NULL
+                   AND worked_at &lt; DATE_ADD(#{workedDate}, INTERVAL 1 DAY)))
+        ORDER BY worked_at DESC, diary_id DESC
+        LIMIT 1
+    </select>
+
+    <select id="existsAfterDate" resultType="boolean">
+        SELECT EXISTS (
+            SELECT 1 FROM cultivation_diary
+            WHERE plan_id = #{planId} AND worked_at &gt;= DATE_ADD(#{workedDate}, INTERVAL 1 DAY)
+              AND (deleted_at IS NULL OR NULLIF(TRIM(stage_change_reason), '') IS NOT NULL)
+        )
+    </select>
+
+    <update id="touchDiary">
+        UPDATE cultivation_diary SET updated_at = CURRENT_TIMESTAMP WHERE diary_id = #{diaryId}
     </update>
 </mapper>

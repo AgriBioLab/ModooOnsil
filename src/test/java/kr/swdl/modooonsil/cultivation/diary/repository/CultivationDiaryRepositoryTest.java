@@ -24,6 +24,31 @@ class CultivationDiaryRepositoryTest {
     private CultivationDiaryRepository cultivationDiaryRepository;
 
     @Test
+    void 등록_가능한_작기를_조회하고_확정된_생육단계를_유지한다() {
+        long planId = 940001L;
+        LocalDate workedDate = LocalDate.of(2099, 1, 1);
+        assertThat(cultivationDiaryRepository.findActivePlans(MEMBER_ID))
+                .anySatisfy(plan -> {
+                    assertThat(plan.getPlanId()).isEqualTo(planId);
+                    assertThat(plan.getActualStartDate()).isNotNull();
+                });
+        assertThat(cultivationDiaryRepository.lockActivePlan(MEMBER_ID, planId)).isEqualTo(planId);
+        assertThat(cultivationDiaryRepository.lockActivePlan(OTHER_MEMBER_ID, planId)).isNull();
+
+        CultivationDiary diary = CultivationDiary.builder().planId(planId).workedAt(workedDate.atStartOfDay())
+                .growthStage("생식생장기").stageChangeReason("생육단계 확인").build();
+        cultivationDiaryRepository.addDiary(MEMBER_ID, diary);
+        assertThat(cultivationDiaryRepository.existsOnDate(planId, workedDate)).isTrue();
+        assertThat(cultivationDiaryRepository.lockDiary(MEMBER_ID, diary.getDiaryId())).isEqualTo(diary.getDiaryId());
+
+        cultivationDiaryRepository.deleteDiaryById(MEMBER_ID, diary.getDiaryId());
+
+        assertThat(cultivationDiaryRepository.existsOnDate(planId, workedDate)).isFalse();
+        assertThat(cultivationDiaryRepository.findStageAtDate(planId, workedDate)).isEqualTo("생식생장기");
+        assertThat(cultivationDiaryRepository.existsAfterDate(planId, workedDate.minusDays(1))).isTrue();
+    }
+
+    @Test
     void 재배일지_등록() {
         CultivationDiary diary = CultivationDiary.builder()
                 .planId(940001L)
