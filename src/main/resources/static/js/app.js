@@ -839,6 +839,7 @@
   async function init() {
     const hostPage = document.body?.dataset?.page || 'entry';
     const member = await currentMember();
+    window.__modooSignedIn = Boolean(member);
     if (hostPage === 'entry') {
       location.replace(member ? 'cultivationDiaryList.html' : 'login.html');
       return;

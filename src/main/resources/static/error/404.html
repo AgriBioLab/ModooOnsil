@@ -1,0 +1,88 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>모두의온실 | 에러 404</title>
+  <link rel="icon" href="/img/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="/vendor/krds/css/component/output.css">
+  <link rel="stylesheet" href="/css/common.css">
+  <link rel="stylesheet" href="/css/auth.css">
+  <style>
+    .minimal-error-wrap {
+      min-height: 100dvh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 32px 16px;
+      background: #f5f7f6;
+      text-align: center;
+    }
+    .minimal-error-logo {
+      width: 172px;
+      height: auto;
+      margin-bottom: 24px;
+    }
+    .minimal-error-card {
+      width: 100%;
+      max-width: 480px;
+      background: #ffffff;
+      border: 1px solid #e2e8e4;
+      border-radius: 16px;
+      box-shadow: 0 10px 30px rgba(19, 38, 27, 0.06);
+      padding: 40px 28px 34px;
+    }
+    .minimal-error-code {
+      margin: 0 0 8px;
+      font-size: 22px;
+      font-weight: 800;
+      color: #d93025;
+      letter-spacing: -0.02em;
+    }
+    .minimal-error-title {
+      margin: 0 0 16px;
+      font-size: 19px;
+      font-weight: 700;
+      color: #13261b;
+    }
+    .minimal-error-desc {
+      margin: 0 0 28px;
+      font-size: 14px;
+      line-height: 1.65;
+      color: #526358;
+    }
+    .minimal-error-actions {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+    .minimal-error-copy {
+      margin-top: 22px;
+      font-size: 12px;
+      color: #7c8b82;
+    }
+  </style>
+</head>
+<body>
+<main class="minimal-error-wrap">
+  <a href="/index.html" aria-label="모두의 온실 홈으로 이동" style="display:inline-block;margin-bottom:24px;">
+    <svg class="minimal-error-logo" style="margin-bottom:0;" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 228 48" aria-hidden="true"><g transform="translate(4,6)"><path d="M13 0C5.8 0 0 5.8 0 13v23h24V13C24 5.8 18.2 0 13 0z" fill="#176B3A"/><path d="M33 6c-6.6 0-12 5.4-12 12v18h24V18c0-6.6-5.4-12-12-12z" fill="#176B3A" fill-opacity="0.45"/><path d="M21 18v18h4V15.5c-2.2.6-4 1.4-4 2.5z" fill="#FFFFFF"/></g><text x="60" y="33" fill="#13261B" font-family="'GmarketSansBold','Pretendard GOV','Malgun Gothic',sans-serif" font-size="25" font-weight="700" letter-spacing="-1">모두의 온실</text></svg>
+  </a>
+  <section class="minimal-error-card" aria-labelledby="errorHeading">
+    <p class="minimal-error-code">에러 404</p>
+    <h1 id="errorHeading" class="minimal-error-title">페이지를 찾을 수 없습니다.</h1>
+    <p class="minimal-error-desc">
+      요청하신 페이지의 주소가 올바르지 않거나 변경·삭제되었습니다.<br>
+      입력하신 주소(URL)를 다시 확인해 주세요.
+    </p>
+    <div class="minimal-error-actions">
+      <a class="krds-btn medium primary" href="/index.html">메인으로 이동</a>
+      <button type="button" class="krds-btn medium secondary" onclick="history.back()">이전 페이지로 이동</button>
+    </div>
+  </section>
+  <p class="minimal-error-copy">&copy; 2026 모두의온실. All rights reserved.</p>
+</main>
+</body>
+</html>
