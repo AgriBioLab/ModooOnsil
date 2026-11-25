@@ -26,6 +26,14 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.GET, "/api/members/availability").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/members").permitAll()
                         .requestMatchers("/api/**").authenticated()
+                        .requestMatchers(
+                                "/mypage.html",
+                                "/cultivationDiaryList.html",
+                                "/cultivationPlanList.html",
+                                "/greenhouseList.html",
+                                "/environmentChangeList.html",
+                                "/environmentIssueList.html")
+                        .authenticated()
                         .anyRequest().permitAll())
                 .exceptionHandling(errors -> errors.defaultAuthenticationEntryPointFor(
                         new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED),

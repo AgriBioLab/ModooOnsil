@@ -31,15 +31,8 @@ class SecurityConfigTest {
     }
 
     @Test
-    void 비로그인_템플릿_페이지는_200과_공통_프래그먼트를_반환한다() throws Exception {
-        for (String path : new String[]{
-                "/",
-                "/index.html",
-                "/greenhouseList.html",
-                "/cultivationPlanList.html",
-                "/environmentChangeList.html",
-                "/environmentIssueList.html"
-        }) {
+    void 비로그인_공개_페이지는_200을_반환한다() throws Exception {
+        for (String path : new String[]{"/", "/index.html"}) {
             HttpResponse<String> response = get(path, "text/html");
             assertThat(response.statusCode()).isEqualTo(200);
             assertThat(response.body()).contains("class=\"topbar\"", "class=\"sidebar\"", "class=\"site-footer\"");
@@ -51,8 +44,15 @@ class SecurityConfigTest {
     }
 
     @Test
-    void 비로그인_인증필요_뷰는_로그인으로_리다이렉트한다() throws Exception {
-        for (String path : new String[]{"/mypage.html", "/cultivationDiaryList.html"}) {
+    void 비로그인_보호_뷰는_로그인으로_리다이렉트한다() throws Exception {
+        for (String path : new String[]{
+                "/mypage.html",
+                "/cultivationDiaryList.html",
+                "/cultivationPlanList.html",
+                "/greenhouseList.html",
+                "/environmentChangeList.html",
+                "/environmentIssueList.html"
+        }) {
             HttpResponse<String> response = get(path, "text/html");
             assertThat(response.statusCode()).isEqualTo(302);
             assertThat(response.headers().firstValue("Location")).hasValueSatisfying(
