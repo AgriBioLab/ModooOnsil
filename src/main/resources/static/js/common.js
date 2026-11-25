@@ -276,7 +276,10 @@
   async function currentMember() {
     const response = await fetch('/api/auth/me', { headers: { Accept: 'application/json' } });
     if (response.status === 401) return null;
-    const member = await (await checkResponse(response)).json();
+    return applyLocalCertification(await (await checkResponse(response)).json());
+  }
+
+  function applyLocalCertification(member) {
     const localCertification = loadMemberOverrides()[member.username];
     if ((!member.certification || member.certification === '미인증') &&
         localCertification?.certification === '인증 대기중') {
@@ -386,6 +389,6 @@
   window.ModooCommon = {
     ready, notify, escapeHtml, checkResponse, fetchJson, setButtonsDisabled,
     currentMember,
-    saveCertificationRequest, showAccount, bindAccount, setCurrentMenu
+    saveCertificationRequest, applyLocalCertification, showAccount, bindAccount, setCurrentMenu
   };
 })();
