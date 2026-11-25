@@ -552,7 +552,8 @@ main:has(.editor-shell) {
   border-bottom: 1px solid var(--line);
 }
 
-.panel-head h2 {
+.panel-head h2,
+.panel-head .panel-title {
   margin: 0;
   font-size: 16px;
   font-weight: 700;
@@ -1100,7 +1101,8 @@ select.ctrl:disabled {
   color: var(--krds-light-color-text-subtle, #464c53);
 }
 
-.list-total-count strong {
+.list-total-count strong,
+.list-total-count .list-count-value {
   color: var(--krds-light-color-text-bolder, #131416);
   font-weight: 700;
 }
