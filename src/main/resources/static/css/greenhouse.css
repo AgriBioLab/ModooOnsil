@@ -1,24 +1,3 @@
-/* 온실 목록 · 상세 화면 전용 스타일 */
-
-/* 온실 사진 썸네일 · 상세 미리보기 · 업로드 안내 */
-.gh-thumb {
-  width: 68px;
-  height: 42px;
-  object-fit: cover;
-  border-radius: 6px;
-  border: 1px solid var(--line);
-  display: block;
-}
-
-.gh-thumb-empty {
-  display: inline-block;
-  padding: 3px 8px;
-  border-radius: 6px;
-  background: var(--soft);
-  color: var(--muted);
-  font-size: 12px;
-}
-
 .gh-photo-box {
   margin-bottom: 16px;
 }
@@ -33,19 +12,6 @@
   display: block;
 }
 
-.gh-upload-row {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.gh-upload-hint {
-  margin: 6px 0 10px;
-  font-size: 12.5px;
-  color: var(--muted);
-}
-
-/* 온실 목록 이미지 카드 그리드 */
 .gh-card-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
@@ -59,7 +25,9 @@
   overflow: hidden;
   display: flex;
   flex-direction: column;
-  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+  transition:
+    border-color 0.15s ease,
+    box-shadow 0.15s ease;
 }
 
 .gh-card:hover {
@@ -117,18 +85,6 @@
   text-align: left;
 }
 
-.gh-card-badge {
-  display: inline-flex;
-  align-items: center;
-  padding: 2px 8px;
-  border-radius: 999px;
-  background: var(--primary-soft);
-  color: var(--primary-text);
-  font-size: 12px;
-  font-weight: 700;
-  white-space: nowrap;
-}
-
 .gh-card-specs {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -157,7 +113,7 @@
   text-overflow: ellipsis;
   white-space: nowrap;
 }
-/* 온실 상세 좌우 2열 배치 */
+
 .gh-detail-layout {
   display: grid;
   grid-template-columns: minmax(260px, 340px) minmax(0, 1fr);
@@ -182,4 +138,3 @@
     grid-template-columns: 1fr;
   }
 }
-

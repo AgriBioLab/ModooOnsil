@@ -30,15 +30,26 @@
 
   function signupProgress(step) {
     return `<ol class="krds-step-wrap" aria-label="회원가입 단계">
-      ${signupStages.map((label, index) => {
-        const number = index + 1;
-        const state = number === step ? 'class="active" aria-current="step"' : number < step ? 'class="done"' : '';
-        return `<li ${state}><span><span class="step">${number}단계</span><span class="step-tit">${label}</span></span></li>`;
-      }).join('')}
+      ${signupStages
+        .map((label, index) => {
+          const number = index + 1;
+          const state =
+            number === step
+              ? 'class="active" aria-current="step"'
+              : number < step
+                ? 'class="done"'
+                : '';
+          return `<li ${state}><span><span class="step">${number}단계</span><span class="step-tit">${label}</span></span></li>`;
+        })
+        .join('')}
     </ol>`;
   }
 
-  function signupField(id, label, { type = 'text', required = false, attributes = '', hint = '', checkLabel = '' } = {}) {
+  function signupField(
+    id,
+    label,
+    { type = 'text', required = false, attributes = '', hint = '', checkLabel = '' } = {}
+  ) {
     return `<div class="form-group">
       <label class="form-label" for="${id}">${label}${required ? ' <span class="required" aria-hidden="true">*</span>' : ''}</label>
       <div class="${checkLabel ? 'auth-input-row' : 'form-conts'}">
@@ -70,7 +81,9 @@
     let savedMember;
 
     function showStep(content, title = signupStages[step - 1]) {
-      mount.innerHTML = signupProgress(step) + `<section class="panel signup-panel" aria-labelledby="signupStepTitle">
+      mount.innerHTML =
+        signupProgress(step) +
+        `<section class="panel signup-panel" aria-labelledby="signupStepTitle">
         <div class="panel-head"><h2 id="signupStepTitle" tabindex="-1">${title}</h2></div>
         <div class="panel-body">${content}</div>
       </section>`;
@@ -87,22 +100,30 @@
           ${signupField('signupFarmName', '농장명', { required: true, attributes: 'maxlength="100" autocomplete="organization"' })}
           ${signupField('signupRepresentativeName', '대표자명', { required: true, attributes: 'maxlength="50" autocomplete="name"' })}
           ${signupField('signupUsername', '아이디', {
-            required: true, attributes: 'minlength="6" maxlength="20" autocomplete="username" autocapitalize="none" spellcheck="false"',
-            hint: '영문 소문자로 시작하는 영문 소문자·숫자 6~20자', checkLabel: '아이디'
+            required: true,
+            attributes:
+              'minlength="6" maxlength="20" autocomplete="username" autocapitalize="none" spellcheck="false"',
+            hint: '영문 소문자로 시작하는 영문 소문자·숫자 6~20자',
+            checkLabel: '아이디'
           })}
           ${signupField('signupEmail', '이메일 (선택)', { type: 'email', attributes: 'maxlength="255" autocomplete="email"', checkLabel: '이메일' })}
           ${signupField('signupPassword', '비밀번호', {
-            type: 'password', required: true, attributes: 'minlength="8" maxlength="20" autocomplete="new-password"', hint: '8~20자로 입력하세요.'
+            type: 'password',
+            required: true,
+            attributes: 'minlength="8" maxlength="20" autocomplete="new-password"',
+            hint: '8~20자로 입력하세요.'
           })}
           ${signupField('signupPasswordConfirm', '비밀번호 확인', {
-            type: 'password', required: true, attributes: 'minlength="8" maxlength="20" autocomplete="new-password"'
+            type: 'password',
+            required: true,
+            attributes: 'minlength="8" maxlength="20" autocomplete="new-password"'
           })}
           ${signupField('signupPhone', '연락처 (선택)', { type: 'tel', attributes: 'maxlength="20" autocomplete="tel"' })}
           ${signupField('signupMainCrop', '주요 재배 품목 (선택)', { attributes: 'maxlength="100"' })}
           <div class="form-group">
             <label class="form-label" for="signupAddress">농장 주소 (선택)</label>
             <div class="auth-input-row">
-              <input id="signupAddress" class="krds-input medium" type="text" maxlength="255" readonly aria-describedby="signupAddress-feedback">
+              <input id="signupAddress" class="krds-input medium" type="text" maxlength="255" placeholder="주소 검색으로 입력하세요" readonly aria-describedby="signupAddress-feedback">
               <button type="button" class="krds-btn medium secondary" id="signupAddrSearchBtn">주소 검색</button>
             </div>
             <p id="signupAddress-feedback" class="auth-feedback" aria-live="polite"></p>
@@ -128,12 +149,18 @@
 
       const fieldsToCheck = {
         signupUsername: {
-          key: 'username', label: '아이디', empty: '아이디를 입력하세요.',
-          validate: () => signupUsernamePattern.test(value('signupUsername')) ? '' : '아이디 형식을 확인하세요.'
+          key: 'username',
+          label: '아이디',
+          empty: '아이디를 입력하세요.',
+          validate: () =>
+            signupUsernamePattern.test(value('signupUsername')) ? '' : '아이디 형식을 확인하세요.'
         },
         signupEmail: {
-          key: 'email', label: '이메일', empty: '이메일을 입력하세요.',
-          validate: () => input('signupEmail').validity.typeMismatch ? '이메일 주소 형식을 확인하세요.' : ''
+          key: 'email',
+          label: '이메일',
+          empty: '이메일을 입력하세요.',
+          validate: () =>
+            input('signupEmail').validity.typeMismatch ? '이메일 주소 형식을 확인하세요.' : ''
         }
       };
 
@@ -196,7 +223,9 @@
           signupEmail: fieldsToCheck.signupEmail.validate()
         };
         if (displayErrors(errors)) return;
-        draft = Object.fromEntries($$('input, textarea', form).map(field => [field.id, field.value]));
+        draft = Object.fromEntries(
+          $$('input, textarea', form).map(field => [field.id, field.value])
+        );
         renderCertificationForm();
         focusStep();
       };
@@ -237,7 +266,11 @@
           return;
         }
         updateCertification();
-        signupFeedback(input, '인증 요청이 접수되었습니다. 관리자 승인 후 인증이 완료됩니다.', 'success');
+        signupFeedback(
+          input,
+          '인증 요청이 접수되었습니다. 관리자 승인 후 인증이 완료됩니다.',
+          'success'
+        );
         toast('인증 요청이 접수되었습니다. 관리자 승인 후 인증됩니다.');
       };
       $('#signupPrevBtn', form).onclick = () => {
