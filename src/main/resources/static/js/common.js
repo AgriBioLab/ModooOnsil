@@ -383,9 +383,92 @@
     }
   }
 
+  function showGuestHeader() {
+    const headerAccount = document.querySelector('.header-account');
+    if (headerAccount) {
+      headerAccount.innerHTML =
+        '<a class="btn xs header-btn" href="login.html">로그인</a>' +
+        '<a class="btn xs header-btn" href="signup.html">회원가입</a>';
+    }
+    const sidebarFoot = document.getElementById('sidebarFoot');
+    if (sidebarFoot) sidebarFoot.textContent = '로그인이 필요합니다';
+  }
+
+  function renderLoginGate(mainEl, sectionTitle = '서비스') {
+    showGuestHeader();
+    const crumb = document.getElementById('crumb');
+    if (crumb) crumb.textContent = `홈 / ${sectionTitle}`;
+    if (!mainEl) return;
+
+    mainEl.innerHTML = `<section class="panel" aria-labelledby="loginGateTitle" style="max-width:460px;margin:28px auto;padding:32px 28px;text-align:center;">
+      <h1 id="loginGateTitle" style="margin:0 0 8px;font-size:22px;">농민회원 로그인</h1>
+      <p style="margin:0 0 22px;color:var(--muted,#4b5b51);font-size:14.5px;line-height:1.55;">
+        로그인을 하시면 <strong>${escapeHtml(sectionTitle)}</strong> 서비스를 이용하실 수 있습니다.
+      </p>
+      <form id="inlineLoginForm" class="login-form" style="text-align:left;display:grid;gap:14px;">
+        <div class="form-group">
+          <label class="form-label" for="gateUsername">아이디</label>
+          <input id="gateUsername" name="username" class="krds-input medium" type="text" maxlength="20" autocomplete="username" required>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="gatePassword">비밀번호</label>
+          <div style="display:flex;gap:8px;">
+            <input id="gatePassword" name="password" class="krds-input medium" type="password" maxlength="20" autocomplete="current-password" required style="flex:1;">
+            <button type="button" class="krds-btn medium secondary" id="gatePwToggle">보기</button>
+          </div>
+        </div>
+        <p id="gateError" class="auth-feedback" role="alert" style="margin:0;color:#c62828;font-size:13.5px;"></p>
+        <button type="submit" class="krds-btn medium primary" style="width:100%;">로그인</button>
+        <div style="display:flex;justify-content:center;gap:8px;font-size:13.5px;color:var(--muted,#4b5b51);">
+          <span>처음이신가요?</span>
+          <a href="signup.html">회원가입</a>
+        </div>
+      </form>
+    </section>`;
+
+    const form = document.getElementById('inlineLoginForm');
+    const pw = document.getElementById('gatePassword');
+    const toggle = document.getElementById('gatePwToggle');
+    const feedback = document.getElementById('gateError');
+    toggle?.addEventListener('click', () => {
+      const reveal = pw.type === 'password';
+      pw.type = reveal ? 'text' : 'password';
+      toggle.textContent = reveal ? '숨기기' : '보기';
+    });
+    form?.addEventListener('input', () => {
+      feedback.textContent = '';
+    });
+    form?.addEventListener('submit', async event => {
+      event.preventDefault();
+      const submit = form.querySelector('button[type="submit"]');
+      submit.disabled = true;
+      feedback.textContent = '';
+      try {
+        const body = new URLSearchParams({
+          username: document.getElementById('gateUsername').value.trim(),
+          password: pw.value
+        });
+        const res = await fetch('/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+          body
+        });
+        if (res.ok && !new URL(res.url).searchParams.has('error')) {
+          location.reload();
+          return;
+        }
+        feedback.textContent = '아이디와 비밀번호를 확인하세요.';
+      } catch {
+        feedback.textContent = '로그인 요청 중 오류가 발생했습니다.';
+      } finally {
+        submit.disabled = false;
+      }
+    });
+  }
+
   window.ModooCommon = {
     ready, notify, escapeHtml, checkResponse, fetchJson, setButtonsDisabled,
-    currentMember,
+    currentMember, showGuestHeader, renderLoginGate,
     saveCertificationRequest, showAccount, bindAccount, setCurrentMenu
   };
 })();

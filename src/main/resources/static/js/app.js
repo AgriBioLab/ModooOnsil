@@ -6,6 +6,7 @@
     notify: toast,
     escapeHtml,
     currentMember,
+    renderLoginGate,
     showAccount,
     bindAccount,
     setCurrentMenu
@@ -839,18 +840,36 @@
   async function init() {
     const hostPage = document.body?.dataset?.page || 'entry';
     const member = await currentMember();
+    window.__modooSignedIn = Boolean(member);
     if (hostPage === 'entry') {
       location.replace(member ? 'cultivationDiaryList.html' : 'login.html');
       return;
     }
 
     if (!member) {
+      await ready;
       if (hostPage === 'home') {
-        await ready;
         pages.home?.renderLanding();
         return;
       }
-      location.replace('login.html');
+      const gateTitles = {
+        list: '재배일지작업',
+        create: '재배일지작업',
+        'cycle-list': '작기계획',
+        'cycle-create': '작기계획',
+        'gh-list': '온실',
+        'gh-create': '온실',
+        'env-list': '온실 환경변화',
+        'issue-list': '온실 환경 이슈'
+      };
+      const viewParam = new URLSearchParams(location.search).get('view');
+      const menuKey =
+        viewParam === 'create' || viewParam === 'cycle-create' || viewParam === 'gh-create'
+          ? viewParam
+          : hostPage;
+      setCurrentMenu(menuKey);
+      renderLoginGate(main, gateTitles[menuKey] || '서비스');
+      if (main) main.focus({ preventScroll: true });
       return;
     }
 

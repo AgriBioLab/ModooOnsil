@@ -1,6 +1,6 @@
 (() => {
   'use strict';
-  const { ready, notify: toast, escapeHtml, fetchJson } = window.ModooCommon;
+  const { ready, notify: toast, escapeHtml, fetchJson, currentMember } = window.ModooCommon;
   const $ = (s, base = document) => base.querySelector(s);
   const $$ = (s, base = document) => [...base.querySelectorAll(s)];
 
@@ -339,6 +339,16 @@
   async function init() {
     await ready;
     const page = document.body?.dataset?.page;
+    if (page === 'login' || page === 'signup') {
+      try {
+        if (await currentMember()) {
+          location.replace('index.html');
+          return;
+        }
+      } catch {
+        // Fall through to render auth page when session lookup fails.
+      }
+    }
     if (page === 'login') setupLogin();
     else if (page === 'signup') setupSignup();
   }

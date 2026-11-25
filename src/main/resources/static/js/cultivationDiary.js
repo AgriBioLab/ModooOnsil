@@ -36,6 +36,12 @@ function filterOptions(rows, field) {
   .sort((a, b) => a.localeCompare(b, 'ko')).map(value => ({value, label:value}));
 }
 async function loadList() {
+ if (!window.__modooSignedIn) {
+  filterRows = [];
+  listRows = [];
+  renderList();
+  return;
+ }
  const sequence = ++listRequest;
  const filters = new URLSearchParams();
  for (const [key, value] of Object.entries({planName:filterCycle, greenhouseName:filterGreenhouse,

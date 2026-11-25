@@ -289,7 +289,13 @@
     await common.ready;
     const member = await common.currentMember();
     if (!member) {
-      location.replace('login.html');
+      const main = document.getElementById('main');
+      common.setCurrentMenu('profile');
+      common.renderLoginGate(main, '내정보');
+      if (main) {
+        main.inert = false;
+        main.focus({ preventScroll: true });
+      }
       return;
     }
 
