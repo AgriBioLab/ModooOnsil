@@ -11,7 +11,7 @@
             JOIN greenhouse AS g ON g.greenhouse_id = p.greenhouse_id
             JOIN crop_stage_standard AS s ON s.standard_id = p.standard_id
             JOIN crop AS c ON c.crop_id = s.crop_id
-        WHERE p.member_id = #{memberId}
+        WHERE p.member_id = #{memberId} AND p.deleted_at IS NULL
         <if test="planName != null">
             AND p.plan_name LIKE CONCAT('%', TRIM(#{planName}),'%')
         </if>
