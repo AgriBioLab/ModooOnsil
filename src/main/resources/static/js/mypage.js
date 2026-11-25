@@ -157,7 +157,7 @@
           body: JSON.stringify({ businessNumber: certNumber.value.trim() })
         });
         if (response.status === 401) {
-          location.replace('login');
+          location.replace('/login');
           return;
         }
         if (response.status === 409) {
@@ -199,7 +199,7 @@
           body: JSON.stringify({ currentPassword: current.value, newPassword: next.value })
         });
         if (response.status === 401) {
-          location.replace('login');
+          location.replace('/login');
           return;
         }
         if (response.status === 409) {
@@ -241,7 +241,7 @@
           body: JSON.stringify(profile)
         });
         if (response.status === 401) {
-          location.replace('login');
+          location.replace('/login');
           return;
         }
         if (response.status === 409 && form === memberForm) {

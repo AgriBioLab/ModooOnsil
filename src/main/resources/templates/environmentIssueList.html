@@ -1,31 +1,107 @@
 ﻿<!doctype html>
 <html lang="ko" xmlns:th="http://www.thymeleaf.org">
+
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>모두의온실 | 온실 환경 이슈</title>
-    <link rel="stylesheet" href="vendor/krds/css/component/output.css" />
-    <link rel="stylesheet" href="css/common.css" />
-    <link rel="stylesheet" href="css/environment.css" />
-    <script src="js/sampleData.js" defer></script>
-    <script src="js/common.js" defer></script>
-    <script src="js/app.js" defer></script>
-    <script src="js/environment.js" defer></script>
+
+    <link rel="stylesheet" href="/vendor/krds/css/component/output.css" />
+    <link rel="stylesheet" href="/css/common.css" />
+    <link rel="stylesheet" href="/css/environment.css" />
+
+    <script src="/js/common.js" defer></script>
+    <script src="/js/environment.js" defer></script>
   </head>
+
   <body data-page="issue-list">
     <div class="app">
+      <!-- 사이드바 -->
       <aside th:replace="~{sidebar :: sidebar}"></aside>
+
       <div class="workarea">
+        <!-- 상단 헤더 -->
         <header th:replace="~{header :: header}"></header>
+
+        <!-- 본문 -->
         <main>
           <nav class="crumb" aria-label="현재 위치">
             <span id="crumb">온실 / 온실 환경 이슈 / 목록</span>
           </nav>
-          <div class="page-content" id="main" tabindex="-1"></div>
+
+          <!-- TODO: EnvironmentIssueController / Thymeleaf 연결 시 이슈 목록·필터·페이징 데이터를 Model로 바인딩 -->
+          <div class="page-content" id="main" tabindex="-1">
+            <div id="issueListView">
+
+              <div class="pagehead">
+                <div>
+                  <h1>온실 환경 이슈</h1>
+                </div>
+              </div>
+
+              <section class="panel list-section" aria-label="온실 환경 이슈 목록">
+                <!-- 검색 필터 -->
+                <form class="list-filter-strip" id="issueFilters">
+                  <label class="list-ctrl-field" for="ifCycle">
+                    <span>작기계획</span>
+                    <select class="ctrl" id="ifCycle" name="cycle">
+                      <option value="all">전체 작기계획</option>
+                    </select>
+                  </label>
+
+                  <label class="list-ctrl-field" for="ifStatus">
+                    <span>조치 상태</span>
+                    <select class="ctrl" id="ifStatus" name="status">
+                      <option value="all">전체 상태</option>
+                      <option value="발생">발생</option>
+                      <option value="조치중">조치중</option>
+                      <option value="조치 완료">조치 완료</option>
+                    </select>
+                  </label>
+
+                  <div class="list-ctrl-actions">
+                    <button type="submit" class="btn main">검색</button>
+                    <button type="button" class="btn" id="ifReset">초기화</button>
+                  </div>
+                </form>
+
+                <!-- 목록 요약 -->
+                <div class="list-summary-bar">
+                  <span class="list-total-count">총 <strong>0</strong>건</span>
+                </div>
+
+                <!-- 목록 테이블 -->
+                <div class="tablewrap">
+                  <table class="data-table module-table">
+                    <caption class="sr-only">온실 환경 이슈 목록</caption>
+                    <thead>
+                      <tr>
+                        <th scope="col">발생 일시</th>
+                        <th scope="col">온실 · 작기</th>
+                        <th scope="col">이슈 유형</th>
+                        <th scope="col">이슈 내용</th>
+                        <th scope="col">상태</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr>
+                        <td colspan="5" class="empty">등록된 환경 이슈가 없습니다. (서버 API 연동 대기)</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </section>
+
+            </div>
+          </div>
         </main>
+
+        <!-- 푸터 -->
         <footer th:replace="~{footer :: footer}"></footer>
       </div>
     </div>
+
     <div class="notice-toast hidden" id="toast" role="status" aria-live="polite"></div>
   </body>
+
 </html>

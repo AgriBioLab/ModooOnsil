@@ -1,29 +1,132 @@
 ﻿<!doctype html>
 <html lang="ko" xmlns:th="http://www.thymeleaf.org">
+
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>모두의온실 | 작기계획</title>
-    <link rel="stylesheet" href="vendor/krds/css/component/output.css" />
-    <link rel="stylesheet" href="css/common.css" />
-    <link rel="stylesheet" href="css/cultivationPlan.css" />
-    <script src="js/sampleData.js" defer></script>
-    <script src="js/common.js" defer></script>
-    <script src="js/app.js" defer></script>
-    <script src="js/cultivationPlan.js" defer></script>
+
+    <link rel="stylesheet" href="/vendor/krds/css/component/output.css" />
+    <link rel="stylesheet" href="/css/common.css" />
+    <link rel="stylesheet" href="/css/cultivationPlan.css" />
+
+    <script src="/js/common.js" defer></script>
+    <script src="/js/cultivationPlan.js" defer></script>
   </head>
+
   <body data-page="cycle-list">
     <div class="app">
+      <!-- 사이드바 -->
       <aside th:replace="~{sidebar :: sidebar}"></aside>
+
       <div class="workarea">
+        <!-- 상단 헤더 -->
         <header th:replace="~{header :: header}"></header>
+
+        <!-- 본문 -->
         <main>
-          <nav class="crumb" aria-label="현재 위치"><span id="crumb">작기계획 / 목록</span></nav>
-          <div class="page-content" id="main" tabindex="-1"></div>
+          <nav class="crumb" aria-label="현재 위치">
+            <span id="crumb">작기계획 / 목록</span>
+          </nav>
+
+          <!-- TODO: CultivationPlanController / Thymeleaf 연결 시 목록·필터·페이징 데이터를 Model로 바인딩 -->
+          <div class="page-content" id="main" tabindex="-1">
+            <div id="planListView">
+
+              <div class="pagehead">
+                <div>
+                  <h1>작기계획 목록</h1>
+                </div>
+              </div>
+
+              <section class="panel list-section" aria-label="작기계획 목록">
+                <!-- 검색 필터 -->
+                <form class="list-filter-strip" id="planFilters">
+                  <label class="list-ctrl-field" for="cfPlan">
+                    <span>작기계획명</span>
+                    <select class="ctrl" id="cfPlan" name="plan">
+                      <option value="all">전체 작기계획</option>
+                    </select>
+                  </label>
+
+                  <label class="list-ctrl-field" for="cfStatus">
+                    <span>진행 상태</span>
+                    <select class="ctrl" id="cfStatus" name="status">
+                      <option value="all">전체 상태</option>
+                      <option value="진행">진행</option>
+                      <option value="미진행">미진행</option>
+                      <option value="종료">종료</option>
+                    </select>
+                  </label>
+
+                  <label class="list-ctrl-field" for="cfGh">
+                    <span>온실</span>
+                    <select class="ctrl" id="cfGh" name="greenhouse">
+                      <option value="all">전체 온실</option>
+                    </select>
+                  </label>
+
+                  <label class="list-ctrl-field" for="cfCrop">
+                    <span>품목</span>
+                    <select class="ctrl" id="cfCrop" name="crop">
+                      <option value="all">전체 품목</option>
+                    </select>
+                  </label>
+
+                  <label class="list-ctrl-field" for="cfVariety">
+                    <span>품종</span>
+                    <select class="ctrl" id="cfVariety" name="variety">
+                      <option value="all">전체 품종</option>
+                    </select>
+                  </label>
+
+                  <div class="list-ctrl-actions">
+                    <button type="submit" class="btn main">검색</button>
+                    <button type="button" class="btn" id="cfReset">초기화</button>
+                  </div>
+                </form>
+
+                <!-- 목록 요약 및 등록 버튼 -->
+                <div class="list-summary-bar">
+                  <span class="list-total-count">총 <strong>0</strong>건</span>
+                  <div class="list-summary-actions">
+                    <button type="button" class="btn main" id="cycleCreateBtn">+ 작기계획 등록</button>
+                  </div>
+                </div>
+
+                <!-- 목록 테이블 -->
+                <div class="tablewrap">
+                  <table class="data-table module-table">
+                    <caption class="sr-only">작기계획 목록</caption>
+                    <thead>
+                      <tr>
+                        <th scope="col">작기계획명</th>
+                        <th scope="col">온실</th>
+                        <th scope="col">품목 · 품종</th>
+                        <th scope="col">계획 기간</th>
+                        <th scope="col">실제 기간</th>
+                        <th scope="col">상태</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr>
+                        <td colspan="6" class="empty">등록된 작기계획이 없습니다. (서버 API 연동 대기)</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </section>
+
+            </div>
+          </div>
         </main>
+
+        <!-- 푸터 -->
         <footer th:replace="~{footer :: footer}"></footer>
       </div>
     </div>
+
     <div class="notice-toast hidden" id="toast" role="status" aria-live="polite"></div>
   </body>
+
 </html>

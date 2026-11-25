@@ -853,7 +853,7 @@
     const member = await currentMember();
     window.__modooSignedIn = Boolean(member);
     if (hostPage === 'entry') {
-      location.replace(member ? 'cultivation-diaries' : 'login');
+      location.replace(member ? '/cultivation-diaries' : '/login');
       return;
     }
 
@@ -863,7 +863,7 @@
         pages.home?.renderLanding();
         return;
       }
-      location.replace('login');
+      location.replace('/login');
       return;
     }
 

@@ -261,7 +261,7 @@
     if (page === 'login' || page === 'signup') {
       try {
         if (await currentMember()) {
-          location.replace('index.html');
+          location.replace('/index.html');
           return;
         }
       } catch {
