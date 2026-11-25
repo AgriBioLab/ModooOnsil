@@ -6,7 +6,7 @@ import kr.swdl.modooonsil.member.dto.MemberPasswordChangeRequest;
 import kr.swdl.modooonsil.member.dto.MemberProfileUpdateRequest;
 import kr.swdl.modooonsil.member.dto.MemberRegistrationRequest;
 import kr.swdl.modooonsil.member.dto.MemberResponse;
-import kr.swdl.modooonsil.member.security.CustomUserDetails;
+import kr.swdl.modooonsil.security.CustomUserDetails;
 import kr.swdl.modooonsil.member.service.MemberService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;

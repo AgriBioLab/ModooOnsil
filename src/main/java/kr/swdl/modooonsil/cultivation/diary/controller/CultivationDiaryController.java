@@ -2,9 +2,8 @@ package kr.swdl.modooonsil.cultivation.diary.controller;
 
 import kr.swdl.modooonsil.cultivation.diary.domain.FindAllCultivationDiaryVO;
 import kr.swdl.modooonsil.cultivation.diary.service.CultivationDiaryService;
-import kr.swdl.modooonsil.member.security.CustomUserDetails;
+import kr.swdl.modooonsil.security.CustomUserDetails;
 import lombok.RequiredArgsConstructor;
-import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
