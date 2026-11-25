@@ -1,0 +1,79 @@
+<div id="diaryList" th:fragment="diaryList" th:attr="data-worked-date=${workedDate}"
+     xmlns:th="http://www.thymeleaf.org">
+  <div class="pagehead"><div><h1>재배일지작업 목록</h1></div></div>
+  <section class="panel list-section" aria-label="재배일지작업 목록">
+    <form id="diaryFilters" class="list-filter-strip" method="get" th:action="@{/cultivationDiaryList.html}">
+      <label class="list-ctrl-field"><span>작기계획명</span>
+        <select id="filterCycle" name="planName" class="ctrl">
+          <option value="">전체 작기</option>
+          <option th:each="name : ${plans}" th:value="${name}" th:text="${name}" th:selected="${name == planName}"></option>
+        </select>
+      </label>
+      <label class="list-ctrl-field"><span>온실명</span>
+        <select id="filterGreenhouse" name="greenhouseName" class="ctrl">
+          <option value="">전체 온실</option>
+          <option th:each="name : ${greenhouses}" th:value="${name}" th:text="${name}" th:selected="${name == greenhouseName}"></option>
+        </select>
+      </label>
+      <label class="list-ctrl-field"><span>품목명</span>
+        <select id="filterCrop" name="cropName" class="ctrl">
+          <option value="">전체 품목</option>
+          <option th:each="name : ${crops}" th:value="${name}" th:text="${name}" th:selected="${name == cropName}"></option>
+        </select>
+      </label>
+      <label class="list-ctrl-field"><span>품종명</span>
+        <select id="filterVariety" name="varietyName" class="ctrl" th:attr="data-selected=${varietyName}">
+          <option value="">전체 품종</option>
+        </select>
+      </label>
+      <template id="diaryVarieties">
+        <option th:each="variety : ${varieties}" th:attr="data-crop=${variety.crop()}"
+                th:value="${variety.name()}" th:text="${variety.name()}"></option>
+      </template>
+      <label class="list-ctrl-field" for="workDateFilterTrigger">
+        <span>실제 작업일</span><span id="diaryDateControl"></span>
+      </label>
+      <div class="list-filter-actions">
+        <button class="btn list-reset-btn" type="button" id="filterReset">초기화</button>
+        <button class="btn main list-search-btn" type="submit">검색</button>
+      </div>
+    </form>
+    <div class="list-summary-bar">
+      <span class="list-total-count">총 <strong th:text="${totalRows}">0</strong>건</span>
+      <div class="list-summary-actions">
+        <a class="btn main xs" id="createButton" th:href="@{/cultivationDiaryList.html(view=create)}">+ 재배일지작업 등록</a>
+      </div>
+    </div>
+    <div class="tablewrap">
+      <table class="data-table diary-table">
+        <caption class="sr-only">재배일지작업 목록</caption>
+        <thead>
+          <tr>
+            <th class="row-index" scope="col">번호</th>
+            <th scope="col">실제 작업일</th>
+            <th scope="col">온실명</th>
+            <th scope="col">품목명</th>
+            <th scope="col">품종명</th>
+            <th scope="col">작기계획명</th>
+            <th scope="col">생육단계</th>
+            <th class="tnum" scope="col">작업 건수 (전체/미완료)</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr th:each="diary, row : ${diaries}">
+            <td class="row-index" th:text="${totalRows - row.index}"></td>
+            <td><a class="linkbtn" th:href="@{/cultivationDiaryList.html(view=detail,id=${diary.diaryId})}"
+                   th:attr="data-detail=${diary.diaryId}" th:text="${diary.workedAt?.toLocalDate()}"></a></td>
+            <td th:text="${diary.greenhouseName}"></td>
+            <td th:text="${diary.cropName}"></td>
+            <td th:text="${diary.varietyName}"></td>
+            <td th:text="${diary.planName}"></td>
+            <td th:text="${#strings.defaultString(diary.growthStage, '-')}"></td>
+            <td class="tnum" th:text="|${diary.taskCount} / ${diary.incompleteTaskCount}|"></td>
+          </tr>
+          <tr th:if="${diaries.isEmpty()}"><td class="empty" colspan="8">조회 결과가 없습니다.</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+</div>

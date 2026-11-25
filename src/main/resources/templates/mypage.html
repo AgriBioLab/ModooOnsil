@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="ko">
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -21,19 +21,32 @@
         <div id="headerSlot"></div>
         <main class="profile-page">
           <nav class="crumb" aria-label="현재 위치"><span id="crumb">내정보</span></nav>
+          <div id="profileMemberData" hidden
+               th:attr="data-username=${member.username},
+                        data-display-name=${member.displayName},
+                        data-farm-name=${member.farmName},
+                        data-certification=${member.certification},
+                        data-business-number=${member.businessNumber},
+                        data-email=${member.email},
+                        data-phone=${member.phone},
+                        data-address=${member.address},
+                        data-address-detail=${member.addressDetail},
+                        data-main-crop=${member.mainCrop},
+                        data-description=${member.description},
+                        data-created-at=${member.createdAt?.toLocalDate()}"></div>
           <div class="page-content" id="main" tabindex="-1" inert>
             <div class="pagehead">
               <div><h1 id="profileTitle">내정보</h1></div>
             </div>
             <section class="profile-summary-card" aria-label="농장 요약">
               <div class="profile-summary-title">
-                <h2 id="profileFarmTitle">—</h2>
+                <h2 id="profileFarmTitle" th:text="${#strings.defaultString(member.farmName, '—')}">—</h2>
                 <span class="krds-badge bg-light-gray" id="profileCertBadge">
                   <span class="sr-only">농업경영체 인증 상태</span>
                   <span id="profileCertLabel">미인증</span>
                 </span>
               </div>
-              <p id="profileFarmSummary"></p>
+              <p id="profileFarmSummary" th:text="${#strings.defaultString(member.displayName, '—') + ' · ' + #strings.defaultString(member.mainCrop, '품목 미등록')}"></p>
             </section>
 
             <div class="tabbar profile-tabbar" role="tablist" aria-label="내정보 메뉴">
@@ -83,13 +96,13 @@
                 <div class="panel-body">
                   <dl class="profile-facts">
                     <dt>농장명</dt>
-                    <dd data-profile-value="farmName">—</dd>
+                    <dd data-profile-value="farmName" th:text="${#strings.defaultString(member.farmName, '—')}">—</dd>
                     <dt>주요 재배 품목</dt>
-                    <dd data-profile-value="mainCrop">—</dd>
+                    <dd data-profile-value="mainCrop" th:text="${#strings.defaultString(member.mainCrop, '—')}">—</dd>
                     <dt>농장 주소</dt>
-                    <dd data-profile-value="farmAddress">—</dd>
+                    <dd data-profile-value="farmAddress" th:text="${#strings.defaultString(#strings.trim(#strings.defaultString(member.address, '') + ' ' + #strings.defaultString(member.addressDetail, '')), '—')}">—</dd>
                     <dt>농장 소개</dt>
-                    <dd data-profile-value="description">—</dd>
+                    <dd data-profile-value="description" th:text="${#strings.defaultString(member.description, '—')}">—</dd>
                   </dl>
                 </div>
               </section>
@@ -165,9 +178,9 @@
                 <div class="panel-body">
                   <dl class="profile-facts">
                     <dt>인증 상태</dt>
-                    <dd data-profile-value="certification">—</dd>
+                    <dd data-profile-value="certification" th:text="${#strings.defaultString(member.certification == '인증중' ? '인증 대기중' : #strings.defaultString(member.certification, '미인증'), '—')}">—</dd>
                     <dt>농업경영체 등록번호</dt>
-                    <dd data-profile-value="businessNumber">—</dd>
+                    <dd data-profile-value="businessNumber" th:text="${#strings.defaultString(member.businessNumber, '—')}">—</dd>
                     <dt>인증일</dt>
                     <dd data-profile-value="certifiedAt">—</dd>
                   </dl>
@@ -222,15 +235,15 @@
                 <div class="panel-body">
                   <dl class="profile-facts">
                     <dt>아이디</dt>
-                    <dd data-profile-value="username">—</dd>
+                    <dd data-profile-value="username" th:text="${#strings.defaultString(member.username, '—')}">—</dd>
                     <dt>대표자명</dt>
-                    <dd data-profile-value="displayName">—</dd>
+                    <dd data-profile-value="displayName" th:text="${#strings.defaultString(member.displayName, '—')}">—</dd>
                     <dt>이메일</dt>
-                    <dd data-profile-value="email">—</dd>
+                    <dd data-profile-value="email" th:text="${#strings.defaultString(member.email, '—')}">—</dd>
                     <dt>연락처</dt>
-                    <dd data-profile-value="phone">—</dd>
+                    <dd data-profile-value="phone" th:text="${#strings.defaultString(member.phone, '—')}">—</dd>
                     <dt>회원가입일</dt>
-                    <dd data-profile-value="createdAt">—</dd>
+                    <dd data-profile-value="createdAt" th:text="${#strings.defaultString(member.createdAt?.toLocalDate(), '—')}">—</dd>
                   </dl>
                 </div>
               </section>

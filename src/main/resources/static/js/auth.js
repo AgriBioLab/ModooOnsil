@@ -11,10 +11,7 @@
     const toggle = $('#loginPasswordToggle');
     const feedback = $('#loginError');
 
-    if (new URLSearchParams(location.search).has('error')) {
-      feedback.textContent = '아이디와 비밀번호를 확인하세요.';
-      feedback.focus();
-    }
+    if (feedback.textContent.trim()) feedback.focus();
 
     toggle.addEventListener('click', () => {
       const reveal = password.type === 'password';
@@ -25,41 +22,7 @@
     form.addEventListener('input', () => { feedback.textContent = ''; });
   }
 
-  const signupStages = ['회원정보 입력', '농업경영체 인증', '완료'];
   const signupUsernamePattern = /^[a-z][a-z0-9]{5,19}$/;
-
-  function signupProgress(step) {
-    return `<ol class="krds-step-wrap" aria-label="회원가입 단계">
-      ${signupStages
-        .map((label, index) => {
-          const number = index + 1;
-          const state =
-            number === step
-              ? 'class="active" aria-current="step"'
-              : number < step
-                ? 'class="done"'
-                : '';
-          return `<li ${state}><span><span class="step">${number}단계</span><span class="step-tit">${label}</span></span></li>`;
-        })
-        .join('')}
-    </ol>`;
-  }
-
-  function signupField(
-    id,
-    label,
-    { type = 'text', required = false, attributes = '', hint = '', checkLabel = '' } = {}
-  ) {
-    return `<div class="form-group">
-      <label class="form-label" for="${id}">${label}${required ? ' <span class="required" aria-hidden="true">*</span>' : ''}</label>
-      <div class="${checkLabel ? 'auth-input-row' : 'form-conts'}">
-        <input id="${id}" name="${id}" class="krds-input medium" type="${type}" aria-describedby="${hint ? id + '-hint ' : ''}${id}-feedback" ${required ? 'required' : ''} ${attributes}>
-        ${checkLabel ? `<button type="button" class="krds-btn medium secondary" data-check="${id}" aria-label="${checkLabel} 중복 확인">중복 확인</button>` : ''}
-      </div>
-      ${hint ? `<p id="${id}-hint" class="auth-hint">${hint}</p>` : ''}
-      <p id="${id}-feedback" class="auth-feedback" aria-live="polite"></p>
-    </div>`;
-  }
 
   function signupFeedback(input, message, state = 'error') {
     const feedback = document.getElementById(input.id + '-feedback');
@@ -80,13 +43,20 @@
     let certStatus = '미인증';
     let savedMember;
 
-    function showStep(content, title = signupStages[step - 1]) {
-      mount.innerHTML =
-        signupProgress(step) +
-        `<section class="panel signup-panel" aria-labelledby="signupStepTitle">
-        <div class="panel-head"><h2 id="signupStepTitle" tabindex="-1">${title}</h2></div>
-        <div class="panel-body">${content}</div>
-      </section>`;
+    const stages = $$('[data-signup-stage]', mount);
+    const title = $('#signupStepTitle', mount);
+    const body = $('#signupStepBody', mount);
+
+    function showStep(content) {
+      for (const [index, stage] of stages.entries()) {
+        const active = index === step - 1;
+        stage.classList.toggle('active', active);
+        if (active) stage.setAttribute('aria-current', 'step');
+        else stage.removeAttribute('aria-current');
+      }
+      title.textContent = $('.step-tit', stages[step - 1]).textContent;
+      if (typeof content === 'string') body.innerHTML = content;
+      else if (step !== 1 || !body.querySelector('#signupForm')) body.replaceChildren(content);
     }
 
     function focusStep() {
@@ -95,50 +65,7 @@
 
     function renderMemberForm(conflicts = {}) {
       step = 1;
-      showStep(`<form id="signupForm" class="login-form" novalidate>
-        <div class="signup-form-grid">
-          ${signupField('signupFarmName', '농장명', { required: true, attributes: 'maxlength="100" autocomplete="organization"' })}
-          ${signupField('signupRepresentativeName', '대표자명', { required: true, attributes: 'maxlength="50" autocomplete="name"' })}
-          ${signupField('signupUsername', '아이디', {
-            required: true,
-            attributes:
-              'minlength="6" maxlength="20" autocomplete="username" autocapitalize="none" spellcheck="false"',
-            hint: '영문 소문자로 시작하는 영문 소문자·숫자 6~20자',
-            checkLabel: '아이디'
-          })}
-          ${signupField('signupEmail', '이메일 (선택)', { type: 'email', attributes: 'maxlength="255" autocomplete="email"', checkLabel: '이메일' })}
-          ${signupField('signupPassword', '비밀번호', {
-            type: 'password',
-            required: true,
-            attributes: 'minlength="8" maxlength="20" autocomplete="new-password"',
-            hint: '8~20자로 입력하세요.'
-          })}
-          ${signupField('signupPasswordConfirm', '비밀번호 확인', {
-            type: 'password',
-            required: true,
-            attributes: 'minlength="8" maxlength="20" autocomplete="new-password"'
-          })}
-          ${signupField('signupPhone', '연락처 (선택)', { type: 'tel', attributes: 'maxlength="20" autocomplete="tel"' })}
-          ${signupField('signupMainCrop', '주요 재배 품목 (선택)', { attributes: 'maxlength="100"' })}
-          <div class="form-group">
-            <label class="form-label" for="signupAddress">농장 주소 (선택)</label>
-            <div class="auth-input-row">
-              <input id="signupAddress" class="krds-input medium" type="text" maxlength="255" placeholder="주소 검색으로 입력하세요" readonly aria-describedby="signupAddress-feedback">
-              <button type="button" class="krds-btn medium secondary" id="signupAddrSearchBtn">주소 검색</button>
-            </div>
-            <p id="signupAddress-feedback" class="auth-feedback" aria-live="polite"></p>
-          </div>
-          ${signupField('signupAddressDetail', '상세 주소 (선택)', { attributes: 'maxlength="255" autocomplete="address-line2"' })}
-          <div class="form-group signup-field-wide">
-            <label class="form-label" for="signupDescription">농장 소개 (선택)</label>
-            <div class="form-conts">
-              <textarea id="signupDescription" class="krds-input medium signup-textarea" maxlength="500" aria-describedby="signupDescription-feedback"></textarea>
-            </div>
-            <p id="signupDescription-feedback" class="auth-feedback" aria-live="polite"></p>
-          </div>
-        </div>
-        <div class="signup-actions"><button type="submit" class="krds-btn medium primary" id="signupNextBtn">다음</button></div>
-      </form>`);
+      showStep(document.getElementById('signupFormTemplate').content.cloneNode(true));
 
       const form = $('#signupForm', mount);
       const input = id => form.elements.namedItem(id);
@@ -234,15 +161,7 @@
 
     function renderCertificationForm() {
       step = 2;
-      showStep(`<form id="signupCertificationForm" class="login-form">
-        ${signupField('signupBusinessNumber', '농업경영체 등록번호 (선택)', { attributes: 'maxlength="20"', hint: '등록번호를 입력해 인증을 요청하시면 관리자 승인 후 인증이 완료됩니다.' })}
-        <div class="signup-actions">
-          <button type="button" class="krds-btn medium tertiary" id="signupPrevBtn">이전</button>
-          <button type="button" class="krds-btn medium secondary" id="signupCertBtn">인증 요청</button>
-          <button type="submit" class="krds-btn medium primary">가입하기</button>
-        </div>
-        <p class="auth-feedback" id="signupSaveError" role="alert" data-state="error"></p>
-      </form>`);
+      showStep(document.getElementById('signupCertificationFormTemplate').content.cloneNode(true));
 
       const form = $('#signupCertificationForm', mount);
       const input = $('#signupBusinessNumber', form);

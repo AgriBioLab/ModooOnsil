@@ -1,13 +1,12 @@
 package kr.swdl.modooonsil.cultivation.plan.repository;
 
-import kr.swdl.modooonsil.cultivation.plan.domain.CultivationPlan;
-import kr.swdl.modooonsil.cultivation.plan.domain.FindAllCultivationPlanVO;
-import kr.swdl.modooonsil.cultivation.plan.domain.FindCultivationPlanDetailVO;
-import kr.swdl.modooonsil.cultivation.plan.domain.UpdateCultivationPlan;
+import kr.swdl.modooonsil.cultivation.plan.domain.vo.CultivationPlan;
+import kr.swdl.modooonsil.cultivation.plan.domain.vo.FindAllCultivationPlanVO;
+import kr.swdl.modooonsil.cultivation.plan.domain.vo.FindCultivationPlanDetailVO;
+import kr.swdl.modooonsil.cultivation.plan.domain.vo.UpdateCultivationPlan;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.annotation.Rollback;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
