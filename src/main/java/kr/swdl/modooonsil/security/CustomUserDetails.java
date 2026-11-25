@@ -1,4 +1,4 @@
-package kr.swdl.modooonsil.member.security;
+package kr.swdl.modooonsil.security;
 
 import kr.swdl.modooonsil.member.domain.Member;
 import org.springframework.security.core.GrantedAuthority;
