@@ -1,4 +1,7 @@
-<aside class="sidebar" id="appSidebar" aria-label="서비스 탐색">
+<!doctype html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<body>
+<aside th:fragment="sidebar" class="sidebar" id="appSidebar" aria-label="서비스 탐색">
   <div class="sidebar-head">
     <a class="brand" id="brand" href="index.html" aria-label="모두의 온실 홈">
       <svg
@@ -147,3 +150,5 @@
   </nav>
   <div class="sidebar-foot" id="sidebarFoot"></div>
 </aside>
+</body>
+</html>
