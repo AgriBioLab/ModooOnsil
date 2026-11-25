@@ -287,11 +287,8 @@
   async function init() {
     const common = window.ModooCommon;
     await common.ready;
-    const member = await common.currentMember();
-    if (!member) {
-      location.replace('login.html');
-      return;
-    }
+    const memberData = document.getElementById('profileMemberData');
+    const member = common.applyLocalCertification({ ...memberData.dataset });
 
     const main = document.getElementById('main');
     const crumb = document.getElementById('crumb');
