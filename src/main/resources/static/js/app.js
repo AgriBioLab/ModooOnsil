@@ -6,7 +6,6 @@
     notify: toast,
     escapeHtml,
     currentMember,
-    renderLoginGate,
     showAccount,
     bindAccount,
     setCurrentMenu
@@ -847,29 +846,12 @@
     }
 
     if (!member) {
-      await ready;
       if (hostPage === 'home') {
+        await ready;
         pages.home?.renderLanding();
         return;
       }
-      const gateTitles = {
-        list: '재배일지작업',
-        create: '재배일지작업',
-        'cycle-list': '작기계획',
-        'cycle-create': '작기계획',
-        'gh-list': '온실',
-        'gh-create': '온실',
-        'env-list': '온실 환경변화',
-        'issue-list': '온실 환경 이슈'
-      };
-      const viewParam = new URLSearchParams(location.search).get('view');
-      const menuKey =
-        viewParam === 'create' || viewParam === 'cycle-create' || viewParam === 'gh-create'
-          ? viewParam
-          : hostPage;
-      setCurrentMenu(menuKey);
-      renderLoginGate(main, gateTitles[menuKey] || '서비스');
-      if (main) main.focus({ preventScroll: true });
+      location.replace('login.html');
       return;
     }
 
