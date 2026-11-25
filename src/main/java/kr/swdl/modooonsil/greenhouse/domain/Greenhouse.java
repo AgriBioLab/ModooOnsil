@@ -3,11 +3,8 @@ package kr.swdl.modooonsil.greenhouse.domain;
 import kr.swdl.modooonsil.common.BaseEntity;
 import lombok.*;
 
-import java.time.LocalDateTime;
-
 @Builder
 @Getter
-@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 public class Greenhouse extends BaseEntity {
