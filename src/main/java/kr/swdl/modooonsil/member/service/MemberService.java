@@ -9,6 +9,8 @@ import kr.swdl.modooonsil.member.dto.MemberResponse;
 import kr.swdl.modooonsil.member.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DuplicateKeyException;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.server.ResponseStatusException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -67,6 +69,17 @@ public class MemberService {
                 .phoneNumber(request.getPhone())
                 .build());
         return getCurrentMember(memberId);
+    }
+
+    @Transactional
+    public MemberResponse requestCertification(Long memberId, String businessNumber) {
+        String number = businessNumber.strip();
+        repository.requestCertification(memberId, number);
+        MemberResponse member = getCurrentMember(memberId);
+        if (!"인증 대기중".equals(member.getCertification()) || !number.equals(member.getBusinessNumber())) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "이미 신청했거나 인증된 회원입니다.");
+        }
+        return member;
     }
 
     private Member requireMember(Long memberId) {

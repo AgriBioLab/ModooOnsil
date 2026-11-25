@@ -103,4 +103,14 @@
             updated_at = NOW()
         WHERE member_id = #{memberId} AND deleted_at IS NULL
     </update>
+    <update id="requestCertification">
+        UPDATE farm_member
+        SET farm_business_number = #{businessNumber},
+            certification_status = '인증 대기중',
+            updated_at = NOW()
+        WHERE member_id = #{memberId}
+          AND deleted_at IS NULL
+          AND certified_at IS NULL
+          AND (certification_status IS NULL OR certification_status = '미인증')
+    </update>
 </mapper>

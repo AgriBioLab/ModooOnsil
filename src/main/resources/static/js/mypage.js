@@ -146,14 +146,37 @@
 
     bindForm(certForm, () => ({
       certBusinessNumber: certNumber.value.trim() ? '' : '농업경영체 등록번호를 입력하세요.'
-    }), () => {
-      const patch = { businessNumber: certNumber.value.trim(), certification: '인증 대기중' };
-      if (!actions.saveCertificationRequest(user.username, patch)) return;
-      Object.assign(user, patch);
-      actions.updateAccount();
-      updateProfileValues();
-      get('profileCertHeading').focus();
-      actions.notify('농업경영체 인증을 요청했습니다. 현재 인증 대기중입니다.');
+    }), async () => {
+      const button = certForm.querySelector('button[type="submit"]');
+      if (button.disabled) return;
+      button.disabled = true;
+      try {
+        const response = await fetch('/api/auth/me/certification', {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ businessNumber: certNumber.value.trim() })
+        });
+        if (response.status === 401) {
+          location.replace('login');
+          return;
+        }
+        if (response.status === 409) {
+          actions.notify('이미 신청했거나 인증된 회원입니다. 페이지를 새로고침해 주세요.');
+          return;
+        }
+        if (!response.ok) throw new Error('HTTP ' + response.status);
+        const saved = await response.json();
+        user.businessNumber = saved.businessNumber;
+        user.certification = saved.certification;
+        actions.updateAccount();
+        updateProfileValues();
+        get('profileCertHeading').focus();
+        actions.notify('농업경영체 인증을 요청했습니다. 현재 인증 대기중입니다.');
+      } catch {
+        actions.notify('인증 신청을 저장하지 못했습니다. 다시 시도하세요.');
+      } finally {
+        button.disabled = false;
+      }
     });
 
     const current = get('curPw');
@@ -176,7 +199,7 @@
           body: JSON.stringify({ currentPassword: current.value, newPassword: next.value })
         });
         if (response.status === 401) {
-          location.replace('login.html');
+          location.replace('login');
           return;
         }
         if (response.status === 409) {
@@ -218,7 +241,7 @@
           body: JSON.stringify(profile)
         });
         if (response.status === 401) {
-          location.replace('login.html');
+          location.replace('login');
           return;
         }
         if (response.status === 409 && form === memberForm) {
@@ -288,12 +311,11 @@
     const common = window.ModooCommon;
     await common.ready;
     const memberData = document.getElementById('profileMemberData');
-    const member = common.applyLocalCertification({ ...memberData.dataset });
+    const member = { ...memberData.dataset };
 
     const main = document.getElementById('main');
     const crumb = document.getElementById('crumb');
     const profile = createProfilePage(main, {
-      saveCertificationRequest: common.saveCertificationRequest,
       notify: common.notify,
       updateAccount: () => common.showAccount(member),
       openTab

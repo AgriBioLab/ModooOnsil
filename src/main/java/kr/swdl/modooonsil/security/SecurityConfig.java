@@ -27,8 +27,9 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.POST, "/api/members").permitAll()
                         .requestMatchers("/api/**").authenticated()
                         .requestMatchers(
-                                "/mypage.html",
-                                "/cultivationDiaryList.html",
+                                "/mypage",
+                                "/cultivation-diaries",
+                                "/cultivation-diaries/**",
                                 "/cultivationPlanList.html",
                                 "/greenhouseList.html",
                                 "/environmentChangeList.html",
@@ -39,10 +40,10 @@ public class SecurityConfig {
                         new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED),
                         PathPatternRequestMatcher.withDefaults().matcher("/api/**")))
                 .formLogin(form -> form
-                        .loginPage("/login.html")
+                        .loginPage("/login")
                         .loginProcessingUrl("/login")
-                        .defaultSuccessUrl("/index.html", false)
-                        .failureUrl("/login.html?error")
+                        .defaultSuccessUrl("/", false)
+                        .failureUrl("/login?error")
                         .permitAll())
                 .build();
     }

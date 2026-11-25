@@ -23,4 +23,5 @@ public interface MemberRepository {
 
     void updateFarmProfile(Member member);
     void updateMemberProfile(Member member);
+    void requestCertification(@Param("memberId") Long memberId, @Param("businessNumber") String businessNumber);
 }

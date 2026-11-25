@@ -248,7 +248,7 @@
           <dt>아이디</dt><dd>${escapeHtml(savedMember.username)}</dd>
           <dt>농업경영체 인증</dt><dd>${escapeHtml(savedMember.certification)}</dd>
         </dl>
-        <div class="signup-actions"><a class="krds-btn medium primary" href="login.html">로그인으로 이동</a></div>
+        <div class="signup-actions"><a class="krds-btn medium primary" href="login">로그인으로 이동</a></div>
       </div>`);
     }
 
