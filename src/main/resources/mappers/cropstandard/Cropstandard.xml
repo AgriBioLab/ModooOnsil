@@ -3,12 +3,21 @@
         "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="kr.swdl.modooonsil.cropstandard.repository.CropStandardRepository">
 
+    <select id="findCrops" resultType="kr.swdl.modooonsil.cropstandard.domain.CropOption">
+        SELECT crop_id, crop_name, variety_name
+        FROM crop
+        WHERE deleted_at IS NULL
+        ORDER BY crop_name, variety_name, crop_id
+    </select>
+
     <select id="findCropStandardByCropId" resultType="kr.swdl.modooonsil.cropstandard.domain.CropStandard" parameterType="Long">
         SELECT c.crop_id, c.crop_name, c.variety_name, s.standard_id, s.growth_stage, s.stage_order, s.stage_duration_days, s.day_temp_min, s.day_temp_max, s.night_temp_min, s.night_temp_max, s.humidity_min, s.humidity_max, s.co2_min, s.co2_max, s.radiation_min, s.radiation_max, s.light_min, s.light_max, s.soil_temp_min, s.soil_temp_max, s.soil_moisture_min, s.soil_moisture_max, s.soil_ec_min, s.soil_ec_max, s.soil_ph_min, s.soil_ph_max
         FROM crop c
             INNER JOIN crop_stage_standard s ON c.crop_id = s.crop_id
         WHERE c.crop_id = #{cropId}
-        ORDER BY s.stage_order;
+            AND c.deleted_at IS NULL
+            AND s.deleted_at IS NULL
+        ORDER BY s.stage_order IS NULL, s.stage_order, s.standard_id
     </select>
 
 </mapper>
