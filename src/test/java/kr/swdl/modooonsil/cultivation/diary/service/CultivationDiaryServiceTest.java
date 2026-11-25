@@ -8,7 +8,7 @@ import kr.swdl.modooonsil.cultivation.diary.dto.StageOptionsResponse;
 import kr.swdl.modooonsil.cultivation.diary.dto.TaskInput;
 import kr.swdl.modooonsil.cultivation.diary.repository.CultivationDiaryRepository;
 import kr.swdl.modooonsil.cultivation.diary.task.domain.CultivationDiaryTask;
-import kr.swdl.modooonsil.cultivation.plan.domain.CultivationPlan;
+import kr.swdl.modooonsil.cultivation.plan.domain.vo.CultivationPlan;
 import kr.swdl.modooonsil.cultivation.plan.repository.CultivationPlanRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -197,11 +197,11 @@ class CultivationDiaryServiceTest {
 
     private Long createActivePlan(String planName) {
         CultivationPlan plan = CultivationPlan.builder()
-                .memberId(MEMBER_ID).greenhouseId(GREENHOUSE_ID).standardId(STANDARD_ID)
-                .planName(planName)
-                .plannedStartDate(workDate.atStartOfDay())
-                .plannedEndDate(workDate.plusMonths(1).atStartOfDay())
-                .build();
+                                              .memberId(MEMBER_ID).greenhouseId(GREENHOUSE_ID).standardId(STANDARD_ID)
+                                              .planName(planName)
+                                              .plannedStartDate(workDate.atStartOfDay())
+                                              .plannedEndDate(workDate.plusMonths(1).atStartOfDay())
+                                              .build();
         plans.addCultivationPlan(plan);
         plans.updateCultivationPlanStart(MEMBER_ID, plan.getPlanId());
         return plan.getPlanId();
