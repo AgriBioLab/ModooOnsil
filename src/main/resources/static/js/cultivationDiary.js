@@ -1,16 +1,15 @@
 (() => {
 'use strict';
 const app = window.ModooApp;
-const { state, config, pages, $, $$, escapeHtml, htmlText, clone, toast, options, pageBtns,
+const { state, config, pages, $, $$, escapeHtml, htmlText, clone, toast, options,
  timeOf, timeSort, makeStarted, taskTone, trashSvg, toReason, getReasons, error, go, heading,
- bindBack, unifiedListPanel, listFilterField, singleDateControl, setSingleDateValue,
+ bindBack, singleDateControl, setSingleDateValue,
  mountSingleDatePicker } = app;
 const main = $('#main');
 const today = () => new Intl.DateTimeFormat('sv-SE', {timeZone:'Asia/Seoul'}).format(new Date());
 const endpoint = '/api/cultivation-diaries';
 let working = [], editRow = null, plans = [], stageOptions = null;
-let filterCycle = 'all', filterGreenhouse = 'all', filterCrop = 'all', filterVariety = 'all', filterDate = '';
-let listPage = 1, listRows = [], filterRows = [], listRequest = 0, stageRequest = 0;
+let listRequest = 0, stageRequest = 0;
 
 async function request(path = '', method = 'GET', body) {
  const response = await fetch(endpoint + path, {
@@ -31,49 +30,73 @@ function showLoadError(message) {
  main.innerHTML = heading('재배일지작업', message, true);
  bindBack();
 }
-function filterOptions(rows, field) {
- return [...new Set(rows.map(row => row[field]).filter(Boolean))]
-  .sort((a, b) => a.localeCompare(b, 'ko')).map(value => ({value, label:value}));
-}
+const listUrl = '/cultivationDiaryList.html';
+let listFilters = new URLSearchParams(location.search);
+listFilters.delete('view');
+listFilters.delete('id');
+listFilters.delete('cycleId');
+
 async function loadList() {
  const sequence = ++listRequest;
- const filters = new URLSearchParams();
- for (const [key, value] of Object.entries({planName:filterCycle, greenhouseName:filterGreenhouse,
-  cropName:filterCrop, varietyName:filterVariety, workedDate:filterDate})) {
-  if (value && value !== 'all') filters.set(key, value);
- }
+ const query = new URLSearchParams(listFilters);
+ query.set('fragment', 'true');
  try {
-  const allRows = await request();
-  const rows = filters.size ? await request('?' + filters) : allRows;
+  const response = await fetch(listUrl + '?' + query);
+  if (response.redirected) {
+   location.replace(response.url);
+   return;
+  }
+  if (!response.ok) throw new Error('재배일지 목록을 불러올 수 없습니다.');
+  const html = await response.text();
   if (state.page !== 'list' || sequence !== listRequest) return;
-  filterRows = allRows;
-  listRows = rows;
-  renderList();
+  main.innerHTML = html;
+  bindList();
  } catch (failure) {
   if (state.page === 'list' && sequence === listRequest) showLoadError(failure.message);
  }
 }
-function renderList() {
- const rows = listRows;
- const crops = filterOptions(filterRows, 'cropName');
- const varietiesFor = crop => filterOptions(filterRows.filter(row => crop === 'all' || row.cropName === crop), 'varietyName');
- const varieties = varietiesFor(filterCrop);
- const pageSize=Number(config.pagination?.pageSize)||5,totalPages=Math.max(1,Math.ceil(rows.length/pageSize));listPage=Math.min(Math.max(1,listPage),totalPages);
- const first=(listPage-1)*pageSize,paged=rows.slice(first,first+pageSize),start=rows.length?first+1:0,end=Math.min(first+pageSize,rows.length);
- const pageButtons=pageBtns(listPage,totalPages,'data-list-page');
- main.innerHTML=heading('재배일지작업 목록')+unifiedListPanel({
-  title:'재배일지작업 목록',
-  count:rows.length,
-  actionHtml:'<button class="btn main xs" type="button" id="createButton">+ 재배일지작업 등록</button>',
-  filterHtml:`${listFilterField('filterCycle','작기계획명',`<select id="filterCycle" class="ctrl">${options([{value:'all',label:'전체 작기'},...filterOptions(filterRows, 'planName')],filterCycle)}</select>`)}${listFilterField('filterGreenhouse','온실명',`<select id="filterGreenhouse" class="ctrl">${options([{value:'all',label:'전체 온실'},...filterOptions(filterRows, 'greenhouseName')],filterGreenhouse)}</select>`)}${listFilterField('filterCrop','품목명',`<select id="filterCrop" class="ctrl">${options([{value:'all',label:'전체 품목'},...crops],filterCrop)}</select>`)}${listFilterField('filterVariety','품종명',`<select id="filterVariety" class="ctrl">${options([{value:'all',label:'전체 품종'},...varieties],filterVariety)}</select>`)}${listFilterField('workDateFilterTrigger','실제 작업일',singleDateControl('workDateFilter',filterDate))}<div class="list-filter-actions"><button class="btn list-reset-btn" type="button" id="filterReset">초기화</button><button class="btn main list-search-btn" type="button" id="filterButton">검색</button></div>`,
-  bodyHtml:`<div class="tablewrap"><table class="data-table diary-table"><caption class="sr-only">재배일지작업 목록</caption><thead><tr><th class="row-index" scope="col">번호</th><th scope="col">실제 작업일</th><th scope="col">온실명</th><th scope="col">품목명</th><th scope="col">품종명</th><th scope="col">작기계획명</th><th scope="col">생육단계</th><th class="tnum" scope="col">작업 건수 (전체/미완료)</th></tr></thead><tbody>${paged.map((d,i)=>`<tr><td class="row-index">${rows.length-first-i}</td><td><button class="linkbtn" data-detail="${escapeHtml(d.diaryId)}">${htmlText(d.workedAt.slice(0,10))}</button></td><td>${htmlText(d.greenhouseName)}</td><td>${htmlText(d.cropName)}</td><td>${htmlText(d.varietyName)}</td><td>${htmlText(d.planName)}</td><td>${htmlText(d.growthStage||'-')}</td><td class="tnum">${d.taskCount} / ${d.incompleteTaskCount}</td></tr>`).join('')||'<tr><td class="empty" colspan="8">조회 결과가 없습니다.</td></tr>'}</tbody></table></div>`,
-  footHtml:`<div class="list-foot"><nav class="pagination" aria-label="재배일지작업 페이지 이동"><button class="page-button" type="button" data-page-direction="prev" ${listPage===1?'disabled':''}>이전</button>${pageButtons}<button class="page-button" type="button" data-page-direction="next" ${listPage===totalPages?'disabled':''}>다음</button></nav></div>`
- });
+
+function bindList() {
+ const list = $('#diaryList', main);
+ const form = $('#diaryFilters', list);
+ const crop = $('#filterCrop', list);
+ const variety = $('#filterVariety', list);
+ const allVarieties = [...$('#diaryVarieties', list).content.querySelectorAll('option')];
+ function updateVarieties(selected) {
+  const choices = allVarieties.filter(option => !crop.value || option.dataset.crop === crop.value);
+  variety.innerHTML = options([
+   {value: '', label: '전체 품종'},
+   ...[...new Set(choices.map(option => option.value))].map(value => ({value, label: value}))
+  ], selected);
+ }
+ updateVarieties(variety.dataset.selected);
+ crop.onchange = () => updateVarieties(variety.value);
+ $('#diaryDateControl', list).innerHTML = singleDateControl('workDateFilter', list.dataset.workedDate || '');
  mountSingleDatePicker('workDateFilter');
- $('#filterCrop').onchange=()=>{const selected=$('#filterCrop').value;const possible=varietiesFor(selected);const variety=$('#filterVariety');const old=variety.value;variety.innerHTML=options([{value:'all',label:'전체 품종'},...possible],possible.some(v=>v.value===old)?old:'all')};
- $('#filterReset').onclick=()=>{filterCycle=filterGreenhouse=filterCrop=filterVariety='all';filterDate='';listPage=1;loadList()};
- $('#filterButton').onclick=()=>{filterCycle=$('#filterCycle').value;filterGreenhouse=$('#filterGreenhouse').value;filterCrop=$('#filterCrop').value;filterVariety=$('#filterVariety').value;filterDate=$('#workDateFilter').value;listPage=1;loadList()};$('#createButton').onclick=()=>go('create');$$('[data-detail]').forEach(b=>b.onclick=()=>go('detail',b.dataset.detail));
- $$('[data-list-page]').forEach(b=>b.onclick=()=>{listPage=Number(b.dataset.listPage);renderList()});$$('[data-page-direction]').forEach(b=>b.onclick=()=>{listPage+=b.dataset.pageDirection==='next'?1:-1;renderList()});
+ form.onsubmit = event => {
+  event.preventDefault();
+  listFilters = new URLSearchParams();
+  for (const [name, value] of new FormData(form)) {
+   if (value) listFilters.set(name, value);
+  }
+  const date = $('#workDateFilter', list).value;
+  if (date) listFilters.set('workedDate', date);
+  loadList();
+ };
+ $('#filterReset', list).onclick = () => {
+  listFilters = new URLSearchParams();
+  loadList();
+ };
+ $('#createButton', list).onclick = event => {
+  event.preventDefault();
+  go('create');
+ };
+ for (const link of $$('[data-detail]', list)) {
+  link.onclick = event => {
+   event.preventDefault();
+   go('detail', link.dataset.detail);
+  };
+ }
 }
 
 async function fetchDetail(id) {
@@ -253,15 +276,15 @@ async function saveEditor() {
  }
 }
 
+const initialList = $('#diaryList', main);
 pages.diary = {
  renderList() {
-  main.innerHTML = heading('재배일지작업 목록');
-  loadList();
+  if (initialList && initialList.isConnected) bindList();
+  else loadList();
  },
  renderDetail, renderEditor,
  applyCycleFilter(planName) {
-  filterCycle = planName;
-  listPage = 1;
+  listFilters.set('planName', planName);
   loadList();
  }
 };

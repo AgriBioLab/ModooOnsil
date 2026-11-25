@@ -25,7 +25,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(HttpMethod.GET, "/api/members/availability").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/members").permitAll()
-                        .requestMatchers("/api/**").authenticated()
+                        .requestMatchers("/api/**", "/mypage.html", "/cultivationDiaryList.html").authenticated()
                         .anyRequest().permitAll())
                 .exceptionHandling(errors -> errors.defaultAuthenticationEntryPointFor(
                         new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED),
