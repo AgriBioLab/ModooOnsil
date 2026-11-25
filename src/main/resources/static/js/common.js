@@ -154,8 +154,6 @@
     initMobileDrawer();
   });
 
-  const accountStorageKey = name => `modoo-${name}:${sampleData.meta.version}`;
-
   function notify(message) {
     const notice = document.getElementById('toast');
     if (!notice) return;
@@ -167,40 +165,10 @@
     }, 3400);
   }
 
-  function loadMemberOverrides() {
-    try {
-      return JSON.parse(localStorage.getItem(accountStorageKey('cert-overrides')) || '{}') || {};
-    } catch {
-      return {};
-    }
-  }
-
-  function saveCertificationRequest(username, patch) {
-    try {
-      const overrides = loadMemberOverrides();
-      overrides[username] = { ...overrides[username], ...patch };
-      localStorage.setItem(accountStorageKey('cert-overrides'), JSON.stringify(overrides));
-      return true;
-    } catch {
-      notify('브라우저에 변경 내용을 저장하지 못했습니다.');
-      return false;
-    }
-  }
-
   async function currentMember() {
     const response = await fetch('/api/auth/me', { headers: { Accept: 'application/json' } });
     if (response.status === 401) return null;
-    return applyLocalCertification(await (await checkResponse(response)).json());
-  }
-
-  function applyLocalCertification(member) {
-    const localCertification = loadMemberOverrides()[member.username];
-    if ((!member.certification || member.certification === '미인증') &&
-        localCertification?.certification === '인증 대기중') {
-      member.businessNumber = localCertification.businessNumber;
-      member.certification = localCertification.certification;
-    }
-    return member;
+    return (await checkResponse(response)).json();
   }
 
   async function logout() {
@@ -303,6 +271,6 @@
   window.ModooCommon = {
     ready, notify, escapeHtml, checkResponse, fetchJson, setButtonsDisabled,
     currentMember,
-    saveCertificationRequest, applyLocalCertification, showAccount, bindAccount, setCurrentMenu
+    showAccount, bindAccount, setCurrentMenu
   };
 })();

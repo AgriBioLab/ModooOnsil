@@ -1,6 +1,7 @@
 package kr.swdl.modooonsil.member.controller;
 
 import jakarta.validation.Valid;
+import kr.swdl.modooonsil.member.dto.CertificationRequest;
 import kr.swdl.modooonsil.member.dto.FarmProfileUpdateRequest;
 import kr.swdl.modooonsil.member.dto.MemberPasswordChangeRequest;
 import kr.swdl.modooonsil.member.dto.MemberProfileUpdateRequest;
@@ -48,6 +49,13 @@ public class MemberRestController {
             @AuthenticationPrincipal CustomUserDetails userDetails,
             @Valid @RequestBody MemberProfileUpdateRequest request) {
         return ResponseEntity.ok(memberService.updateMemberProfile(requireMemberId(userDetails), request));
+    }
+
+    @PutMapping("/api/auth/me/certification")
+    public ResponseEntity<MemberResponse> requestCertification(
+            @AuthenticationPrincipal CustomUserDetails userDetails,
+            @Valid @RequestBody CertificationRequest request) {
+        return ResponseEntity.ok(memberService.requestCertification(requireMemberId(userDetails), request.getBusinessNumber()));
     }
 
     @PostMapping("/api/auth/password")
