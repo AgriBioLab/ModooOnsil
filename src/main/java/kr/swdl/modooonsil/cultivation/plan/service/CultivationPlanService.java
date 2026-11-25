@@ -1,9 +1,9 @@
 package kr.swdl.modooonsil.cultivation.plan.service;
 
-import kr.swdl.modooonsil.cultivation.plan.domain.CultivationPlan;
-import kr.swdl.modooonsil.cultivation.plan.domain.FindAllCultivationPlanVO;
-import kr.swdl.modooonsil.cultivation.plan.domain.FindCultivationPlanDetailVO;
-import kr.swdl.modooonsil.cultivation.plan.domain.UpdateCultivationPlan;
+import kr.swdl.modooonsil.cultivation.plan.domain.vo.CultivationPlan;
+import kr.swdl.modooonsil.cultivation.plan.domain.vo.FindAllCultivationPlanVO;
+import kr.swdl.modooonsil.cultivation.plan.domain.vo.FindCultivationPlanDetailVO;
+import kr.swdl.modooonsil.cultivation.plan.domain.vo.UpdateCultivationPlan;
 
 import kr.swdl.modooonsil.cultivation.plan.repository.CultivationPlanRepository;
 import kr.swdl.modooonsil.member.repository.MemberRepository;
