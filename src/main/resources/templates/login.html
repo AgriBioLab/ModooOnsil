@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="ko">
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -17,7 +17,7 @@
   <section class="signed-out-card" aria-labelledby="loginTitle">
     <a class="login-brand" href="index.html" aria-label="모두의 온실"><svg class="auth-brand-logo" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 228 48" aria-hidden="true"><g transform="translate(4,6)"><path d="M13 0C5.8 0 0 5.8 0 13v23h24V13C24 5.8 18.2 0 13 0z" fill="#176B3A"/><path d="M33 6c-6.6 0-12 5.4-12 12v18h24V18c0-6.6-5.4-12-12-12z" fill="#176B3A" fill-opacity="0.45"/><path d="M21 18v18h4V15.5c-2.2.6-4 1.4-4 2.5z" fill="#FFFFFF"/></g><text x="60" y="33" fill="#13261B" font-family="'GmarketSansBold','Pretendard GOV','Malgun Gothic',sans-serif" font-size="25" font-weight="700" letter-spacing="-1">모두의 온실</text></svg></a>
     <h1 id="loginTitle">로그인</h1>
-    <form id="loginForm" class="login-form" method="post" action="/login">
+    <form id="loginForm" class="login-form" method="post" th:action="@{/login}">
       <div class="form-group">
         <label class="form-label" for="loginUsername">아이디</label>
         <input id="loginUsername" name="username" class="krds-input medium" type="text" maxlength="20" autocomplete="username" required>
@@ -29,11 +29,11 @@
           <button type="button" class="krds-btn medium secondary" id="loginPasswordToggle" aria-controls="loginPassword">비밀번호 보기</button>
         </div>
       </div>
-      <p id="loginError" class="auth-feedback" role="alert" data-state="error" tabindex="-1"></p>
+      <p id="loginError" class="auth-feedback" role="alert" data-state="error" tabindex="-1" th:text="${param.error != null ? '아이디와 비밀번호를 확인하세요.' : ''}"></p>
       <button type="submit" class="krds-btn medium primary">로그인</button>
       <div class="auth-links">
         <span>처음이신가요?</span>
-        <a href="signup.html">회원가입</a>
+        <a th:href="@{/signup.html}">회원가입</a>
       </div>
     </form>
   </section>
