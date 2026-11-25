@@ -12,7 +12,7 @@ import kr.swdl.modooonsil.cultivation.plan.domain.vo.FindAllCultivationPlanVO;
 import kr.swdl.modooonsil.cultivation.plan.domain.vo.FindCultivationPlanDetailVO;
 import kr.swdl.modooonsil.cultivation.plan.domain.vo.UpdateCultivationPlan;
 import kr.swdl.modooonsil.cultivation.plan.service.CultivationPlanService;
-import kr.swdl.modooonsil.member.security.CustomUserDetails;
+import kr.swdl.modooonsil.security.CustomUserDetails;
 
 import lombok.RequiredArgsConstructor;
 

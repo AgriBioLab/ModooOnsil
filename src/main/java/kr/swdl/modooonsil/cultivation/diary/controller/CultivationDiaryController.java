@@ -36,6 +36,10 @@ public class CultivationDiaryController {
             return "cultivationDiaryList";
         }
 
+        if (user == null) {
+            return "redirect:/login.html";
+        }
+
         Long memberId = user.getMemberId();
         List<FindAllCultivationDiaryVO> allRows = service.findAll(memberId, null, null, null, null, null);
         List<FindAllCultivationDiaryVO> rows = planName == null && greenhouseName == null && cropName == null
@@ -57,7 +61,7 @@ public class CultivationDiaryController {
         model.addAttribute("cropName", cropName);
         model.addAttribute("varietyName", varietyName);
         model.addAttribute("workedDate", workedDate);
-        return fragment ? "fragments/diary-list :: diaryList" : "cultivationDiaryList";
+        return fragment ? "diary-list :: diaryList" : "cultivationDiaryList";
     }
 
     private List<String> options(List<FindAllCultivationDiaryVO> rows,

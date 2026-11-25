@@ -1,5 +1,5 @@
-<!doctype html>
-<html lang="ko">
+﻿<!doctype html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -14,16 +14,16 @@
   </head>
   <body data-page="issue-list">
     <div class="app">
-      <div id="sidebarSlot"></div>
+      <aside th:replace="~{sidebar :: sidebar}"></aside>
       <div class="workarea">
-        <div id="headerSlot"></div>
+        <header th:replace="~{header :: header}"></header>
         <main>
           <nav class="crumb" aria-label="현재 위치">
             <span id="crumb">온실 / 온실 환경 이슈 / 목록</span>
           </nav>
           <div class="page-content" id="main" tabindex="-1"></div>
         </main>
-        <div id="footerSlot"></div>
+        <footer th:replace="~{footer :: footer}"></footer>
       </div>
     </div>
     <div class="notice-toast hidden" id="toast" role="status" aria-live="polite"></div>

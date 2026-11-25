@@ -1,4 +1,4 @@
-<!doctype html>
+﻿<!doctype html>
 <html lang="ko" xmlns:th="http://www.thymeleaf.org">
   <head>
     <meta charset="utf-8" />
@@ -16,9 +16,9 @@
   </head>
   <body data-page="profile">
     <div class="app profile-app">
-      <div id="sidebarSlot"></div>
+      <aside th:replace="~{sidebar :: sidebar}"></aside>
       <div class="workarea">
-        <div id="headerSlot"></div>
+        <header th:replace="~{header :: header}"></header>
         <main class="profile-page">
           <nav class="crumb" aria-label="현재 위치"><span id="crumb">내정보</span></nav>
           <div id="profileMemberData" hidden
@@ -371,7 +371,7 @@
             </div>
           </div>
         </main>
-        <div id="footerSlot"></div>
+        <footer th:replace="~{footer :: footer}"></footer>
       </div>
     </div>
     <div class="notice-toast hidden" id="toast" role="status" aria-live="polite"></div>

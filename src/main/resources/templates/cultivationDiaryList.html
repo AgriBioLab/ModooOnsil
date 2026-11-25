@@ -1,4 +1,4 @@
-<!doctype html>
+﻿<!doctype html>
 <html lang="ko" xmlns:th="http://www.thymeleaf.org">
   <head>
     <meta charset="utf-8" />
@@ -14,18 +14,18 @@
   </head>
   <body data-page="list">
     <div class="app">
-      <div id="sidebarSlot"></div>
+      <aside th:replace="~{sidebar :: sidebar}"></aside>
       <div class="workarea">
-        <div id="headerSlot"></div>
+        <header th:replace="~{header :: header}"></header>
         <main>
           <nav class="crumb" aria-label="현재 위치">
             <span id="crumb">재배일지작업 / 목록</span>
           </nav>
           <div class="page-content" id="main" tabindex="-1">
-            <th:block th:if="${listView}" th:insert="~{fragments/diary-list :: diaryList}"></th:block>
+            <th:block th:if="${listView}" th:insert="~{diary-list :: diaryList}"></th:block>
           </div>
         </main>
-        <div id="footerSlot"></div>
+        <footer th:replace="~{footer :: footer}"></footer>
       </div>
     </div>
     <div class="notice-toast hidden" id="toast" role="status" aria-live="polite"></div>
