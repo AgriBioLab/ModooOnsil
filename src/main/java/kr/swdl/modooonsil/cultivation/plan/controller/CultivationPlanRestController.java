@@ -45,13 +45,13 @@ public class CultivationPlanRestController {
         Long memberId = requireMemberId(userDetails);
 
         FindAllCultivationPlanVO searchCondition = FindAllCultivationPlanVO.builder()
-                .memberId(memberId)
-                .planName(request.getPlanName())
-                .greenhouseName(request.getGreenhouseName())
-                .cropName(request.getCropName())
-                .varietyName(request.getVarietyName())
-                .planStatus(request.getPlanStatus())
-                .build();
+                                                                           .memberId(memberId)
+                                                                           .planName(request.getPlanName())
+                                                                           .greenhouseName(request.getGreenhouseName())
+                                                                           .cropName(request.getCropName())
+                                                                           .varietyName(request.getVarietyName())
+                                                                           .planStatus(request.getPlanStatus())
+                                                                           .build();
 
         List<FindAllCultivationPlanVO> result = planService.findAll(searchCondition);
 
@@ -81,13 +81,18 @@ public class CultivationPlanRestController {
                                                                           @Valid @RequestBody CreateCultivationPlanRequest request) {
         Long memberId = requireMemberId(userDetails);
 
-        CultivationPlan newPlan = CultivationPlan.builder().memberId(memberId).planName(request.getPlanName()).greenhouseId(request.getGreenhouseId()).standardId(request.getStandardId()).plannedStartDate(request.getPlannedStartDate()).plannedEndDate(request.getPlannedEndDate()).build();
+        CultivationPlan newPlan = CultivationPlan.builder().memberId(memberId).planName(request.getPlanName())
+                                                 .greenhouseId(request.getGreenhouseId())
+                                                 .standardId(request.getStandardId())
+                                                 .plannedStartDate(request.getPlannedStartDate())
+                                                 .plannedEndDate(request.getPlannedEndDate()).build();
 
         Long planId = planService.addCultivationPlan(newPlan);
 
         FindCultivationPlanDetailVO result = planService.findByMemberIdAndPlanId(memberId, planId);
 
-        URI location = ServletUriComponentsBuilder.fromCurrentRequest().path("/{planId}").buildAndExpand(planId).toUri();
+        URI location = ServletUriComponentsBuilder.fromCurrentRequest().path("/{planId}").buildAndExpand(planId)
+                                                  .toUri();
 
         return ResponseEntity.created(location).body(result);
     }
@@ -102,7 +107,12 @@ public class CultivationPlanRestController {
                                                                              @Valid @RequestBody UpdateCultivationPlanRequest request) {
         Long memberId = requireMemberId(userDetails);
 
-        UpdateCultivationPlan updatePlan = UpdateCultivationPlan.builder().memberId(memberId).planId(planId).planName(request.getPlanName()).greenhouseId(request.getGreenhouseId()).standardId(request.getStandardId()).plannedStartDate(request.getPlannedStartDate()).plannedEndDate(request.getPlannedEndDate()).build();
+        UpdateCultivationPlan updatePlan = UpdateCultivationPlan.builder().memberId(memberId).planId(planId)
+                                                                .planName(request.getPlanName())
+                                                                .greenhouseId(request.getGreenhouseId())
+                                                                .standardId(request.getStandardId())
+                                                                .plannedStartDate(request.getPlannedStartDate())
+                                                                .plannedEndDate(request.getPlannedEndDate()).build();
 
         planService.updateCultivationPlan(updatePlan);
 
@@ -136,7 +146,8 @@ public class CultivationPlanRestController {
                                                                           @Valid @RequestBody EndCultivationPlanRequest request) {
         Long memberId = requireMemberId(userDetails);
 
-        CultivationPlan endPlan = CultivationPlan.builder().memberId(memberId).planId(planId).endReason(request.getEndReason()).build();
+        CultivationPlan endPlan = CultivationPlan.builder().memberId(memberId).planId(planId)
+                                                 .endReason(request.getEndReason()).build();
 
         planService.updateCultivationPlanEnd(endPlan);
 
