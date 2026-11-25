@@ -22,9 +22,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
-import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
-import java.net.URI;
 import java.util.List;
 
 @RestController
@@ -90,11 +88,8 @@ public class CultivationPlanRestController {
         Long planId = planService.addCultivationPlan(newPlan);
 
         FindCultivationPlanDetailVO result = planService.findByMemberIdAndPlanId(memberId, planId);
-
-        URI location = ServletUriComponentsBuilder.fromCurrentRequest().path("/{planId}").buildAndExpand(planId)
-                                                  .toUri();
-
-        return ResponseEntity.created(location).body(result);
+        
+        return ResponseEntity.ok().body(result);
     }
 
     /*
