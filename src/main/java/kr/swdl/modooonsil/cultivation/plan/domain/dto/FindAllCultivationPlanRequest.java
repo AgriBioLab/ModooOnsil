@@ -1,12 +1,9 @@
 package kr.swdl.modooonsil.cultivation.plan.domain.dto;
 
-import lombok.Getter;
-import lombok.Setter;
-import lombok.NoArgsConstructor;
-import lombok.AllArgsConstructor;
+import lombok.*;
 
 @Getter
-@Setter
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
 public class FindAllCultivationPlanRequest {
