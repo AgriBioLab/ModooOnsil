@@ -289,8 +289,8 @@
           <span>재배 관리</span>
         </a>
         <div class="landing-top-actions">
-          <a class="btn xs header-btn" href="login.html">로그인</a>
-          <a class="btn main xs" href="signup.html">농민 회원가입</a>
+          <a class="btn xs header-btn" href="login">로그인</a>
+          <a class="btn main xs" href="signup">농민 회원가입</a>
         </div>
       </div>
     </header>
@@ -301,8 +301,8 @@
           <h1>농민 누구나 쉽고 간편하게 쓰는<br>온실 재배관리</h1>
           <p>환경 데이터와 작기·재배일지를 한곳에 모아 현장 체감형 디지털 영농을 지원합니다.</p>
           <div class="landing-hero-actions">
-            <a class="btn main" href="login.html">로그인하기</a>
-            <a class="btn" href="signup.html">농민 회원가입</a>
+            <a class="btn main" href="login">로그인하기</a>
+            <a class="btn" href="signup">농민 회원가입</a>
           </div>
         </div>
         <div class="landing-hero-visual" aria-hidden="true">

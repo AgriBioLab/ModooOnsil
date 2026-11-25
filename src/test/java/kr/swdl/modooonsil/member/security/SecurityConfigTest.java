@@ -37,7 +37,7 @@ class SecurityConfigTest {
             assertThat(response.statusCode()).isEqualTo(200);
             assertThat(response.body()).contains("class=\"topbar\"", "class=\"sidebar\"", "class=\"site-footer\"");
         }
-        for (String path : new String[]{"/login.html", "/signup.html"}) {
+        for (String path : new String[]{"/login", "/signup"}) {
             HttpResponse<String> response = get(path, "text/html");
             assertThat(response.statusCode()).isEqualTo(200);
         }
@@ -46,8 +46,8 @@ class SecurityConfigTest {
     @Test
     void 비로그인_보호_뷰는_로그인으로_리다이렉트한다() throws Exception {
         for (String path : new String[]{
-                "/mypage.html",
-                "/cultivationDiaryList.html",
+                "/mypage",
+                "/cultivation-diaries",
                 "/cultivationPlanList.html",
                 "/greenhouseList.html",
                 "/environmentChangeList.html",
@@ -56,7 +56,7 @@ class SecurityConfigTest {
             HttpResponse<String> response = get(path, "text/html");
             assertThat(response.statusCode()).isEqualTo(302);
             assertThat(response.headers().firstValue("Location")).hasValueSatisfying(
-                    location -> assertThat(location).endsWith("/login.html"));
+                    location -> assertThat(location).endsWith("/login"));
         }
     }
 

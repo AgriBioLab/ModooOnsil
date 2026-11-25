@@ -1,28 +1,29 @@
-﻿<!doctype html>
+<!doctype html>
 <html lang="ko" xmlns:th="http://www.thymeleaf.org">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <base href="/" th:href="@{/}" />
     <title>모두의온실 | 재배일지작업</title>
     <link rel="stylesheet" href="vendor/krds/css/component/output.css" />
     <link rel="stylesheet" href="css/common.css" />
     <link rel="stylesheet" href="css/cultivationDiary.css?v=20261120-badges" />
     <script src="js/sampleData.js" defer></script>
     <script src="js/common.js" defer></script>
-    <script src="js/app.js" defer></script>
-    <script src="js/cultivationDiary.js?v=20261120-badges" defer></script>
+    <script src="js/app.js?v=20261125-diary-routes" defer></script>
+    <script src="js/cultivationDiary.js?v=20261125-diary-rest-filters" defer></script>
   </head>
-  <body data-page="list">
+  <body data-page="list" th:attr="data-diary-view=${diaryView},data-diary-id=${diaryId}">
     <div class="app">
       <aside th:replace="~{sidebar :: sidebar}"></aside>
       <div class="workarea">
         <header th:replace="~{header :: header}"></header>
         <main>
-          <nav class="crumb" aria-label="현재 위치">
+          <nav class="crumb" aria-label="현재 위치">문제
             <span id="crumb">재배일지작업 / 목록</span>
           </nav>
           <div class="page-content" id="main" tabindex="-1">
-            <th:block th:if="${listView}" th:insert="~{diary-list :: diaryList}"></th:block>
+            <th:block th:if="${diaryView == 'list'}" th:insert="~{diary-list :: diaryList}"></th:block>
           </div>
         </main>
         <footer th:replace="~{footer :: footer}"></footer>

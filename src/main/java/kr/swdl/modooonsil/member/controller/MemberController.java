@@ -13,20 +13,20 @@ import org.springframework.web.bind.annotation.GetMapping;
 public class MemberController {
     private final MemberService memberService;
 
-    @GetMapping("/login.html")
+    @GetMapping("/login")
     public String login() {
         return "login";
     }
 
-    @GetMapping("/signup.html")
+    @GetMapping("/signup")
     public String signup() {
         return "signup";
     }
 
-    @GetMapping("/mypage.html")
+    @GetMapping("/mypage")
     public String mypage(@AuthenticationPrincipal CustomUserDetails user, Model model) {
         if (user == null) {
-            return "redirect:/login.html";
+            return "redirect:/login";
         }
         model.addAttribute("member", memberService.getCurrentMember(user.getMemberId()));
         return "mypage";

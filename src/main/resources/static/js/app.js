@@ -105,7 +105,6 @@
   const getStage = id =>
     config.growthStages.find(stage => stage.stageId === id) || config.growthStages[0];
   const stageOrder = id => getStage(id).order;
-  const getDiary = id => diaryRows.find(diary => diary.diaryId === id) || diaryRows[0];
   const getSelectedCycle = () =>
     config.cycles.find(cycle => cycle.cycleId === state.selectedCycleId) || config.cycles[0];
   const cycleStatus = cycle => cycle.status || '미진행';
@@ -336,17 +335,30 @@
     if (target.startsWith('gh-')) return 'greenhouseList.html';
     if (target.startsWith('env-')) return 'environmentChangeList.html';
     if (target.startsWith('issue-')) return 'environmentIssueList.html';
-    if (target === 'member') return 'mypage.html?tab=pw';
-    if (target === 'profile') return 'mypage.html';
-    if (target === 'cert') return 'mypage.html?tab=cert';
-    return 'cultivationDiaryList.html';
+    if (target === 'member') return 'mypage?tab=pw';
+    if (target === 'profile') return 'mypage';
+    if (target === 'cert') return 'mypage?tab=cert';
+    return 'cultivation-diaries';
   }
 
   function go(target, id) {
+    if (target === 'create') {
+      location.assign(new URL('cultivation-diaries/new', document.baseURI));
+      return;
+    }
+    if (target === 'detail' || target === 'edit') {
+      const path = 'cultivation-diaries/' + encodeURIComponent(id) + (target === 'edit' ? '/edit' : '');
+      location.assign(new URL(path, document.baseURI));
+      return;
+    }
+    if (target === 'list' && document.body.dataset.diaryView && document.body.dataset.diaryView !== 'list') {
+      location.assign(new URL('cultivation-diaries', document.baseURI));
+      return;
+    }
     const hostPage = document.body?.dataset?.page;
     const targetFile = resolvePageFile(target);
     if (hostPage && targetFile.split('?')[0] !== resolvePageFile(hostPage).split('?')[0]) {
-      const destination = new URL(targetFile, location.href);
+      const destination = new URL(targetFile, document.baseURI);
       if (target !== hostPage && target !== 'cert') destination.searchParams.set('view', target);
       if (id) destination.searchParams.set('id', id);
       location.href = destination.href;
@@ -841,7 +853,7 @@
     const member = await currentMember();
     window.__modooSignedIn = Boolean(member);
     if (hostPage === 'entry') {
-      location.replace(member ? 'cultivationDiaryList.html' : 'login.html');
+      location.replace(member ? 'cultivation-diaries' : 'login');
       return;
     }
 
@@ -851,7 +863,7 @@
         pages.home?.renderLanding();
         return;
       }
-      location.replace('login.html');
+      location.replace('login');
       return;
     }
 
@@ -874,13 +886,14 @@
     if ($('#cycleEndConfirm')) $('#cycleEndConfirm').onclick = () => pages.cycle?.commitCycleEnd();
 
     const params = new URLSearchParams(location.search);
-    const initialView = params.get('view') || hostPage;
+    const diaryView = document.body.dataset.diaryView;
+    const initialView = diaryView || params.get('view') || hostPage;
     if (initialView === 'profile' || initialView === 'cert') {
       location.replace(resolvePageFile(initialView));
       return;
     }
 
-    const initialId = params.get('id');
+    const initialId = diaryView ? document.body.dataset.diaryId : params.get('id');
     const initialCycleId = params.get('cycleId');
     signIn(member, initialView, initialId);
     const initialCycle = config.cycles.find(cycle => cycle.cycleId === initialCycleId);
@@ -913,7 +926,6 @@
     stageOrder,
     stageByDate,
     lastEvent,
-    getDiary,
     timeOf,
     timeSort,
     makeStarted,
