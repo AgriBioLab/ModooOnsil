@@ -72,7 +72,7 @@ public class GreenhouseRestController {
      * 4. 온실 정보 수정
      * PATCH /api/greenhouses/{greenhouseId}
      */
-    @PatchMapping("/{greenhouseId}")
+    @PutMapping("/{greenhouseId}")
     public ResponseEntity<Greenhouse> updateGreenhouse(@AuthenticationPrincipal CustomUserDetails userDetails, @PathVariable @Positive Long greenhouseId, @RequestBody Greenhouse request) {
         Long memberId = requireMemberId(userDetails);
 
