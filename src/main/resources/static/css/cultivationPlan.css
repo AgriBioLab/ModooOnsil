@@ -176,8 +176,31 @@
   display: none;
 }
 
+.plan-detail-table {
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  overflow: hidden;
+  background: var(--paper);
+}
+
+.plan-detail-table .profile-facts {
+  grid-template-columns: minmax(130px, 160px) minmax(0, 1fr);
+  border-top: 0;
+}
+
+.plan-detail-table .profile-facts dt {
+  background: #f8fafc;
+  color: var(--ink);
+  font-weight: 600;
+  border-right: 1px solid var(--line);
+}
+
+.plan-detail-table .profile-facts dd {
+  overflow-wrap: anywhere;
+}
+
 .plan-detail-body {
-  border-top: 1px solid var(--line);
+  margin-top: 16px;
 }
 
 .plan-end-form {
