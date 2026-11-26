@@ -15,7 +15,7 @@
   const PAGE_ROUTES = {
     'issue-list': '/environmentIssueList.html',
     'cycle-list': '/cultivation-plans',
-    'gh-list': '/greenhouseList.html',
+    'gh-list': '/greenhouses',
     'env-list': '/environmentChangeList.html',
     list: '/cultivation-diaries',
     create: '/cultivation-diaries/new'

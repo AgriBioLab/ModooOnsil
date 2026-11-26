@@ -145,7 +145,7 @@
     const url = isEdit
       ? `/api/greenhouses/${encodeURIComponent(greenhouseId)}`
       : '/api/greenhouses';
-    const method = isEdit ? 'PATCH' : 'POST';
+    const method = isEdit ? 'PUT' : 'POST';
 
     try {
       const response = await fetch(url, {

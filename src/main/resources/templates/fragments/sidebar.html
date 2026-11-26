@@ -101,8 +101,8 @@
       <a class="navbtn nav-sub" href="/environmentIssueList.html" data-go="issue-list">
         온실 환경 이슈
       </a>
-      <a class="navbtn nav-sub" href="/greenhouseList.html" data-go="gh-list">온실목록</a>
-      <a class="navbtn nav-sub" href="/greenhouseList.html?view=gh-create" data-go="gh-create">
+      <a class="navbtn nav-sub" th:href="@{/greenhouses}" data-go="gh-list">온실목록</a>
+      <a class="navbtn nav-sub" th:href="@{/greenhouses/new}" data-go="gh-create">
         온실등록
       </a>
     </div>
