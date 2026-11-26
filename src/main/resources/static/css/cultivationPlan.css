@@ -176,6 +176,10 @@
   display: none;
 }
 
+.plan-detail-body {
+  border-top: 1px solid var(--line);
+}
+
 .plan-end-form {
   display: grid;
   gap: 8px;
