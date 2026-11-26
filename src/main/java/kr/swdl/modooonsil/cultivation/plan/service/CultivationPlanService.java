@@ -1,5 +1,8 @@
 package kr.swdl.modooonsil.cultivation.plan.service;
 
+import com.github.pagehelper.PageHelper;
+import kr.swdl.modooonsil.common.dto.PageRequest;
+import kr.swdl.modooonsil.common.dto.PageResponse;
 import kr.swdl.modooonsil.cultivation.plan.domain.vo.CultivationPlan;
 import kr.swdl.modooonsil.cultivation.plan.domain.vo.FindAllCultivationPlanVO;
 import kr.swdl.modooonsil.cultivation.plan.domain.vo.FindCultivationPlanDetailVO;
@@ -30,13 +33,22 @@ public class CultivationPlanService {
      * 1. 작기 목록 조회
      */
     public List<FindAllCultivationPlanVO> findAll(FindAllCultivationPlanVO vo) {
+        validateSearchCondition(vo);
+        return planRepository.findAll(vo);
+    }
+
+    public PageResponse<FindAllCultivationPlanVO> findPage(FindAllCultivationPlanVO vo, PageRequest page) {
+        validateSearchCondition(vo);
+        return PageResponse.from(PageHelper.<FindAllCultivationPlanVO>startPage(page.getPage(), page.getSize())
+                .doSelectPageInfo(() -> planRepository.findForPage(vo)));
+    }
+
+    private void validateSearchCondition(FindAllCultivationPlanVO vo) {
         if (vo == null) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "검색 조건이 올바르지 않습니다.");
         }
 
         existsMemberId(vo.getMemberId());
-
-        return planRepository.findAll(vo);
     }
 
     /*
