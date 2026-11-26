@@ -5,7 +5,7 @@
     <title th:text="${greenhouseView == 'edit'} ? '모두의온실 | 온실 정보 수정' : '모두의온실 | 온실 정보 등록'">
       모두의온실 | 온실 정보 등록
     </title>
-    <th:block th:replace="~{common :: headBase}"></th:block>
+    <th:block th:replace="~{fragments/common :: headBase}"></th:block>
     <link rel="stylesheet" href="/css/greenhouse.css" />
     <script src="/js/greenhouseForm.js" defer></script>
   </head>
@@ -15,11 +15,11 @@
                  data-greenhouse-id=${greenhouseId}">
     <div class="app">
       <!-- 사이드바 -->
-      <aside th:replace="~{sidebar :: sidebar}"></aside>
+      <aside th:replace="~{fragments/sidebar :: sidebar}"></aside>
 
       <div class="workarea">
         <!-- 상단 헤더 -->
-        <header th:replace="~{header :: header}"></header>
+        <header th:replace="~{fragments/header :: header}"></header>
 
         <!-- 본문 -->
         <main>
@@ -154,11 +154,11 @@
         </main>
 
         <!-- 푸터 -->
-        <footer th:replace="~{footer :: footer}"></footer>
+        <footer th:replace="~{fragments/footer :: footer}"></footer>
       </div>
     </div>
 
-    <div th:replace="~{common :: toast}"></div>
+    <div th:replace="~{fragments/common :: toast}"></div>
   </body>
 
 </html>

@@ -2,27 +2,21 @@
 <html lang="ko" xmlns:th="http://www.thymeleaf.org">
 
   <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
     <base href="/" th:href="@{/}" />
     <title>모두의온실 | 재배일지작업 상세</title>
-
-    <link rel="stylesheet" href="vendor/krds/css/component/output.css" />
-    <link rel="stylesheet" href="css/common.css" />
-    <link rel="stylesheet" href="css/cultivationDiary.css?v=20261120-badges" />
-
-    <script src="js/common.js" defer></script>
-    <script src="js/cultivationDiary.js?v=20261126-mvc-split" defer></script>
+    <th:block th:replace="~{fragments/common :: headBase}"></th:block>
+    <link rel="stylesheet" href="/css/cultivationDiary.css?v=20261120-badges" />
+    <script src="/js/cultivationDiary.js?v=20261126-mvc-split" defer></script>
   </head>
 
   <body data-page="detail" th:attr="data-diary-view=${diaryView},data-diary-id=${diaryId}">
     <div class="app">
       <!-- 사이드바 -->
-      <aside th:replace="~{sidebar :: sidebar}"></aside>
+      <aside th:replace="~{fragments/sidebar :: sidebar}"></aside>
 
       <div class="workarea">
         <!-- 상단 헤더 -->
-        <header th:replace="~{header :: header}"></header>
+        <header th:replace="~{fragments/header :: header}"></header>
 
         <!-- 본문 -->
         <main>
@@ -114,11 +108,11 @@
         </main>
 
         <!-- 푸터 -->
-        <footer th:replace="~{footer :: footer}"></footer>
+        <footer th:replace="~{fragments/footer :: footer}"></footer>
       </div>
     </div>
 
-    <div class="notice-toast hidden" id="toast" role="status" aria-live="polite"></div>
+    <div th:replace="~{fragments/common :: toast}"></div>
   </body>
 
 </html>
