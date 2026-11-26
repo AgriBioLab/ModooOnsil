@@ -48,7 +48,7 @@ public class CultivationDiaryRestController {
             @RequestParam(required = false) LocalDate workedDate,
             @RequestParam(required = false) String greenhouseName,
             @RequestParam(defaultValue = "1") int page,
-            @RequestParam(defaultValue = "10") int size) {
+            @RequestParam(defaultValue = "5") int size) {
         return service.findPage(user.getMemberId(), planName, cropName, varietyName, workedDate, greenhouseName,
                 new PageRequest(page, size));
     }
