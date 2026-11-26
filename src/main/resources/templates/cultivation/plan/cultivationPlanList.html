@@ -115,36 +115,44 @@
 
             <section th:if="${planView == 'detail'}">
               <div class="pagehead"><h1>작기계획 상세</h1></div>
-              <div class="panel">
-                <div class="panel-body">
-                  <div class="plan-detail-table">
-                    <dl id="planDetail" class="profile-facts"></dl>
+
+              <section class="panel" aria-label="작기계획 상세 정보">
+                <div class="panel-head">
+                  <div class="panel-head-title">
+                    <p class="panel-title" id="planDetailName">—</p>
+                    <span class="krds-badge bg-light-gray hidden" id="planStatusBadge"></span>
                   </div>
-
-                  <div class="plan-detail-body">
-                    <div class="list-summary-actions">
-                      <a class="btn" th:href="@{/cultivation-plans}">목록</a>
-                      <a class="btn" id="editPlan" th:href="@{/cultivation-plans/{id}/edit(id=${planId})}" hidden>수정</a>
-                      <button type="button" class="btn main" id="startPlan" hidden>시작</button>
-                      <button type="button" class="btn" id="deletePlan" hidden>삭제</button>
-                    </div>
-
-                    <!-- 시작 · 삭제 인라인 확인 바 -->
-                    <div class="plan-delete-confirm" id="planActionConfirm" hidden>
-                      <span id="planActionMessage"></span>
-                      <button type="button" class="btn" id="planActionCancel">취소</button>
-                      <button type="button" class="btn main" id="planActionOk">확인</button>
-                    </div>
-
-                    <form id="endPlanForm" class="plan-end-form" novalidate hidden>
-                      <label for="endReason">종료 사유</label>
-                      <textarea class="ctrl" id="endReason" name="endReason" rows="3" required maxlength="1000"></textarea>
-                      <div class="plan-end-actions">
-                        <button type="submit" class="btn main">종료</button>
-                      </div>
-                    </form>
-                  </div>
+                  <span class="counter" id="planDetailSummary">—</span>
                 </div>
+
+                <div class="panel-body">
+                  <dl id="planDetail" class="profile-facts"></dl>
+
+                  <form id="endPlanForm" class="plan-end-form" novalidate hidden>
+                    <label for="endReason">종료 사유</label>
+                    <textarea class="ctrl" id="endReason" name="endReason" rows="3" required maxlength="1000"></textarea>
+                    <div class="plan-end-actions">
+                      <button type="submit" class="btn main">종료</button>
+                    </div>
+                  </form>
+                </div>
+              </section>
+
+              <!-- 시작 · 삭제 인라인 확인 바 -->
+              <div class="plan-delete-confirm" id="planActionConfirm" role="alert" hidden>
+                <span id="planActionMessage"></span>
+                <button type="button" class="btn" id="planActionCancel">취소</button>
+                <button type="button" class="btn main" id="planActionOk">확인</button>
+              </div>
+
+              <!-- 하단 액션 버튼 -->
+              <div class="module-actions">
+                <div class="module-actions-left">
+                  <a class="btn" th:href="@{/cultivation-plans}">목록</a>
+                </div>
+                <a class="btn" id="editPlan" th:href="@{/cultivation-plans/{id}/edit(id=${planId})}" hidden>수정</a>
+                <button type="button" class="btn danger" id="deletePlan" hidden>삭제</button>
+                <button type="button" class="btn main" id="startPlan" hidden>시작</button>
               </div>
             </section>
 

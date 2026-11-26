@@ -121,6 +121,22 @@
   }
 
   function renderDetail(plan) {
+    const detailName = byId('planDetailName');
+    const statusBadge = byId('planStatusBadge');
+    const detailSummary = byId('planDetailSummary');
+    if (detailName) detailName.textContent = plan.planName || '—';
+    if (detailSummary) {
+      detailSummary.textContent = [plan.greenhouseName, cropLabel(plan)].filter(Boolean).join(' · ') || '—';
+    }
+    if (statusBadge) {
+      if (plan.planStatus) {
+        statusBadge.textContent = plan.planStatus;
+        statusBadge.className = `krds-badge ${plan.planStatus === '진행' ? 'bg-light-success' : 'bg-light-gray'}`;
+      } else {
+        statusBadge.classList.add('hidden');
+      }
+    }
+
     const detail = byId('planDetail');
     detail.replaceChildren();
     const fields = {
