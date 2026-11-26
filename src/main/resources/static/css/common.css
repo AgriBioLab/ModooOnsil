@@ -6,8 +6,7 @@
 
 @font-face {
   font-family: 'GmarketSansBold';
-  src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2001@1.1/GmarketSansBold.woff')
-    format('woff');
+  src: url('../fonts/GmarketSansBold.woff') format('woff');
   font-weight: 700;
   font-display: swap;
 }
@@ -186,6 +185,43 @@ textarea:focus-visible {
 
 .skip-link:focus {
   top: 12px;
+}
+
+/* === 브랜드 로고(심볼 + GmarketSansBold 워드마크) === */
+.brand-lockup {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  white-space: nowrap;
+}
+
+.brand-mark {
+  width: 32px;
+  height: 27px;
+  display: block;
+  flex-shrink: 0;
+}
+
+.brand-wordmark {
+  font-family: 'GmarketSansBold', 'Pretendard GOV', 'Malgun Gothic', sans-serif;
+  font-size: 19px;
+  font-weight: 700;
+  letter-spacing: -0.04em;
+  line-height: 1;
+  color: #13261b;
+}
+
+.brand-lockup.is-inverse .brand-wordmark {
+  color: #ffffff;
+}
+
+.topbar-brand .brand-mark {
+  width: 26px;
+  height: 22px;
+}
+
+.topbar-brand .brand-wordmark {
+  font-size: 16px;
 }
 
 

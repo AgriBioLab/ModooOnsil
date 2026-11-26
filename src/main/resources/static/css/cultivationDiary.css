@@ -663,7 +663,7 @@
 }
 
 .diary-table {
-  min-width: 920px;
+  min-width: 880px;
 }
 
 .diary-table th:nth-child(2),
@@ -673,7 +673,14 @@
 }
 
 .diary-table th:nth-child(3),
-.diary-table td:nth-child(3),
+.diary-table td:nth-child(3) {
+  min-width: 150px;
+  max-width: 240px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
 .diary-table th:nth-child(4),
 .diary-table td:nth-child(4) {
   width: 92px;

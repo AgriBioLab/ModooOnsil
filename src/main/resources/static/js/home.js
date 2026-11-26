@@ -13,10 +13,10 @@
   } = window.ModooCommon;
 
   const PAGE_ROUTES = {
-    'issue-list': '/environmentIssueList.html',
+    'issue-list': '/preparing.html?page=issue',
     'cycle-list': '/cultivation-plans',
     'gh-list': '/greenhouses',
-    'env-list': '/environmentChangeList.html',
+    'env-list': '/preparing.html?page=env',
     list: '/cultivation-diaries',
     create: '/cultivation-diaries/new'
   };
@@ -29,7 +29,7 @@
       return;
     }
     if (target === 'issue-detail' && id) {
-      location.href = `/environmentIssueList.html?view=issue-detail&id=${encodeURIComponent(id)}`;
+      location.href = '/preparing.html?page=issue';
       return;
     }
     if (target === 'detail' && id) {
