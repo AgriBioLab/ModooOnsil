@@ -271,9 +271,54 @@
     }
   }
 
+  function renderPagination(container, page, totalPages, onSelect) {
+    const restoreFocus = container.contains(document.activeElement);
+    container.replaceChildren();
+    container.hidden = totalPages < 1;
+    if (container.hidden) return;
+
+    function addButton(label, target, disabled = false) {
+      const button = document.createElement('button');
+      button.type = 'button';
+      button.className = 'page-button';
+      button.textContent = label;
+      button.disabled = disabled;
+      button.addEventListener('click', () => onSelect(target));
+      container.append(button);
+      return button;
+    }
+
+    addButton('이전', page - 1, page === 1);
+    const pages = new Set([1]);
+    const firstPage = totalPages <= 7 ? 1 : Math.max(2, page - 2);
+    const lastPage = totalPages <= 7 ? totalPages : Math.min(totalPages - 1, page + 2);
+    for (let number = firstPage; number <= lastPage; number++) {
+      pages.add(number);
+    }
+    pages.add(totalPages);
+
+    let previous = 0;
+    for (const number of pages) {
+      if (number > previous + 1) {
+        const ellipsis = document.createElement('span');
+        ellipsis.className = 'page-ellipsis';
+        ellipsis.textContent = '…';
+        ellipsis.setAttribute('aria-hidden', 'true');
+        container.append(ellipsis);
+      }
+      const button = addButton(String(number), number);
+      if (number === page) {
+        button.setAttribute('aria-current', 'page');
+        if (restoreFocus) button.focus();
+      }
+      previous = number;
+    }
+    addButton('다음', page + 1, page === totalPages);
+  }
+
   window.ModooCommon = {
     ready, notify, escapeHtml, checkResponse, fetchJson, setButtonsDisabled,
     currentMember,
-    showAccount, bindAccount, setCurrentMenu
+    showAccount, bindAccount, setCurrentMenu, renderPagination
   };
 })();

@@ -496,6 +496,10 @@ select.ctrl:disabled {
   gap: 4px;
 }
 
+.pagination[hidden] {
+  display: none;
+}
+
 .pagination .page-button {
   border: 1px solid var(--line);
   border-radius: 6px;

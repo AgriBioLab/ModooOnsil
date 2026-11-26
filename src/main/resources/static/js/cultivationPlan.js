@@ -1,7 +1,7 @@
 (() => {
   'use strict';
 
-  const { ready, currentMember, showAccount, bindAccount, setCurrentMenu } = window.ModooCommon;
+  const { ready, currentMember, showAccount, bindAccount, setCurrentMenu, renderPagination } = window.ModooCommon;
   const page = '/cultivation-plans';
   const api = '/api/cultivation-plans';
   const { planView, planId } = document.body.dataset;
@@ -47,10 +47,10 @@
     return `${start?.replace('T', ' ') || '—'} ~ ${end?.replace('T', ' ') || '—'}`;
   }
 
-  function renderRows(plans, emptyMessage = '조건에 맞는 작기계획이 없습니다.') {
+  function renderRows(plans, total, emptyMessage = '조건에 맞는 작기계획이 없습니다.') {
     const rows = byId('planRows');
     rows.replaceChildren();
-    document.querySelector('.list-count-value').textContent = plans.length;
+    document.querySelector('.list-count-value').textContent = total;
     if (!plans.length) {
       const cell = rows.insertRow().insertCell();
       cell.colSpan = 6;
@@ -77,43 +77,51 @@
 
   function bindList() {
     const form = byId('planFilters');
+    const pagination = byId('planPagination');
     let latestSearch = 0;
 
-    async function search() {
+    async function loadPage(filters, pageNumber = 1) {
       const searchId = ++latestSearch;
-      const params = new URLSearchParams();
-      for (const [name, value] of new FormData(form)) {
-        if (value) params.set(name, value);
-      }
+      const params = new URLSearchParams(filters);
+      params.set('page', pageNumber);
       showError();
       try {
-        const plans = await request(params.size ? `${api}?${params}` : api);
+        const result = await request(`${api}/page?${params}`);
         if (searchId !== latestSearch) return;
-        if (!params.size) {
-          for (const name of ['planName', 'greenhouseName', 'cropName', 'varietyName']) {
-            const select = form.elements.namedItem(name);
-            const values = [...new Set(plans.map(plan => plan[name]).filter(Boolean))].sort();
-            select.replaceChildren(select.options[0], ...values.map(value => new Option(value, value)));
-          }
+        if (result.totalPages && pageNumber > result.totalPages) {
+          return loadPage(filters, result.totalPages);
         }
-        const status = params.get('planStatus');
-        renderRows(status ? plans.filter(plan => plan.planStatus === status) : plans);
+        renderRows(result.items, result.total);
+        renderPagination(pagination, result.page, result.totalPages, next => loadPage(filters, next));
       } catch (error) {
         if (searchId !== latestSearch) return;
-        renderRows([], '작기계획을 불러오지 못했습니다.');
+        renderPagination(pagination, 1, 0);
+        renderRows([], 0, '작기계획을 불러오지 못했습니다.');
         showError(error.message);
       }
     }
 
+    request(api).then(plans => {
+      for (const name of ['planName', 'greenhouseName', 'cropName', 'varietyName']) {
+        const select = form.elements.namedItem(name);
+        const values = [...new Set(plans.map(plan => plan[name]).filter(Boolean))].sort();
+        select.replaceChildren(select.options[0], ...values.map(value => new Option(value, value)));
+      }
+    }).catch(error => window.ModooCommon.notify(error.message));
+
     form.addEventListener('submit', event => {
       event.preventDefault();
-      search();
+      const filters = new URLSearchParams();
+      for (const [name, value] of new FormData(form)) {
+        if (value) filters.set(name, value);
+      }
+      loadPage(filters);
     });
     byId('cfReset').addEventListener('click', () => {
       form.reset();
-      search();
+      loadPage(new URLSearchParams());
     });
-    return search();
+    return loadPage(new URLSearchParams());
   }
 
   function renderDetail(plan) {
