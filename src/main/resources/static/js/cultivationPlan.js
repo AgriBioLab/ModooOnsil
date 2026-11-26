@@ -42,9 +42,13 @@
     return [crop.cropName, crop.varietyName].filter(Boolean).join(' · ');
   }
 
+  function formatDateOnly(value) {
+    return value ? String(value).slice(0, 10) : '—';
+  }
+
   function period(start, end) {
     if (!start && !end) return '—';
-    return `${start?.replace('T', ' ') || '—'} ~ ${end?.replace('T', ' ') || '—'}`;
+    return `${formatDateOnly(start)} ~ ${formatDateOnly(end)}`;
   }
 
   function renderRows(plans, emptyMessage = '조건에 맞는 작기계획이 없습니다.') {

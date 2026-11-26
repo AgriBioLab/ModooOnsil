@@ -52,7 +52,10 @@
   overflow-wrap: anywhere;
 }
 
+.profile-tabbar .tabbtn:focus,
 .profile-tabbar .tabbtn:focus-visible {
+  outline: none;
+  box-shadow: none;
   position: relative;
   z-index: 1;
 }

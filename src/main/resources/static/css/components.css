@@ -1181,6 +1181,12 @@ select.ctrl:disabled {
   color: var(--ink);
 }
 
+.tabbtn:focus,
+.tabbtn:focus-visible {
+  outline: none;
+  box-shadow: none;
+}
+
 .tabbtn[aria-selected='true'] {
   color: var(--primary-text);
   border-bottom: 2px solid var(--primary);
