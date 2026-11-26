@@ -135,7 +135,6 @@
   function bindEvents() {
     const form = document.getElementById('ghFilters');
     const resetBtn = document.getElementById('ghResetBtn');
-    const createBtn = document.getElementById('ghCreateBtn');
 
     if (form) {
       form.addEventListener('submit', event => {
@@ -148,12 +147,6 @@
       resetBtn.addEventListener('click', () => {
         form.reset();
         renderFilteredList();
-      });
-    }
-
-    if (createBtn) {
-      createBtn.addEventListener('click', () => {
-        notify('온실 등록 기능은 API 연동 후 동작합니다.');
       });
     }
   }

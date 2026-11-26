@@ -94,7 +94,7 @@
                   <a class="btn" th:href="@{/greenhouses}" id="ghToList">목록</a>
                 </div>
                 <button type="button" class="btn danger" id="ghDelete">삭제</button>
-                <button type="button" class="btn main" id="ghToEdit">수정</button>
+                <a class="btn main" id="ghToEdit" th:href="@{/greenhouses/{id}/edit(id=${greenhouseId})}">수정</a>
               </div>
             </div>
           </div>

@@ -3,6 +3,10 @@
   margin-bottom: 16px;
 }
 
+.gh-photo-preview {
+  margin-top: 10px;
+}
+
 .gh-detail-photo {
   max-width: 360px;
   width: 100%;

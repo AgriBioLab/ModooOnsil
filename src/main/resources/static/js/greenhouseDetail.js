@@ -161,8 +161,5 @@
     document.getElementById('ghDeleteOk')?.addEventListener('click', () => {
       deleteGreenhouse(greenhouseId);
     });
-    document.getElementById('ghToEdit')?.addEventListener('click', () => {
-      notify('온실 수정 화면은 준비 중입니다.');
-    });
   });
 })();
