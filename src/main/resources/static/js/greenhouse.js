@@ -1,5 +1,4 @@
 // 온실 목록 조회 · 필터링 · 이벤트 바인딩 (표준 DOM + fetch + window.ModooCommon).
-// TODO: 온실 상세·등록·수정·삭제 API(SCRUM-174) 연결 후 CRUD 기능 추가 예정.
 (() => {
   'use strict';
 
