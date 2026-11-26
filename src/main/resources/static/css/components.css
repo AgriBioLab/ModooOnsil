@@ -424,7 +424,9 @@ select.ctrl:disabled {
 .tablewrap {
   overflow: auto;
   flex: 1;
+  min-width: 0;
   min-height: 0;
+  max-width: 100%;
 }
 
 /* === 6. 데이터 테이블 · 빈 상태 · 페이지네이션 === */
@@ -644,7 +646,7 @@ select.ctrl:disabled {
 }
 
 .list-section > .tablewrap {
-  padding: 0;
+  padding: 0 0 16px;
   background: #ffffff;
 }
 
@@ -758,8 +760,11 @@ select.ctrl:disabled {
 .summary-strip {
   display: grid;
   grid-template-columns:
-    minmax(145px, 1.45fr) minmax(112px, 0.9fr) minmax(75px, 0.65fr) minmax(116px, 0.85fr)
-    minmax(100px, 0.83fr);
+    minmax(145px, 1.35fr)
+    minmax(112px, 0.9fr)
+    minmax(120px, 1.15fr)
+    minmax(110px, 0.85fr)
+    minmax(100px, 0.85fr);
   align-items: center;
   gap: 14px;
   padding: 12px 15px;
@@ -778,7 +783,10 @@ select.ctrl:disabled {
   white-space: nowrap;
 }
 
-.summary-fact > strong {
+.summary-fact > strong,
+.summary-fact > .summary-value {
+  display: block;
+  color: var(--ink);
   font-size: 13px;
   font-weight: 700;
   overflow: hidden;

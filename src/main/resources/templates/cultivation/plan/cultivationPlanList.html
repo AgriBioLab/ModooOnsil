@@ -155,9 +155,17 @@
                       <input class="ctrl" type="datetime-local" name="plannedEndDate" required step="1" />
                     </label>
                   </div>
-                  <button type="submit" class="btn main" id="savePlan" disabled>저장</button>
                 </fieldset>
-                <a class="btn" th:href="${planView == 'edit'} ? @{/cultivation-plans/{id}(id=${planId})} : @{/cultivation-plans}">취소</a>
+
+                <!-- 폼 액션 버튼 -->
+                <div class="form-actions">
+                  <a
+                    class="btn"
+                    th:href="${planView == 'edit'} ? @{/cultivation-plans/{id}(id=${planId})} : @{/cultivation-plans}">
+                    취소
+                  </a>
+                  <button type="submit" class="btn main" id="savePlan" disabled>저장</button>
+                </div>
               </form>
             </section>
           </div>
