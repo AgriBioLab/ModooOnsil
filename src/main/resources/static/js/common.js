@@ -175,7 +175,7 @@
     try {
       const response = await fetch('/logout', { method: 'POST' });
       await checkResponse(response);
-      location.replace('index.html');
+      location.replace('/index.html');
     } catch {
       notify('로그아웃하지 못했습니다. 다시 시도하세요.');
     }

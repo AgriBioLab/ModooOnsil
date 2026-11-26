@@ -157,3 +157,18 @@
     grid-template-columns: 1fr;
   }
 }
+
+.plan-criteria-panel {
+  margin-top: 12px;
+}
+
+.plan-delete-confirm {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+.plan-tablewrap-spaced {
+  margin-top: 14px;
+}

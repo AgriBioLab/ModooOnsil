@@ -1,30 +1,124 @@
 ﻿<!doctype html>
 <html lang="ko" xmlns:th="http://www.thymeleaf.org">
+
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>모두의온실 | 농장 현황</title>
-    <link rel="icon" href="img/favicon.svg" type="image/svg+xml" />
-    <link rel="stylesheet" href="vendor/krds/css/component/output.css" />
-    <link rel="stylesheet" href="css/common.css" />
-    <link rel="stylesheet" href="css/home.css" />
-    <script src="js/sampleData.js" defer></script>
-    <script src="js/common.js" defer></script>
-    <script src="js/app.js" defer></script>
-    <script src="js/home.js" defer></script>
+
+    <link rel="icon" href="/img/favicon.svg" type="image/svg+xml" />
+    <link rel="stylesheet" href="/vendor/krds/css/component/output.css" />
+    <link rel="stylesheet" href="/css/common.css" />
+    <link rel="stylesheet" href="/css/home.css" />
+
+    <script src="/js/common.js" defer></script>
+    <script src="/js/home.js" defer></script>
   </head>
+
   <body data-page="home">
     <div class="app">
+      <!-- 사이드바 -->
       <aside th:replace="~{sidebar :: sidebar}"></aside>
+
       <div class="workarea">
+        <!-- 상단 헤더 -->
         <header th:replace="~{header :: header}"></header>
+
+        <!-- 본문 -->
         <main>
-          <nav class="crumb" aria-label="현재 위치"><span id="crumb">홈 / 농장 현황</span></nav>
-          <div class="page-content" id="main" tabindex="-1"></div>
+          <nav class="crumb" aria-label="현재 위치">
+            <span id="crumb">홈 / 농장 현황</span>
+          </nav>
+
+          <!-- TODO: HomeController / Thymeleaf 연결 시 대시보드 요약 데이터를 Model로 바인딩 -->
+          <div class="page-content" id="main" tabindex="-1">
+
+            <!-- 상단 제목 및 빠른 이동 -->
+            <div class="pagehead">
+              <div>
+                <h1 id="homeFarmTitle">모두의온실 현황</h1>
+              </div>
+              <div class="home-quick-actions">
+                <button type="button" class="btn xs" id="homeGoEnv">온실 환경변화</button>
+                <button type="button" class="btn main xs" id="homeGoDiaryCreate">+ 재배일지작업 등록</button>
+              </div>
+            </div>
+
+            <div class="home-scroll">
+              <!-- 주요 현황 KPI 카드 -->
+              <section class="home-kpis" aria-label="농장 주요 현황">
+                <button type="button" class="home-kpi-card" data-home-go="issue-list">
+                  <span class="home-kpi-label">미해결 환경 이슈</span>
+                  <span class="home-kpi-value">0건</span>
+                  <span class="home-kpi-sub">전체 이력 0건</span>
+                </button>
+
+                <button type="button" class="home-kpi-card" data-home-go="list">
+                  <span class="home-kpi-label">미완료 작업</span>
+                  <span class="home-kpi-value">0건</span>
+                  <span class="home-kpi-sub">최근 일지 —</span>
+                </button>
+
+                <button type="button" class="home-kpi-card" data-home-go="cycle-list">
+                  <span class="home-kpi-label">진행 중 작기</span>
+                  <span class="home-kpi-value">0건</span>
+                  <span class="home-kpi-sub">예정 0건 · 전체 0건</span>
+                </button>
+
+                <button type="button" class="home-kpi-card" data-home-go="gh-list">
+                  <span class="home-kpi-label">운영 온실</span>
+                  <span class="home-kpi-value">0개소</span>
+                  <span class="home-kpi-sub">총 등록 면적 0 ㎡</span>
+                </button>
+              </section>
+
+              <!-- 하단 2열 현황 패널 -->
+              <div class="home-grid">
+                <div class="home-col">
+                  <section class="panel" aria-label="진행 중인 온실 현황">
+                    <div class="panel-head">
+                      <p class="panel-title">진행 중인 온실 현황</p>
+                      <button type="button" class="btn xs" data-home-go="cycle-list">전체 보기</button>
+                    </div>
+                    <div class="home-cycle-list">
+                      <p class="empty home-empty-cycle">현재 진행 중인 작기계획이 없습니다.</p>
+                    </div>
+                  </section>
+                </div>
+
+                <div class="home-col">
+                  <section class="panel" aria-label="온실 환경 이슈">
+                    <div class="panel-head">
+                      <p class="panel-title">온실 환경 이슈</p>
+                      <button type="button" class="btn xs" data-home-go="issue-list">전체 보기</button>
+                    </div>
+                    <div class="home-feed-list">
+                      <p class="empty home-empty-feed">현재 조치가 필요한 환경 이슈가 없습니다.</p>
+                    </div>
+                  </section>
+
+                  <section class="panel" aria-label="최근 재배일지">
+                    <div class="panel-head">
+                      <p class="panel-title">최근 재배일지</p>
+                      <button type="button" class="btn xs" data-home-go="list">전체 보기</button>
+                    </div>
+                    <div class="home-feed-list">
+                      <p class="empty home-empty-feed">등록된 재배일지가 없습니다.</p>
+                    </div>
+                  </section>
+                </div>
+              </div>
+            </div>
+
+          </div>
         </main>
+
+        <!-- 푸터 -->
         <footer th:replace="~{footer :: footer}"></footer>
       </div>
     </div>
+
     <div class="notice-toast hidden" id="toast" role="status" aria-live="polite"></div>
   </body>
+
 </html>
