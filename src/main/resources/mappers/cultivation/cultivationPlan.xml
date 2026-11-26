@@ -45,6 +45,9 @@
     <select id="findByMemberIdAndPlanId" parameterType="Long" resultType="kr.swdl.modooonsil.cultivation.plan.domain.vo.FindCultivationPlanDetailVO">
         SELECT
             cp.plan_id,
+            cp.greenhouse_id,
+            c.crop_id,
+            cp.standard_id,
             cp.plan_name,
             g.greenhouse_name,
             c.crop_name,
@@ -68,6 +71,9 @@
     <select id="findDeletedByMemberIdAndPlanId" parameterType="Long" resultType="kr.swdl.modooonsil.cultivation.plan.domain.vo.FindCultivationPlanDetailVO">
         SELECT
             cp.plan_id,
+            cp.greenhouse_id,
+            c.crop_id,
+            cp.standard_id,
             cp.plan_name,
             g.greenhouse_name,
             c.crop_name,
