@@ -17,7 +17,7 @@
 <!-- 상단 바 -->
 <header class="signup-topbar">
   <a class="signup-topbar-brand" href="index.html" aria-label="모두의 온실">
-    <svg class="auth-brand-logo" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 228 48" aria-hidden="true"><g transform="translate(4,6)"><path d="M13 0C5.8 0 0 5.8 0 13v23h24V13C24 5.8 18.2 0 13 0z" fill="#176B3A"/><path d="M33 6c-6.6 0-12 5.4-12 12v18h24V18c0-6.6-5.4-12-12-12z" fill="#176B3A" fill-opacity="0.45"/><path d="M21 18v18h4V15.5c-2.2.6-4 1.4-4 2.5z" fill="#FFFFFF"/></g><text x="60" y="33" fill="#13261B" font-family="'GmarketSansBold','Pretendard GOV','Malgun Gothic',sans-serif" font-size="25" font-weight="700" letter-spacing="-1">모두의 온실</text></svg>
+    <img class="auth-brand-logo" src="/img/logo-horizontal.svg" alt="" />
     <span class="signup-topbar-sub">재배 관리</span>
   </a>
   <a class="btn xs header-btn signup-topbar-btn" href="login">로그인 화면</a>
@@ -46,126 +46,114 @@
   <!-- 단계 1 템플릿: 회원정보 입력 -->
   <template id="signupFormTemplate">
     <form th:fragment="signupMemberForm" id="signupForm" class="login-form" novalidate>
-        <div class="signup-form-grid">
-          <div class="form-group">
-      <label class="form-label" for="signupFarmName">농장명 <span class="required" aria-hidden="true">*</span></label>
-      <div class="form-conts">
-        <input id="signupFarmName" name="signupFarmName" class="krds-input medium" type="text" aria-describedby="signupFarmName-feedback" required maxlength="100" autocomplete="organization">
-        
-      </div>
-      
-      <p id="signupFarmName-feedback" class="auth-feedback" aria-live="polite"></p>
-    </div>
-          <div class="form-group">
-      <label class="form-label" for="signupRepresentativeName">대표자명 <span class="required" aria-hidden="true">*</span></label>
-      <div class="form-conts">
-        <input id="signupRepresentativeName" name="signupRepresentativeName" class="krds-input medium" type="text" aria-describedby="signupRepresentativeName-feedback" required maxlength="50" autocomplete="name">
-        
-      </div>
-      
-      <p id="signupRepresentativeName-feedback" class="auth-feedback" aria-live="polite"></p>
-    </div>
-          <div class="form-group">
-      <label class="form-label" for="signupUsername">아이디 <span class="required" aria-hidden="true">*</span></label>
-      <div class="auth-input-row">
-        <input id="signupUsername" name="signupUsername" class="krds-input medium" type="text" aria-describedby="signupUsername-hint signupUsername-feedback" required minlength="6" maxlength="20" autocomplete="username" autocapitalize="none" spellcheck="false">
-        <button type="button" class="krds-btn medium secondary" data-check="signupUsername" aria-label="아이디 중복 확인">중복 확인</button>
-      </div>
-      <p id="signupUsername-hint" class="auth-hint">영문 소문자로 시작하는 영문 소문자·숫자 6~20자</p>
-      <p id="signupUsername-feedback" class="auth-feedback" aria-live="polite"></p>
-    </div>
-          <div class="form-group">
-      <label class="form-label" for="signupEmail">이메일 (선택)</label>
-      <div class="auth-input-row">
-        <input id="signupEmail" name="signupEmail" class="krds-input medium" type="email" aria-describedby="signupEmail-feedback"  maxlength="255" autocomplete="email">
-        <button type="button" class="krds-btn medium secondary" data-check="signupEmail" aria-label="이메일 중복 확인">중복 확인</button>
-      </div>
-      
-      <p id="signupEmail-feedback" class="auth-feedback" aria-live="polite"></p>
-    </div>
-          <div class="form-group">
-      <label class="form-label" for="signupPassword">비밀번호 <span class="required" aria-hidden="true">*</span></label>
-      <div class="form-conts">
-        <input id="signupPassword" name="signupPassword" class="krds-input medium" type="password" aria-describedby="signupPassword-hint signupPassword-feedback" required minlength="8" maxlength="20" autocomplete="new-password">
-        
-      </div>
-      <p id="signupPassword-hint" class="auth-hint">8~20자로 입력하세요.</p>
-      <p id="signupPassword-feedback" class="auth-feedback" aria-live="polite"></p>
-    </div>
-          <div class="form-group">
-      <label class="form-label" for="signupPasswordConfirm">비밀번호 확인 <span class="required" aria-hidden="true">*</span></label>
-      <div class="form-conts">
-        <input id="signupPasswordConfirm" name="signupPasswordConfirm" class="krds-input medium" type="password" aria-describedby="signupPasswordConfirm-feedback" required minlength="8" maxlength="20" autocomplete="new-password">
-        
-      </div>
-      
-      <p id="signupPasswordConfirm-feedback" class="auth-feedback" aria-live="polite"></p>
-    </div>
-          <div class="form-group">
-      <label class="form-label" for="signupPhone">연락처 (선택)</label>
-      <div class="form-conts">
-        <input id="signupPhone" name="signupPhone" class="krds-input medium" type="tel" aria-describedby="signupPhone-feedback"  maxlength="20" autocomplete="tel">
-        
-      </div>
-      
-      <p id="signupPhone-feedback" class="auth-feedback" aria-live="polite"></p>
-    </div>
-          <div class="form-group">
-      <label class="form-label" for="signupMainCrop">주요 재배 품목 (선택)</label>
-      <div class="form-conts">
-        <input id="signupMainCrop" name="signupMainCrop" class="krds-input medium" type="text" aria-describedby="signupMainCrop-feedback"  maxlength="100">
-        
-      </div>
-      
-      <p id="signupMainCrop-feedback" class="auth-feedback" aria-live="polite"></p>
-    </div>
-          <div class="form-group">
-            <label class="form-label" for="signupAddress">농장 주소 (선택)</label>
-            <div class="auth-input-row">
-              <input id="signupAddress" class="krds-input medium" type="text" maxlength="255" placeholder="주소 검색으로 입력하세요" readonly aria-describedby="signupAddress-feedback">
-              <button type="button" class="krds-btn medium secondary" id="signupAddrSearchBtn">주소 검색</button>
-            </div>
-            <p id="signupAddress-feedback" class="auth-feedback" aria-live="polite"></p>
+      <div class="signup-form-grid">
+        <div class="form-group">
+          <label class="form-label" for="signupFarmName">농장명 <span class="required" aria-hidden="true">*</span></label>
+          <div class="form-conts">
+            <input id="signupFarmName" name="signupFarmName" class="krds-input medium" type="text" aria-describedby="signupFarmName-feedback" required maxlength="100" autocomplete="organization">
           </div>
-          <div class="form-group">
-      <label class="form-label" for="signupAddressDetail">상세 주소 (선택)</label>
-      <div class="form-conts">
-        <input id="signupAddressDetail" name="signupAddressDetail" class="krds-input medium" type="text" aria-describedby="signupAddressDetail-feedback"  maxlength="255" autocomplete="address-line2">
-        
-      </div>
-      
-      <p id="signupAddressDetail-feedback" class="auth-feedback" aria-live="polite"></p>
-    </div>
-          <div class="form-group signup-field-wide">
-            <label class="form-label" for="signupDescription">농장 소개 (선택)</label>
-            <div class="form-conts">
-              <textarea id="signupDescription" class="krds-input medium signup-textarea" maxlength="500" aria-describedby="signupDescription-feedback"></textarea>
-            </div>
-            <p id="signupDescription-feedback" class="auth-feedback" aria-live="polite"></p>
-          </div>
+          <p id="signupFarmName-feedback" class="auth-feedback" aria-live="polite"></p>
         </div>
-        <div class="signup-actions"><button type="submit" class="krds-btn medium primary" id="signupNextBtn">다음</button></div>
-      </form>
+        <div class="form-group">
+          <label class="form-label" for="signupRepresentativeName">대표자명 <span class="required" aria-hidden="true">*</span></label>
+          <div class="form-conts">
+            <input id="signupRepresentativeName" name="signupRepresentativeName" class="krds-input medium" type="text" aria-describedby="signupRepresentativeName-feedback" required maxlength="50" autocomplete="name">
+          </div>
+          <p id="signupRepresentativeName-feedback" class="auth-feedback" aria-live="polite"></p>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="signupUsername">아이디 <span class="required" aria-hidden="true">*</span></label>
+          <div class="auth-input-row">
+            <input id="signupUsername" name="signupUsername" class="krds-input medium" type="text" aria-describedby="signupUsername-hint signupUsername-feedback" required minlength="6" maxlength="20" autocomplete="username" autocapitalize="none" spellcheck="false">
+            <button type="button" class="krds-btn medium secondary" data-check="signupUsername" aria-label="아이디 중복 확인">중복 확인</button>
+          </div>
+          <p id="signupUsername-hint" class="auth-hint">영문 소문자로 시작하는 영문 소문자·숫자 6~20자</p>
+          <p id="signupUsername-feedback" class="auth-feedback" aria-live="polite"></p>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="signupEmail">이메일 (선택)</label>
+          <div class="auth-input-row">
+            <input id="signupEmail" name="signupEmail" class="krds-input medium" type="email" aria-describedby="signupEmail-feedback" maxlength="255" autocomplete="email">
+            <button type="button" class="krds-btn medium secondary" data-check="signupEmail" aria-label="이메일 중복 확인">중복 확인</button>
+          </div>
+          <p id="signupEmail-feedback" class="auth-feedback" aria-live="polite"></p>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="signupPassword">비밀번호 <span class="required" aria-hidden="true">*</span></label>
+          <div class="form-conts">
+            <input id="signupPassword" name="signupPassword" class="krds-input medium" type="password" aria-describedby="signupPassword-hint signupPassword-feedback" required minlength="8" maxlength="20" autocomplete="new-password">
+          </div>
+          <p id="signupPassword-hint" class="auth-hint">8~20자로 입력하세요.</p>
+          <p id="signupPassword-feedback" class="auth-feedback" aria-live="polite"></p>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="signupPasswordConfirm">비밀번호 확인 <span class="required" aria-hidden="true">*</span></label>
+          <div class="form-conts">
+            <input id="signupPasswordConfirm" name="signupPasswordConfirm" class="krds-input medium" type="password" aria-describedby="signupPasswordConfirm-feedback" required minlength="8" maxlength="20" autocomplete="new-password">
+          </div>
+          <p id="signupPasswordConfirm-feedback" class="auth-feedback" aria-live="polite"></p>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="signupPhone">연락처 (선택)</label>
+          <div class="form-conts">
+            <input id="signupPhone" name="signupPhone" class="krds-input medium" type="tel" aria-describedby="signupPhone-feedback" maxlength="20" autocomplete="tel">
+          </div>
+          <p id="signupPhone-feedback" class="auth-feedback" aria-live="polite"></p>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="signupMainCrop">주요 재배 품목 (선택)</label>
+          <div class="form-conts">
+            <input id="signupMainCrop" name="signupMainCrop" class="krds-input medium" type="text" aria-describedby="signupMainCrop-feedback" maxlength="100">
+          </div>
+          <p id="signupMainCrop-feedback" class="auth-feedback" aria-live="polite"></p>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="signupAddress">농장 주소 (선택)</label>
+          <div class="auth-input-row">
+            <input id="signupAddress" class="krds-input medium" type="text" maxlength="255" placeholder="주소 검색으로 입력하세요" readonly aria-describedby="signupAddress-feedback">
+            <button type="button" class="krds-btn medium secondary" id="signupAddrSearchBtn">주소 검색</button>
+          </div>
+          <p id="signupAddress-feedback" class="auth-feedback" aria-live="polite"></p>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="signupAddressDetail">상세 주소 (선택)</label>
+          <div class="form-conts">
+            <input id="signupAddressDetail" name="signupAddressDetail" class="krds-input medium" type="text" aria-describedby="signupAddressDetail-feedback" maxlength="255" autocomplete="address-line2">
+          </div>
+          <p id="signupAddressDetail-feedback" class="auth-feedback" aria-live="polite"></p>
+        </div>
+        <div class="form-group signup-field-wide">
+          <label class="form-label" for="signupDescription">농장 소개 (선택)</label>
+          <div class="form-conts">
+            <textarea id="signupDescription" class="krds-input medium signup-textarea" maxlength="500" aria-describedby="signupDescription-feedback"></textarea>
+          </div>
+          <p id="signupDescription-feedback" class="auth-feedback" aria-live="polite"></p>
+        </div>
+      </div>
+      <div class="signup-actions">
+        <button type="submit" class="krds-btn medium primary" id="signupNextBtn">다음</button>
+      </div>
+    </form>
   </template>
+
   <!-- 단계 2 템플릿: 농업경영체 인증 -->
   <template id="signupCertificationFormTemplate">
     <form id="signupCertificationForm" class="login-form">
-        <div class="form-group">
-      <label class="form-label" for="signupBusinessNumber">농업경영체 등록번호 (선택)</label>
-      <div class="form-conts">
-        <input id="signupBusinessNumber" name="signupBusinessNumber" class="krds-input medium" type="text" aria-describedby="signupBusinessNumber-hint signupBusinessNumber-feedback"  maxlength="20">
-        
-      </div>
-      <p id="signupBusinessNumber-hint" class="auth-hint">등록번호를 입력해 인증을 요청하시면 관리자 승인 후 인증이 완료됩니다.</p>
-      <p id="signupBusinessNumber-feedback" class="auth-feedback" aria-live="polite"></p>
-    </div>
-        <div class="signup-actions">
-          <button type="button" class="krds-btn medium tertiary" id="signupPrevBtn">이전</button>
-          <button type="button" class="krds-btn medium secondary" id="signupCertBtn">인증 요청</button>
-          <button type="submit" class="krds-btn medium primary">가입하기</button>
+      <div class="form-group">
+        <label class="form-label" for="signupBusinessNumber">농업경영체 등록번호 (선택)</label>
+        <div class="form-conts">
+          <input id="signupBusinessNumber" name="signupBusinessNumber" class="krds-input medium" type="text" aria-describedby="signupBusinessNumber-hint signupBusinessNumber-feedback" maxlength="20">
         </div>
-        <p class="auth-feedback" id="signupSaveError" role="alert" data-state="error"></p>
-      </form>
+        <p id="signupBusinessNumber-hint" class="auth-hint">등록번호를 입력해 인증을 요청하시면 관리자 승인 후 인증이 완료됩니다.</p>
+        <p id="signupBusinessNumber-feedback" class="auth-feedback" aria-live="polite"></p>
+      </div>
+      <div class="signup-actions">
+        <button type="button" class="krds-btn medium tertiary" id="signupPrevBtn">이전</button>
+        <button type="button" class="krds-btn medium secondary" id="signupCertBtn">인증 요청</button>
+        <button type="submit" class="krds-btn medium primary">가입하기</button>
+      </div>
+      <p class="auth-feedback" id="signupSaveError" role="alert" data-state="error"></p>
+    </form>
   </template>
 </main>
 <!-- 푸터 -->

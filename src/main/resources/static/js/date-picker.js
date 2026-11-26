@@ -5,6 +5,7 @@
   const { escapeHtml } = window.ModooCommon;
   const $ = (selector, base = document) => base.querySelector(selector);
 
+  // === 1. 상수 · 날짜 유틸 · 팝오버 공통 닫기 ===
   const CALENDAR_SVG =
     '<svg class="drp-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">' +
     '<rect x="3" y="4" width="18" height="18" rx="2"/>' +
@@ -50,6 +51,7 @@
     document.addEventListener('keydown', window.__drpDocKey);
   }
 
+  // === 2. 기간 선택기 (Date Range Picker) ===
   function dateRangeControl(idPrefix, fromValue, toValue) {
     const hasValue = Boolean(fromValue || toValue);
     const label = hasValue
@@ -225,6 +227,7 @@
     bindDatePopoverDismiss();
   }
 
+  // === 3. 단일 날짜 선택기 (Single Date Picker) ===
   function singleDateControl(id, value = '', opts = {}) {
     const currentValue = value || '';
     const hasValue = Boolean(currentValue);
