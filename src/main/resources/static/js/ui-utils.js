@@ -161,7 +161,6 @@
 
   function resolvePageFile(target) {
     if (target === 'home') return '/index.html';
-    if (target.startsWith('cycle-')) return '/cultivationPlanList.html';
     if (target.startsWith('gh-')) return '/greenhouseList.html';
     if (target.startsWith('env-')) return '/environmentChangeList.html';
     if (target.startsWith('issue-')) return '/environmentIssueList.html';
@@ -171,6 +170,17 @@
   }
 
   function go(target, id) {
+    if (target.startsWith('cycle-')) {
+      let path = '/cultivation-plans';
+      if (target === 'cycle-create') {
+        path += '/new';
+      } else if (id && (target === 'cycle-detail' || target === 'cycle-edit')) {
+        path += `/${encodeURIComponent(id)}`;
+        if (target === 'cycle-edit') path += '/edit';
+      }
+      location.assign(path);
+      return;
+    }
     const hostPage = document.body?.dataset?.page;
     const targetFile = resolvePageFile(target);
     if (hostPage && targetFile !== resolvePageFile(hostPage).split('?')[0]) {
@@ -181,7 +191,6 @@
       return;
     }
     if (target.startsWith('issue-') && id) state.selectedIssueId = id;
-    else if (target.startsWith('cycle-') && id) state.selectedCycleId = id;
     else if (target.startsWith('gh-') && id) state.selectedGhId = id;
     else if (id) state.selectedId = id;
 

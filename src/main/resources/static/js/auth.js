@@ -261,7 +261,7 @@
     if (page === 'login' || page === 'signup') {
       try {
         if (await currentMember()) {
-          location.replace('/index.html');
+          location.replace('/cultivation-plans');
           return;
         }
       } catch {
