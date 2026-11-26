@@ -1,34 +1,45 @@
 <!doctype html>
 <html lang="ko">
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>모두의온실 | 에러 404</title>
-  <link rel="icon" href="/img/favicon.svg" type="image/svg+xml">
-  <link rel="stylesheet" href="/vendor/krds/css/component/output.css">
-  <link rel="stylesheet" href="/css/common.css">
-  <link rel="stylesheet" href="/css/auth.css">
-  <link rel="stylesheet" href="/css/error.css">
-  <script src="/js/error.js" defer></script>
-</head>
-<body>
-<main class="minimal-error-wrap">
-  <a class="minimal-error-home-link" href="/index.html" aria-label="모두의 온실 홈으로 이동">
-    <svg class="minimal-error-logo" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 228 48" aria-hidden="true"><g transform="translate(4,6)"><path d="M13 0C5.8 0 0 5.8 0 13v23h24V13C24 5.8 18.2 0 13 0z" fill="#176B3A"/><path d="M33 6c-6.6 0-12 5.4-12 12v18h24V18c0-6.6-5.4-12-12-12z" fill="#176B3A" fill-opacity="0.45"/><path d="M21 18v18h4V15.5c-2.2.6-4 1.4-4 2.5z" fill="#FFFFFF"/></g><text x="60" y="33" fill="#13261B" font-family="'GmarketSansBold','Pretendard GOV','Malgun Gothic',sans-serif" font-size="25" font-weight="700" letter-spacing="-1">모두의 온실</text></svg>
-  </a>
-  <section class="minimal-error-card" aria-labelledby="errorHeading">
-    <p class="minimal-error-code">에러 404</p>
-    <h1 id="errorHeading" class="minimal-error-title">페이지를 찾을 수 없습니다.</h1>
-    <p class="minimal-error-desc">
-      요청하신 페이지의 주소가 올바르지 않거나 변경·삭제되었습니다.<br>
-      입력하신 주소(URL)를 다시 확인해 주세요.
-    </p>
-    <div class="minimal-error-actions">
-      <a class="krds-btn medium primary" href="/index.html">메인으로 이동</a>
-      <button type="button" id="errorBackBtn" class="krds-btn medium secondary">이전 페이지로 이동</button>
-    </div>
-  </section>
-  <p class="minimal-error-copy">&copy; 2026 모두의온실. All rights reserved.</p>
-</main>
-</body>
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>모두의온실 | 에러 404</title>
+
+    <link rel="icon" href="/img/favicon.svg" type="image/svg+xml" />
+    <link rel="stylesheet" href="/vendor/krds/css/component/output.css" />
+    <link rel="stylesheet" href="/css/common.css" />
+    <link rel="stylesheet" href="/css/auth.css" />
+    <link rel="stylesheet" href="/css/error.css" />
+
+    <script src="/js/error.js" defer></script>
+  </head>
+
+  <body>
+    <main class="minimal-error-wrap">
+      <!-- 상단 로고 -->
+      <a class="minimal-error-home-link" href="/index.html" aria-label="모두의 온실 홈으로 이동">
+        <img class="minimal-error-logo" src="/img/logo-horizontal.svg" alt="" />
+      </a>
+
+      <!-- 안내 카드 -->
+      <section class="minimal-error-card" aria-labelledby="errorHeading">
+        <p class="minimal-error-code">에러 404</p>
+        <h1 id="errorHeading" class="minimal-error-title">페이지를 찾을 수 없습니다.</h1>
+        <p class="minimal-error-desc">
+          요청하신 페이지의 주소가 올바르지 않거나 변경·삭제되었습니다.<br />
+          입력하신 주소(URL)를 다시 확인해 주세요.
+        </p>
+
+        <div class="minimal-error-actions">
+          <a class="krds-btn medium primary" href="/index.html">메인으로 이동</a>
+          <button type="button" id="errorBackBtn" class="krds-btn medium secondary">이전 페이지로 이동</button>
+        </div>
+      </section>
+
+      <!-- 저작권 안내 -->
+      <p class="minimal-error-copy">&copy; 2026 모두의온실. All rights reserved.</p>
+    </main>
+  </body>
+
 </html>

@@ -4,6 +4,7 @@
   const $ = (s, base = document) => base.querySelector(s);
   const $$ = (s, base = document) => [...base.querySelectorAll(s)];
 
+  // === 1. 로그인 화면 ===
   function setupLogin() {
     const form = $('#loginForm');
     if (!form) return;
@@ -22,6 +23,7 @@
     form.addEventListener('input', () => { feedback.textContent = ''; });
   }
 
+  // === 2. 회원가입 다단계 폼 ===
   const signupUsernamePattern = /^[a-z][a-z0-9]{5,19}$/;
 
   function signupFeedback(input, message, state = 'error') {
@@ -255,6 +257,7 @@
     renderMemberForm();
   }
 
+  // === 3. 페이지 초기화 ===
   async function init() {
     await ready;
     const page = document.body?.dataset?.page;

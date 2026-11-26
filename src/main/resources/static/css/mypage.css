@@ -11,7 +11,8 @@
   font-size: 28px;
 }
 
-.profile-page .panel-head h2 {
+.profile-page .panel-head h2,
+.profile-page .panel-head .panel-title {
   font-size: 17px;
 }
 
@@ -29,7 +30,8 @@
   gap: 8px;
 }
 
-.profile-summary-title h2 {
+.profile-summary-title h2,
+.profile-summary-title .profile-farm-title {
   margin: 0;
   font-size: 17px;
   overflow-wrap: anywhere;
