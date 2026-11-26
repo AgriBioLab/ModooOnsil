@@ -12,6 +12,7 @@
 
   let toastTimer;
 
+  // === 1. 접근성 · 모바일 드로어 ===
   function ensureSkipLink() {
     if (!document.getElementById('main') || document.querySelector('.skip-link')) return;
     const skipLink = document.createElement('a');
@@ -154,6 +155,7 @@
     initMobileDrawer();
   });
 
+  // === 2. 알림 토스트 · 인증 배지 · 계정 바인딩 ===
   function notify(message) {
     const notice = document.getElementById('toast');
     if (!notice) return;
@@ -226,6 +228,7 @@
     }
   }
 
+  // === 3. 내비게이션 · XSS/네트워크 공용 유틸 ===
   function setCurrentMenu(entry) {
     let activeLink;
     for (const link of document.querySelectorAll('#navigation [data-go]')) {

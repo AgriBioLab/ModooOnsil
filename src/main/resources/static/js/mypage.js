@@ -1,6 +1,7 @@
 (function () {
   'use strict';
 
+  // === 1. 프로필 페이지 컨트롤러 (폼 검증 · 상태) ===
   function createProfilePage(main, actions) {
     const get = id => main.querySelector('#' + id);
     const tabs = [...main.querySelectorAll('[data-profile-tab]')];
@@ -321,6 +322,7 @@
       openTab
     });
 
+    // === 2. 탭 전환 · 초기화 ===
     function showTab(tab, focusId) {
       const menuKey = tab === 'cert' ? 'cert' : tab === 'pw' ? 'member' : 'profile';
       common.setCurrentMenu(menuKey);

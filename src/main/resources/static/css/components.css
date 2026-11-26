@@ -1,4 +1,6 @@
 /* 공통 UI 컴포넌트 · 폼 · 테이블 · 필터 · 반응형 */
+
+/* === 1. 브레드크럼 · 페이지 헤더 === */
 .crumb {
   flex: none;
   color: var(--muted);
@@ -42,6 +44,7 @@
   font-weight: 600;
 }
 
+/* === 2. 패널 공통 === */
 .panel {
   display: flex;
   flex-direction: column;
@@ -100,6 +103,7 @@
   padding: 20px 22px;
 }
 
+/* === 3. 버튼 · 링크 === */
 .btn {
   display: inline-flex;
   align-items: center;
@@ -190,6 +194,7 @@
   color: var(--primary-pressed);
 }
 
+/* === 4. 폼 필드 · 입력 컨트롤 · 알림 === */
 .field {
   min-width: 0;
   margin-bottom: 12px;
@@ -309,6 +314,7 @@ select.ctrl:disabled {
   gap: 8px;
 }
 
+/* === 5. 인증 화면 · KRDS 버튼/배지 오버라이드 === */
 .signed-out {
   background: var(--soft);
   display: flex;
@@ -421,6 +427,7 @@ select.ctrl:disabled {
   min-height: 0;
 }
 
+/* === 6. 데이터 테이블 · 빈 상태 · 페이지네이션 === */
 .data-table {
   border-collapse: collapse;
   width: 100%;
@@ -523,6 +530,7 @@ select.ctrl:disabled {
   user-select: none;
 }
 
+/* === 7. 목록 필터 바 · 요약 바 · 컨텍스트 바 === */
 .filterbar {
   display: flex;
   flex-wrap: wrap;
@@ -731,6 +739,7 @@ select.ctrl:disabled {
   color: var(--muted);
 }
 
+/* === 8. 에디터(등록·수정·상세) 패널 · 작업 카드 === */
 .editor-shell {
   flex: none;
   min-height: 0;
@@ -1040,6 +1049,7 @@ select.ctrl:disabled {
   flex: none;
 }
 
+/* === 9. 모듈 레이아웃 · 탭 · 프로필 요약 카드 === */
 .module-scroll {
   flex: 1;
   min-height: 0;
@@ -1216,6 +1226,7 @@ select.ctrl:disabled {
 }
 
 
+/* === 10. 반응형 미디어 쿼리 === */
 @media (max-height: 720px) and (min-width: 841px) {
   main {
     padding: 14px 22px;

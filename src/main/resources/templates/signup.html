@@ -14,6 +14,7 @@
 </head>
 <body data-page="signup" class="signup-shell">
 <a class="skip-link" href="#signupOverlay">본문 바로가기</a>
+<!-- 상단 바 -->
 <header class="signup-topbar">
   <a class="signup-topbar-brand" href="index.html" aria-label="모두의 온실">
     <svg class="auth-brand-logo" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 228 48" aria-hidden="true"><g transform="translate(4,6)"><path d="M13 0C5.8 0 0 5.8 0 13v23h24V13C24 5.8 18.2 0 13 0z" fill="#176B3A"/><path d="M33 6c-6.6 0-12 5.4-12 12v18h24V18c0-6.6-5.4-12-12-12z" fill="#176B3A" fill-opacity="0.45"/><path d="M21 18v18h4V15.5c-2.2.6-4 1.4-4 2.5z" fill="#FFFFFF"/></g><text x="60" y="33" fill="#13261B" font-family="'GmarketSansBold','Pretendard GOV','Malgun Gothic',sans-serif" font-size="25" font-weight="700" letter-spacing="-1">모두의 온실</text></svg>
@@ -21,6 +22,7 @@
   </a>
   <a class="btn xs header-btn signup-topbar-btn" href="login">로그인 화면</a>
 </header>
+<!-- 본문: 회원가입 단계 -->
 <main id="signupOverlay" class="signup-container" tabindex="-1">
   <nav class="crumb" aria-label="현재 위치">처음 화면 &rsaquo; 농민 회원가입</nav>
   <h1 id="signupTitle">농민 회원가입</h1>
@@ -41,6 +43,7 @@
       <div class="panel-body" id="signupStepBody" th:insert="~{:: signupMemberForm}"></div>
     </section>
   </div>
+  <!-- 단계 1 템플릿: 회원정보 입력 -->
   <template id="signupFormTemplate">
     <form th:fragment="signupMemberForm" id="signupForm" class="login-form" novalidate>
         <div class="signup-form-grid">
@@ -144,6 +147,7 @@
         <div class="signup-actions"><button type="submit" class="krds-btn medium primary" id="signupNextBtn">다음</button></div>
       </form>
   </template>
+  <!-- 단계 2 템플릿: 농업경영체 인증 -->
   <template id="signupCertificationFormTemplate">
     <form id="signupCertificationForm" class="login-form">
         <div class="form-group">
@@ -164,6 +168,7 @@
       </form>
   </template>
 </main>
+<!-- 푸터 -->
 <footer class="signup-footer">
   <strong>모두의온실</strong>
   <span>농민 누구나 쉽고 간편하게 쓰는 온실 재배관리</span>

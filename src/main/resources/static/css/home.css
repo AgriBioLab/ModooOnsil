@@ -1,5 +1,6 @@
 @charset "UTF-8";
 
+/* === 1. 농장 현황 대시보드 · KPI 카드 === */
 .home-scroll {
   display: flex;
   flex-direction: column;
@@ -80,6 +81,7 @@
   color: var(--muted);
 }
 
+/* === 2. 2열 현황 패널 · 작기/센서/피드 === */
 .home-grid {
   display: grid;
   grid-template-columns: minmax(0, 1.35fr) minmax(320px, 1fr);
@@ -226,6 +228,7 @@
   padding: 6px 12px;
 }
 
+/* === 3. 대시보드 반응형 === */
 @media (max-width: 1120px) {
   .home-kpis {
     grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -261,6 +264,7 @@
   }
 }
 
+/* === 4. 랜딩 페이지(비로그인) === */
 .landing-shell {
   min-height: 100dvh;
   height: auto;
@@ -524,6 +528,7 @@
   color: var(--muted);
 }
 
+/* === 5. 랜딩 페이지 반응형 === */
 @media (max-width: 960px) {
   .landing-hero {
     grid-template-columns: 1fr;

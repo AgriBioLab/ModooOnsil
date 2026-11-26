@@ -1,3 +1,4 @@
+/* === 1. 재배일지 목록 헤더 · 뷰 전환 · 필터 === */
 .diary-pagehead {
   align-items: flex-start;
   flex-wrap: wrap;
@@ -63,6 +64,7 @@
   padding: 6px 15px;
 }
 
+/* === 2. 달력 레이아웃 · 툴바 · 그리드 === */
 .diary-calendar-layout {
   display: grid;
   grid-template-columns: minmax(0, 1.8fr) minmax(280px, 1fr);
@@ -271,6 +273,7 @@
   text-underline-offset: 3px;
 }
 
+/* === 3. 선택 일자 상세 작업 카드 === */
 .diary-day-details {
   scroll-margin-top: 16px;
 }
@@ -396,6 +399,7 @@
   line-height: 1.6;
 }
 
+/* === 4. 달력 · 목록 반응형 === */
 @media (max-width: 1200px) {
   .diary-filters {
     grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -472,6 +476,7 @@
   }
 }
 
+/* === 5. 재배일지 등록 · 수정 · 상세 에디터 === */
 .editor-shell {
   gap: 16px;
 }
