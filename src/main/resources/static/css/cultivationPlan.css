@@ -176,6 +176,34 @@
   display: none;
 }
 
+.plan-end-form {
+  display: grid;
+  gap: 8px;
+  margin-top: 14px;
+  padding-top: 14px;
+  border-top: 1px solid var(--line);
+}
+
+.plan-end-form[hidden] {
+  display: none;
+}
+
+.plan-end-form label {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--ink);
+}
+
+.plan-end-form .ctrl {
+  width: 100%;
+  resize: vertical;
+}
+
+.plan-end-actions {
+  display: flex;
+  justify-content: flex-end;
+}
+
 .plan-tablewrap-spaced {
   margin-top: 14px;
 }

@@ -24,7 +24,7 @@
           </nav>
 
           <div class="page-content" id="main" tabindex="-1">
-            <p id="planError" role="alert" hidden></p>
+            <p class="errorbox" id="planError" role="alert" hidden></p>
             <div id="planListView" th:if="${planView == 'list'}">
 
               <div class="pagehead">
@@ -130,10 +130,12 @@
                   <button type="button" class="btn" id="planActionCancel">취소</button>
                   <button type="button" class="btn main" id="planActionOk">확인</button>
                 </div>
-                <form id="endPlanForm" hidden>
+                <form id="endPlanForm" class="plan-end-form" novalidate hidden>
                   <label for="endReason">종료 사유</label>
-                  <textarea class="ctrl" id="endReason" name="endReason" required maxlength="1000"></textarea>
-                  <button type="submit" class="btn main">종료</button>
+                  <textarea class="ctrl" id="endReason" name="endReason" rows="3" required maxlength="1000"></textarea>
+                  <div class="plan-end-actions">
+                    <button type="submit" class="btn main">종료</button>
+                  </div>
                 </form>
               </div>
             </section>
