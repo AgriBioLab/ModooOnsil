@@ -12,26 +12,26 @@ public class CultivationPlanController {
     @GetMapping
     public String list(Model model) {
         model.addAttribute("planView", "list");
-        return "cultivationPlanList";
+        return "cultivation/plan/cultivationPlanList";
     }
 
     @GetMapping("/new")
     public String create(Model model) {
         model.addAttribute("planView", "create");
-        return "cultivationPlanList";
+        return "cultivation/plan/cultivationPlanList";
     }
 
     @GetMapping("/{planId}")
     public String detail(@PathVariable Long planId, Model model) {
         model.addAttribute("planView", "detail");
         model.addAttribute("planId", planId);
-        return "cultivationPlanList";
+        return "cultivation/plan/cultivationPlanList";
     }
 
     @GetMapping("/{planId}/edit")
     public String edit(@PathVariable Long planId, Model model) {
         model.addAttribute("planView", "edit");
         model.addAttribute("planId", planId);
-        return "cultivationPlanList";
+        return "cultivation/plan/cultivationPlanList";
     }
 }

@@ -15,12 +15,12 @@ public class MemberController {
 
     @GetMapping("/login")
     public String login() {
-        return "login";
+        return "member/login";
     }
 
     @GetMapping("/signup")
     public String signup() {
-        return "signup";
+        return "member/signup";
     }
 
     @GetMapping("/mypage")
@@ -29,6 +29,6 @@ public class MemberController {
             return "redirect:/login";
         }
         model.addAttribute("member", memberService.getCurrentMember(user.getMemberId()));
-        return "mypage";
+        return "member/mypage";
     }
 }
