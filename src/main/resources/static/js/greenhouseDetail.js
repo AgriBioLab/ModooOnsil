@@ -126,7 +126,7 @@
 
       notify('온실을 삭제했습니다.');
       setTimeout(() => {
-        location.href = '/greenhouseList.html';
+        location.href = '/greenhouses';
       }, 300);
     } catch (error) {
       if (okBtn) okBtn.disabled = false;
