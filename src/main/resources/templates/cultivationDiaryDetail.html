@@ -1,0 +1,124 @@
+<!doctype html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <base href="/" th:href="@{/}" />
+    <title>모두의온실 | 재배일지작업 상세</title>
+
+    <link rel="stylesheet" href="vendor/krds/css/component/output.css" />
+    <link rel="stylesheet" href="css/common.css" />
+    <link rel="stylesheet" href="css/cultivationDiary.css?v=20261120-badges" />
+
+    <script src="js/common.js" defer></script>
+    <script src="js/cultivationDiary.js?v=20261126-mvc-split" defer></script>
+  </head>
+
+  <body data-page="detail" th:attr="data-diary-view=${diaryView},data-diary-id=${diaryId}">
+    <div class="app">
+      <!-- 사이드바 -->
+      <aside th:replace="~{sidebar :: sidebar}"></aside>
+
+      <div class="workarea">
+        <!-- 상단 헤더 -->
+        <header th:replace="~{header :: header}"></header>
+
+        <!-- 본문 -->
+        <main>
+          <nav class="crumb" aria-label="현재 위치">
+            <span id="crumb">재배일지작업 / 상세</span>
+          </nav>
+
+          <div class="page-content" id="main" tabindex="-1">
+            <!-- 상단 제목 -->
+            <div class="pagehead">
+              <div>
+                <h1>재배일지작업 상세</h1>
+                <p id="detailErrorMsg" class="hidden"></p>
+              </div>
+              <a class="backlink hidden" id="returnList" th:href="@{/cultivation-diaries}">← 재배일지작업 목록으로</a>
+            </div>
+
+            <!-- 상세 본문 -->
+            <div class="editor-shell" id="detailShell">
+              <!-- 기본정보 요약 -->
+              <section class="panel editor-summary detail-summary-card" aria-label="재배일지 요약">
+                <div class="summary-strip">
+                  <div class="summary-fact">
+                    <span>작기계획명</span>
+                    <span class="summary-value" id="summaryCycle">—</span>
+                  </div>
+                  <div class="summary-fact">
+                    <span>품목명 · 품종명</span>
+                    <span class="summary-value" id="summaryCrop">—</span>
+                  </div>
+                  <div class="summary-fact">
+                    <span>온실명</span>
+                    <span class="summary-value" id="summaryHouse">—</span>
+                  </div>
+                  <div class="summary-fact">
+                    <span>실제 작업일</span>
+                    <span class="summary-value" id="summaryDate">—</span>
+                  </div>
+                  <div class="summary-fact">
+                    <span>실제 생육단계</span>
+                    <span class="summary-value" id="summaryStage">—</span>
+                  </div>
+                </div>
+
+                <div class="detail-meta-bar hidden" id="detailReasonBar">
+                  <div class="detail-reason">
+                    <span class="detail-reason-label">생육단계 변경 사유</span>
+                    <span id="detailReasonText"></span>
+                  </div>
+                </div>
+              </section>
+
+              <!-- 작업내용 목록 및 삭제·수정 버튼 -->
+              <section class="panel editor-workpanel">
+                <div class="panel-head">
+                  <p class="panel-title">작업내용</p>
+                  <span class="counter" id="detailTaskCounter">0건</span>
+                </div>
+
+                <div class="task-body">
+                  <div class="task-list-header detail-task-header">
+                    <span>작업명</span>
+                    <span>작업시간</span>
+                    <span>작업유형</span>
+                    <span>상태</span>
+                  </div>
+
+                  <div class="task-scroll detail-list" id="detailTaskList">
+                    <p class="empty">작업내용을 불러오는 중입니다.</p>
+                  </div>
+
+                  <div class="detail-delete-confirm hidden" id="detailDeleteConfirm">
+                    <span>이 재배일지작업을 삭제하시겠습니까?</span>
+                    <button type="button" class="btn" id="detailDeleteCancel">취소</button>
+                    <button type="button" class="btn main" id="detailDeleteOk">삭제 확인</button>
+                  </div>
+
+                  <div class="form-actions">
+                    <div class="module-actions-left">
+                      <a class="btn" id="detailBack" th:href="@{/cultivation-diaries}">목록</a>
+                    </div>
+                    <button type="button" class="btn" id="detailDelete">삭제</button>
+                    <a class="btn main" id="detailEdit" th:href="@{/cultivation-diaries/{id}/edit(id=${diaryId})}">수정</a>
+                  </div>
+                </div>
+              </section>
+            </div>
+          </div>
+        </main>
+
+        <!-- 푸터 -->
+        <footer th:replace="~{footer :: footer}"></footer>
+      </div>
+    </div>
+
+    <div class="notice-toast hidden" id="toast" role="status" aria-live="polite"></div>
+  </body>
+
+</html>

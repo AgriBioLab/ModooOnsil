@@ -1,32 +1,51 @@
-// TODO (SCRUM-180): 상세·등록·수정 HTML 문자열 조립을 별도 Thymeleaf 페이지·Controller로 분리하고,
-//                    ui-utils.js(window.ModooApp) 의존 제거 및 표준 DOM·직접 fetch 구조로 정리 예정.
+// 재배일지 목록 · 상세 · 등록 · 수정 화면 제어 (표준 DOM + fetch + window.ModooCommon).
 (() => {
   'use strict';
 
-  const app = window.ModooApp;
   const {
-    state, config, pages, $, $$, escapeHtml, htmlText, clone, toast, options,
-    timeOf, timeSort, makeStarted, taskTone, trashSvg, toReason, getReasons,
-    error, go, heading, bindBack, singleDateControl, setSingleDateValue,
-    mountSingleDatePicker
-  } = app;
+    ready,
+    notify,
+    escapeHtml,
+    currentMember,
+    showAccount,
+    bindAccount,
+    setCurrentMenu
+  } = window.ModooCommon;
 
-  const main = $('#main');
+  const datePicker = window.ModooDatePicker || {};
   const today = () => new Intl.DateTimeFormat('sv-SE', { timeZone: 'Asia/Seoul' }).format(new Date());
-  const endpoint = '/api/cultivation-diaries';
+  const API_BASE = '/api/cultivation-diaries';
 
-  let working = [];
-  let editRow = null;
-  let plans = [];
+  let workingTasks = [];
+  let editDiary = null;
+  let activePlans = [];
   let stageOptions = null;
-  let listRequest = 0;
-  let stageRequest = 0;
-  let filterOptionsReady;
+  let listRequestSeq = 0;
+  let stageRequestSeq = 0;
 
-  // === 1. 공통 API 요청 · 오류 처리 ===
+  // === 1. 공통 유틸 · API 요청 ===
 
-  function request(path = '', method = 'GET', body) {
-    return requestJson(endpoint + path, method, body);
+  const timeOf = task => String(task.startedAt || '').slice(11, 16) || '09:00';
+  const timeSort = (a, b) =>
+    timeOf(a).localeCompare(timeOf(b)) || (a.taskId || '').localeCompare(b.taskId || '');
+  const makeStarted = (date, time) => `${date}T${time}:00`;
+  const taskTone = status => (status === '완료' ? 'bg-light-success' : 'bg-light-gray');
+
+  function toReason(value) {
+    if (typeof value === 'string') return value.trim();
+    if (value && typeof value === 'object') {
+      return Object.values(value).filter(Boolean).map(v => String(v).trim()).join(' / ');
+    }
+    return '';
+  }
+
+  function renderSelectOptions(select, items, selectedValue) {
+    select.innerHTML = items
+      .map(
+        item =>
+          `<option value="${escapeHtml(item.value)}" ${String(item.value) === String(selectedValue ?? '') ? 'selected' : ''}>${escapeHtml(item.label)}</option>`
+      )
+      .join('');
   }
 
   async function requestJson(url, method = 'GET', body) {
@@ -40,7 +59,7 @@
 
     const response = await fetch(url, fetchOptions);
     if (response.status === 401) {
-      location.replace(new URL('login', document.baseURI));
+      location.replace('/login');
       throw new Error('로그인이 필요합니다.');
     }
     if (!response.ok) {
@@ -50,132 +69,184 @@
     return response.status === 204 ? null : response.json();
   }
 
-  function showLoadError(message) {
-    main.innerHTML = heading('재배일지작업', message, true);
-    bindBack();
+  function request(path = '', method = 'GET', body) {
+    return requestJson(API_BASE + path, method, body);
   }
 
-  // === 2. 목록 조회 · 검색 필터 ===
+  function setSummaryFacts(planOrDiary, workDate, stageName) {
+    const values = {
+      summaryCycle: planOrDiary.planName || '—',
+      summaryCrop: `${planOrDiary.cropName || '-'} · ${planOrDiary.varietyName || '-'}`,
+      summaryHouse: planOrDiary.greenhouseName || '—',
+      summaryDate: workDate || '—',
+      summaryStage: stageName || '-'
+    };
 
-  function filterQuery(form) {
+    for (const [id, text] of Object.entries(values)) {
+      const el = document.getElementById(id);
+      if (!el) continue;
+      el.textContent = text;
+      el.title = text;
+    }
+  }
+
+  // === 2. 목록 화면 (/cultivation-diaries) ===
+
+  function buildFilterQuery(form) {
     const query = new URLSearchParams();
     for (const [name, value] of new FormData(form)) {
       if (value) query.set(name, value);
     }
-    const date = $('#workDateFilter', form).value;
-    if (date) query.set('workedDate', date);
+    const dateInput = document.getElementById('workDateFilter');
+    if (dateInput?.value) {
+      query.set('workedDate', dateInput.value);
+    }
     return query;
   }
 
-  function renderRows(rows) {
-    $('#diaryTotal', main).textContent = rows.length;
-    $('#diaryRows', main).innerHTML = rows.length
-      ? rows.map((diary, index) => {
-          const detailUrl = new URL('cultivation-diaries/' + encodeURIComponent(diary.diaryId), document.baseURI);
-          return `
-            <tr>
-              <td class="row-index">${rows.length - index}</td>
-              <td><a class="linkbtn" href="${escapeHtml(detailUrl.href)}">${htmlText(diary.workedAt?.slice(0, 10))}</a></td>
-              <td>${htmlText(diary.greenhouseName)}</td>
-              <td>${htmlText(diary.cropName)}</td>
-              <td>${htmlText(diary.varietyName)}</td>
-              <td>${htmlText(diary.planName)}</td>
-              <td>${htmlText(diary.growthStage || '-')}</td>
-              <td class="tnum">${htmlText(diary.taskCount)} / ${htmlText(diary.incompleteTaskCount)}</td>
-            </tr>
-          `;
-        }).join('')
-      : '<tr><td class="empty" colspan="8">조회 결과가 없습니다.</td></tr>';
+  function renderListRows(rows) {
+    const totalEl = document.getElementById('diaryTotal');
+    const tbody = document.getElementById('diaryRows');
+    if (!totalEl || !tbody) return;
+
+    totalEl.textContent = String(rows.length);
+    if (!rows.length) {
+      tbody.innerHTML = '<tr><td class="empty" colspan="8">조회 결과가 없습니다.</td></tr>';
+      return;
+    }
+
+    tbody.innerHTML = rows
+      .map((diary, index) => {
+        const detailHref = `/cultivation-diaries/${encodeURIComponent(diary.diaryId)}`;
+        return `
+          <tr>
+            <td class="row-index">${rows.length - index}</td>
+            <td><a class="linkbtn" href="${escapeHtml(detailHref)}">${escapeHtml(diary.workedAt?.slice(0, 10))}</a></td>
+            <td>${escapeHtml(diary.greenhouseName)}</td>
+            <td>${escapeHtml(diary.cropName)}</td>
+            <td>${escapeHtml(diary.varietyName)}</td>
+            <td>${escapeHtml(diary.planName)}</td>
+            <td>${escapeHtml(diary.growthStage || '-')}</td>
+            <td class="tnum">${escapeHtml(diary.taskCount)} / ${escapeHtml(diary.incompleteTaskCount)}</td>
+          </tr>
+        `;
+      })
+      .join('');
   }
 
   async function loadList(query) {
-    const sequence = ++listRequest;
+    const sequence = ++listRequestSeq;
     try {
       const rows = await request('?' + query);
-      if (state.page === 'list' && sequence === listRequest) {
-        renderRows(rows);
+      if (sequence === listRequestSeq) {
+        renderListRows(rows);
       }
     } catch (failure) {
-      if (state.page === 'list' && sequence === listRequest) {
-        $('#diaryTotal', main).textContent = '0';
-        $('#diaryRows', main).innerHTML =
-          `<tr><td class="empty" colspan="8" role="alert">${htmlText(failure.message)}</td></tr>`;
+      if (sequence !== listRequestSeq) return;
+      const totalEl = document.getElementById('diaryTotal');
+      const tbody = document.getElementById('diaryRows');
+      if (totalEl) totalEl.textContent = '0';
+      if (tbody) {
+        tbody.innerHTML = `<tr><td class="empty" colspan="8" role="alert">${escapeHtml(failure.message)}</td></tr>`;
       }
     }
   }
 
   function setFilterOptions(select, names, selected) {
-    const first = select.options[0];
+    if (!select) return;
+    const firstLabel = select.options[0]?.textContent || '전체';
     const sorted = [...new Set(names.filter(name => name?.trim()))]
-      .sort((firstName, secondName) => firstName.localeCompare(secondName, 'ko'));
+      .sort((a, b) => a.localeCompare(b, 'ko'));
 
-    select.innerHTML = options(
-      [
-        { value: '', label: first.textContent },
-        ...sorted.map(name => ({ value: name, label: name }))
-      ],
-      selected
+    renderSelectOptions(
+      select,
+      [{ value: '', label: firstLabel }, ...sorted.map(name => ({ value: name, label: name }))],
+      selected || ''
     );
   }
 
-  function bindList(initial) {
-    const list = $('#diaryList', main);
-    const form = $('#diaryFilters', list);
-    const crop = $('#filterCrop', list);
-    const variety = $('#filterVariety', list);
+  function initListPage() {
+    const form = document.getElementById('diaryFilters');
+    const cropSelect = document.getElementById('filterCrop');
+    const varietySelect = document.getElementById('filterVariety');
+    const dateBox = document.getElementById('diaryDateControl');
+    const resetBtn = document.getElementById('filterReset');
+    if (!form) return;
+
+    const initial = new URLSearchParams(location.search);
     let crops = [];
 
     function updateVarieties(selected) {
-      const choices = crops.filter(option => !crop.value || option.cropName === crop.value);
-      setFilterOptions(variety, choices.map(option => option.varietyName), selected);
+      const choices = crops.filter(item => !cropSelect.value || item.cropName === cropSelect.value);
+      setFilterOptions(varietySelect, choices.map(item => item.varietyName), selected);
     }
 
     const controls = [...form.querySelectorAll('select, button')];
-    for (const control of controls) control.disabled = true;
+    controls.forEach(control => { control.disabled = true; });
     form.setAttribute('aria-busy', 'true');
 
-    filterOptionsReady = Promise.allSettled([
-      requestJson('/api/cultivation-plans').then(planItems => {
-        setFilterOptions($('#filterCycle', form), planItems.map(plan => plan.planName), initial.get('planName'));
+    Promise.allSettled([
+      requestJson('/api/cultivation-plans').then(plans => {
+        setFilterOptions(
+          document.getElementById('filterCycle'),
+          plans.map(plan => plan.planName),
+          initial.get('planName')
+        );
       }),
       requestJson('/api/greenhouses').then(greenhouses => {
         setFilterOptions(
-          $('#filterGreenhouse', form),
+          document.getElementById('filterGreenhouse'),
           greenhouses.map(item => item.greenhouseName),
           initial.get('greenhouseName')
         );
       }),
       requestJson('/api/crops').then(items => {
         crops = items;
-        setFilterOptions(crop, crops.map(option => option.cropName), initial.get('cropName'));
+        setFilterOptions(cropSelect, crops.map(item => item.cropName), initial.get('cropName'));
         updateVarieties(initial.get('varietyName'));
       })
     ]).then(results => {
-      for (const control of controls) control.disabled = false;
+      controls.forEach(control => { control.disabled = false; });
       form.removeAttribute('aria-busy');
       if (results.some(result => result.status === 'rejected')) {
-        toast('일부 검색 선택지를 불러오지 못했습니다. 새로고침해서 다시 시도하세요.');
+        notify('일부 검색 선택지를 불러오지 못했습니다. 새로고침해서 다시 시도하세요.');
       }
     });
 
-    crop.onchange = () => updateVarieties(variety.value);
-    $('#diaryDateControl', list).innerHTML = singleDateControl('workDateFilter', initial.get('workedDate') || '');
-    mountSingleDatePicker('workDateFilter');
+    if (cropSelect) {
+      cropSelect.addEventListener('change', () => updateVarieties(varietySelect.value));
+    }
 
-    form.onsubmit = event => {
+    if (dateBox && datePicker.singleDateControl) {
+      dateBox.innerHTML = datePicker.singleDateControl('workDateFilter', initial.get('workedDate') || '');
+      datePicker.mountSingleDatePicker('workDateFilter');
+    }
+
+    form.addEventListener('submit', event => {
       event.preventDefault();
-      loadList(filterQuery(form));
-    };
+      loadList(buildFilterQuery(form));
+    });
 
-    $('#filterReset', list).onclick = () => {
-      for (const field of form.querySelectorAll('select')) field.value = '';
-      updateVarieties('');
-      setSingleDateValue('workDateFilter', '');
-      loadList(filterQuery(form));
-    };
+    if (resetBtn) {
+      resetBtn.addEventListener('click', () => {
+        form.querySelectorAll('select').forEach(select => { select.value = ''; });
+        updateVarieties('');
+        if (datePicker.setSingleDateValue) {
+          datePicker.setSingleDateValue('workDateFilter', '');
+        }
+        loadList(buildFilterQuery(form));
+      });
+    }
+
+    const initialQuery = new URLSearchParams();
+    for (const key of ['planName', 'greenhouseName', 'cropName', 'varietyName', 'workedDate']) {
+      const value = initial.get(key);
+      if (value) initialQuery.set(key, value);
+    }
+    loadList(initialQuery);
   }
 
-  // === 3. 상세 조회 · 삭제 ===
+  // === 3. 상세 화면 (/cultivation-diaries/{id}) ===
 
   async function fetchDetail(id) {
     const { diary, tasks } = await request('/' + encodeURIComponent(id));
@@ -194,339 +265,293 @@
     };
   }
 
-  function detailTaskItemHtml(task) {
-    return `
-      <article class="detail-task">
-        <div class="t-row">
-          <strong>${htmlText(task.name)}</strong>
-          <span>${timeOf(task)}</span>
-          <span>${htmlText(task.type)}</span>
-          <span>${htmlText(task.status)}</span>
-        </div>
-        <div class="details-content">${htmlText(task.content || '—')}</div>
-      </article>
-    `;
+  function showDetailError(message) {
+    const errorEl = document.getElementById('detailErrorMsg');
+    const returnLink = document.getElementById('returnList');
+    const shell = document.getElementById('detailShell');
+    if (errorEl) {
+      errorEl.textContent = message;
+      errorEl.classList.remove('hidden');
+    }
+    if (returnLink) returnLink.classList.remove('hidden');
+    if (shell) shell.classList.add('hidden');
   }
 
-  async function renderDetail() {
-    const id = state.selectedId;
-    main.innerHTML = heading('재배일지작업 상세');
-
-    let diary;
-    try {
-      diary = await fetchDetail(id);
-    } catch (failure) {
-      if (state.page === 'detail' && state.selectedId === id) {
-        showLoadError(failure.message);
-      }
+  async function initDetailPage(diaryId) {
+    if (!diaryId) {
+      showDetailError('잘못된 재배일지 요청입니다.');
       return;
     }
 
-    if (state.page !== 'detail' || state.selectedId !== id) return;
+    let diary;
+    try {
+      diary = await fetchDetail(diaryId);
+    } catch (failure) {
+      showDetailError(failure.message);
+      return;
+    }
+
+    setSummaryFacts(diary, diary.workDate, diary.stageId);
+
+    const reason = toReason(diary.stageChangeReason);
+    if (reason) {
+      const reasonBar = document.getElementById('detailReasonBar');
+      const reasonText = document.getElementById('detailReasonText');
+      if (reasonText) reasonText.textContent = reason;
+      if (reasonBar) reasonBar.classList.remove('hidden');
+    }
 
     const doneCount = diary.tasks.filter(task => task.status === '완료').length;
-    const reason = toReason(diary.stageChangeReason);
     const dateMeta = [
       diary.createdAt ? `등록일 ${diary.createdAt.slice(0, 10)}` : '',
       diary.updatedAt ? `수정일 ${diary.updatedAt.slice(0, 10)}` : ''
     ].filter(Boolean).join(' · ');
 
-    const reasonHtml = reason
-      ? `<div class="detail-meta-bar"><div class="detail-reason"><strong>생육단계 변경 사유</strong><span>${htmlText(reason)}</span></div></div>`
-      : '';
+    const counterEl = document.getElementById('detailTaskCounter');
+    if (counterEl) {
+      counterEl.textContent =
+        `${diary.tasks.length}건 · 완료 ${doneCount} / 미완료 ${diary.tasks.length - doneCount}${dateMeta ? ` · ${dateMeta}` : ''}`;
+    }
 
-    const taskListHtml = [...diary.tasks].sort(timeSort).map(detailTaskItemHtml).join('')
-      || '<p class="empty" style="padding:24px">등록된 작업내용이 없습니다.</p>';
+    const taskListEl = document.getElementById('detailTaskList');
+    if (taskListEl) {
+      taskListEl.innerHTML = diary.tasks.length
+        ? [...diary.tasks]
+            .sort(timeSort)
+            .map(
+              task => `
+                <article class="detail-task">
+                  <div class="t-row">
+                    <strong>${escapeHtml(task.name)}</strong>
+                    <span>${escapeHtml(timeOf(task))}</span>
+                    <span>${escapeHtml(task.type)}</span>
+                    <span>${escapeHtml(task.status)}</span>
+                  </div>
+                  <div class="details-content">${escapeHtml(task.content || '—')}</div>
+                </article>
+              `
+            )
+            .join('')
+        : '<p class="empty">등록된 작업내용이 없습니다.</p>';
+    }
 
-    main.innerHTML = heading('재배일지작업 상세', '') + `
-      <div class="editor-shell">
-        <section class="panel editor-summary detail-summary-card" aria-label="재배일지 요약">
-          ${summaryHTML(diary, diary.workDate, diary.stageId)}
-          ${reasonHtml}
-        </section>
-        <section class="panel editor-workpanel">
-          <div class="panel-head">
-            <h2>작업내용</h2>
-            <span class="counter">${diary.tasks.length}건 · 완료 ${doneCount} / 미완료 ${diary.tasks.length - doneCount}${dateMeta ? ` · ${htmlText(dateMeta)}` : ''}</span>
-          </div>
-          <div class="task-body">
-            <div class="task-list-header detail-task-header">
-              <span>작업명</span>
-              <span>작업시간</span>
-              <span>작업유형</span>
-              <span>상태</span>
-            </div>
-            <div class="task-scroll detail-list">${taskListHtml}</div>
-            <div class="detail-delete-confirm hidden" id="detailDeleteConfirm">
-              <span>이 재배일지작업을 삭제하시겠습니까?</span>
-              <button type="button" class="btn" id="detailDeleteCancel">취소</button>
-              <button type="button" class="btn main" id="detailDeleteOk">삭제 확인</button>
-            </div>
-            <div class="form-actions">
-              <div class="module-actions-left">
-                <button class="btn" id="detailBack">목록</button>
-              </div>
-              <button class="btn" id="detailDelete">삭제</button>
-              <button class="btn main" id="detailEdit">수정</button>
-            </div>
-          </div>
-        </section>
-      </div>
-    `;
+    const deleteBox = document.getElementById('detailDeleteConfirm');
+    const deleteBtn = document.getElementById('detailDelete');
+    const cancelBtn = document.getElementById('detailDeleteCancel');
+    const confirmBtn = document.getElementById('detailDeleteOk');
 
-    bindBack();
-    $('#detailBack').onclick = () => go('list');
-    $('#detailEdit').onclick = () => go('edit', diary.diaryId);
-    $('#detailDelete').onclick = () => $('#detailDeleteConfirm').classList.remove('hidden');
-    $('#detailDeleteCancel').onclick = () => $('#detailDeleteConfirm').classList.add('hidden');
-    $('#detailDeleteOk').onclick = async event => {
-      const button = event.currentTarget;
-      button.disabled = true;
-      try {
-        await request('/' + diary.diaryId, 'DELETE');
-        toast('재배일지작업을 삭제했습니다.');
-        if (state.page === 'detail' && state.selectedId === id) {
-          go('list');
+    if (deleteBtn && deleteBox) {
+      deleteBtn.addEventListener('click', () => deleteBox.classList.remove('hidden'));
+    }
+    if (cancelBtn && deleteBox) {
+      cancelBtn.addEventListener('click', () => deleteBox.classList.add('hidden'));
+    }
+    if (confirmBtn) {
+      confirmBtn.addEventListener('click', async () => {
+        confirmBtn.disabled = true;
+        try {
+          await request('/' + diary.diaryId, 'DELETE');
+          notify('재배일지작업을 삭제했습니다.');
+          location.href = '/cultivation-diaries';
+        } catch (failure) {
+          notify(failure.message);
+        } finally {
+          confirmBtn.disabled = false;
         }
-      } catch (failure) {
-        toast(failure.message);
-      } finally {
-        button.disabled = false;
-      }
-    };
+      });
+    }
   }
 
-  // === 4. 작업 항목 카드 · 등록/수정 에디터 ===
+  // === 4. 등록 · 수정 화면 (/cultivation-diaries/new, /cultivation-diaries/{id}/edit) ===
 
   function freshTask(date) {
     return {
       taskId: 'NEW-' + Date.now() + '-' + Math.random().toString(36).slice(2, 6),
       name: '',
-      type: config.workTypes[0].value,
+      type: '관수',
       startedAt: makeStarted(date, '09:00'),
       status: '미완료',
       content: ''
     };
   }
 
-  function taskPanel(task) {
-    const title = htmlText(task.name || '새 작업');
-    return `
-      <article class="task-card" data-taskid="${escapeHtml(task.taskId)}">
-        <div class="task-summary">
-          <strong class="task-title title-text">${title}</strong>
-          <span class="summary-time">${timeOf(task)}</span>
-          <span class="summary-type">${htmlText(task.type)}</span>
-          <span class="krds-badge ${taskTone(task.status)} summary-status">${htmlText(task.status)}</span>
-          <button class="trash" type="button" data-remove="${escapeHtml(task.taskId)}" aria-label="${title} 삭제" title="삭제">${trashSvg}</button>
-        </div>
-        <div class="task-detail">
-          <div class="field wide">
-            <label>작업명 *</label>
-            <input class="ctrl compact-input t-name" maxlength="100" value="${escapeHtml(task.name)}" placeholder="작업명">
-          </div>
-          <div class="field">
-            <label>작업유형 *</label>
-            <select class="ctrl t-type">${options(config.workTypes, task.type)}</select>
-          </div>
-          <div class="field">
-            <label>작업시간 *</label>
-            <input class="ctrl t-time" type="time" value="${timeOf(task)}">
-          </div>
-          <div class="field">
-            <label>작업상태 *</label>
-            <select class="ctrl t-status">${options(config.taskStatuses, task.status)}</select>
-          </div>
-          <div class="field wide">
-            <label>작업내용</label>
-            <textarea class="ctrl t-content" rows="2" placeholder="작업 내용을 입력하세요">${htmlText(task.content)}</textarea>
-          </div>
-        </div>
-      </article>
-    `;
+  function showFormError(message) {
+    const box = document.getElementById('formError');
+    if (!box) return;
+    box.textContent = message;
+    box.classList.remove('hidden');
   }
 
-  function gatherTasks() {
-    const cards = $$('[data-taskid]', main);
-    if (!cards.length) return;
-
-    const workDate = $('#workDate')?.value || today();
-    working = cards.map(card => {
-      const previous = working.find(item => item.taskId === card.dataset.taskid) || freshTask(workDate);
-      const time = $('.t-time', card).value;
-      return {
-        ...previous,
-        name: $('.t-name', card)?.value ?? previous.name,
-        type: $('.t-type', card)?.value ?? previous.type,
-        status: $('.t-status', card)?.value ?? previous.status,
-        content: $('.t-content', card)?.value ?? previous.content,
-        startedAt: time ? makeStarted($('#workDate').value, time) : ''
-      };
-    });
-  }
-
-  function paintTasks() {
-    const list = $('#taskList');
-    if (!list) return;
-
-    working.sort(timeSort);
-    $('#taskTotal').textContent = `${working.length}건`;
-    list.innerHTML = working.map(taskPanel).join('');
-
-    for (const button of $$('[data-remove]', list)) {
-      button.onclick = () => {
-        gatherTasks();
-        working = working.filter(task => task.taskId !== button.dataset.remove);
-        paintTasks();
-      };
+  function showFormLoadError(message) {
+    const errorEl = document.getElementById('formLoadErrorMsg');
+    const returnLink = document.getElementById('returnList');
+    const form = document.getElementById('diaryForm');
+    if (errorEl) {
+      errorEl.textContent = message;
+      errorEl.classList.remove('hidden');
     }
-
-    for (const card of $$('.task-card', list)) {
-      const titleEl = $('.title-text', card);
-      const nameInput = $('.t-name', card);
-      const timeInput = $('.t-time', card);
-      const typeSelect = $('.t-type', card);
-      const statusSelect = $('.t-status', card);
-
-      nameInput.addEventListener('input', () => {
-        titleEl.textContent = nameInput.value.trim() || '새 작업';
-      });
-      timeInput.addEventListener('input', () => {
-        $('.summary-time', card).textContent = timeInput.value || '--:--';
-      });
-      typeSelect.addEventListener('change', () => {
-        $('.summary-type', card).textContent = typeSelect.value;
-      });
-      statusSelect.addEventListener('change', () => {
-        const badge = $('.summary-status', card);
-        badge.textContent = statusSelect.value;
-        badge.className = `krds-badge ${taskTone(statusSelect.value)} summary-status`;
-      });
-      timeInput.addEventListener('change', () => {
-        const focusedId = card.dataset.taskid;
-        gatherTasks();
-        paintTasks();
-        const moved = $$('[data-taskid]', list).find(el => el.dataset.taskid === focusedId);
-        moved?.scrollIntoView({ block: 'nearest' });
-      });
-    }
-  }
-
-  function reasonInputHtml(value = '') {
-    return `
-      <div class="reason-box hidden" id="reasonBox">
-        <label for="stageChangeReason" class="label">생육단계 변경 사유 *</label>
-        <textarea class="ctrl textarea" id="stageChangeReason" rows="4" maxlength="500" placeholder="실제 생육단계를 변경한 근거와 관찰 내용을 입력하세요">${htmlText(toReason(value))}</textarea>
-      </div>
-    `;
-  }
-
-  function gatherReason() {
-    return ($('#stageChangeReason')?.value || '').trim();
+    if (returnLink) returnLink.classList.remove('hidden');
+    if (form) form.classList.add('hidden');
   }
 
   function selectedPlan() {
-    return editRow || plans.find(plan => String(plan.planId) === $('#cycleId').value);
+    const cycleId = document.getElementById('cycleId')?.value;
+    return editDiary || activePlans.find(plan => String(plan.planId) === cycleId);
   }
 
-  function updateCycleData() {
+  function refreshFormSummary() {
     const plan = selectedPlan();
-    const date = $('#workDate').value;
-    const min = plan.actualStartDate.slice(0, 10);
-    setSingleDateValue('workDate', date && date >= min ? date : min, { min, max: today() });
-    updateStageOptions();
+    if (!plan) return;
+    const workDate = document.getElementById('workDate')?.value || '';
+    const stage = document.getElementById('stageId')?.value || '-';
+    setSummaryFacts(plan, workDate, stage);
+  }
+
+  function updateReasonVisibility() {
+    const box = document.getElementById('reasonBox');
+    const stageSelect = document.getElementById('stageId');
+    if (!box || !stageSelect) return;
+    const changed = Boolean(stageOptions?.nextStage) && stageSelect.value !== stageOptions.currentStage;
+    box.classList.toggle('hidden', !changed);
   }
 
   async function updateStageOptions() {
-    const sequence = ++stageRequest;
+    const sequence = ++stageRequestSeq;
     const plan = selectedPlan();
-    const date = $('#workDate').value;
-    const select = $('#stageId');
-    const submit = $('#diaryForm button[type="submit"]');
-    const previousOption = select.value;
+    const dateInput = document.getElementById('workDate');
+    const stageSelect = document.getElementById('stageId');
+    const submitBtn = document.querySelector('#diaryForm button[type="submit"]');
+    if (!plan || !dateInput || !stageSelect || !submitBtn) return;
 
+    const previousOption = stageSelect.value;
     stageOptions = null;
-    submit.disabled = true;
-    select.disabled = true;
+    submitBtn.disabled = true;
+    stageSelect.disabled = true;
 
     try {
-      const result = editRow
-        ? { currentStage: editRow.stageId }
-        : await request('/plans/' + plan.planId + '/stages?' + new URLSearchParams({ workedDate: date }));
+      const result = editDiary
+        ? { currentStage: editDiary.stageId }
+        : await request('/plans/' + plan.planId + '/stages?' + new URLSearchParams({ workedDate: dateInput.value }));
 
-      if (sequence !== stageRequest || !select.isConnected) return;
+      if (sequence !== stageRequestSeq) return;
 
       stageOptions = result;
       const stages = [result.currentStage, result.nextStage].filter(stage => stage != null);
-      const selectedStage = stages.includes(previousOption) ? previousOption : result.currentStage;
-      select.innerHTML = options(stages.map(stage => ({ value: stage, label: stage || '-' })), selectedStage);
-      select.disabled = !result.nextStage;
-      submit.disabled = Boolean(result.duplicate);
+      const selected = stages.includes(previousOption) ? previousOption : result.currentStage;
+      renderSelectOptions(
+        stageSelect,
+        stages.map(stage => ({ value: stage, label: stage || '-' })),
+        selected
+      );
+      stageSelect.disabled = !result.nextStage;
+      submitBtn.disabled = Boolean(result.duplicate);
 
-      $('#duplicateNotice').classList.toggle('hidden', !result.duplicate);
-      $('#formError').classList.add('hidden');
+      document.getElementById('duplicateNotice')?.classList.toggle('hidden', !result.duplicate);
+      document.getElementById('formError')?.classList.add('hidden');
       updateReasonVisibility();
-      refreshSummary();
+      refreshFormSummary();
     } catch (failure) {
-      if (sequence === stageRequest && select.isConnected) {
-        error(failure.message);
+      if (sequence === stageRequestSeq) {
+        showFormError(failure.message);
       }
     }
   }
 
-  function updateReasonVisibility() {
-    const box = $('#reasonBox');
-    if (box) {
-      box.classList.toggle('hidden', !stageOptions?.nextStage || $('#stageId').value === stageOptions.currentStage);
-    }
+  function gatherTasks() {
+    const cards = [...document.querySelectorAll('#taskList [data-taskid]')];
+    if (!cards.length) return;
+
+    const workDate = document.getElementById('workDate')?.value || today();
+    workingTasks = cards.map(card => {
+      const previous = workingTasks.find(item => item.taskId === card.dataset.taskid) || freshTask(workDate);
+      const timeValue = card.querySelector('.t-time')?.value || '';
+      return {
+        ...previous,
+        name: card.querySelector('.t-name')?.value ?? previous.name,
+        type: card.querySelector('.t-type')?.value ?? previous.type,
+        status: card.querySelector('.t-status')?.value ?? previous.status,
+        content: card.querySelector('.t-content')?.value ?? previous.content,
+        startedAt: timeValue ? makeStarted(workDate, timeValue) : ''
+      };
+    });
   }
 
-  function summaryHTML(context, date, stage) {
-    return `
-      <div class="summary-strip">
-        <div class="summary-fact">
-          <span>작기계획명</span>
-          <strong id="summaryCycle" title="${htmlText(context.planName)}">${htmlText(context.planName)}</strong>
-        </div>
-        <div class="summary-fact">
-          <span>품목명 · 품종명</span>
-          <strong id="summaryCrop">${htmlText(context.cropName || '-')} · ${htmlText(context.varietyName || '-')}</strong>
-        </div>
-        <div class="summary-fact">
-          <span>온실명</span>
-          <strong id="summaryHouse">${htmlText(context.greenhouseName || '-')}</strong>
-        </div>
-        <div class="summary-fact">
-          <span>실제 작업일</span>
-          <strong id="summaryDate">${htmlText(date)}</strong>
-        </div>
-        <div class="summary-fact">
-          <span>실제 생육단계</span>
-          <strong id="summaryStage">${htmlText(stage || '-')}</strong>
-        </div>
-      </div>
-    `;
+  function createTaskCard(task, template) {
+    const fragment = template.content.cloneNode(true);
+    const card = fragment.querySelector('.task-card');
+    const titleEl = card.querySelector('.title-text');
+    const summaryTimeEl = card.querySelector('.summary-time');
+    const summaryTypeEl = card.querySelector('.summary-type');
+    const summaryStatusEl = card.querySelector('.summary-status');
+    const removeBtn = card.querySelector('[data-remove]');
+    const nameInput = card.querySelector('.t-name');
+    const typeSelect = card.querySelector('.t-type');
+    const timeInput = card.querySelector('.t-time');
+    const statusSelect = card.querySelector('.t-status');
+    const contentInput = card.querySelector('.t-content');
+
+    const title = task.name || '새 작업';
+    const timeText = timeOf(task);
+
+    card.dataset.taskid = task.taskId;
+    titleEl.textContent = title;
+    summaryTimeEl.textContent = timeText;
+    summaryTypeEl.textContent = task.type;
+    summaryStatusEl.textContent = task.status;
+    summaryStatusEl.className = `krds-badge ${taskTone(task.status)} summary-status`;
+
+    removeBtn.dataset.remove = task.taskId;
+    removeBtn.setAttribute('aria-label', `${title} 삭제`);
+
+    nameInput.value = task.name;
+    typeSelect.value = task.type;
+    timeInput.value = timeText;
+    statusSelect.value = task.status;
+    contentInput.value = task.content;
+
+    removeBtn.addEventListener('click', () => {
+      gatherTasks();
+      workingTasks = workingTasks.filter(item => item.taskId !== task.taskId);
+      paintTasks();
+    });
+
+    nameInput.addEventListener('input', () => {
+      titleEl.textContent = nameInput.value.trim() || '새 작업';
+    });
+    timeInput.addEventListener('input', () => {
+      summaryTimeEl.textContent = timeInput.value || '--:--';
+    });
+    typeSelect.addEventListener('change', () => {
+      summaryTypeEl.textContent = typeSelect.value;
+    });
+    statusSelect.addEventListener('change', () => {
+      summaryStatusEl.textContent = statusSelect.value;
+      summaryStatusEl.className = `krds-badge ${taskTone(statusSelect.value)} summary-status`;
+    });
+    timeInput.addEventListener('change', () => {
+      const focusedId = card.dataset.taskid;
+      gatherTasks();
+      paintTasks();
+      const moved = document.querySelector(`#taskList [data-taskid="${CSS.escape(focusedId)}"]`);
+      moved?.scrollIntoView({ block: 'nearest' });
+    });
+
+    return card;
   }
 
-  function refreshSummary() {
-    const plan = selectedPlan();
-    const values = {
-      summaryCycle: plan.planName,
-      summaryCrop: `${plan.cropName} · ${plan.varietyName}`,
-      summaryHouse: plan.greenhouseName,
-      summaryDate: $('#workDate').value,
-      summaryStage: $('#stageId').value || '-'
-    };
+  function paintTasks() {
+    const list = document.getElementById('taskList');
+    const totalEl = document.getElementById('taskTotal');
+    const template = document.getElementById('diaryTaskCardTemplate');
+    if (!list || !template) return;
 
-    for (const [id, value] of Object.entries(values)) {
-      const element = $('#' + id);
-      element.textContent = value;
-      element.title = value;
-    }
+    workingTasks.sort(timeSort);
+    if (totalEl) totalEl.textContent = `${workingTasks.length}건`;
+    list.replaceChildren(...workingTasks.map(task => createTaskCard(task, template)));
   }
 
   function nextTaskStartTime(date) {
-    const lastTask = [...working].sort(timeSort).at(-1);
+    const lastTask = [...workingTasks].sort(timeSort).at(-1);
     if (!lastTask) return null;
 
     const [hours, minutes] = timeOf(lastTask).split(':').map(Number);
@@ -538,151 +563,20 @@
     return makeStarted(date, `${hh}:${mm}`);
   }
 
-  async function renderEditor(isEdit) {
-    const id = state.selectedId;
-    const pageTitle = isEdit ? '재배일지작업 수정' : '재배일지작업 등록';
-    main.innerHTML = heading(pageTitle);
-
-    let diary;
-    let activePlans;
-    try {
-      diary = isEdit ? await fetchDetail(id) : null;
-      activePlans = isEdit ? [] : await request('/plans');
-    } catch (failure) {
-      if (state.page === (isEdit ? 'edit' : 'create') && (!isEdit || state.selectedId === id)) {
-        showLoadError(failure.message);
-      }
-      return;
-    }
-
-    if (state.page !== (isEdit ? 'edit' : 'create') || (isEdit && state.selectedId !== id)) return;
-
-    editRow = diary;
-    plans = activePlans;
-    if (!diary && !activePlans.length) {
-      showLoadError('진행 중인 작기가 없습니다.');
-      return;
-    }
-
-    const currentPlan = diary || activePlans[0];
-    const date = diary?.workDate || today();
-    const min = diary ? date : currentPlan.actualStartDate.slice(0, 10);
-    working = diary ? clone(diary.tasks) : [];
-
-    const planOptions = (isEdit ? [currentPlan] : activePlans).map(plan => ({
-      value: plan.planId,
-      label: plan.planName
-    }));
-    const confirmedReasonHtml = isEdit && toReason(diary.stageChangeReason)
-      ? `<div class="reason-box"><strong>확정된 변경 사유</strong>${getReasons(diary.stageChangeReason)}</div>`
-      : '';
-
-    main.innerHTML = heading(pageTitle, '') + `
-      <form class="editor-shell" id="diaryForm" novalidate>
-        <section class="panel editor-summary" aria-label="재배일지작업 기본정보">
-          ${summaryHTML(currentPlan, date, diary?.stageId)}
-          <div class="summary-detail" id="baseFields">
-            <div class="field">
-              <label for="cycleId">작기계획명 <span class="required">*</span></label>
-              <select class="ctrl" id="cycleId" ${isEdit ? 'disabled' : ''}>${options(planOptions, currentPlan.planId)}</select>
-            </div>
-            <div class="field">
-              <label for="workDateTrigger">실제 작업일 <span class="required">*</span></label>
-              ${singleDateControl('workDate', date, { min, max: today(), disabled: isEdit, clearable: false })}
-            </div>
-            <div class="stage-group" aria-label="실제 생육단계">
-              <div class="field">
-                <label for="stageId">해당 날짜의 실제 생육단계 <span class="required">*</span></label>
-                <select class="ctrl" id="stageId"></select>
-              </div>
-            </div>
-            ${confirmedReasonHtml}
-            ${!isEdit ? reasonInputHtml() : ''}
-            <div id="duplicateNotice" class="errorbox hidden" role="status">해당 날짜에 이미 재배일지가 등록되어 있습니다.</div>
-            <div id="formError" class="errorbox hidden" role="alert"></div>
-          </div>
-        </section>
-        <section class="panel editor-workpanel">
-          <div class="panel-head">
-            <h2>작업내용</h2>
-            <span class="counter" id="taskTotal">0건</span>
-          </div>
-          <div class="task-body">
-            <div class="task-tools">
-              <span class="muted small">작업시간 오름차순</span>
-            </div>
-            <div class="task-scroll" id="tasksScroll">
-              <div class="task-list-header">
-                <span>작업명</span>
-                <span>작업시간</span>
-                <span>작업유형</span>
-                <span>작업상태</span>
-                <span></span>
-              </div>
-              <div id="taskList"></div>
-            </div>
-            <button class="add-btn" id="addTask" type="button">+ 작업내용 추가</button>
-            <div class="form-actions">
-              <button class="btn" type="button" id="cancel">취소</button>
-              <button class="btn main" type="submit">${isEdit ? '수정 저장' : '등록'}</button>
-            </div>
-          </div>
-        </section>
-      </form>
-    `;
-
-    mountSingleDatePicker('workDate');
-    bindBack();
-    paintTasks();
-
-    $('#cycleId').onchange = updateCycleData;
-    $('#workDate').onchange = updateStageOptions;
-    $('#stageId').onchange = () => {
-      updateReasonVisibility();
-      refreshSummary();
-    };
-
-    $('#addTask').onclick = () => {
-      gatherTasks();
-      const workDate = $('#workDate').value;
-      const newTask = freshTask(workDate);
-      const nextStartedAt = nextTaskStartTime(workDate);
-      if (nextStartedAt) {
-        newTask.startedAt = nextStartedAt;
-      }
-      working.push(newTask);
-      paintTasks();
-
-      const target = $$('[data-taskid]', $('#taskList')).find(el => el.dataset.taskid === newTask.taskId);
-      target?.scrollIntoView({ block: 'nearest' });
-      $('.t-name', target)?.focus();
-    };
-
-    $('#cancel').onclick = () => go(isEdit ? 'detail' : 'list', diary?.diaryId);
-    $('#diaryForm').onsubmit = event => {
-      event.preventDefault();
-      saveEditor();
-    };
-
-    updateStageOptions();
-    refreshSummary();
-  }
-
   async function saveEditor() {
-    const form = $('#diaryForm');
-    const button = form.querySelector('button[type="submit"]');
-    if (button.disabled || !stageOptions) return;
+    const form = document.getElementById('diaryForm');
+    const submitBtn = form?.querySelector('button[type="submit"]');
+    if (!form || !submitBtn || submitBtn.disabled || !stageOptions) return;
 
-    const editing = editRow;
-    const date = $('#workDate').value;
+    const workDate = document.getElementById('workDate').value;
     gatherTasks();
 
-    if (working.some(task => !task.name.trim() || !task.startedAt)) {
-      error('모든 작업의 작업명과 작업시간을 입력하세요.');
+    if (workingTasks.some(task => !task.name.trim() || !task.startedAt)) {
+      showFormError('모든 작업의 작업명과 작업시간을 입력하세요.');
       return;
     }
 
-    const tasks = working.map(task => ({
+    const tasks = workingTasks.map(task => ({
       taskId: task.taskId.startsWith('NEW-') ? null : task.taskId,
       taskName: task.name,
       taskType: task.type,
@@ -691,63 +585,154 @@
       taskContent: task.content
     }));
 
-    button.disabled = true;
+    submitBtn.disabled = true;
     try {
-      let diaryId = editing?.diaryId;
-      if (editing) {
+      let diaryId = editDiary?.diaryId;
+      if (editDiary) {
         await request('/' + diaryId + '/tasks', 'PUT', { tasks });
       } else {
-        const growthStage = $('#stageId').value;
         const result = await request('', 'POST', {
-          planId: $('#cycleId').value,
-          workedDate: date,
-          growthStage,
-          stageChangeReason: gatherReason(),
+          planId: document.getElementById('cycleId').value,
+          workedDate: workDate,
+          growthStage: document.getElementById('stageId').value,
+          stageChangeReason: (document.getElementById('stageChangeReason')?.value || '').trim(),
           tasks
         });
         diaryId = result.diaryId;
       }
 
-      toast(editing ? '재배일지작업을 수정했습니다.' : '재배일지작업을 등록했습니다.');
-      if (form.isConnected) {
-        go('detail', String(diaryId));
-      }
+      notify(editDiary ? '재배일지작업을 수정했습니다.' : '재배일지작업을 등록했습니다.');
+      location.href = `/cultivation-diaries/${encodeURIComponent(diaryId)}`;
     } catch (failure) {
-      if (form.isConnected) {
-        error(failure.message);
-      }
+      showFormError(failure.message);
     } finally {
-      button.disabled = false;
+      submitBtn.disabled = false;
     }
   }
 
-  // === 5. 페이지 모듈 등록 ===
-
-  pages.diary = {
-    renderList() {
-      const form = $('#diaryFilters', main);
-      if (!form.onsubmit) {
-        const initial = new URLSearchParams(location.search);
-        bindList(initial);
-        const query = new URLSearchParams();
-        for (const name of ['planName', 'greenhouseName', 'cropName', 'varietyName', 'workedDate']) {
-          const value = initial.get(name);
-          if (value) query.set(name, value);
-        }
-        loadList(query);
-        return;
-      }
-      loadList(filterQuery(form));
-    },
-    renderDetail,
-    renderEditor,
-    async applyCycleFilter(planName) {
-      await filterOptionsReady;
-      const form = $('#diaryFilters', main);
-      $('#filterCycle', form).value = planName;
-      const query = filterQuery(form);
-      query.set('planName', planName);
-      loadList(query);
+  async function initFormPage(isEdit, diaryId) {
+    try {
+      editDiary = isEdit ? await fetchDetail(diaryId) : null;
+      activePlans = isEdit ? [] : await request('/plans');
+    } catch (failure) {
+      showFormLoadError(failure.message);
+      return;
     }
-  };
+
+    if (!editDiary && !activePlans.length) {
+      showFormLoadError('진행 중인 작기가 없습니다.');
+      return;
+    }
+
+    const currentPlan = editDiary || activePlans[0];
+    const date = editDiary?.workDate || today();
+    const minDate = editDiary ? date : currentPlan.actualStartDate.slice(0, 10);
+    workingTasks = editDiary ? JSON.parse(JSON.stringify(editDiary.tasks)) : [];
+
+    const cycleSelect = document.getElementById('cycleId');
+    if (cycleSelect) {
+      renderSelectOptions(
+        cycleSelect,
+        (isEdit ? [currentPlan] : activePlans).map(plan => ({
+          value: plan.planId,
+          label: plan.planName
+        })),
+        currentPlan.planId
+      );
+      cycleSelect.addEventListener('change', () => {
+        const plan = selectedPlan();
+        const currentDate = document.getElementById('workDate').value;
+        const planMin = plan.actualStartDate.slice(0, 10);
+        datePicker.setSingleDateValue(
+          'workDate',
+          currentDate && currentDate >= planMin ? currentDate : planMin,
+          { min: planMin, max: today() }
+        );
+        updateStageOptions();
+      });
+    }
+
+    const workDateBox = document.getElementById('workDateControl');
+    if (workDateBox && datePicker.singleDateControl) {
+      workDateBox.innerHTML = datePicker.singleDateControl('workDate', date, {
+        min: minDate,
+        max: today(),
+        disabled: isEdit,
+        clearable: false
+      });
+      datePicker.mountSingleDatePicker('workDate');
+      document.getElementById('workDate')?.addEventListener('change', updateStageOptions);
+    }
+
+    if (isEdit) {
+      const confirmedReason = toReason(editDiary.stageChangeReason);
+      if (confirmedReason) {
+        const textEl = document.getElementById('confirmedReasonText');
+        const boxEl = document.getElementById('confirmedReasonBox');
+        if (textEl) textEl.textContent = confirmedReason;
+        if (boxEl) boxEl.classList.remove('hidden');
+      }
+    }
+
+    document.getElementById('stageId')?.addEventListener('change', () => {
+      updateReasonVisibility();
+      refreshFormSummary();
+    });
+
+    document.getElementById('addTask')?.addEventListener('click', () => {
+      gatherTasks();
+      const workDate = document.getElementById('workDate').value;
+      const newTask = freshTask(workDate);
+      const nextStartedAt = nextTaskStartTime(workDate);
+      if (nextStartedAt) {
+        newTask.startedAt = nextStartedAt;
+      }
+      workingTasks.push(newTask);
+      paintTasks();
+
+      const target = document.querySelector(`#taskList [data-taskid="${CSS.escape(newTask.taskId)}"]`);
+      target?.scrollIntoView({ block: 'nearest' });
+      target?.querySelector('.t-name')?.focus();
+    });
+
+    document.getElementById('diaryForm')?.addEventListener('submit', event => {
+      event.preventDefault();
+      saveEditor();
+    });
+
+    paintTasks();
+    updateStageOptions();
+    refreshFormSummary();
+  }
+
+  // === 5. 페이지 진입점 ===
+
+  document.addEventListener('DOMContentLoaded', async () => {
+    const member = await currentMember();
+    if (!member) {
+      location.replace('/login');
+      return;
+    }
+
+    await ready;
+    showAccount(member);
+    bindAccount(() => {
+      location.href = '/mypage';
+    });
+
+    const view = document.body.dataset.diaryView || document.body.dataset.page || 'list';
+    const diaryId = document.body.dataset.diaryId || '';
+
+    setCurrentMenu(view === 'create' ? 'create' : 'list');
+
+    if (view === 'detail') {
+      await initDetailPage(diaryId);
+      return;
+    }
+    if (view === 'create' || view === 'edit') {
+      await initFormPage(view === 'edit', diaryId);
+      return;
+    }
+    initListPage();
+  });
 })();
