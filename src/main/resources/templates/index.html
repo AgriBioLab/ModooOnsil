@@ -48,20 +48,20 @@
 
                 <button type="button" class="home-kpi-card" data-home-go="list">
                   <span class="home-kpi-label">미완료 작업</span>
-                  <span class="home-kpi-value">0건</span>
-                  <span class="home-kpi-sub">최근 일지 —</span>
+                  <span class="home-kpi-value" id="homeIncompleteCount">0건</span>
+                  <span class="home-kpi-sub" id="homeLatestDiarySub">최근 일지 —</span>
                 </button>
 
                 <button type="button" class="home-kpi-card" data-home-go="cycle-list">
                   <span class="home-kpi-label">진행 중 작기</span>
-                  <span class="home-kpi-value">0건</span>
-                  <span class="home-kpi-sub">예정 0건 · 전체 0건</span>
+                  <span class="home-kpi-value" id="homeRunningPlanCount">0건</span>
+                  <span class="home-kpi-sub" id="homePlanSub">예정 0건 · 전체 0건</span>
                 </button>
 
                 <button type="button" class="home-kpi-card" data-home-go="gh-list">
                   <span class="home-kpi-label">운영 온실</span>
-                  <span class="home-kpi-value">0개소</span>
-                  <span class="home-kpi-sub">총 등록 면적 0 ㎡</span>
+                  <span class="home-kpi-value" id="homeGreenhouseCount">0개소</span>
+                  <span class="home-kpi-sub" id="homeGreenhouseAreaSub">총 등록 면적 0 ㎡</span>
                 </button>
               </section>
 
@@ -73,7 +73,7 @@
                       <p class="panel-title">진행 중인 온실 현황</p>
                       <button type="button" class="btn xs" data-home-go="cycle-list">전체 보기</button>
                     </div>
-                    <div class="home-cycle-list">
+                    <div class="home-cycle-list" id="homeCycleList">
                       <p class="empty home-empty-cycle">현재 진행 중인 작기계획이 없습니다.</p>
                     </div>
                   </section>
@@ -85,7 +85,7 @@
                       <p class="panel-title">온실 환경 이슈</p>
                       <button type="button" class="btn xs" data-home-go="issue-list">전체 보기</button>
                     </div>
-                    <div class="home-feed-list">
+                    <div class="home-feed-list" id="homeIssueList">
                       <p class="empty home-empty-feed">현재 조치가 필요한 환경 이슈가 없습니다.</p>
                     </div>
                   </section>
@@ -95,7 +95,7 @@
                       <p class="panel-title">최근 재배일지</p>
                       <button type="button" class="btn xs" data-home-go="list">전체 보기</button>
                     </div>
-                    <div class="home-feed-list">
+                    <div class="home-feed-list" id="homeDiaryList">
                       <p class="empty home-empty-feed">등록된 재배일지가 없습니다.</p>
                     </div>
                   </section>
