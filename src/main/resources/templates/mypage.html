@@ -1,17 +1,13 @@
 ﻿<!doctype html>
 <html lang="ko" xmlns:th="http://www.thymeleaf.org">
   <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>모두의온실 | 내정보</title>
-    <link rel="stylesheet" href="vendor/krds/css/component/output.css" />
-    <link rel="stylesheet" href="css/common.css" />
-    <link rel="stylesheet" href="css/mypage.css" />
+    <th:block th:replace="~{common :: headBase}"></th:block>
+    <link rel="stylesheet" href="/css/mypage.css" />
     <script
       src="https://t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"
       async></script>
-    <script src="js/common.js" defer></script>
-    <script src="js/mypage.js" defer></script>
+    <script src="/js/mypage.js" defer></script>
   </head>
   <body data-page="profile">
     <div class="app profile-app">
@@ -413,6 +409,6 @@
         <footer th:replace="~{footer :: footer}"></footer>
       </div>
     </div>
-    <div class="notice-toast hidden" id="toast" role="status" aria-live="polite"></div>
+    <div th:replace="~{common :: toast}"></div>
   </body>
 </html>

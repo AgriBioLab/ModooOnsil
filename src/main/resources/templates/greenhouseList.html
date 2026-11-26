@@ -2,15 +2,9 @@
 <html lang="ko" xmlns:th="http://www.thymeleaf.org">
 
   <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>모두의온실 | 온실 정보</title>
-
-    <link rel="stylesheet" href="/vendor/krds/css/component/output.css" />
-    <link rel="stylesheet" href="/css/common.css" />
+    <th:block th:replace="~{common :: headBase}"></th:block>
     <link rel="stylesheet" href="/css/greenhouse.css" />
-
-    <script src="/js/common.js" defer></script>
     <script src="/js/greenhouse.js" defer></script>
   </head>
 
@@ -101,7 +95,7 @@
       </div>
     </div>
 
-    <div class="notice-toast hidden" id="toast" role="status" aria-live="polite"></div>
+    <div th:replace="~{common :: toast}"></div>
   </body>
 
 </html>
