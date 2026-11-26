@@ -15,9 +15,12 @@
   </head>
   <body data-page="profile">
     <div class="app profile-app">
+      <!-- 사이드바 -->
       <aside th:replace="~{sidebar :: sidebar}"></aside>
       <div class="workarea">
+        <!-- 상단 헤더 -->
         <header th:replace="~{header :: header}"></header>
+        <!-- 본문 -->
         <main class="profile-page">
           <nav class="crumb" aria-label="현재 위치"><span id="crumb">내정보</span></nav>
           <div id="profileMemberData" hidden
@@ -34,9 +37,12 @@
                         data-description=${member.description},
                         data-created-at=${member.createdAt?.toLocalDate()}"></div>
           <div class="page-content" id="main" tabindex="-1" inert>
+            <!-- 상단 제목 -->
             <div class="pagehead">
               <div><h1 id="profileTitle">내정보</h1></div>
             </div>
+
+            <!-- 농장 요약 카드 -->
             <section class="profile-summary-card" aria-label="농장 요약">
               <div class="profile-summary-title">
                 <p class="profile-farm-title" id="profileFarmTitle" th:text="${#strings.defaultString(member.farmName, '—')}">—</p>
@@ -48,6 +54,7 @@
               <p id="profileFarmSummary" th:text="${#strings.defaultString(member.displayName, '—') + ' · ' + #strings.defaultString(member.mainCrop, '품목 미등록')}"></p>
             </section>
 
+            <!-- 탭 메뉴 -->
             <div class="tabbar profile-tabbar" role="tablist" aria-label="내정보 메뉴">
               <button
                 type="button"
@@ -81,6 +88,7 @@
               </button>
             </div>
 
+            <!-- 탭 1: 농장정보 -->
             <div
               class="profile-tab-panel"
               id="profile-panel-info"
@@ -163,6 +171,7 @@
               </section>
             </div>
 
+            <!-- 탭 2: 농업경영체 인증 -->
             <div
               class="profile-tab-panel"
               id="profile-panel-cert"
@@ -219,6 +228,7 @@
               </section>
             </div>
 
+            <!-- 탭 3: 농민 회원정보 · 비밀번호 변경 -->
             <div
               class="profile-tab-panel"
               id="profile-panel-pw"
@@ -370,6 +380,7 @@
             </div>
           </div>
         </main>
+        <!-- 푸터 -->
         <footer th:replace="~{footer :: footer}"></footer>
       </div>
     </div>
