@@ -2,6 +2,7 @@
 <html lang="ko" xmlns:th="http://www.thymeleaf.org">
 <body>
 <header th:fragment="header" class="topbar">
+  <!-- 좌측: 모바일 메뉴 버튼 · 브랜드 로고 -->
   <div class="topbar-start">
     <button
       type="button"
@@ -21,6 +22,7 @@
       </svg>
       <span>메뉴</span>
     </button>
+
     <a class="topbar-brand" href="index.html" aria-label="모두의 온실 홈">
       <svg
         class="topbar-brand-logo"
@@ -49,6 +51,8 @@
     </a>
     <div class="topbar-title"></div>
   </div>
+
+  <!-- 우측: 로그인 사용자 정보 · 내정보/로그아웃 -->
   <div class="header-account" aria-label="로그인 사용자 정보">
     <span class="header-identity">
       <strong id="userName"></strong>

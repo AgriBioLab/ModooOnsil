@@ -2,6 +2,7 @@
 <html lang="ko" xmlns:th="http://www.thymeleaf.org">
 <body>
 <aside th:fragment="sidebar" class="sidebar" id="appSidebar" aria-label="서비스 탐색">
+  <!-- 상단 브랜드 · 모바일 닫기 버튼 -->
   <div class="sidebar-head">
     <a class="brand" id="brand" href="index.html" aria-label="모두의 온실 홈">
       <svg
@@ -41,6 +42,8 @@
       </svg>
     </button>
   </div>
+
+  <!-- 로그인 계정 요약 (모바일/사이드바) -->
   <div class="sidebar-user-bar" id="sidebarUserBar" aria-label="로그인 계정 요약">
     <div class="sidebar-user-meta">
       <strong id="sidebarUserName"></strong>
@@ -48,6 +51,8 @@
     </div>
     <div class="sidebar-user-farm" id="sidebarUserFarm"></div>
   </div>
+
+  <!-- 주 메뉴 -->
   <nav class="nav" id="navigation" aria-label="주 메뉴">
     <a class="navbtn nav-home" href="index.html" data-go="home">
       <svg
@@ -61,6 +66,8 @@
       </svg>
       <span>홈</span>
     </a>
+
+    <!-- 메뉴 그룹: 재배일지작업 -->
     <div class="navgroup" role="group" aria-label="재배일지작업">
       <div class="navhead nav-group-title">
         <svg
@@ -81,6 +88,8 @@
         재배일지작업등록
       </a>
     </div>
+
+    <!-- 메뉴 그룹: 작기계획 -->
     <div class="navgroup" role="group" aria-label="작기계획">
       <div class="navhead nav-group-title">
         <svg
@@ -105,6 +114,8 @@
         작기계획등록
       </a>
     </div>
+
+    <!-- 메뉴 그룹: 온실 -->
     <div class="navgroup" role="group" aria-label="온실">
       <div class="navhead nav-group-title">
         <svg
@@ -129,6 +140,8 @@
         온실등록
       </a>
     </div>
+
+    <!-- 메뉴 그룹: 내정보 -->
     <div class="navgroup" role="group" aria-label="내정보">
       <div class="navhead nav-group-title">
         <svg
@@ -148,6 +161,7 @@
       <a class="navbtn nav-sub" href="mypage?tab=pw" data-go="member">농민 회원정보</a>
     </div>
   </nav>
+
   <div class="sidebar-foot" id="sidebarFoot"></div>
 </aside>
 </body>

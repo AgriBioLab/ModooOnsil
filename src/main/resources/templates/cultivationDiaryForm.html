@@ -93,7 +93,12 @@
 
                   <div class="reason-box hidden" id="reasonBox">
                     <label for="stageChangeReason" class="label">생육단계 변경 사유 *</label>
-                    <textarea class="ctrl textarea" id="stageChangeReason" rows="4" maxlength="500" placeholder="실제 생육단계를 변경한 근거와 관찰 내용을 입력하세요"></textarea>
+                    <textarea
+                      class="ctrl textarea"
+                      id="stageChangeReason"
+                      rows="4"
+                      maxlength="500"
+                      placeholder="실제 생육단계를 변경한 근거와 관찰 내용을 입력하세요"></textarea>
                   </div>
 
                   <div id="duplicateNotice" class="errorbox hidden" role="status">해당 날짜에 이미 재배일지가 등록되어 있습니다.</div>
@@ -127,8 +132,18 @@
                   <button class="add-btn" id="addTask" type="button">+ 작업내용 추가</button>
 
                   <div class="form-actions">
-                    <a class="btn" id="cancel" th:href="${diaryView == 'edit'} ? @{/cultivation-diaries/{id}(id=${diaryId})} : @{/cultivation-diaries}">취소</a>
-                    <button class="btn main" type="submit" th:text="${diaryView == 'edit'} ? '수정 저장' : '등록'">등록</button>
+                    <a
+                      class="btn"
+                      id="cancel"
+                      th:href="${diaryView == 'edit'} ? @{/cultivation-diaries/{id}(id=${diaryId})} : @{/cultivation-diaries}">
+                      취소
+                    </a>
+                    <button
+                      class="btn main"
+                      type="submit"
+                      th:text="${diaryView == 'edit'} ? '수정 저장' : '등록'">
+                      등록
+                    </button>
                   </div>
                 </div>
               </section>

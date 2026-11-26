@@ -100,19 +100,32 @@
                   <p class="panel-title">농장정보</p>
                   <button type="button" class="btn" id="profileEditBtn">수정</button>
                 </div>
+
                 <div class="panel-body">
                   <dl class="profile-facts">
                     <dt>농장명</dt>
-                    <dd data-profile-value="farmName" th:text="${#strings.defaultString(member.farmName, '—')}">—</dd>
+                    <dd
+                      data-profile-value="farmName"
+                      th:text="${#strings.defaultString(member.farmName, '—')}">—</dd>
+
                     <dt>주요 재배 품목</dt>
-                    <dd data-profile-value="mainCrop" th:text="${#strings.defaultString(member.mainCrop, '—')}">—</dd>
+                    <dd
+                      data-profile-value="mainCrop"
+                      th:text="${#strings.defaultString(member.mainCrop, '—')}">—</dd>
+
                     <dt>농장 주소</dt>
-                    <dd data-profile-value="farmAddress" th:text="${#strings.defaultString(#strings.trim(#strings.defaultString(member.address, '') + ' ' + #strings.defaultString(member.addressDetail, '')), '—')}">—</dd>
+                    <dd
+                      data-profile-value="farmAddress"
+                      th:text="${#strings.defaultString(#strings.trim(#strings.defaultString(member.address, '') + ' ' + #strings.defaultString(member.addressDetail, '')), '—')}">—</dd>
+
                     <dt>농장 소개</dt>
-                    <dd data-profile-value="description" th:text="${#strings.defaultString(member.description, '—')}">—</dd>
+                    <dd
+                      data-profile-value="description"
+                      th:text="${#strings.defaultString(member.description, '—')}">—</dd>
                   </dl>
                 </div>
               </section>
+
               <section class="panel" id="profileEditor" hidden>
                 <div class="panel-head"><p class="panel-title">농장정보 수정</p></div>
                 <div class="panel-body">
@@ -241,21 +254,37 @@
                   <p class="panel-title">농민 회원정보</p>
                   <button type="button" class="btn" id="memberEditBtn">수정</button>
                 </div>
+
                 <div class="panel-body">
                   <dl class="profile-facts">
                     <dt>아이디</dt>
-                    <dd data-profile-value="username" th:text="${#strings.defaultString(member.username, '—')}">—</dd>
+                    <dd
+                      data-profile-value="username"
+                      th:text="${#strings.defaultString(member.username, '—')}">—</dd>
+
                     <dt>대표자명</dt>
-                    <dd data-profile-value="displayName" th:text="${#strings.defaultString(member.displayName, '—')}">—</dd>
+                    <dd
+                      data-profile-value="displayName"
+                      th:text="${#strings.defaultString(member.displayName, '—')}">—</dd>
+
                     <dt>이메일</dt>
-                    <dd data-profile-value="email" th:text="${#strings.defaultString(member.email, '—')}">—</dd>
+                    <dd
+                      data-profile-value="email"
+                      th:text="${#strings.defaultString(member.email, '—')}">—</dd>
+
                     <dt>연락처</dt>
-                    <dd data-profile-value="phone" th:text="${#strings.defaultString(member.phone, '—')}">—</dd>
+                    <dd
+                      data-profile-value="phone"
+                      th:text="${#strings.defaultString(member.phone, '—')}">—</dd>
+
                     <dt>회원가입일</dt>
-                    <dd data-profile-value="createdAt" th:text="${#strings.defaultString(member.createdAt?.toLocalDate(), '—')}">—</dd>
+                    <dd
+                      data-profile-value="createdAt"
+                      th:text="${#strings.defaultString(member.createdAt?.toLocalDate(), '—')}">—</dd>
                   </dl>
                 </div>
               </section>
+
               <section class="panel" id="memberEditor" hidden>
                 <div class="panel-head"><p class="panel-title">농민 회원정보 수정</p></div>
                 <div class="panel-body">

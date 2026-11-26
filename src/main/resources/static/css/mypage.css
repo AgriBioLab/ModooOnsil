@@ -1,3 +1,4 @@
+/* === 1. 내정보 페이지 · 농장 요약 카드 === */
 .profile-page {
   line-height: 1.5;
 }
@@ -42,6 +43,7 @@
   overflow-wrap: anywhere;
 }
 
+/* === 2. 탭 바 · 탭 패널 === */
 .profile-tabbar {
   flex: none;
 }
@@ -80,6 +82,7 @@
   box-shadow: 0 0 0 3px rgba(38, 115, 55, 0.14);
 }
 
+/* === 3. 정보 상세 · 수정 폼 === */
 .profile-tab-panel .profile-facts {
   grid-template-columns: minmax(0, 175px) minmax(0, 1fr) minmax(0, 175px) minmax(0, 1fr);
 }
@@ -202,6 +205,7 @@
   border-color: var(--krds-light-color-border-danger);
 }
 
+/* === 4. 반응형 미디어 쿼리 === */
 @media (max-width: 840px) {
   .profile-tab-panel .profile-facts {
     grid-template-columns: minmax(0, 140px) minmax(0, 1fr);

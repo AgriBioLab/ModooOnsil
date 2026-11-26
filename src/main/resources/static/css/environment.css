@@ -1,3 +1,4 @@
+/* === 1. 최신 환경 KPI 패널 === */
 .env-latest-panel {
   flex: none;
 }
@@ -119,6 +120,7 @@
   box-shadow: 0 0 0 2px rgba(34, 160, 70, 0.22);
 }
 
+/* === 2. 이력 조회 패널 · 탭 · 기간 필터 === */
 .env-history-panel {
   flex: none;
 }
@@ -225,6 +227,7 @@
   font-weight: 600;
 }
 
+/* === 3. 차트 툴바 · SVG 차트 === */
 .env-chart-toolbar {
   display: flex;
   align-items: center;
@@ -266,6 +269,7 @@
   background: transparent;
 }
 
+/* === 4. 환경 이력 · 이슈 테이블 === */
 .env-history-panel > .tablewrap {
   padding: 14px 20px 8px;
 }

@@ -8,6 +8,7 @@
   background: #ffffff;
 }
 
+/* === 1. 앱 셸 · 사이드바 === */
 .sidebar {
   min-height: 0;
   display: flex;
@@ -77,6 +78,7 @@
   display: none;
 }
 
+/* === 2. 사이드바 내비게이션 메뉴 === */
 .nav {
   display: grid;
   gap: 4px;
@@ -165,6 +167,7 @@
   outline-offset: 2px;
 }
 
+/* === 3. 작업 영역 · 상단 헤더 === */
 .workarea {
   display: flex;
   min-width: 0;
@@ -270,6 +273,7 @@ main:has(.editor-shell) {
   overflow-y: auto;
 }
 
+/* === 4. 푸터 === */
 .site-footer {
   flex: none;
   background: var(--paper);

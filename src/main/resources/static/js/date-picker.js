@@ -12,6 +12,10 @@
     '<path d="M16 2v4M8 2v4M3 10h18"/>' +
     '</svg>';
 
+  const WEEKDAYS_HTML = ['일', '월', '화', '수', '목', '금', '토']
+    .map(day => `<span>${day}</span>`)
+    .join('');
+
   const pad2 = value => String(value).padStart(2, '0');
   const formatYearMonth = (year, month) => `${year}-${pad2(month + 1)}`;
 
@@ -62,7 +66,11 @@
       <div class="drp-wrap" id="${idPrefix}Wrap">
         <input type="hidden" id="${idPrefix}From" value="${escapeHtml(fromValue)}">
         <input type="hidden" id="${idPrefix}To" value="${escapeHtml(toValue)}">
-        <button type="button" class="ctrl drp-trigger${hasValue ? '' : ' is-placeholder'}" id="${idPrefix}Trigger" aria-expanded="false">
+        <button
+          type="button"
+          class="ctrl drp-trigger${hasValue ? '' : ' is-placeholder'}"
+          id="${idPrefix}Trigger"
+          aria-expanded="false">
           <span>${escapeHtml(label)}</span>${CALENDAR_SVG}
         </button>
         <div class="drp-popover hidden" id="${idPrefix}Pop" role="dialog" aria-label="기간 선택 달력"></div>
@@ -106,7 +114,10 @@
         const iso = `${formatYearMonth(year, month)}-${pad2(day)}`;
         const isEdge = iso === draftFrom || iso === draftTo;
         const isInRange = draftFrom && draftTo && iso > draftFrom && iso < draftTo;
-        cells += `<button type="button" class="drp-day${isEdge ? ' is-selected' : ''}${isInRange ? ' is-in-range' : ''}" data-drp-pick="${side}" data-drp-date="${iso}">${day}</button>`;
+        const stateClass = `${isEdge ? ' is-selected' : ''}${isInRange ? ' is-in-range' : ''}`;
+        cells +=
+          `<button type="button" class="drp-day${stateClass}"` +
+          ` data-drp-pick="${side}" data-drp-date="${iso}">${day}</button>`;
       }
       const remainder = (firstWeekday + daysInMonth) % 7;
       if (remainder) {
@@ -123,7 +134,7 @@
             <strong>${year}년 ${month + 1}월</strong>
             <button type="button" class="drp-nav-btn" data-drp-nav="${side}:1" aria-label="다음 달">›</button>
           </div>
-          <div class="drp-weekdays"><span>일</span><span>월</span><span>화</span><span>수</span><span>목</span><span>금</span><span>토</span></div>
+          <div class="drp-weekdays">${WEEKDAYS_HTML}</div>
           <div class="drp-days">${cells}</div>
           <div class="drp-pane-foot"><button type="button" class="btn xs" data-drp-today="${side}">오늘</button></div>
         </div>
@@ -235,8 +246,18 @@
 
     return `
       <div class="drp-wrap drp-single-wrap" id="${id}Wrap">
-        <input type="hidden" id="${id}" value="${escapeHtml(currentValue)}" data-min="${escapeHtml(opts.min || '')}" data-max="${escapeHtml(opts.max || '')}" data-placeholder="${escapeHtml(placeholder)}"${opts.clearable === false ? ' data-clearable="0"' : ''}>
-        <button type="button" class="ctrl drp-trigger${hasValue ? '' : ' is-placeholder'}" id="${id}Trigger" aria-expanded="false"${opts.disabled ? ' disabled' : ''}>
+        <input
+          type="hidden"
+          id="${id}"
+          value="${escapeHtml(currentValue)}"
+          data-min="${escapeHtml(opts.min || '')}"
+          data-max="${escapeHtml(opts.max || '')}"
+          data-placeholder="${escapeHtml(placeholder)}"${opts.clearable === false ? ' data-clearable="0"' : ''}>
+        <button
+          type="button"
+          class="ctrl drp-trigger${hasValue ? '' : ' is-placeholder'}"
+          id="${id}Trigger"
+          aria-expanded="false"${opts.disabled ? ' disabled' : ''}>
           <span>${escapeHtml(hasValue ? currentValue : placeholder)}</span>${CALENDAR_SVG}
         </button>
         <div class="drp-popover drp-single hidden" id="${id}Pop" role="dialog" aria-label="날짜 선택 달력"></div>
@@ -303,7 +324,10 @@
       for (let day = 1; day <= daysInMonth; day += 1) {
         const iso = `${formatYearMonth(year, month)}-${pad2(day)}`;
         const disabled = (minDate && iso < minDate) || (maxDate && iso > maxDate);
-        cells += `<button type="button" class="drp-day${iso === selectedDate ? ' is-selected' : ''}" data-sdp-date="${iso}"${disabled ? ' disabled' : ''}>${day}</button>`;
+        const selectedClass = iso === selectedDate ? ' is-selected' : '';
+        cells +=
+          `<button type="button" class="drp-day${selectedClass}"` +
+          ` data-sdp-date="${iso}"${disabled ? ' disabled' : ''}>${day}</button>`;
       }
       const remainder = (firstWeekday + daysInMonth) % 7;
       if (remainder) {
@@ -322,7 +346,7 @@
             <strong>${year}년 ${month + 1}월</strong>
             <button type="button" class="drp-nav-btn" data-sdp-nav="1" aria-label="다음 달">›</button>
           </div>
-          <div class="drp-weekdays"><span>일</span><span>월</span><span>화</span><span>수</span><span>목</span><span>금</span><span>토</span></div>
+          <div class="drp-weekdays">${WEEKDAYS_HTML}</div>
           <div class="drp-days">${cells}</div>
         </div>
         <div class="drp-foot">
