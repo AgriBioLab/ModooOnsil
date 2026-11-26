@@ -1,31 +1,107 @@
 ﻿<!doctype html>
 <html lang="ko" xmlns:th="http://www.thymeleaf.org">
+
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>모두의온실 | 온실 정보</title>
-    <link rel="stylesheet" href="vendor/krds/css/component/output.css" />
-    <link rel="stylesheet" href="css/common.css" />
-    <link rel="stylesheet" href="css/greenhouse.css" />
-    <script src="js/sampleData.js" defer></script>
-    <script src="js/common.js" defer></script>
-    <script src="js/app.js" defer></script>
-    <script src="js/greenhouse.js" defer></script>
+
+    <link rel="stylesheet" href="/vendor/krds/css/component/output.css" />
+    <link rel="stylesheet" href="/css/common.css" />
+    <link rel="stylesheet" href="/css/greenhouse.css" />
+
+    <script src="/js/common.js" defer></script>
+    <script src="/js/greenhouse.js" defer></script>
   </head>
+
   <body data-page="gh-list">
     <div class="app">
+      <!-- 사이드바 -->
       <aside th:replace="~{sidebar :: sidebar}"></aside>
+
       <div class="workarea">
+        <!-- 상단 헤더 -->
         <header th:replace="~{header :: header}"></header>
+
+        <!-- 본문 -->
         <main>
           <nav class="crumb" aria-label="현재 위치">
             <span id="crumb">온실 / 온실 정보 / 목록</span>
           </nav>
-          <div class="page-content" id="main" tabindex="-1"></div>
+
+          <!-- TODO: GreenhouseController(Thymeleaf) 및 등록·수정·삭제 API(/api/greenhouses/**) 연동 -->
+          <div class="page-content" id="main" tabindex="-1">
+            <div id="ghListView">
+
+              <div class="pagehead">
+                <div>
+                  <h1>온실 정보</h1>
+                </div>
+              </div>
+
+              <section class="panel list-section" aria-label="온실 목록">
+                <!-- 검색 필터 -->
+                <form class="list-filter-strip" id="ghFilters">
+                  <label class="list-ctrl-field" for="ghFilterName">
+                    <span>온실명</span>
+                    <select class="ctrl" id="ghFilterName" name="name">
+                      <option value="">전체</option>
+                    </select>
+                  </label>
+
+                  <label class="list-ctrl-field" for="ghFilterType">
+                    <span>온실유형</span>
+                    <select class="ctrl" id="ghFilterType" name="type">
+                      <option value="">전체</option>
+                    </select>
+                  </label>
+
+                  <label class="list-ctrl-field" for="ghFilterCover">
+                    <span>피복형태</span>
+                    <select class="ctrl" id="ghFilterCover" name="coverType">
+                      <option value="">전체</option>
+                    </select>
+                  </label>
+
+                  <label class="list-ctrl-field" for="ghFilterMedium">
+                    <span>배지형태</span>
+                    <select class="ctrl" id="ghFilterMedium" name="mediumType">
+                      <option value="">전체</option>
+                    </select>
+                  </label>
+
+                  <div class="list-ctrl-actions">
+                    <button type="submit" class="btn main">검색</button>
+                    <button type="button" class="btn" id="ghResetBtn">초기화</button>
+                  </div>
+                </form>
+
+                <!-- 목록 요약 및 등록 버튼 -->
+                <div class="list-summary-bar">
+                  <span class="list-total-count">총 <span class="list-count-value" id="ghTotal">0</span>건</span>
+                  <div class="list-summary-actions">
+                    <button type="button" class="btn main" id="ghCreateBtn">+ 온실 등록</button>
+                  </div>
+                </div>
+
+                <!-- 온실 카드 목록 -->
+                <div class="panel-body">
+                  <div class="gh-card-grid" id="ghCardGrid">
+                    <p class="empty">온실 목록을 불러오는 중입니다.</p>
+                  </div>
+                </div>
+              </section>
+
+            </div>
+          </div>
         </main>
+
+        <!-- 푸터 -->
         <footer th:replace="~{footer :: footer}"></footer>
       </div>
     </div>
+
     <div class="notice-toast hidden" id="toast" role="status" aria-live="polite"></div>
   </body>
+
 </html>

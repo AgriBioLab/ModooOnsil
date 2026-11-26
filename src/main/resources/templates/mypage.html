@@ -39,7 +39,7 @@
             </div>
             <section class="profile-summary-card" aria-label="농장 요약">
               <div class="profile-summary-title">
-                <h2 id="profileFarmTitle" th:text="${#strings.defaultString(member.farmName, '—')}">—</h2>
+                <p class="profile-farm-title" id="profileFarmTitle" th:text="${#strings.defaultString(member.farmName, '—')}">—</p>
                 <span class="krds-badge bg-light-gray" id="profileCertBadge">
                   <span class="sr-only">농업경영체 인증 상태</span>
                   <span id="profileCertLabel">미인증</span>
@@ -89,7 +89,7 @@
               tabindex="0">
               <section class="panel" id="profileDetails">
                 <div class="panel-head">
-                  <h2>농장정보</h2>
+                  <p class="panel-title">농장정보</p>
                   <button type="button" class="btn" id="profileEditBtn">수정</button>
                 </div>
                 <div class="panel-body">
@@ -106,7 +106,7 @@
                 </div>
               </section>
               <section class="panel" id="profileEditor" hidden>
-                <div class="panel-head"><h2>농장정보 수정</h2></div>
+                <div class="panel-head"><p class="panel-title">농장정보 수정</p></div>
                 <div class="panel-body">
                   <form id="profileForm" class="profile-form" novalidate>
                     <div class="module-input-grid profile-form-grid">
@@ -172,7 +172,7 @@
               hidden>
               <section class="panel">
                 <div class="panel-head">
-                  <h2 id="profileCertHeading" tabindex="-1">현재 인증 상태</h2>
+                  <p class="panel-title" id="profileCertHeading" tabindex="-1">현재 인증 상태</p>
                 </div>
                 <div class="panel-body">
                   <dl class="profile-facts">
@@ -186,7 +186,7 @@
                 </div>
               </section>
               <section class="panel">
-                <div class="panel-head"><h2>등록번호 인증</h2></div>
+                <div class="panel-head"><p class="panel-title">등록번호 인증</p></div>
                 <div class="panel-body">
                   <p class="profile-hint" id="profileCertComplete" hidden>
                     농업경영체 인증이 완료된 회원입니다.
@@ -228,7 +228,7 @@
               hidden>
               <section class="panel" id="memberDetails">
                 <div class="panel-head">
-                  <h2>농민 회원정보</h2>
+                  <p class="panel-title">농민 회원정보</p>
                   <button type="button" class="btn" id="memberEditBtn">수정</button>
                 </div>
                 <div class="panel-body">
@@ -247,7 +247,7 @@
                 </div>
               </section>
               <section class="panel" id="memberEditor" hidden>
-                <div class="panel-head"><h2>농민 회원정보 수정</h2></div>
+                <div class="panel-head"><p class="panel-title">농민 회원정보 수정</p></div>
                 <div class="panel-body">
                   <form id="memberForm" class="profile-form" novalidate>
                     <div class="module-input-grid profile-form-grid">
@@ -308,7 +308,7 @@
                 </div>
               </section>
               <section class="panel">
-                <div class="panel-head"><h2>비밀번호 변경</h2></div>
+                <div class="panel-head"><p class="panel-title">비밀번호 변경</p></div>
                 <div class="panel-body">
                   <form id="passwordForm" class="profile-form profile-form-narrow" novalidate>
                     <div class="field">
