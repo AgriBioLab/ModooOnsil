@@ -32,7 +32,8 @@ public class SecurityConfig {
                                 "/cultivation-diaries/**",
                                 "/cultivation-plans",
                                 "/cultivation-plans/**",
-                                "/greenhouseList.html",
+                                "/greenhouses",
+                                "/greenhouses/**",
                                 "/environmentChangeList.html",
                                 "/environmentIssueList.html")
                         .authenticated()

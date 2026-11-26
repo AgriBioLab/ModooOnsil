@@ -27,7 +27,6 @@ public class GreenhouseRestController {
 
     /*
      * 1. 온실 목록 조회
-     * GET /api/greenhouses
      */
     @GetMapping
     public ResponseEntity<List<Greenhouse>> findAll(@AuthenticationPrincipal CustomUserDetails userDetails,
@@ -44,7 +43,6 @@ public class GreenhouseRestController {
 
     /*
      * 2. 온실 상세 조회
-     * GET /api/greenhouses/{greenhouseId}
      */
     @GetMapping("/{greenhouseId}")
     public ResponseEntity<Greenhouse> findById(@AuthenticationPrincipal CustomUserDetails userDetails, @PathVariable @Positive Long greenhouseId) {
@@ -57,7 +55,6 @@ public class GreenhouseRestController {
 
     /*
      * 3. 온실 등록
-     * POST /api/greenhouses
      */
     @PostMapping
     public ResponseEntity<Greenhouse> addGreenhouse(@AuthenticationPrincipal CustomUserDetails userDetails, @RequestBody Greenhouse request) {
@@ -70,7 +67,6 @@ public class GreenhouseRestController {
 
     /*
      * 4. 온실 정보 수정
-     * PATCH /api/greenhouses/{greenhouseId}
      */
     @PutMapping("/{greenhouseId}")
     public ResponseEntity<Greenhouse> updateGreenhouse(@AuthenticationPrincipal CustomUserDetails userDetails, @PathVariable @Positive Long greenhouseId, @RequestBody Greenhouse request) {
@@ -100,7 +96,6 @@ public class GreenhouseRestController {
 
     /*
      * 5. 온실 논리 삭제
-     * DELETE /api/greenhouses/{greenhouseId}
      */
     @DeleteMapping("/{greenhouseId}")
     public ResponseEntity<Void> deleteGreenhouse(@AuthenticationPrincipal CustomUserDetails userDetails, @PathVariable @Positive Long greenhouseId) {
