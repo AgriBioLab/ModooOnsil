@@ -12,6 +12,9 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 public class FindCultivationPlanDetailVO extends BaseEntity {
     private Long planId;
+    private Long greenhouseId;
+    private Long cropId;
+    private Long standardId;
     private String planName;
     private String greenhouseName;
     private String cropName;

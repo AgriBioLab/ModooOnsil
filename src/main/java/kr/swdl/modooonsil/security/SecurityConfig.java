@@ -30,7 +30,8 @@ public class SecurityConfig {
                                 "/mypage",
                                 "/cultivation-diaries",
                                 "/cultivation-diaries/**",
-                                "/cultivationPlanList.html",
+                                "/cultivation-plans",
+                                "/cultivation-plans/**",
                                 "/greenhouseList.html",
                                 "/environmentChangeList.html",
                                 "/environmentIssueList.html")
@@ -42,7 +43,7 @@ public class SecurityConfig {
                 .formLogin(form -> form
                         .loginPage("/login")
                         .loginProcessingUrl("/login")
-                        .defaultSuccessUrl("/", false)
+                        .defaultSuccessUrl("/cultivation-plans", false)
                         .failureUrl("/login?error")
                         .permitAll())
                 .build();

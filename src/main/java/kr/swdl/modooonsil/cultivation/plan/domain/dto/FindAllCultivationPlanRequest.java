@@ -4,17 +4,16 @@ import lombok.*;
 
 @Getter
 @Builder
-@NoArgsConstructor
 @AllArgsConstructor
 public class FindAllCultivationPlanRequest {
 
-    private String planName;
+    private final String planName;
 
-    private String greenhouseName;
+    private final String greenhouseName;
 
-    private String cropName;
+    private final String cropName;
 
-    private String varietyName;
+    private final String varietyName;
 
-    private String planStatus;
+    private final String planStatus;
 }

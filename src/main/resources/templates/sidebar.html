@@ -3,7 +3,7 @@
 <body>
 <aside th:fragment="sidebar" class="sidebar" id="appSidebar" aria-label="서비스 탐색">
   <div class="sidebar-head">
-    <a class="brand" id="brand" href="index.html" aria-label="모두의 온실 홈">
+    <a class="brand" id="brand" href="/index.html" aria-label="모두의 온실 홈">
       <svg
         class="brand-logo"
         xmlns="http://www.w3.org/2000/svg"
@@ -49,7 +49,7 @@
     <div class="sidebar-user-farm" id="sidebarUserFarm"></div>
   </div>
   <nav class="nav" id="navigation" aria-label="주 메뉴">
-    <a class="navbtn nav-home" href="index.html" data-go="home">
+    <a class="navbtn nav-home" href="/index.html" data-go="home">
       <svg
         class="nav-ico"
         viewBox="0 0 24 24"
@@ -76,7 +76,7 @@
         </svg>
         재배일지작업
       </div>
-      <a class="navbtn nav-sub" href="cultivation-diaries" data-go="list">재배일지작업목록</a>
+      <a class="navbtn nav-sub" href="/cultivation-diaries" data-go="list">재배일지작업목록</a>
       <a class="navbtn nav-sub" href="/cultivation-diaries/new" data-go="create">
         재배일지작업등록
       </a>
@@ -95,12 +95,12 @@
         </svg>
         작기계획
       </div>
-      <a class="navbtn nav-sub" href="cultivationPlanList.html" data-go="cycle-list">
+      <a class="navbtn nav-sub" th:href="@{/cultivation-plans}" data-go="cycle-list">
         작기계획목록
       </a>
       <a
         class="navbtn nav-sub"
-        href="cultivationPlanList.html?view=cycle-create"
+        th:href="@{/cultivation-plans/new}"
         data-go="cycle-create">
         작기계획등록
       </a>
@@ -118,14 +118,14 @@
         </svg>
         온실
       </div>
-      <a class="navbtn nav-sub" href="environmentChangeList.html" data-go="env-list">
+      <a class="navbtn nav-sub" href="/environmentChangeList.html" data-go="env-list">
         온실 환경변화
       </a>
-      <a class="navbtn nav-sub" href="environmentIssueList.html" data-go="issue-list">
+      <a class="navbtn nav-sub" href="/environmentIssueList.html" data-go="issue-list">
         온실 환경 이슈
       </a>
-      <a class="navbtn nav-sub" href="greenhouseList.html" data-go="gh-list">온실목록</a>
-      <a class="navbtn nav-sub" href="greenhouseList.html?view=gh-create" data-go="gh-create">
+      <a class="navbtn nav-sub" href="/greenhouseList.html" data-go="gh-list">온실목록</a>
+      <a class="navbtn nav-sub" href="/greenhouseList.html?view=gh-create" data-go="gh-create">
         온실등록
       </a>
     </div>
@@ -143,9 +143,9 @@
         </svg>
         내정보
       </div>
-      <a class="navbtn nav-sub" href="mypage" data-go="profile">농장정보</a>
-      <a class="navbtn nav-sub" href="mypage?tab=cert" data-go="cert">농업경영체 인증</a>
-      <a class="navbtn nav-sub" href="mypage?tab=pw" data-go="member">농민 회원정보</a>
+      <a class="navbtn nav-sub" href="/mypage" data-go="profile">농장정보</a>
+      <a class="navbtn nav-sub" href="/mypage?tab=cert" data-go="cert">농업경영체 인증</a>
+      <a class="navbtn nav-sub" href="/mypage?tab=pw" data-go="member">농민 회원정보</a>
     </div>
   </nav>
   <div class="sidebar-foot" id="sidebarFoot"></div>
