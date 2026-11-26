@@ -7,7 +7,7 @@
 
   const PAGE_ROUTES = {
     'issue-list': '/environmentIssueList.html',
-    'cycle-list': '/cultivationPlanList.html',
+    'cycle-list': '/cultivation-plans',
     'gh-list': '/greenhouseList.html',
     'env-list': '/environmentChangeList.html',
     list: '/cultivation-diaries',
@@ -16,7 +16,7 @@
 
   function navigateTo(target, id) {
     if (target === 'cycle-detail' && id) {
-      location.href = `/cultivationPlanList.html?view=cycle-detail&id=${encodeURIComponent(id)}`;
+      location.href = `/cultivation-plans/${encodeURIComponent(id)}`;
       return;
     }
     if (target === 'issue-detail' && id) {

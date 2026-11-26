@@ -31,6 +31,8 @@ public class SecurityConfig {
                                 "/cultivation-diaries",
                                 "/cultivation-diaries/**",
                                 "/cultivationPlanList.html",
+                                "/cultivation-plans",
+                                "/cultivation-plans/**",
                                 "/greenhouseList.html",
                                 "/environmentChangeList.html",
                                 "/environmentIssueList.html")

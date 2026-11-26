@@ -17,6 +17,7 @@ import kr.swdl.modooonsil.security.CustomUserDetails;
 import lombok.RequiredArgsConstructor;
 
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ProblemDetail;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.annotation.Validated;
@@ -174,5 +175,10 @@ public class CultivationPlanRestController {
         }
 
         return userDetails.getMemberId();
+    }
+
+    @ExceptionHandler(ResponseStatusException.class)
+    public ResponseEntity<ProblemDetail> handleStatus(ResponseStatusException exception) {
+        return ResponseEntity.status(exception.getStatusCode()).body(exception.getBody());
     }
 }

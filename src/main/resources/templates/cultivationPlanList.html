@@ -14,7 +14,7 @@
     <script src="/js/cultivationPlan.js" defer></script>
   </head>
 
-  <body data-page="cycle-list">
+  <body th:attr="data-plan-view=${planView},data-plan-id=${planId},data-page=${planView == 'create' ? 'cycle-create' : 'cycle-list'}">
     <div class="app">
       <!-- 사이드바 -->
       <aside th:replace="~{sidebar :: sidebar}"></aside>
@@ -26,12 +26,12 @@
         <!-- 본문 -->
         <main>
           <nav class="crumb" aria-label="현재 위치">
-            <span id="crumb">작기계획 / 목록</span>
+            <a th:href="@{/cultivation-plans}">작기계획</a>
           </nav>
 
-          <!-- TODO: CultivationPlanController / Thymeleaf 연결 시 목록·필터·페이징 데이터를 Model로 바인딩 -->
           <div class="page-content" id="main" tabindex="-1">
-            <div id="planListView">
+            <p id="planError" role="alert" hidden></p>
+            <div id="planListView" th:if="${planView == 'list'}">
 
               <div class="pagehead">
                 <div>
@@ -44,15 +44,15 @@
                 <form class="list-filter-strip" id="planFilters">
                   <label class="list-ctrl-field" for="cfPlan">
                     <span>작기계획명</span>
-                    <select class="ctrl" id="cfPlan" name="plan">
-                      <option value="all">전체 작기계획</option>
+                    <select class="ctrl" id="cfPlan" name="planName">
+                      <option value="">전체 작기계획</option>
                     </select>
                   </label>
 
                   <label class="list-ctrl-field" for="cfStatus">
                     <span>진행 상태</span>
-                    <select class="ctrl" id="cfStatus" name="status">
-                      <option value="all">전체 상태</option>
+                    <select class="ctrl" id="cfStatus" name="planStatus">
+                      <option value="">전체 상태</option>
                       <option value="진행">진행</option>
                       <option value="미진행">미진행</option>
                       <option value="종료">종료</option>
@@ -61,22 +61,22 @@
 
                   <label class="list-ctrl-field" for="cfGh">
                     <span>온실</span>
-                    <select class="ctrl" id="cfGh" name="greenhouse">
-                      <option value="all">전체 온실</option>
+                    <select class="ctrl" id="cfGh" name="greenhouseName">
+                      <option value="">전체 온실</option>
                     </select>
                   </label>
 
                   <label class="list-ctrl-field" for="cfCrop">
                     <span>품목</span>
-                    <select class="ctrl" id="cfCrop" name="crop">
-                      <option value="all">전체 품목</option>
+                    <select class="ctrl" id="cfCrop" name="cropName">
+                      <option value="">전체 품목</option>
                     </select>
                   </label>
 
                   <label class="list-ctrl-field" for="cfVariety">
                     <span>품종</span>
-                    <select class="ctrl" id="cfVariety" name="variety">
-                      <option value="all">전체 품종</option>
+                    <select class="ctrl" id="cfVariety" name="varietyName">
+                      <option value="">전체 품종</option>
                     </select>
                   </label>
 
@@ -90,7 +90,7 @@
                 <div class="list-summary-bar">
                   <span class="list-total-count">총 <span class="list-count-value">0</span>건</span>
                   <div class="list-summary-actions">
-                    <button type="button" class="btn main" id="cycleCreateBtn">+ 작기계획 등록</button>
+                    <a class="btn main" th:href="@{/cultivation-plans/new}">+ 작기계획 등록</a>
                   </div>
                 </div>
 
@@ -108,9 +108,9 @@
                         <th scope="col">상태</th>
                       </tr>
                     </thead>
-                    <tbody>
+                    <tbody id="planRows">
                       <tr>
-                        <td colspan="6" class="empty">등록된 작기계획이 없습니다. (서버 API 연동 대기)</td>
+                        <td colspan="6" class="empty">작기계획을 불러오는 중입니다.</td>
                       </tr>
                     </tbody>
                   </table>
@@ -118,6 +118,54 @@
               </section>
 
             </div>
+
+            <section th:if="${planView == 'detail'}">
+              <div class="pagehead"><h1>작기계획 상세</h1></div>
+              <div class="panel">
+                <dl id="planDetail" class="profile-facts facts-2col"></dl>
+                <div class="list-summary-actions">
+                  <a class="btn" th:href="@{/cultivation-plans}">목록</a>
+                  <a class="btn" id="editPlan" th:href="@{/cultivation-plans/{id}/edit(id=${planId})}" hidden>수정</a>
+                  <button type="button" class="btn main" id="startPlan" hidden>시작</button>
+                  <button type="button" class="btn" id="deletePlan" hidden>삭제</button>
+                </div>
+                <form id="endPlanForm" hidden>
+                  <label for="endReason">종료 사유</label>
+                  <textarea class="ctrl" id="endReason" name="endReason" required maxlength="1000"></textarea>
+                  <button type="submit" class="btn main">종료</button>
+                </form>
+              </div>
+            </section>
+
+            <section th:if="${planView == 'create' or planView == 'edit'}">
+              <div class="pagehead"><h1 th:text="${planView == 'edit' ? '작기계획 수정' : '작기계획 등록'}"></h1></div>
+              <form id="planForm" class="panel">
+                <fieldset id="planFields" disabled>
+                  <div class="list-filter-strip">
+                    <label class="list-ctrl-field">작기계획명
+                      <input class="ctrl" name="planName" maxlength="100" required />
+                    </label>
+                    <label class="list-ctrl-field">온실
+                      <select class="ctrl" name="greenhouseId" required></select>
+                    </label>
+                    <label class="list-ctrl-field">품목 · 품종
+                      <select class="ctrl" name="cropId" required></select>
+                    </label>
+                    <label class="list-ctrl-field">생육 단계 기준
+                      <select class="ctrl" name="standardId" required disabled></select>
+                    </label>
+                    <label class="list-ctrl-field">예정 시작
+                      <input class="ctrl" type="datetime-local" name="plannedStartDate" required step="1" />
+                    </label>
+                    <label class="list-ctrl-field">예정 종료
+                      <input class="ctrl" type="datetime-local" name="plannedEndDate" required step="1" />
+                    </label>
+                  </div>
+                  <button type="submit" class="btn main" id="savePlan" disabled>저장</button>
+                </fieldset>
+                <a class="btn" th:href="${planView == 'edit'} ? @{/cultivation-plans/{id}(id=${planId})} : @{/cultivation-plans}">취소</a>
+              </form>
+            </section>
           </div>
         </main>
 
