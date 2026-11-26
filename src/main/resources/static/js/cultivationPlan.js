@@ -166,7 +166,9 @@
     }
 
     renderDetail(await request(planApi));
-    byId('startPlan').addEventListener('click', () => change(`${planApi}/start`, 'POST'));
+    byId('startPlan').addEventListener('click', () => {
+      if (window.confirm('이 작기계획을 시작하시겠습니까?')) change(`${planApi}/start`, 'POST');
+    });
     byId('deletePlan').addEventListener('click', () => {
       if (window.confirm('이 작기계획을 삭제하시겠습니까?')) change(planApi, 'DELETE');
     });
@@ -199,24 +201,24 @@
       ...crops.map(item => new Option(cropLabel(item), item.cropId)));
 
     let latestSelection = 0;
-    async function loadStandards(selectedStandard) {
+    let selectedStandardId = null;
+
+    async function loadStandards(preferredStandardId) {
       const selection = ++latestSelection;
       const cropId = fields.cropId.value;
-      fields.standardId.replaceChildren(new Option('생육 단계 선택', ''));
-      fields.standardId.disabled = true;
+      selectedStandardId = null;
       save.disabled = true;
       showError();
       if (!cropId) return;
       try {
         const standards = await request(`/api/crops/${cropId}/standards`);
         if (selection !== latestSelection) return;
-        for (const standard of standards) {
-          fields.standardId.add(new Option(standard.growthStage, standard.standardId));
-        }
-        if (selectedStandard != null) fields.standardId.value = selectedStandard;
-        fields.standardId.disabled = !standards.length;
-        save.disabled = !standards.length;
-        if (!standards.length) showError('선택한 품목에 등록된 생육 단계 기준이 없습니다.');
+        const matched = preferredStandardId != null
+          ? standards.find(item => Number(item.standardId) === Number(preferredStandardId))
+          : null;
+        selectedStandardId = matched ? matched.standardId : (standards[0]?.standardId ?? null);
+        save.disabled = !selectedStandardId;
+        if (!selectedStandardId) showError('선택한 품목에 등록된 재배 기준이 없습니다.');
       } catch (error) {
         if (selection === latestSelection) showError(error.message);
       }
@@ -231,10 +233,14 @@
     fields.cropId.addEventListener('change', () => loadStandards());
     form.addEventListener('submit', async event => {
       event.preventDefault();
-      const { planName, greenhouseId, standardId, plannedStartDate, plannedEndDate } =
+      const { planName, greenhouseId, plannedStartDate, plannedEndDate } =
         Object.fromEntries(new FormData(form));
       if (!planName.trim()) {
         showError('작기계획명을 입력해 주세요.');
+        return;
+      }
+      if (!selectedStandardId) {
+        showError('선택한 품목에 등록된 재배 기준이 없습니다.');
         return;
       }
       if (plannedStartDate >= plannedEndDate) {
@@ -247,7 +253,7 @@
         const saved = await request(editing ? planApi : api, editing ? 'PATCH' : 'POST', {
           planName: planName.trim(),
           greenhouseId: Number(greenhouseId),
-          standardId: Number(standardId),
+          standardId: Number(selectedStandardId),
           plannedStartDate,
           plannedEndDate
         });
