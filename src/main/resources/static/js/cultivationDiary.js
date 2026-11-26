@@ -504,6 +504,9 @@
     removeBtn.setAttribute('aria-label', `${title} 삭제`);
 
     nameInput.value = task.name;
+    if (task.type && ![...typeSelect.options].some(opt => opt.value === task.type)) {
+      typeSelect.add(new Option(task.type, task.type));
+    }
     typeSelect.value = task.type;
     timeInput.value = timeText;
     statusSelect.value = task.status;
