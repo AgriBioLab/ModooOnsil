@@ -489,8 +489,10 @@
   font-weight: 600;
 }
 
-.summary-fact > strong {
+.summary-fact > strong,
+.summary-fact > .summary-value {
   font-size: 14.5px;
+  font-weight: 700;
   color: var(--krds-light-color-text-bolder, #131416);
 }
 
@@ -649,7 +651,8 @@
   color: var(--ink);
 }
 
-.detail-reason strong {
+.detail-reason strong,
+.detail-reason .detail-reason-label {
   color: var(--muted);
   font-weight: 700;
 }

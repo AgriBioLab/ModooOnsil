@@ -16,20 +16,20 @@ public class CultivationDiaryController {
     @GetMapping("/cultivation-diaries/new")
     public String createForm(Model model) {
         model.addAttribute("diaryView", "create");
-        return "cultivationDiaryList";
+        return "cultivationDiaryForm";
     }
 
     @GetMapping("/cultivation-diaries/{diaryId}")
     public String detail(@PathVariable Long diaryId, Model model) {
         model.addAttribute("diaryView", "detail");
         model.addAttribute("diaryId", diaryId);
-        return "cultivationDiaryList";
+        return "cultivationDiaryDetail";
     }
 
     @GetMapping("/cultivation-diaries/{diaryId}/edit")
     public String editForm(@PathVariable Long diaryId, Model model) {
         model.addAttribute("diaryView", "edit");
         model.addAttribute("diaryId", diaryId);
-        return "cultivationDiaryList";
+        return "cultivationDiaryForm";
     }
 }
