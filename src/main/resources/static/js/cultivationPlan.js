@@ -141,12 +141,32 @@
     }
     const pending = plan.planStatus === '미진행';
     for (const id of ['editPlan', 'startPlan', 'deletePlan']) byId(id).hidden = !pending;
+    if (!pending) byId('planActionConfirm').hidden = true;
     byId('endPlanForm').hidden = plan.planStatus !== '진행';
   }
 
   async function bindDetail() {
     const endForm = byId('endPlanForm');
-    const buttons = [byId('startPlan'), byId('deletePlan'), endForm.querySelector('button')];
+    const confirmBox = byId('planActionConfirm');
+    const confirmMessage = byId('planActionMessage');
+    const confirmOk = byId('planActionOk');
+    const confirmCancel = byId('planActionCancel');
+    const buttons = [byId('startPlan'), byId('deletePlan'), confirmOk, confirmCancel, endForm.querySelector('button')];
+    let pendingAction = null;
+
+    function closeConfirm() {
+      pendingAction = null;
+      confirmBox.hidden = true;
+      confirmMessage.textContent = '';
+    }
+
+    function openConfirm(action) {
+      pendingAction = action;
+      confirmMessage.textContent = action.message;
+      confirmOk.textContent = action.confirmLabel;
+      confirmBox.hidden = false;
+    }
+
     async function change(url, method, data) {
       buttons.forEach(button => { button.disabled = true; });
       showError();
@@ -156,6 +176,7 @@
           location.assign(page);
           return;
         }
+        closeConfirm();
         renderDetail(plan);
         endForm.reset();
       } catch (error) {
@@ -166,11 +187,30 @@
     }
 
     renderDetail(await request(planApi));
+
     byId('startPlan').addEventListener('click', () => {
-      if (window.confirm('이 작기계획을 시작하시겠습니까?')) change(`${planApi}/start`, 'POST');
+      openConfirm({
+        message: '이 작기계획을 시작하시겠습니까?',
+        confirmLabel: '시작 확인',
+        url: `${planApi}/start`,
+        method: 'POST'
+      });
     });
+
     byId('deletePlan').addEventListener('click', () => {
-      if (window.confirm('이 작기계획을 삭제하시겠습니까?')) change(planApi, 'DELETE');
+      openConfirm({
+        message: '이 작기계획을 삭제하시겠습니까?',
+        confirmLabel: '삭제 확인',
+        url: planApi,
+        method: 'DELETE'
+      });
+    });
+
+    confirmCancel.addEventListener('click', closeConfirm);
+
+    confirmOk.addEventListener('click', () => {
+      if (!pendingAction) return;
+      change(pendingAction.url, pendingAction.method);
     });
     endForm.addEventListener('submit', event => {
       event.preventDefault();

@@ -123,6 +123,13 @@
                   <button type="button" class="btn main" id="startPlan" hidden>시작</button>
                   <button type="button" class="btn" id="deletePlan" hidden>삭제</button>
                 </div>
+
+                <!-- 시작 · 삭제 인라인 확인 바 -->
+                <div class="plan-delete-confirm" id="planActionConfirm" hidden>
+                  <span id="planActionMessage"></span>
+                  <button type="button" class="btn" id="planActionCancel">취소</button>
+                  <button type="button" class="btn main" id="planActionOk">확인</button>
+                </div>
                 <form id="endPlanForm" hidden>
                   <label for="endReason">종료 사유</label>
                   <textarea class="ctrl" id="endReason" name="endReason" required maxlength="1000"></textarea>
