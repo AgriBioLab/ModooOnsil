@@ -59,6 +59,8 @@
                registered_area,
                medium_type,
                greenhouse_image_url,
+               created_at,
+               updated_at,
                deleted_at
         FROM greenhouse
         WHERE member_id = #{memberId}
