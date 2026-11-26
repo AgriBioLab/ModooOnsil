@@ -1,0 +1,111 @@
+<!doctype html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+
+  <head>
+    <title>모두의온실 | 온실 정보 상세</title>
+    <th:block th:replace="~{common :: headBase}"></th:block>
+    <link rel="stylesheet" href="/css/greenhouse.css" />
+    <script src="/js/greenhouseDetail.js" defer></script>
+  </head>
+
+  <body data-page="gh-detail" th:attr="data-greenhouse-id=${greenhouseId}">
+    <div class="app">
+      <!-- 사이드바 -->
+      <aside th:replace="~{sidebar :: sidebar}"></aside>
+
+      <div class="workarea">
+        <!-- 상단 헤더 -->
+        <header th:replace="~{header :: header}"></header>
+
+        <!-- 본문 -->
+        <main>
+          <nav class="crumb" aria-label="현재 위치">
+            <span id="crumb">온실 / 온실 정보 / 상세</span>
+          </nav>
+
+          <div class="page-content" id="main" tabindex="-1">
+            <!-- 상단 제목 -->
+            <div class="pagehead">
+              <div>
+                <h1>온실 정보 상세</h1>
+              </div>
+            </div>
+
+            <!-- 상세 본문 스크롤 영역 -->
+            <div class="module-scroll">
+              <section class="panel" aria-label="온실 상세 정보">
+                <div class="panel-head">
+                  <div class="panel-head-title">
+                    <p class="panel-title" id="ghDetailName">—</p>
+                    <span class="krds-badge bg-light-success hidden" id="ghDetailTypeBadge"></span>
+                  </div>
+                  <span class="counter" id="ghDetailSummary">—</span>
+                </div>
+
+                <div class="panel-body">
+                  <div id="ghDetailBody">
+                    <div id="ghDetailLayout">
+                      <div class="gh-photo-box hidden" id="ghPhotoBox">
+                        <img class="gh-detail-photo" id="ghDetailPhoto" src="" alt="" />
+                      </div>
+
+                      <dl class="profile-facts facts-2col">
+                        <dt>등록 면적</dt>
+                        <dd id="ghDetailArea">—</dd>
+
+                        <dt>동 수</dt>
+                        <dd id="ghDetailCount">—</dd>
+
+                        <dt>피복형태</dt>
+                        <dd id="ghDetailCover">—</dd>
+
+                        <dt>배지형태</dt>
+                        <dd id="ghDetailMedium">—</dd>
+
+                        <dt>측고</dt>
+                        <dd id="ghDetailSideHeight">—</dd>
+
+                        <dt>폭</dt>
+                        <dd id="ghDetailWidth">—</dd>
+
+                        <dt>길이</dt>
+                        <dd id="ghDetailLength">—</dd>
+
+                        <dt>온실 사진 URL</dt>
+                        <dd id="ghDetailImageUrl">—</dd>
+                      </dl>
+                    </div>
+                  </div>
+
+                  <p class="empty hidden" id="ghDetailError" role="alert"></p>
+                </div>
+              </section>
+
+              <!-- 삭제 확인 영역 -->
+              <div class="gh-delete-confirm hidden" id="ghDeleteConfirm" role="alert">
+                <span>이 온실을 삭제하시겠습니까?</span>
+                <button type="button" class="btn" id="ghDeleteCancel">취소</button>
+                <button type="button" class="btn danger" id="ghDeleteOk">삭제 확인</button>
+              </div>
+
+              <!-- 하단 액션 버튼 -->
+              <div class="module-actions">
+                <div class="module-actions-left">
+                  <a class="btn" href="/greenhouseList.html" id="ghToList">목록</a>
+                </div>
+                <button type="button" class="btn danger" id="ghDelete">삭제</button>
+                <button type="button" class="btn main" id="ghToEdit">수정</button>
+              </div>
+            </div>
+          </div>
+        </main>
+
+        <!-- 푸터 -->
+        <footer th:replace="~{footer :: footer}"></footer>
+      </div>
+    </div>
+
+    <div th:replace="~{common :: toast}"></div>
+  </body>
+
+</html>

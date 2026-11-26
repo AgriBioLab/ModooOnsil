@@ -27,15 +27,18 @@
   }
 
   function renderGreenhouseCard(house) {
+    const id = house.greenhouseId;
+    const detailHref = id != null ? `/greenhouses/${encodeURIComponent(id)}` : '#';
     const name = house.greenhouseName || house.name || '이름 없음';
     const type = house.greenhouseType || house.type || '';
-    const cover = house.coveringType || house.coverType || '—';
+    const cover = house.coverType || house.coveringType || '—';
     const medium = house.mediumType || '—';
-    const count = house.houseCount ?? house.buildingCount;
+    const count = house.buildingCount ?? house.houseCount;
     const area = house.registeredArea;
+    const imageUrl = house.greenhouseImageUrl || house.imageUrl || '';
 
-    const mediaHtml = house.imageUrl
-      ? `<img src="${escapeHtml(house.imageUrl)}" alt="${escapeHtml(name)} 사진">`
+    const mediaHtml = imageUrl
+      ? `<img src="${escapeHtml(imageUrl)}" alt="${escapeHtml(name)} 사진">`
       : '<div class="gh-card-placeholder"><span>등록된 사진 없음</span></div>';
 
     const typeBadge = type
@@ -44,10 +47,10 @@
 
     return `
       <article class="gh-card">
-        <div class="gh-card-media">${mediaHtml}</div>
+        <a class="gh-card-media" href="${escapeHtml(detailHref)}" aria-label="${escapeHtml(name)} 상세 보기">${mediaHtml}</a>
         <div class="gh-card-body">
           <div class="gh-card-head">
-            <span class="gh-card-title">${escapeHtml(name)}</span>
+            <a class="gh-card-title" href="${escapeHtml(detailHref)}">${escapeHtml(name)}</a>
             ${typeBadge}
           </div>
           <dl class="gh-card-specs">

@@ -1,3 +1,4 @@
+/* === 1. 온실 상세 사진 · 카드 그리드 === */
 .gh-photo-box {
   margin-bottom: 16px;
 }
@@ -83,6 +84,14 @@
   font-size: 16px;
   font-weight: 700;
   text-align: left;
+  color: inherit;
+  text-decoration: none;
+}
+
+.gh-card-title:hover {
+  color: var(--primary);
+  text-decoration: underline;
+  text-underline-offset: 3px;
 }
 
 .gh-card-specs {
@@ -114,6 +123,7 @@
   white-space: nowrap;
 }
 
+/* === 2. 온실 상세 레이아웃 · 삭제 확인 === */
 .gh-detail-layout {
   display: grid;
   grid-template-columns: minmax(260px, 340px) minmax(0, 1fr);
@@ -137,4 +147,15 @@
   .gh-detail-layout {
     grid-template-columns: 1fr;
   }
+}
+
+.gh-delete-confirm {
+  padding: 10px 14px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: var(--paper);
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8px;
 }
