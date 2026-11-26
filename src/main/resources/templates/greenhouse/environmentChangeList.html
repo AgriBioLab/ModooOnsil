@@ -1,27 +1,21 @@
-﻿<!doctype html>
+<!doctype html>
 <html lang="ko" xmlns:th="http://www.thymeleaf.org">
 
   <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>모두의온실 | 온실 환경변화</title>
-
-    <link rel="stylesheet" href="/vendor/krds/css/component/output.css" />
-    <link rel="stylesheet" href="/css/common.css" />
+    <th:block th:replace="~{fragments/common :: headBase}"></th:block>
     <link rel="stylesheet" href="/css/environment.css" />
-
-    <script src="/js/common.js" defer></script>
     <script src="/js/environment.js" defer></script>
   </head>
 
   <body data-page="env-list">
     <div class="app">
       <!-- 사이드바 -->
-      <aside th:replace="~{sidebar :: sidebar}"></aside>
+      <aside th:replace="~{fragments/sidebar :: sidebar}"></aside>
 
       <div class="workarea">
         <!-- 상단 헤더 -->
-        <header th:replace="~{header :: header}"></header>
+        <header th:replace="~{fragments/header :: header}"></header>
 
         <!-- 본문 -->
         <main>
@@ -71,11 +65,11 @@
         </main>
 
         <!-- 푸터 -->
-        <footer th:replace="~{footer :: footer}"></footer>
+        <footer th:replace="~{fragments/footer :: footer}"></footer>
       </div>
     </div>
 
-    <div class="notice-toast hidden" id="toast" role="status" aria-live="polite"></div>
+    <div th:replace="~{fragments/common :: toast}"></div>
   </body>
 
 </html>

@@ -1,16 +1,11 @@
 <!doctype html>
 <html lang="ko" xmlns:th="http://www.thymeleaf.org">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>모두의온실 | 농민 회원가입</title>
-  <link rel="icon" href="img/favicon.svg" type="image/svg+xml">
-  <link rel="stylesheet" href="vendor/krds/css/component/output.css">
-  <link rel="stylesheet" href="css/common.css">
-  <link rel="stylesheet" href="css/auth.css">
+  <th:block th:replace="~{fragments/common :: headBase}"></th:block>
+  <link rel="stylesheet" href="/css/auth.css" />
   <script src="https://t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js" async></script>
-  <script src="js/common.js" defer></script>
-  <script src="js/auth.js" defer></script>
+  <script src="/js/auth.js" defer></script>
 </head>
 <body data-page="signup" class="signup-shell">
 <a class="skip-link" href="#signupOverlay">본문 바로가기</a>
@@ -173,6 +168,6 @@
   <strong>모두의온실</strong>
   <span>농민 누구나 쉽고 간편하게 쓰는 온실 재배관리</span>
 </footer>
-<div class="notice-toast hidden" id="toast" role="status" aria-live="polite"></div>
+<div th:replace="~{fragments/common :: toast}"></div>
 </body>
 </html>

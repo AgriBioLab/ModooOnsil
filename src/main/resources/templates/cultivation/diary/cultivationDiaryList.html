@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+
+  <head>
+    <base href="/" th:href="@{/}" />
+    <title>모두의온실 | 재배일지작업</title>
+    <th:block th:replace="~{fragments/common :: headBase}"></th:block>
+    <link rel="stylesheet" href="/css/cultivationDiary.css?v=20261120-badges" />
+    <script src="/js/date-picker.js" defer></script>
+    <script src="/js/cultivationDiary.js?v=20261126-mvc-split" defer></script>
+  </head>
+
+  <body data-page="list" th:attr="data-diary-view=${diaryView},data-diary-id=${diaryId}">
+    <div class="app">
+      <!-- 사이드바 -->
+      <aside th:replace="~{fragments/sidebar :: sidebar}"></aside>
+
+      <div class="workarea">
+        <!-- 상단 헤더 -->
+        <header th:replace="~{fragments/header :: header}"></header>
+
+        <!-- 본문 -->
+        <main>
+          <nav class="crumb" aria-label="현재 위치">
+            <span id="crumb">재배일지작업 / 목록</span>
+          </nav>
+
+          <div class="page-content" id="main" tabindex="-1">
+            <th:block th:insert="~{cultivation/diary/diary-list :: diaryList}"></th:block>
+          </div>
+        </main>
+
+        <!-- 푸터 -->
+        <footer th:replace="~{fragments/footer :: footer}"></footer>
+      </div>
+    </div>
+
+    <div th:replace="~{fragments/common :: toast}"></div>
+  </body>
+
+</html>
