@@ -572,7 +572,15 @@
     if (!form || !submitBtn || submitBtn.disabled || !stageOptions) return;
 
     const workDate = document.getElementById('workDate').value;
+    const stageValue = document.getElementById('stageId').value;
+    const stageChangeReason = (document.getElementById('stageChangeReason')?.value || '').trim();
+    showFormError('');
     gatherTasks();
+
+    if (!editDiary && stageValue !== stageOptions.currentStage && (!stageChangeReason || stageChangeReason.length > 500)) {
+      showFormError('생육단계 변경 사유를 500자 이내로 입력하세요.');
+      return;
+    }
 
     if (workingTasks.some(task => !task.name.trim() || !task.startedAt)) {
       showFormError('모든 작업의 작업명과 작업시간을 입력하세요.');
@@ -597,8 +605,8 @@
         const result = await request('', 'POST', {
           planId: document.getElementById('cycleId').value,
           workedDate: workDate,
-          growthStage: document.getElementById('stageId').value,
-          stageChangeReason: (document.getElementById('stageChangeReason')?.value || '').trim(),
+          growthStage: stageValue,
+          stageChangeReason,
           tasks
         });
         diaryId = result.diaryId;
