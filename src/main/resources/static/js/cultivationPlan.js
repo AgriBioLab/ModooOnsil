@@ -5,7 +5,6 @@
   const page = '/cultivation-plans';
   const api = '/api/cultivation-plans';
   const { planView, planId } = document.body.dataset;
-  const detailUrl = planId && `${page}/${planId}`;
   const planApi = planId && `${api}/${planId}`;
   const byId = id => document.getElementById(id);
 

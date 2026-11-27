@@ -159,11 +159,6 @@ select:disabled {
   gap: inherit;
 }
 
-.page-content:focus {
-  outline: none;
-  box-shadow: none;
-}
-
 .skip-link {
   position: fixed;
   top: -48px;

@@ -36,30 +36,14 @@
     }
   }
 
-  function bindEnvEvents() {
-    const form = document.getElementById('envFilters');
-    const resetBtn = document.getElementById('efReset');
+  function bindFilterForm(formId, resetId, noticeMessage) {
+    const form = document.getElementById(formId);
+    const resetBtn = document.getElementById(resetId);
 
     if (form) {
       form.addEventListener('submit', event => {
         event.preventDefault();
-        notify('환경변화 조회는 서버 연동 후 동작합니다.');
-      });
-    }
-
-    if (resetBtn && form) {
-      resetBtn.addEventListener('click', () => form.reset());
-    }
-  }
-
-  function bindIssueEvents() {
-    const form = document.getElementById('issueFilters');
-    const resetBtn = document.getElementById('ifReset');
-
-    if (form) {
-      form.addEventListener('submit', event => {
-        event.preventDefault();
-        notify('환경 이슈 조회는 서버 연동 후 동작합니다.');
+        notify(noticeMessage);
       });
     }
 
@@ -84,13 +68,13 @@
     const page = document.body?.dataset?.page;
     if (page === 'issue-list') {
       setCurrentMenu('issue-list');
-      bindIssueEvents();
+      bindFilterForm('issueFilters', 'ifReset', '환경 이슈 조회는 서버 연동 후 동작합니다.');
       await populateFilterOptions('ifHouse', 'ifCycle');
       return;
     }
 
     setCurrentMenu('env-list');
-    bindEnvEvents();
+    bindFilterForm('envFilters', 'efReset', '환경변화 조회는 서버 연동 후 동작합니다.');
     await populateFilterOptions('efHouse', 'efCycle');
   });
 })();

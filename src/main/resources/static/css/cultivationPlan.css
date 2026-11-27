@@ -1,30 +1,3 @@
-.profile-facts.facts-2col {
-  grid-template-columns: minmax(0, 145px) minmax(0, 1fr) minmax(0, 145px) minmax(0, 1fr);
-}
-
-.profile-facts.facts-2col dt,
-.profile-facts.facts-2col dd {
-  padding: 12px 15px;
-  font-size: 14px;
-  overflow-wrap: anywhere;
-}
-
-.profile-facts.facts-2col dd:nth-of-type(odd) {
-  border-right: 1px solid var(--line);
-}
-
-.profile-facts.facts-2col dd:last-of-type:nth-of-type(odd) {
-  grid-column: 2 / -1;
-  border-right: 0;
-}
-
-.profile-facts.facts-2col dt:nth-of-type(odd):nth-last-of-type(2),
-.profile-facts.facts-2col dd:nth-of-type(odd):nth-last-of-type(2),
-.profile-facts.facts-2col dt:last-of-type,
-.profile-facts.facts-2col dd:last-of-type {
-  border-bottom: 0;
-}
-
 .module-actions-left {
   margin-right: auto;
   display: flex;
@@ -139,19 +112,6 @@
 }
 
 @media (max-width: 720px) {
-  .profile-facts.facts-2col {
-    grid-template-columns: minmax(0, 110px) minmax(0, 1fr);
-  }
-
-  .profile-facts.facts-2col dd:nth-of-type(odd) {
-    border-right: 0;
-  }
-
-  .profile-facts.facts-2col dt:nth-of-type(odd):nth-last-of-type(2),
-  .profile-facts.facts-2col dd:nth-of-type(odd):nth-last-of-type(2) {
-    border-bottom: 1px solid var(--line);
-  }
-
   .module-input-grid.cycle-basic-grid,
   .module-input-grid.cycle-crop-bar {
     grid-template-columns: 1fr;
