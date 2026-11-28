@@ -26,7 +26,7 @@
 
     if (body) body.classList.add('hidden');
     if (deleteBtn) deleteBtn.disabled = true;
-    if (editBtn) editBtn.disabled = true;
+    if (editBtn) editBtn.classList.add('hidden');
     if (errorEl) {
       errorEl.textContent = message;
       errorEl.classList.remove('hidden');

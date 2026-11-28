@@ -5,7 +5,6 @@
   const page = '/cultivation-plans';
   const api = '/api/cultivation-plans';
   const { planView, planId } = document.body.dataset;
-  const detailUrl = planId && `${page}/${planId}`;
   const planApi = planId && `${api}/${planId}`;
   const byId = id => document.getElementById(id);
 
@@ -121,6 +120,22 @@
   }
 
   function renderDetail(plan) {
+    const detailName = byId('planDetailName');
+    const statusBadge = byId('planStatusBadge');
+    const detailSummary = byId('planDetailSummary');
+    if (detailName) detailName.textContent = plan.planName || '—';
+    if (detailSummary) {
+      detailSummary.textContent = [plan.greenhouseName, cropLabel(plan)].filter(Boolean).join(' · ') || '—';
+    }
+    if (statusBadge) {
+      if (plan.planStatus) {
+        statusBadge.textContent = plan.planStatus;
+        statusBadge.className = `krds-badge ${plan.planStatus === '진행' ? 'bg-light-success' : 'bg-light-gray'}`;
+      } else {
+        statusBadge.classList.add('hidden');
+      }
+    }
+
     const detail = byId('planDetail');
     detail.replaceChildren();
     const fields = {
@@ -141,12 +156,32 @@
     }
     const pending = plan.planStatus === '미진행';
     for (const id of ['editPlan', 'startPlan', 'deletePlan']) byId(id).hidden = !pending;
+    if (!pending) byId('planActionConfirm').hidden = true;
     byId('endPlanForm').hidden = plan.planStatus !== '진행';
   }
 
   async function bindDetail() {
     const endForm = byId('endPlanForm');
-    const buttons = [byId('startPlan'), byId('deletePlan'), endForm.querySelector('button')];
+    const confirmBox = byId('planActionConfirm');
+    const confirmMessage = byId('planActionMessage');
+    const confirmOk = byId('planActionOk');
+    const confirmCancel = byId('planActionCancel');
+    const buttons = [byId('startPlan'), byId('deletePlan'), confirmOk, confirmCancel, endForm.querySelector('button')];
+    let pendingAction = null;
+
+    function closeConfirm() {
+      pendingAction = null;
+      confirmBox.hidden = true;
+      confirmMessage.textContent = '';
+    }
+
+    function openConfirm(action) {
+      pendingAction = action;
+      confirmMessage.textContent = action.message;
+      confirmOk.textContent = action.confirmLabel;
+      confirmBox.hidden = false;
+    }
+
     async function change(url, method, data) {
       buttons.forEach(button => { button.disabled = true; });
       showError();
@@ -156,6 +191,7 @@
           location.assign(page);
           return;
         }
+        closeConfirm();
         renderDetail(plan);
         endForm.reset();
       } catch (error) {
@@ -166,9 +202,30 @@
     }
 
     renderDetail(await request(planApi));
-    byId('startPlan').addEventListener('click', () => change(`${planApi}/start`, 'POST'));
+
+    byId('startPlan').addEventListener('click', () => {
+      openConfirm({
+        message: '이 작기계획을 시작하시겠습니까?',
+        confirmLabel: '시작 확인',
+        url: `${planApi}/start`,
+        method: 'POST'
+      });
+    });
+
     byId('deletePlan').addEventListener('click', () => {
-      if (window.confirm('이 작기계획을 삭제하시겠습니까?')) change(planApi, 'DELETE');
+      openConfirm({
+        message: '이 작기계획을 삭제하시겠습니까?',
+        confirmLabel: '삭제 확인',
+        url: planApi,
+        method: 'DELETE'
+      });
+    });
+
+    confirmCancel.addEventListener('click', closeConfirm);
+
+    confirmOk.addEventListener('click', () => {
+      if (!pendingAction) return;
+      change(pendingAction.url, pendingAction.method);
     });
     endForm.addEventListener('submit', event => {
       event.preventDefault();
@@ -199,24 +256,24 @@
       ...crops.map(item => new Option(cropLabel(item), item.cropId)));
 
     let latestSelection = 0;
-    async function loadStandards(selectedStandard) {
+    let selectedStandardId = null;
+
+    async function loadStandards(preferredStandardId) {
       const selection = ++latestSelection;
       const cropId = fields.cropId.value;
-      fields.standardId.replaceChildren(new Option('생육 단계 선택', ''));
-      fields.standardId.disabled = true;
+      selectedStandardId = null;
       save.disabled = true;
       showError();
       if (!cropId) return;
       try {
         const standards = await request(`/api/crops/${cropId}/standards`);
         if (selection !== latestSelection) return;
-        for (const standard of standards) {
-          fields.standardId.add(new Option(standard.growthStage, standard.standardId));
-        }
-        if (selectedStandard != null) fields.standardId.value = selectedStandard;
-        fields.standardId.disabled = !standards.length;
-        save.disabled = !standards.length;
-        if (!standards.length) showError('선택한 품목에 등록된 생육 단계 기준이 없습니다.');
+        const matched = preferredStandardId != null
+          ? standards.find(item => Number(item.standardId) === Number(preferredStandardId))
+          : null;
+        selectedStandardId = matched ? matched.standardId : (standards[0]?.standardId ?? null);
+        save.disabled = !selectedStandardId;
+        if (!selectedStandardId) showError('선택한 품목에 등록된 재배 기준이 없습니다.');
       } catch (error) {
         if (selection === latestSelection) showError(error.message);
       }
@@ -231,10 +288,14 @@
     fields.cropId.addEventListener('change', () => loadStandards());
     form.addEventListener('submit', async event => {
       event.preventDefault();
-      const { planName, greenhouseId, standardId, plannedStartDate, plannedEndDate } =
+      const { planName, greenhouseId, plannedStartDate, plannedEndDate } =
         Object.fromEntries(new FormData(form));
       if (!planName.trim()) {
         showError('작기계획명을 입력해 주세요.');
+        return;
+      }
+      if (!selectedStandardId) {
+        showError('선택한 품목에 등록된 재배 기준이 없습니다.');
         return;
       }
       if (plannedStartDate >= plannedEndDate) {
@@ -247,7 +308,7 @@
         const saved = await request(editing ? planApi : api, editing ? 'PATCH' : 'POST', {
           planName: planName.trim(),
           greenhouseId: Number(greenhouseId),
-          standardId: Number(standardId),
+          standardId: Number(selectedStandardId),
           plannedStartDate,
           plannedEndDate
         });

@@ -33,13 +33,64 @@
                 </div>
               </div>
 
+              <!-- 최근 환경 요약 KPI (프로토타입 환경관측 카드 기준) -->
+              <section class="panel env-latest-panel" aria-label="최근 측정 환경 요약">
+                <div class="panel-head">
+                  <p class="panel-title">최근 측정 환경</p>
+                  <span class="counter" id="envLatestTime">측정 이력 대기</span>
+                </div>
+
+                <div class="env-kpi-groups">
+                  <div class="env-kpi-grid cols-5">
+                    <div class="env-kpi-card">
+                      <div class="env-kpi-top"><span class="env-kpi-label">온도</span></div>
+                      <div class="env-kpi-value is-empty" id="envKpiTemp">—<small>°C</small></div>
+                    </div>
+                    <div class="env-kpi-card">
+                      <div class="env-kpi-top"><span class="env-kpi-label">상대습도</span></div>
+                      <div class="env-kpi-value is-empty" id="envKpiHumidity">—<small>%RH</small></div>
+                    </div>
+                    <div class="env-kpi-card">
+                      <div class="env-kpi-top"><span class="env-kpi-label">광도</span></div>
+                      <div class="env-kpi-value is-empty" id="envKpiLight">—<small>µmol/m²/s</small></div>
+                    </div>
+                    <div class="env-kpi-card">
+                      <div class="env-kpi-top"><span class="env-kpi-label">CO₂</span></div>
+                      <div class="env-kpi-value is-empty" id="envKpiCo2">—<small>ppm</small></div>
+                    </div>
+                    <div class="env-kpi-card is-sub">
+                      <div class="env-kpi-top"><span class="env-kpi-label">EC</span></div>
+                      <div class="env-kpi-value is-empty" id="envKpiEc">—<small>dS/m</small></div>
+                    </div>
+                  </div>
+                </div>
+              </section>
+
               <section class="panel list-section" aria-label="온실 환경변화 목록">
                 <!-- 검색 필터 -->
                 <form class="list-filter-strip" id="envFilters">
+                  <label class="list-ctrl-field" for="efHouse">
+                    <span>온실</span>
+                    <select class="ctrl" id="efHouse" name="greenhouseId">
+                      <option value="">전체 온실</option>
+                    </select>
+                  </label>
+
                   <label class="list-ctrl-field" for="efCycle">
                     <span>작기계획</span>
-                    <select class="ctrl" id="efCycle" name="cycle">
-                      <option value="all">전체 작기계획</option>
+                    <select class="ctrl" id="efCycle" name="planId">
+                      <option value="">전체 작기계획</option>
+                    </select>
+                  </label>
+
+                  <label class="list-ctrl-field" for="efMetric">
+                    <span>측정 항목</span>
+                    <select class="ctrl" id="efMetric" name="metric">
+                      <option value="">전체 항목</option>
+                      <option value="temperature">온도</option>
+                      <option value="humidity">습도</option>
+                      <option value="light">광도</option>
+                      <option value="co2">CO₂</option>
                     </select>
                   </label>
 
@@ -51,12 +102,30 @@
 
                 <!-- 목록 요약 -->
                 <div class="list-summary-bar">
-                  <span class="list-total-count">총 <span class="list-count-value">0</span>건</span>
+                  <span class="list-total-count">총 <span class="list-count-value" id="envTotal">0</span>건</span>
                 </div>
 
-                <!-- 측정 이력 영역 -->
-                <div class="panel-body">
-                  <p class="empty env-chart-empty">등록된 환경 측정 이력이 없습니다. (서버 API 연동 대기)</p>
+                <!-- 측정 이력 테이블 -->
+                <div class="tablewrap">
+                  <table class="data-table module-table">
+                    <caption class="sr-only">온실 환경변화 측정 이력</caption>
+                    <thead>
+                      <tr>
+                        <th scope="col">측정 일시</th>
+                        <th scope="col">온실 · 작기</th>
+                        <th scope="col">온도 (°C)</th>
+                        <th scope="col">습도 (%RH)</th>
+                        <th scope="col">광도 (µmol/m²/s)</th>
+                        <th scope="col">CO₂ (ppm)</th>
+                        <th scope="col">상태</th>
+                      </tr>
+                    </thead>
+                    <tbody id="envRows">
+                      <tr>
+                        <td colspan="7" class="empty">등록된 환경 측정 이력이 없습니다. (서버 API 연동 대기)</td>
+                      </tr>
+                    </tbody>
+                  </table>
                 </div>
               </section>
 

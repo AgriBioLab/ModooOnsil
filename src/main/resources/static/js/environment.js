@@ -3,32 +3,47 @@
 (() => {
   'use strict';
 
-  const { ready, notify, currentMember, showAccount, bindAccount, setCurrentMenu } = window.ModooCommon;
+  const { ready, notify, escapeHtml, currentMember, showAccount, bindAccount, setCurrentMenu } = window.ModooCommon;
 
-  function bindEnvEvents() {
-    const form = document.getElementById('envFilters');
-    const resetBtn = document.getElementById('efReset');
+  async function populateFilterOptions(houseSelectId, cycleSelectId) {
+    const houseSelect = document.getElementById(houseSelectId);
+    const cycleSelect = document.getElementById(cycleSelectId);
+    if (!houseSelect && !cycleSelect) return;
 
-    if (form) {
-      form.addEventListener('submit', event => {
-        event.preventDefault();
-        notify('환경변화 조회는 서버 연동 후 동작합니다.');
-      });
-    }
+    try {
+      const [housesRes, plansRes] = await Promise.all([
+        houseSelect ? fetch('/api/greenhouses', { headers: { Accept: 'application/json' } }) : null,
+        cycleSelect ? fetch('/api/cultivation-plans', { headers: { Accept: 'application/json' } }) : null
+      ]);
 
-    if (resetBtn && form) {
-      resetBtn.addEventListener('click', () => form.reset());
+      if (housesRes?.ok && houseSelect) {
+        const houses = await housesRes.json();
+        houseSelect.innerHTML = [
+          '<option value="">전체 온실</option>',
+          ...houses.map(h => `<option value="${escapeHtml(String(h.greenhouseId))}">${escapeHtml(h.greenhouseName)}</option>`)
+        ].join('');
+      }
+
+      if (plansRes?.ok && cycleSelect) {
+        const plans = await plansRes.json();
+        cycleSelect.innerHTML = [
+          '<option value="">전체 작기계획</option>',
+          ...plans.map(p => `<option value="${escapeHtml(String(p.planId))}">${escapeHtml(p.planName)}</option>`)
+        ].join('');
+      }
+    } catch {
+      // 환경변화·이슈 API 미연동 상태에서는 기본 옵션만 유지
     }
   }
 
-  function bindIssueEvents() {
-    const form = document.getElementById('issueFilters');
-    const resetBtn = document.getElementById('ifReset');
+  function bindFilterForm(formId, resetId, noticeMessage) {
+    const form = document.getElementById(formId);
+    const resetBtn = document.getElementById(resetId);
 
     if (form) {
       form.addEventListener('submit', event => {
         event.preventDefault();
-        notify('환경 이슈 조회는 서버 연동 후 동작합니다.');
+        notify(noticeMessage);
       });
     }
 
@@ -53,11 +68,13 @@
     const page = document.body?.dataset?.page;
     if (page === 'issue-list') {
       setCurrentMenu('issue-list');
-      bindIssueEvents();
+      bindFilterForm('issueFilters', 'ifReset', '환경 이슈 조회는 서버 연동 후 동작합니다.');
+      await populateFilterOptions('ifHouse', 'ifCycle');
       return;
     }
 
     setCurrentMenu('env-list');
-    bindEnvEvents();
+    bindFilterForm('envFilters', 'efReset', '환경변화 조회는 서버 연동 후 동작합니다.');
+    await populateFilterOptions('efHouse', 'efCycle');
   });
 })();

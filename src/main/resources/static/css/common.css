@@ -113,13 +113,10 @@ select:disabled {
   opacity: 0.55;
 }
 
-button:focus-visible,
-a:focus-visible,
-input:focus-visible,
-select:focus-visible,
-textarea:focus-visible {
-  outline: 2px solid var(--primary);
-  outline-offset: 2px;
+*:focus,
+*:focus-visible {
+  outline: none;
+  box-shadow: none;
 }
 
 .hidden {
@@ -160,11 +157,6 @@ textarea:focus-visible {
   min-height: 0;
   min-width: 0;
   gap: inherit;
-}
-
-.page-content:focus {
-  outline: none;
-  box-shadow: none;
 }
 
 .skip-link {

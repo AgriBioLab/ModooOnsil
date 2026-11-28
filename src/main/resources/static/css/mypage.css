@@ -2,11 +2,6 @@
   line-height: 1.5;
 }
 
-.profile-page .page-content:focus {
-  outline: none;
-  box-shadow: none;
-}
-
 .profile-page .pagehead h1 {
   font-size: 28px;
 }
@@ -54,8 +49,6 @@
 
 .profile-tabbar .tabbtn:focus,
 .profile-tabbar .tabbtn:focus-visible {
-  outline: none;
-  box-shadow: none;
   position: relative;
   z-index: 1;
 }

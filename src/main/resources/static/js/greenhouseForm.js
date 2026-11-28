@@ -104,8 +104,11 @@
     }
 
     const buildingCount = readNullableNumber('ghCount');
-    if (buildingCount !== null && (Number.isNaN(buildingCount) || buildingCount < 1)) {
-      showFormError('동 수는 1 이상이어야 합니다.');
+    if (
+      buildingCount !== null &&
+      (Number.isNaN(buildingCount) || !Number.isInteger(buildingCount) || buildingCount < 1)
+    ) {
+      showFormError('동 수는 1 이상의 정수여야 합니다.');
       return null;
     }
 
@@ -114,8 +117,8 @@
     const length = readNullableNumber('ghLength');
     const registeredArea = readNullableNumber('ghArea');
     for (const num of [sideHeight, width, length, registeredArea]) {
-      if (num !== null && (Number.isNaN(num) || num < 0)) {
-        showFormError('규격 및 면적은 0 이상의 숫자여야 합니다.');
+      if (num !== null && (Number.isNaN(num) || num <= 0)) {
+        showFormError('측고·폭·길이·등록 면적은 0보다 큰 숫자여야 합니다.');
         return null;
       }
     }
