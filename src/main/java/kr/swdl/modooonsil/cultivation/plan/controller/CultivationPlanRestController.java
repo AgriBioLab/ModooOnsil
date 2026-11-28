@@ -2,6 +2,8 @@ package kr.swdl.modooonsil.cultivation.plan.controller;
 
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Positive;
+import kr.swdl.modooonsil.common.dto.PageRequest;
+import kr.swdl.modooonsil.common.dto.PageResponse;
 
 import kr.swdl.modooonsil.cultivation.plan.domain.dto.CreateCultivationPlanRequest;
 import kr.swdl.modooonsil.cultivation.plan.domain.dto.EndCultivationPlanRequest;
@@ -41,20 +43,28 @@ public class CultivationPlanRestController {
     @GetMapping
     public ResponseEntity<List<FindAllCultivationPlanVO>> findAll(@AuthenticationPrincipal CustomUserDetails userDetails,
                                                                   @ModelAttribute FindAllCultivationPlanRequest request) {
-        Long memberId = requireMemberId(userDetails);
+        return ResponseEntity.ok(planService.findAll(searchCondition(userDetails, request)));
+    }
 
-        FindAllCultivationPlanVO searchCondition = FindAllCultivationPlanVO.builder()
-                                                                           .memberId(memberId)
-                                                                           .planName(request.getPlanName())
-                                                                           .greenhouseName(request.getGreenhouseName())
-                                                                           .cropName(request.getCropName())
-                                                                           .varietyName(request.getVarietyName())
-                                                                           .planStatus(request.getPlanStatus())
-                                                                           .build();
+    @GetMapping("/page")
+    public PageResponse<FindAllCultivationPlanVO> findPage(
+            @AuthenticationPrincipal CustomUserDetails userDetails,
+            @ModelAttribute FindAllCultivationPlanRequest request,
+            @RequestParam(defaultValue = "1") int page,
+            @RequestParam(defaultValue = "5") int size) {
+        return planService.findPage(searchCondition(userDetails, request), new PageRequest(page, size));
+    }
 
-        List<FindAllCultivationPlanVO> result = planService.findAll(searchCondition);
-
-        return ResponseEntity.ok(result);
+    private FindAllCultivationPlanVO searchCondition(CustomUserDetails userDetails,
+                                                    FindAllCultivationPlanRequest request) {
+        return FindAllCultivationPlanVO.builder()
+                .memberId(requireMemberId(userDetails))
+                .planName(request.getPlanName())
+                .greenhouseName(request.getGreenhouseName())
+                .cropName(request.getCropName())
+                .varietyName(request.getVarietyName())
+                .planStatus(request.getPlanStatus())
+                .build();
     }
 
     /*

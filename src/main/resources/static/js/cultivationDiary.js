@@ -9,7 +9,8 @@
     currentMember,
     showAccount,
     bindAccount,
-    setCurrentMenu
+    setCurrentMenu,
+    renderPagination
   } = window.ModooCommon;
 
   const datePicker = window.ModooDatePicker || {};
@@ -104,12 +105,12 @@
     return query;
   }
 
-  function renderListRows(rows) {
+  function renderListRows({ items: rows, total, page, size }) {
     const totalEl = document.getElementById('diaryTotal');
     const tbody = document.getElementById('diaryRows');
     if (!totalEl || !tbody) return;
 
-    totalEl.textContent = String(rows.length);
+    totalEl.textContent = String(total);
     if (!rows.length) {
       tbody.innerHTML = '<tr><td class="empty" colspan="8">조회 결과가 없습니다.</td></tr>';
       return;
@@ -120,7 +121,7 @@
         const detailHref = `/cultivation-diaries/${encodeURIComponent(diary.diaryId)}`;
         return `
           <tr>
-            <td class="row-index">${rows.length - index}</td>
+            <td class="row-index">${total - (page - 1) * size - index}</td>
             <td><a class="linkbtn" href="${escapeHtml(detailHref)}">${escapeHtml(diary.workedAt?.slice(0, 10))}</a></td>
             <td>${escapeHtml(diary.greenhouseName)}</td>
             <td>${escapeHtml(diary.cropName)}</td>
@@ -134,15 +135,22 @@
       .join('');
   }
 
-  async function loadList(query) {
+  async function loadList(filters, page = 1) {
     const sequence = ++listRequestSeq;
+    const pagination = document.getElementById('diaryPagination');
+    const query = new URLSearchParams(filters);
+    query.set('page', page);
     try {
-      const rows = await request('?' + query);
-      if (sequence === listRequestSeq) {
-        renderListRows(rows);
+      const result = await request('/page?' + query);
+      if (sequence !== listRequestSeq) return;
+      if (result.totalPages && page > result.totalPages) {
+        return loadList(filters, result.totalPages);
       }
+      renderListRows(result);
+      renderPagination(pagination, result.page, result.totalPages, next => loadList(filters, next));
     } catch (failure) {
       if (sequence !== listRequestSeq) return;
+      renderPagination(pagination, 1, 0);
       const totalEl = document.getElementById('diaryTotal');
       const tbody = document.getElementById('diaryRows');
       if (totalEl) totalEl.textContent = '0';

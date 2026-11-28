@@ -6,6 +6,24 @@
     <select id="findAll"
             resultType="kr.swdl.modooonsil.cultivation.plan.domain.vo.FindAllCultivationPlanVO"
             parameterType="kr.swdl.modooonsil.cultivation.plan.domain.vo.FindAllCultivationPlanVO">
+        <include refid="planListSearch"/>
+        <if test="planStatus != null">
+            AND p.plan_status LIKE CONCAT('%', #{planStatus},'%')
+        </if>
+        ORDER BY p.plan_id DESC
+    </select>
+
+    <select id="findForPage"
+            resultType="kr.swdl.modooonsil.cultivation.plan.domain.vo.FindAllCultivationPlanVO"
+            parameterType="kr.swdl.modooonsil.cultivation.plan.domain.vo.FindAllCultivationPlanVO">
+        <include refid="planListSearch"/>
+        <if test="planStatus != null">
+            AND p.plan_status = #{planStatus}
+        </if>
+        ORDER BY p.plan_id DESC
+    </select>
+
+    <sql id="planListSearch">
         SELECT p.member_id, p.plan_id, p.plan_name, g.greenhouse_name, c.crop_name, c.variety_name, p.plan_status, p.planned_start_date, p.planned_end_date, p.actual_start_date, p.actual_end_date
         FROM cultivation_plan AS p
             JOIN greenhouse AS g ON g.greenhouse_id = p.greenhouse_id
@@ -24,9 +42,6 @@
         <if test="varietyName != null">
             AND c.variety_name LIKE CONCAT('%', #{varietyName},'%')
         </if>
-        <if test="planStatus != null">
-            AND p.plan_status LIKE CONCAT('%', #{planStatus},'%')
-        </if>
         <if test="plannedStartDate != null">
             AND p.planned_end_date >= #{plannedStartDate}
         </if>
@@ -39,8 +54,7 @@
         <if test="actualEndDate != null">
             AND #{actualEndDate} >= p.actual_start_date
         </if>
-        ORDER BY p.plan_id DESC;
-    </select>
+    </sql>
 
     <select id="findByMemberIdAndPlanId" parameterType="Long" resultType="kr.swdl.modooonsil.cultivation.plan.domain.vo.FindCultivationPlanDetailVO">
         SELECT

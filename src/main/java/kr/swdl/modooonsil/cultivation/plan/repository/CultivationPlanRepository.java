@@ -13,6 +13,8 @@ import java.util.List;
 public interface CultivationPlanRepository {
     List<FindAllCultivationPlanVO> findAll(FindAllCultivationPlanVO vo);
 
+    List<FindAllCultivationPlanVO> findForPage(FindAllCultivationPlanVO vo);
+
     FindCultivationPlanDetailVO findByMemberIdAndPlanId(@Param("memberId") Long memberId, @Param("planId") Long planId);
 
     FindCultivationPlanDetailVO findDeletedByMemberIdAndPlanId(@Param("memberId") Long memberId, @Param("planId") Long planId);

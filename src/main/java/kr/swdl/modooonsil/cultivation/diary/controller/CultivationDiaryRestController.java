@@ -1,5 +1,7 @@
 package kr.swdl.modooonsil.cultivation.diary.controller;
 
+import kr.swdl.modooonsil.common.dto.PageRequest;
+import kr.swdl.modooonsil.common.dto.PageResponse;
 import kr.swdl.modooonsil.cultivation.diary.domain.DiaryPlan;
 import kr.swdl.modooonsil.cultivation.diary.domain.FindAllCultivationDiaryVO;
 import kr.swdl.modooonsil.cultivation.diary.dto.CreateRequest;
@@ -35,6 +37,20 @@ public class CultivationDiaryRestController {
             @RequestParam(required = false) LocalDate workedDate,
             @RequestParam(required = false) String greenhouseName) {
         return service.findAll(user.getMemberId(), planName, cropName, varietyName, workedDate, greenhouseName);
+    }
+
+    @GetMapping("/page")
+    public PageResponse<FindAllCultivationDiaryVO> listPage(
+            @AuthenticationPrincipal CustomUserDetails user,
+            @RequestParam(required = false) String planName,
+            @RequestParam(required = false) String cropName,
+            @RequestParam(required = false) String varietyName,
+            @RequestParam(required = false) LocalDate workedDate,
+            @RequestParam(required = false) String greenhouseName,
+            @RequestParam(defaultValue = "1") int page,
+            @RequestParam(defaultValue = "5") int size) {
+        return service.findPage(user.getMemberId(), planName, cropName, varietyName, workedDate, greenhouseName,
+                new PageRequest(page, size));
     }
 
     @GetMapping("/plans")

@@ -1,5 +1,8 @@
 package kr.swdl.modooonsil.cultivation.diary.service;
 
+import com.github.pagehelper.PageHelper;
+import kr.swdl.modooonsil.common.dto.PageRequest;
+import kr.swdl.modooonsil.common.dto.PageResponse;
 import kr.swdl.modooonsil.cultivation.diary.domain.CultivationDiary;
 import kr.swdl.modooonsil.cultivation.diary.domain.DiaryPlan;
 import kr.swdl.modooonsil.cultivation.diary.domain.FindAllCultivationDiaryVO;
@@ -29,6 +32,13 @@ public class CultivationDiaryService {
     public List<FindAllCultivationDiaryVO> findAll(Long memberId, String planName, String cropName,
                                                    String varietyName, LocalDate workedDate, String greenhouseName) {
         return repository.findAll(memberId, planName, cropName, varietyName, workedDate, greenhouseName);
+    }
+
+    public PageResponse<FindAllCultivationDiaryVO> findPage(Long memberId, String planName, String cropName,
+            String varietyName, LocalDate workedDate, String greenhouseName, PageRequest page) {
+        return PageResponse.from(PageHelper.<FindAllCultivationDiaryVO>startPage(page.getPage(), page.getSize())
+                .doSelectPageInfo(() -> repository.findAll(memberId, planName, cropName, varietyName,
+                        workedDate, greenhouseName)));
     }
 
     public List<DiaryPlan> findActivePlans(Long memberId) {
