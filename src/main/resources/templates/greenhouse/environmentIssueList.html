@@ -36,17 +36,24 @@
               <section class="panel list-section" aria-label="온실 환경 이슈 목록">
                 <!-- 검색 필터 -->
                 <form class="list-filter-strip" id="issueFilters">
+                  <label class="list-ctrl-field" for="ifHouse">
+                    <span>온실</span>
+                    <select class="ctrl" id="ifHouse" name="greenhouseId">
+                      <option value="">전체 온실</option>
+                    </select>
+                  </label>
+
                   <label class="list-ctrl-field" for="ifCycle">
                     <span>작기계획</span>
-                    <select class="ctrl" id="ifCycle" name="cycle">
-                      <option value="all">전체 작기계획</option>
+                    <select class="ctrl" id="ifCycle" name="planId">
+                      <option value="">전체 작기계획</option>
                     </select>
                   </label>
 
                   <label class="list-ctrl-field" for="ifStatus">
                     <span>조치 상태</span>
                     <select class="ctrl" id="ifStatus" name="status">
-                      <option value="all">전체 상태</option>
+                      <option value="">전체 상태</option>
                       <option value="발생">발생</option>
                       <option value="조치중">조치중</option>
                       <option value="조치 완료">조치 완료</option>
@@ -61,7 +68,7 @@
 
                 <!-- 목록 요약 -->
                 <div class="list-summary-bar">
-                  <span class="list-total-count">총 <span class="list-count-value">0</span>건</span>
+                  <span class="list-total-count">총 <span class="list-count-value" id="issueTotal">0</span>건</span>
                 </div>
 
                 <!-- 목록 테이블 -->
@@ -74,12 +81,13 @@
                         <th scope="col">온실 · 작기</th>
                         <th scope="col">이슈 유형</th>
                         <th scope="col">이슈 내용</th>
+                        <th scope="col">감지값 · 기준</th>
                         <th scope="col">상태</th>
                       </tr>
                     </thead>
-                    <tbody>
+                    <tbody id="issueRows">
                       <tr>
-                        <td colspan="5" class="empty">등록된 환경 이슈가 없습니다. (서버 API 연동 대기)</td>
+                        <td colspan="6" class="empty">등록된 환경 이슈가 없습니다. (서버 API 연동 대기)</td>
                       </tr>
                     </tbody>
                   </table>
